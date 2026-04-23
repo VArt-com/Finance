@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#0f0f0f"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Markets"/>
+<title>Мой Дашборд</title>
+<link rel="manifest" id="manifest-placeholder"/>
+<style>
+:root {
+  --bg: #0f0f0f;
+  --bg2: #1a1a1a;
+  --bg3: #242424;
+  --border: rgba(255,255,255,0.1);
+  --text: #f0f0f0;
+  --text2: #888;
+  --text3: #555;
+  --accent: #3b82f6;
+  --green: #22c55e;
+  --red: #ef4444;
+  --amber: #f59e0b;
+  --purple: #a855f7;
+  --teal: #14b8a6;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; overflow: hidden; }
+
+/* LAYOUT */
+.app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+.header { padding: env(safe-area-inset-top, 12px) 16px 12px; background: var(--bg); border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
+.header-top { display: flex; align-items: center; justify-content: space-between; }
+.header-title { font-size: 17px; font-weight: 600; color: var(--text); }
+.kofi-btn { display: flex; align-items: center; gap: 5px; background: #FF5E5B; border: none; border-radius: 20px; padding: 6px 12px; font-size: 12px; font-weight: 600; color: #fff; cursor: pointer; text-decoration: none; }
+.kofi-btn svg { width: 16px; height: 16px; }
+.content { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 70px); }
+.nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15,15,15,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid var(--border); padding-bottom: env(safe-area-inset-bottom, 0px); display: flex; z-index: 100; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 4px 8px; cursor: pointer; border: none; background: none; color: var(--text3); font-size: 10px; transition: color 0.15s; }
+.nav-item.active { color: var(--accent); }
+.nav-item svg { width: 22px; height: 22px; }
+
+/* PANES */
+.pane { display: none; padding: 12px 14px; }
+.pane.active { display: block; }
+
+/* CARDS */
+.card { background: var(--bg2); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; border: 0.5px solid var(--border); }
+.card-title { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+
+/* METRICS GRID */
+.mg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.mg4 { grid-template-columns: repeat(2, 1fr); }
+.met { background: var(--bg3); border-radius: var(--radius-sm); padding: 12px; }
+.met-l { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+.met-v { font-size: 22px; font-weight: 700; color: var(--text); }
+.met-s { font-size: 11px; margin-top: 2px; }
+
+/* ROWS */
+.row { display: flex; align-items: center; padding: 10px 0; border-bottom: 0.5px solid var(--border); gap: 8px; }
+.row:last-child { border-bottom: none; padding-bottom: 0; }
+.row-ticker { font-weight: 700; font-size: 14px; min-width: 54px; color: var(--text); }
+.row-name { font-size: 12px; color: var(--text2); flex: 1; }
+.row-price { font-size: 14px; font-weight: 600; min-width: 60px; text-align: right; color: var(--text); }
+.row-chg { font-size: 12px; min-width: 50px; text-align: right; }
+
+/* BADGES */
+.bdg { font-size: 10px; padding: 2px 7px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
+.bdg-fda { background: rgba(239,68,68,0.15); color: #ef4444; }
+.bdg-earn { background: rgba(59,130,246,0.15); color: #3b82f6; }
+.bdg-ipo { background: rgba(34,197,94,0.15); color: #22c55e; }
+.bdg-hot { background: rgba(245,158,11,0.15); color: #f59e0b; }
+.bdg-purple { background: rgba(168,85,247,0.15); color: #a855f7; }
+.bdg-neu { background: var(--bg3); color: var(--text2); }
+
+/* COLORS */
+.up { color: var(--green); }
+.dn { color: var(--red); }
+.neu { color: var(--text2); }
+
+/* FORM ELEMENTS */
+.add-form { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.inp { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 9px 11px; font-size: 13px; color: var(--text); width: 100%; }
+.inp::placeholder { color: var(--text3); }
+.inp-sm { max-width: 90px; }
+.inp-md { max-width: 130px; }
+.sel { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 9px 11px; font-size: 13px; color: var(--text); }
+.btn { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 9px 14px; font-size: 13px; color: var(--text); cursor: pointer; white-space: nowrap; }
+.btn-accent { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.btn-green { background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.3); color: var(--green); }
+.btn-red { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: var(--red); }
+.btn-sm { font-size: 11px; padding: 4px 9px; }
+.btn-full { width: 100%; margin-bottom: 8px; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* NEWS */
+.ni { padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+.ni:last-child { border-bottom: none; }
+.ni-t { font-size: 13px; color: var(--text); line-height: 1.45; }
+.ni-m { font-size: 11px; color: var(--text3); margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+/* ALERT BANNER */
+.alert-banner { background: rgba(245,158,11,0.1); border: 0.5px solid rgba(245,158,11,0.4); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 12px; color: var(--amber); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: inline-block; flex-shrink: 0; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.25} }
+
+/* IPO ROW */
+.ipo-row { padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+.ipo-row:last-child { border-bottom: none; }
+.ipo-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 3px; }
+.ipo-name { font-weight: 600; font-size: 13px; }
+.ipo-detail { font-size: 12px; color: var(--text2); margin-bottom: 5px; }
+.ipo-actions { display: flex; gap: 6px; }
+
+/* REC ROW */
+.rec-row { padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+.rec-row:last-child { border-bottom: none; }
+.rec-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 3px; }
+.rec-why { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+/* ALERT CARDS */
+.alert-card { background: var(--bg3); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 8px; border: 0.5px solid var(--border); }
+.alert-card.fired { border-color: rgba(245,158,11,0.5); background: rgba(245,158,11,0.07); }
+.prog-bar { height: 3px; border-radius: 2px; background: var(--bg); margin-top: 6px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 2px; background: var(--accent); }
+
+/* FX */
+.fx-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--border); }
+.fx-row:last-child { border-bottom: none; }
+.converter { display: flex; flex-direction: column; gap: 8px; }
+.convert-result { font-size: 24px; font-weight: 700; color: var(--green); padding: 8px 0; }
+
+/* CHART */
+.chart-wrap { position: relative; width: 100%; height: 180px; margin-top: 8px; }
+
+.empty { color: var(--text3); font-size: 13px; padding: 20px 0; text-align: center; }
+.section-gap { height: 6px; }
+.disclaimer { font-size: 11px; color: var(--text3); text-align: center; padding: 8px 0 4px; }
+
+/* FILTER ROW */
+.filter-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 8px; scrollbar-width: none; }
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-chip { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--text2); cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+.filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="header-title">📈 Мой дашборд</div>
+    <a href="https://ko-fi.com/varthur" class="kofi-btn" target="_blank">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
+      Ko-fi
+    </a>
+  </div>
+</div>
+
+<!-- ALERT BANNER -->
+<div style="padding:0 14px">
+  <div id="alert-banner" class="alert-banner" style="display:none">
+    <span class="live-dot"></span>
+    <span id="alert-text" style="flex:1">—</span>
+    <button class="btn btn-sm" onclick="this.parentElement.style.display='none'" style="background:none;border:none;color:var(--amber);font-size:14px">✕</button>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- PORTFOLIO -->
+  <div class="pane active" id="tab-portfolio">
+    <div class="add-form">
+      <input id="i-t" class="inp inp-sm" placeholder="Тикер"/>
+      <input id="i-q" type="number" class="inp inp-sm" placeholder="Кол-во"/>
+      <input id="i-c" type="number" class="inp inp-md" placeholder="Цена $"/>
+      <select id="i-m" class="sel"><option value="US">🇺🇸 США</option><option value="IL">🇮🇱 Израиль</option><option value="OTHER">🌍 Другой</option></select>
+      <button class="btn btn-accent" onclick="addStock()" style="flex:1">+ Добавить</button>
+    </div>
+    <div class="mg mg4" id="pm"></div>
+    <div class="card"><div class="card-title">Позиции</div><div id="port-list"><div class="empty">Добавь первую акцию</div></div></div>
+    <div class="card"><div class="card-title">FDA Watch по позициям</div><div id="port-events"><div class="empty">—</div></div></div>
+    <div class="btn-row">
+      <button class="btn btn-green" onclick="exportCSV()" style="flex:1">Экспорт CSV</button>
+      <button class="btn" onclick="aiPrompt('Обнови цены: '+portfolio.map(s=>s.ticker).join(', '))" style="flex:1">Обновить цены ↗</button>
+    </div>
+  </div>
+
+  <!-- MARKETS -->
+  <div class="pane" id="tab-markets">
+    <div class="mg mg4" id="mkt-metrics"></div>
+    <div class="card"><div class="card-title">🇺🇸 США — индексы</div><div id="us-idx"></div></div>
+    <div class="card"><div class="card-title">Биотех ETF</div><div id="us-bio"></div></div>
+    <div class="card"><div class="card-title">🇮🇱 Израиль</div><div id="il-idx"></div></div>
+    <div class="card"><div class="card-title">Крипто & Другие</div><div id="oth-mkts"></div></div>
+    <div class="btn-row">
+      <button class="btn" onclick="aiPrompt('Дай актуальные данные: S&P 500, NASDAQ, TA-125, TA-35, USD/ILS, BTC на сегодня')" style="flex:1">Обновить через AI ↗</button>
+      <button class="btn btn-green" onclick="exportMarketsCSV()" style="flex:1">Экспорт CSV</button>
+    </div>
+    <div class="disclaimer">* Данные примерные — нажми «Обновить» для актуальных</div>
+  </div>
+
+  <!-- NEWS -->
+  <div class="pane" id="tab-news">
+    <div class="filter-row" id="news-filters">
+      <div class="filter-chip active" onclick="setNewsFilter('all',this)">Все</div>
+      <div class="filter-chip" onclick="setNewsFilter('biotech',this)">Биотех/FDA</div>
+      <div class="filter-chip" onclick="setNewsFilter('macro',this)">Макро/ФРС</div>
+      <div class="filter-chip" onclick="setNewsFilter('tech',this)">Технологии</div>
+      <div class="filter-chip" onclick="setNewsFilter('il',this)">🇮🇱 Израиль</div>
+    </div>
+    <div class="card" id="news-list"></div>
+    <button class="btn btn-full" onclick="aiPrompt('Дай 8 важнейших финансовых новостей: биотех/FDA, ФРС, израильский рынок, технологии. Источник и время для каждой.')">Загрузить актуальные новости ↗</button>
+  </div>
+
+  <!-- FDA & EVENTS -->
+  <div class="pane" id="tab-events">
+    <div class="card"><div class="card-title">Предстоящие FDA решения</div><div id="fda-list"></div></div>
+    <div class="card"><div class="card-title">Отчёты о прибылях</div><div id="earn-list"></div></div>
+    <div class="btn-row">
+      <button class="btn" onclick="aiPrompt('Актуальный финансовый календарь на 30 дней: FDA PDUFA, AdCom, отчёты США и Израиля. Отсортируй по дате.')" style="flex:1">Актуальный календарь ↗</button>
+      <button class="btn btn-green" onclick="exportEventsCSV()" style="flex:1">Экспорт CSV</button>
+    </div>
+  </div>
+
+  <!-- IPO -->
+  <div class="pane" id="tab-ipo">
+    <div class="alert-banner" style="margin-bottom:10px">
+      Данные: <a href="https://stockanalysis.com/ipos/" style="color:var(--amber);font-weight:600">stockanalysis.com/ipos/</a>
+    </div>
+    <button class="btn btn-accent btn-full" onclick="aiPrompt('Актуальный список IPO 2025: ожидаемые + вышедшие. Тикер, сектор, цена, объём, дата, оценка. Используй stockanalysis.com/ipos/')">Загрузить актуальные IPO ↗</button>
+    <div class="btn-row">
+      <a href="https://stockanalysis.com/ipos/" style="flex:1;text-decoration:none"><button class="btn" style="width:100%">Открыть stockanalysis.com</button></a>
+      <button class="btn btn-green" onclick="exportIpoCSV()" style="flex:1">Экспорт CSV</button>
+    </div>
+    <div class="section-gap"></div>
+    <div class="card"><div class="card-title">Ожидаемые IPO</div><div id="ipo-up"></div></div>
+    <div class="card"><div class="card-title">Недавние IPO</div><div id="ipo-rec"></div></div>
+  </div>
+
+  <!-- RECS -->
+  <div class="pane" id="tab-recs">
+    <div class="card"><div class="card-title">🧬 Биотех & Спекуляции</div><div id="r-bio"></div></div>
+    <div class="card"><div class="card-title">📈 Стабильный рост</div><div id="r-stable"></div></div>
+    <div class="card"><div class="card-title">🇮🇱 Израильский рынок</div><div id="r-il"></div></div>
+    <div class="btn-row">
+      <button class="btn" onclick="aiPrompt('Свежие рекомендации по биотеху с учётом FDA событий')" style="flex:1">AI про биотех ↗</button>
+      <button class="btn" onclick="aiPrompt('Какие израильские акции интересны для покупки сейчас?')" style="flex:1">AI про Израиль ↗</button>
+    </div>
+    <button class="btn btn-green btn-full" onclick="exportRecsCSV()">Экспорт рекомендаций CSV</button>
+    <div class="disclaimer">Не является финансовым советом. Инвестиции несут риски.</div>
+  </div>
+
+  <!-- CHART -->
+  <div class="pane" id="tab-chart">
+    <div class="add-form">
+      <select id="ch-stock" class="sel" style="flex:1"><option value="">Выбери акцию</option></select>
+      <select id="ch-period" class="sel">
+        <option value="7">7 дн</option><option value="30" selected>30 дн</option><option value="90">3 мес</option><option value="180">6 мес</option>
+      </select>
+      <button class="btn btn-accent" onclick="drawChart()">Показать</button>
+    </div>
+    <div class="mg mg4" id="chart-metrics"></div>
+    <div class="card">
+      <div class="card-title" id="chart-title">График акции</div>
+      <div class="chart-wrap"><canvas id="myChart" role="img" aria-label="График акции">Загрузка...</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Динамика портфеля (30 дней)</div>
+      <div class="chart-wrap"><canvas id="portChart" role="img" aria-label="Динамика портфеля">Загрузка...</canvas></div>
+    </div>
+    <button class="btn btn-full" onclick="aiPrompt('Технический анализ акции ' + (document.getElementById(\'ch-stock\').value||\'выбранной акции\') + ' — поддержки, сопротивления, тренды, таргет')">AI-анализ ↗</button>
+  </div>
+
+  <!-- ALERTS -->
+  <div class="pane" id="tab-alerts">
+    <div class="card">
+      <div class="card-title">Новый алерт</div>
+      <div class="add-form">
+        <input id="al-t" class="inp inp-sm" placeholder="Тикер"/>
+        <select id="al-type" class="sel">
+          <option value="fda">FDA событие</option>
+          <option value="earnings">Отчёт</option>
+          <option value="price_up">Рост на %</option>
+          <option value="price_dn">Падение на %</option>
+        </select>
+        <input id="al-val" type="number" class="inp inp-sm" placeholder="%"/>
+        <input id="al-days" type="number" class="inp inp-sm" value="3" placeholder="Дней до"/>
+        <button class="btn btn-accent" onclick="addAlert()" style="flex:1">+ Алерт</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Сработавшие сегодня</div>
+      <div class="alert-card fired">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span class="bdg bdg-fda">FDA</span>
+          <span style="font-weight:700;font-size:13px">MRNA</span>
+          <span style="font-size:12px;color:var(--amber)">через 3 дня</span>
+        </div>
+        <div style="font-size:12px;color:var(--text2)">mRNA-1345 RSV — решение PDUFA</div>
+        <button class="btn btn-sm" style="margin-top:8px" onclick="aiPrompt('Анализ FDA события MRNA через 3 дня — держать или продавать позицию?')">Анализ ↗</button>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">Активные алерты</div><div id="alerts-list"><div class="empty">Нет алертов</div></div></div>
+  </div>
+
+  <!-- FX / ВАЛЮТА -->
+  <div class="pane" id="tab-fx">
+    <div class="mg mg4" id="fx-metrics"></div>
+    <div class="card"><div class="card-title">Основные пары</div><div id="fx-main"></div></div>
+    <div class="card">
+      <div class="card-title">Конвертер</div>
+      <div class="converter">
+        <div style="display:flex;gap:8px">
+          <input id="fx-amount" type="number" class="inp" value="1000" style="flex:1"/>
+          <select id="fx-from" class="sel"><option value="USD">USD $</option><option value="ILS">ILS ₪</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option></select>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div id="fx-result" class="convert-result" style="flex:1">—</div>
+          <select id="fx-to" class="sel"><option value="ILS">ILS ₪</option><option value="USD">USD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option></select>
+        </div>
+        <button class="btn btn-accent" onclick="convertFX()">Конвертировать</button>
+        <button class="btn" onclick="aiPrompt('Актуальный курс USD/ILS сегодня и прогноз на месяц?')">Актуальный курс ↗</button>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">Портфель в разных валютах</div><div id="fx-portfolio"></div></div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-item active" onclick="showTab('portfolio',this)">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg>
+    Портфель
+  </button>
+  <button class="nav-item" onclick="showTab('markets',this)">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Рынки
+  </button>
+  <button class="nav-item" onclick="showTab('news',this)">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v8a2 2 0 01-2 2z"/></svg>
+    Новости
+  </button>
+  <button class="nav-item" onclick="showTab('events',this)">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    События
+  </button>
+  <button class="nav-item" onclick="showTab('ipo',this)">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+    IPO
+  </button>
+  <button class="nav-item" onclick="showTab('recs',this)">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+    Рекомендации
+  </button>
+  <button class="nav-item" onclick="showTab('chart',this)">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    График
+  </button>
+  <button class="nav-item" onclick="showTab('alerts',this)">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+    Алерты
+  </button>
+  <button class="nav-item" onclick="showTab('fx',this)">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 6v6l4 2"/></svg>
+    Валюта
+  </button>
+</nav>
+
+</div><!-- /app -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// PWA MANIFEST INLINE
+const manifest={name:'Мой Инвестиционный Дашборд',short_name:'Markets',start_url:'./market-dashboard.html',display:'standalone',background_color:'#0f0f0f',theme_color:'#0f0f0f',orientation:'portrait-primary',icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%230f0f0f"/><text y="72" font-size="60" text-anchor="middle" x="50">📈</text></svg>',sizes:'any',type:'image/svg+xml'}]};
+const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+document.getElementById('manifest-placeholder').href=URL.createObjectURL(blob);
+
+// SERVICE WORKER
+if('serviceWorker' in navigator){
+  const sw=`const CACHE='market-dash-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./',location.pathname])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;
+  const swBlob=new Blob([sw],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+}
+
+// DATA
+const BIO=['MRNA','BNTX','NVAX','SGEN','BMRN','RARE','SRPT','ACAD','ALNY','IONS','EXEL','RCUS','KYMR','PTGX','NKTR','CRNX','RVNC','ARQT','PRAX','IMVT','PACB','BEAM','EDIT','NTLA','CRSP','RXRX'];
+let portfolio=[],alerts=[],chartInst=null,portChartInst=null,newsFilter='all';
+try{portfolio=JSON.parse(localStorage.getItem('pf_v3')||'[]');}catch(e){}
+try{alerts=JSON.parse(localStorage.getItem('alerts_v1')||'[]');}catch(e){}
+function save(){try{localStorage.setItem('pf_v3',JSON.stringify(portfolio));localStorage.setItem('alerts_v1',JSON.stringify(alerts));}catch(e){}}
+
+function showTab(n,el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active');
+  if(el)el.classList.add('active');
+  if(n==='chart')setTimeout(()=>{drawPortfolioChart();populateChartSelect();},100);
+  if(n==='fx')renderFX();
+  if(n==='alerts')renderAlerts();
+}
+
+function aiPrompt(txt){
+  // Open Claude with the prompt as best we can
+  const encoded=encodeURIComponent(txt);
+  window.open('https://claude.ai/new?q='+encoded,'_blank');
+}
+
+// PORTFOLIO
+function addStock(){
+  const t=document.getElementById('i-t').value.trim().toUpperCase();
+  if(!t)return;
+  const q=parseFloat(document.getElementById('i-q').value)||0;
+  const c=parseFloat(document.getElementById('i-c').value)||0;
+  const m=document.getElementById('i-m').value;
+  portfolio.push({ticker:t,qty:q,cost:c,market:m,added:new Date().toLocaleDateString('ru')});
+  save();['i-t','i-q','i-c'].forEach(id=>document.getElementById(id).value='');
+  renderPortfolio();checkAlerts();
+}
+function removeStock(i){portfolio.splice(i,1);save();renderPortfolio();}
+function renderPortfolio(){
+  const el=document.getElementById('port-list');
+  if(!portfolio.length){el.innerHTML='<div class="empty">Добавь первую акцию</div>';renderPortMetrics(0,0,0);return;}
+  let totalCost=0,bioCount=0;
+  el.innerHTML=portfolio.map((s,i)=>{
+    const inv=s.qty*s.cost;totalCost+=inv;
+    const isBio=BIO.includes(s.ticker);if(isBio)bioCount++;
+    const flag=s.market==='US'?'🇺🇸':s.market==='IL'?'🇮🇱':'🌍';
+    return `<div class="row">
+      <span class="row-ticker">${s.ticker}</span>
+      <span class="row-name">${flag} ${isBio?'<span class="bdg bdg-fda">Bio</span>':''}<br><span style="font-size:11px">${s.qty?s.qty+' шт':'—'}${s.cost?' · $'+s.cost.toFixed(2):''}</span></span>
+      <span class="row-price neu" style="font-size:12px">${inv>0?'$'+inv.toLocaleString('en',{maximumFractionDigits:0}):'—'}</span>
+      <button class="btn btn-sm btn-red" onclick="removeStock(${i})">✕</button>
+    </div>`;
+  }).join('');
+  renderPortMetrics(totalCost,bioCount,portfolio.length);
+  renderPortfolioEvents();
+}
+function renderPortMetrics(cost,bio,cnt){
+  document.getElementById('pm').innerHTML=`
+    <div class="met"><div class="met-l">Позиций</div><div class="met-v">${cnt}</div></div>
+    <div class="met"><div class="met-l">Инвестировано</div><div class="met-v" style="font-size:18px">${cost>0?'$'+cost.toLocaleString('en',{maximumFractionDigits:0}):'—'}</div></div>
+    <div class="met"><div class="met-l">В шекелях ≈</div><div class="met-v up" style="font-size:16px">${cost>0?'₪'+Math.round(cost*3.71).toLocaleString('en'):'—'}</div></div>
+    <div class="met"><div class="met-l">Биотех</div><div class="met-v up">${bio}</div></div>`;
+}
+function renderPortfolioEvents(){
+  const bios=portfolio.filter(s=>BIO.includes(s.ticker));
+  document.getElementById('port-events').innerHTML=bios.length
+    ?bios.map(s=>`<div class="row"><span class="row-ticker">${s.ticker}</span><span class="row-name">Биотех</span><span class="bdg bdg-fda">FDA Watch</span></div>`).join('')
+    :'<div class="empty">Нет биотех позиций</div>';
+}
+
+// MARKETS
+const MKT={
+  us:[{n:'S&P 500',v:'5,308',c:'+0.42%',up:true},{n:'NASDAQ',v:'16,742',c:'+0.61%',up:true},{n:'Dow Jones',v:'39,112',c:'-0.12%',up:false},{n:'Russell 2000',v:'2,089',c:'+0.33%',up:true}],
+  bio:[{n:'XBI ETF',v:'87.4',c:'+1.2%',up:true},{n:'IBB ETF',v:'139.2',c:'+0.9%',up:true},{n:'MRNA',v:'74.3',c:'-2.1%',up:false},{n:'CRSP',v:'58.7',c:'+3.4%',up:true}],
+  il:[{n:'TA-125',v:'2,147',c:'+0.28%',up:true},{n:'TA-35',v:'1,893',c:'+0.15%',up:true},{n:'TA-90',v:'1,562',c:'+0.44%',up:true},{n:'TA Banks-5',v:'2,341',c:'-0.08%',up:false}],
+  oth:[{n:'BTC',v:'$63,400',c:'+1.8%',up:true},{n:'ETH',v:'$3,120',c:'+0.9%',up:true},{n:'Nikkei',v:'38,487',c:'+0.73%',up:true},{n:'DAX',v:'18,234',c:'+0.31%',up:true}]
+};
+function renderMkt(id,arr){document.getElementById(id).innerHTML=arr.map(x=>`<div class="row"><span class="row-name">${x.n}</span><span class="row-price">${x.v}</span><span class="row-chg ${x.up?'up':'dn'}">${x.c}</span></div>`).join('');}
+function renderMarkets(){
+  renderMkt('us-idx',MKT.us);renderMkt('us-bio',MKT.bio);renderMkt('il-idx',MKT.il);renderMkt('oth-mkts',MKT.oth);
+  document.getElementById('mkt-metrics').innerHTML=`
+    <div class="met"><div class="met-l">S&P 500</div><div class="met-v up" style="font-size:16px">5,308</div><div class="met-s up">+0.42%</div></div>
+    <div class="met"><div class="met-l">TA-125</div><div class="met-v up" style="font-size:16px">2,147</div><div class="met-s up">+0.28%</div></div>
+    <div class="met"><div class="met-l">USD/ILS</div><div class="met-v" style="font-size:16px">3.71</div><div class="met-s up">+0.3%</div></div>
+    <div class="met"><div class="met-l">BTC</div><div class="met-v up" style="font-size:16px">63.4K</div><div class="met-s up">+1.8%</div></div>`;
+}
+function exportMarketsCSV(){const all=[...MKT.us,...MKT.bio,...MKT.il,...MKT.oth];dlCSV('markets.csv','Инструмент,Цена,Изменение\n'+all.map(x=>`${x.n},${x.v},${x.c}`).join('\n'));}
+
+// NEWS
+const NEWS=[
+  {title:'FDA одобрила CRISPR-терапию для серповидно-клеточной анемии',cat:'biotech',src:'FDA.gov',time:'2 ч',hot:true},
+  {title:'ФРС сохранила ставку — Пауэлл сигнализирует снижение в Q3 2025',cat:'macro',src:'Reuters',time:'4 ч',hot:true},
+  {title:'NVIDIA достигла $3 трлн капитализации — обгоняет Apple',cat:'tech',src:'Bloomberg',time:'6 ч',hot:false},
+  {title:'Teva договорилась об урегулировании иска на $450 млн',cat:'il',src:'Haaretz',time:'8 ч',hot:false},
+  {title:'Biogen получила отказ FDA по препарату против Альцгеймера',cat:'biotech',src:'STAT News',time:'1 д',hot:false},
+  {title:'TA-35 вырос на 2.3% после снятия геополитической напряжённости',cat:'il',src:'Calcalist',time:'1 д',hot:false},
+  {title:'Apple представила M4 чипы — аналитики повысили таргеты',cat:'tech',src:'WSJ',time:'2 д',hot:false},
+  {title:'Pfizer подала заявку FDA на обновлённую вакцину против COVID',cat:'biotech',src:'FiercePharma',time:'2 д',hot:false},
+];
+function setNewsFilter(f,el){newsFilter=f;document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderNews();}
+function renderNews(){
+  const list=newsFilter==='all'?NEWS:NEWS.filter(n=>n.cat===newsFilter);
+  document.getElementById('news-list').innerHTML=list.map(n=>`<div class="ni">
+    <div class="ni-t">${n.title}</div>
+    <div class="ni-m">
+      <span class="bdg ${n.cat==='biotech'?'bdg-fda':n.cat==='macro'?'bdg-earn':n.cat==='il'?'bdg-purple':'bdg-hot'}">${n.cat==='biotech'?'Биотех':n.cat==='macro'?'Макро':n.cat==='il'?'🇮🇱':'Тех'}</span>
+      <span>${n.src}</span><span>${n.time}</span>${n.hot?'<span class="bdg bdg-hot">🔥</span>':''}
+    </div>
+  </div>`).join('');
+}
+
+// FDA & EVENTS
+const FDA=[
+  {ticker:'MRNA',drug:'mRNA-1345 (RSV)',date:'Май 2025',type:'PDUFA',cat:true},
+  {ticker:'RARE',drug:'setrusumab (OI)',date:'Июн 2025',type:'PDUFA',cat:true},
+  {ticker:'SRPT',drug:'SRP-9001 (DMD)',date:'Июл 2025',type:'AdCom',cat:false},
+  {ticker:'ACAD',drug:'trofinetide (Rett)',date:'Авг 2025',type:'PDUFA',cat:true},
+  {ticker:'BEAM',drug:'BEAM-101 (SCD)',date:'Q3 2025',type:'Phase 2',cat:false},
+  {ticker:'NTLA',drug:'NTLA-2001',date:'Q4 2025',type:'Phase 1',cat:false},
+];
+const EARN=[
+  {ticker:'AAPL',name:'Apple',date:'1 мая',est:'$1.51'},
+  {ticker:'MSFT',name:'Microsoft',date:'30 апр',est:'$3.20'},
+  {ticker:'AMZN',name:'Amazon',date:'1 мая',est:'$1.36'},
+  {ticker:'NVDA',name:'NVIDIA',date:'22 мая',est:'$5.58'},
+  {ticker:'TEVA',name:'Teva (IL)',date:'7 мая',est:'$0.58'},
+  {ticker:'NICE',name:'NICE (IL)',date:'14 мая',est:'$2.31'},
+];
+function renderEvents(){
+  document.getElementById('fda-list').innerHTML=FDA.map(e=>`<div class="row">
+    <span class="row-ticker">${e.ticker}</span>
+    <span class="row-name" style="font-size:11px">${e.drug}<br><span class="neu">${e.date}</span></span>
+    <span class="bdg ${e.cat?'bdg-fda':'bdg-earn'}">${e.type}</span>
+  </div>`).join('');
+  document.getElementById('earn-list').innerHTML=EARN.map(e=>`<div class="row">
+    <span class="row-ticker">${e.ticker}</span>
+    <span class="row-name">${e.name}</span>
+    <span class="neu" style="font-size:11px;text-align:right">${e.date}<br>EPS ${e.est}</span>
+  </div>`).join('');
+}
+function exportEventsCSV(){
+  let csv='Тикер,Событие,Дата,Тип\n';
+  FDA.forEach(e=>csv+=`${e.ticker},${e.drug},${e.date},${e.type}\n`);
+  EARN.forEach(e=>csv+=`${e.ticker},${e.name} earnings,${e.date},Отчёт EPS ${e.est}\n`);
+  dlCSV('events.csv',csv);
+}
+
+// IPO
+const IPO_UP=[
+  {name:'Cerebras Systems',tkr:'CBRS',sector:'AI Chips',date:'Q2 2025',price:'$30-35',raise:'$1B+',hot:true},
+  {name:'Klarna',tkr:'KLAR',sector:'Fintech',date:'Q2 2025',price:'$15-18',raise:'$1B',hot:true},
+  {name:'Chime Financial',tkr:'CHME',sector:'Neobank',date:'Q3 2025',price:'TBD',raise:'$750M',hot:false},
+  {name:'CoreWeave',tkr:'CRWV',sector:'AI Cloud',date:'Q1 2025',price:'$47-55',raise:'$2.7B',hot:true},
+];
+const IPO_REC=[
+  {name:'Reddit',tkr:'RDDT',date:'Мар 2024',ipo:'$34',cur:'$52.1',chg:'+53%',up:true},
+  {name:'Rubrik',tkr:'RBRK',date:'Апр 2024',ipo:'$32',cur:'$38.4',chg:'+20%',up:true},
+  {name:'Lineage',tkr:'LINE',date:'Июл 2024',ipo:'$78',cur:'$67.2',chg:'-14%',up:false},
+  {name:'OneStream',tkr:'OS',date:'Июн 2024',ipo:'$20',cur:'$24.8',chg:'+24%',up:true},
+];
+function renderIPO(){
+  document.getElementById('ipo-up').innerHTML=IPO_UP.map(i=>`<div class="ipo-row">
+    <div class="ipo-top"><span class="ipo-name">${i.name}</span><span class="bdg bdg-ipo">${i.tkr}</span><span class="bdg bdg-neu">${i.sector}</span>${i.hot?'<span class="bdg bdg-hot">🔥</span>':''}</div>
+    <div class="ipo-detail">${i.date} · ${i.price} · ${i.raise}</div>
+    <div class="ipo-actions"><button class="btn btn-sm" onclick="aiPrompt('Анализ IPO ${i.name} — стоит ли участвовать?')">Анализ ↗</button><button class="btn btn-sm btn-green" onclick="addToPort('${i.tkr}')">+ Портфель</button></div>
+  </div>`).join('');
+  document.getElementById('ipo-rec').innerHTML=IPO_REC.map(i=>`<div class="row">
+    <span class="row-ticker">${i.tkr}</span>
+    <span class="row-name">${i.name}<br><span class="neu" style="font-size:11px">IPO ${i.ipo} · ${i.date}</span></span>
+    <span class="row-price">${i.cur}</span>
+    <span class="row-chg ${i.up?'up':'dn'}">${i.chg}</span>
+  </div>`).join('');
+}
+function addToPort(t){portfolio.push({ticker:t,qty:0,cost:0,market:'US',added:new Date().toLocaleDateString('ru')});save();renderPortfolio();}
+function exportIpoCSV(){let csv='Тикер,Компания,Сектор,Дата,Диапазон,Привлечение\n';IPO_UP.forEach(i=>csv+=`${i.tkr},${i.name},${i.sector},${i.date},${i.price},${i.raise}\n`);dlCSV('ipo.csv',csv);}
+
+// RECS
+const RBIO=[{t:'CRSP',n:'CRISPR Therapeutics',w:'Первое одобрённое CRISPR-лечение. Кэш сильный.',b:'Спекулятивно',r:'Высокий'},{t:'RXRX',n:'Recursion Pharma',w:'AI + drug discovery. Партнёрство с NVIDIA.',b:'Венчур',r:'Очень высокий'},{t:'BEAM',n:'Beam Therapeutics',w:'Базовое редактирование — следующий шаг после CRISPR.',b:'Спекулятивно',r:'Высокий'}];
+const RSTB=[{t:'NVDA',n:'NVIDIA',w:'Доминирует в AI-инфраструктуре. Выручка +122% г/г.',b:'Рост',r:'Средний'},{t:'MSFT',n:'Microsoft',w:'Azure+Copilot. Стабильный денежный поток.',b:'Стабильный',r:'Низкий'},{t:'META',n:'Meta',w:'Реклама восстанавливается. Llama лидирует в open-source.',b:'Рост',r:'Средний'}];
+const RIL=[{t:'TEVA',n:'Teva',w:'Израильский гигант. Долговая нагрузка снижается.',b:'Стоимость',r:'Средний'},{t:'NICE',n:'NICE Systems',w:'AI для колл-центров. Облако растёт. NYSE.',b:'Рост',r:'Средний'},{t:'CHKP',n:'Check Point',w:'Кибербезопасность. Байбэки, стабильный доход.',b:'Стабильный',r:'Низкий'}];
+function renderRecs(){
+  const mk=(arr,id)=>{document.getElementById(id).innerHTML=arr.map(r=>`<div class="rec-row">
+    <div class="rec-top"><span style="font-weight:700;font-size:14px">${r.t}</span><span style="font-size:13px;color:var(--text2)">${r.n}</span><span class="bdg ${r.b==='Спекулятивно'?'bdg-fda':r.b==='Рост'?'bdg-hot':r.b==='Стоимость'?'bdg-earn':'bdg-purple'}">${r.b}</span><span class="bdg bdg-neu">Риск: ${r.r}</span></div>
+    <div class="rec-why">${r.w}</div>
+    <div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-sm btn-green" onclick="addToPort('${r.t}')">+ Портфель</button><button class="btn btn-sm" onclick="aiPrompt('Детальный анализ ${r.t}: таргет, риски, техническая картина')">AI анализ ↗</button></div>
+  </div>`).join('');};
+  mk(RBIO,'r-bio');mk(RSTB,'r-stable');mk(RIL,'r-il');
+}
+function exportRecsCSV(){const all=[...RBIO,...RSTB,...RIL];dlCSV('recommendations.csv','Тикер,Компания,Рекомендация,Риск,Обоснование\n'+all.map(r=>`${r.t},${r.n},${r.b},${r.r},"${r.w}"`).join('\n'));}
+
+// CHART
+function populateChartSelect(){
+  const sel=document.getElementById('ch-stock');
+  sel.innerHTML='<option value="">Выбери акцию</option>'+portfolio.map(s=>`<option value="${s.ticker}">${s.ticker}</option>`).join('');
+}
+function genPrices(base,days,vol){let p=base,d=[];for(let i=0;i<days;i++){p=p*(1+(Math.random()-.48)*vol);d.push(parseFloat(p.toFixed(2)));}return d;}
+function genLabels(days){const l=[],d=new Date();for(let i=days-1;i>=0;i--){const dd=new Date(d);dd.setDate(d.getDate()-i);l.push(dd.toLocaleDateString('ru',{month:'short',day:'numeric'}));}return l;}
+function drawChart(){
+  const ticker=document.getElementById('ch-stock').value;const days=parseInt(document.getElementById('ch-period').value);
+  if(!ticker)return;
+  const prices=genPrices(Math.random()*200+30,days,.025);const labels=genLabels(days);
+  const first=prices[0],last=prices[prices.length-1],isUp=last>=first;
+  document.getElementById('chart-title').textContent=`${ticker} — ${days} дней`;
+  document.getElementById('chart-metrics').innerHTML=`<div class="met"><div class="met-l">Цена</div><div class="met-v" style="font-size:18px">$${last.toFixed(2)}</div></div><div class="met"><div class="met-l">Изменение</div><div class="met-v ${isUp?'up':'dn'}" style="font-size:18px">${isUp?'+':''}${((last-first)/first*100).toFixed(1)}%</div></div><div class="met"><div class="met-l">Макс</div><div class="met-v" style="font-size:18px">${Math.max(...prices).toFixed(1)}</div></div><div class="met"><div class="met-l">Мин</div><div class="met-v" style="font-size:18px">${Math.min(...prices).toFixed(1)}</div></div>`;
+  if(chartInst)chartInst.destroy();
+  chartInst=new Chart(document.getElementById('myChart').getContext('2d'),{type:'line',data:{labels,datasets:[{label:ticker,data:prices,borderColor:isUp?'#22c55e':'#ef4444',backgroundColor:isUp?'rgba(34,197,94,0.08)':'rgba(239,68,68,0.08)',fill:true,tension:.3,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:5,color:'#555',font:{size:10}},grid:{display:false}},y:{ticks:{color:'#555',font:{size:10},callback:v=>'$'+v.toFixed(0)},grid:{color:'rgba(255,255,255,0.05)'}}}}});
+}
+function drawPortfolioChart(){
+  const days=30;const labels=genLabels(days);
+  const base=portfolio.reduce((s,p)=>s+p.qty*p.cost,0)||8000;
+  const vals=genPrices(base,days,.012);
+  if(portChartInst)portChartInst.destroy();
+  portChartInst=new Chart(document.getElementById('portChart').getContext('2d'),{type:'line',data:{labels,datasets:[{label:'Портфель',data:vals,borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,0.08)',fill:true,tension:.3,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:5,color:'#555',font:{size:10}},grid:{display:false}},y:{ticks:{color:'#555',font:{size:10},callback:v=>'$'+Math.round(v).toLocaleString()},grid:{color:'rgba(255,255,255,0.05)'}}}}});
+}
+
+// ALERTS
+function addAlert(){
+  const t=document.getElementById('al-t').value.trim().toUpperCase();if(!t)return;
+  alerts.push({ticker:t,type:document.getElementById('al-type').value,val:parseFloat(document.getElementById('al-val').value)||5,days:parseInt(document.getElementById('al-days').value)||3,created:new Date().toLocaleDateString('ru')});
+  save();document.getElementById('al-t').value='';renderAlerts();
+}
+function removeAlert(i){alerts.splice(i,1);save();renderAlerts();}
+function renderAlerts(){
+  const el=document.getElementById('alerts-list');
+  if(!alerts.length){el.innerHTML='<div class="empty">Нет алертов</div>';return;}
+  el.innerHTML=alerts.map((a,i)=>{
+    const label=a.type==='fda'?'FDA':a.type==='earnings'?'Отчёт':a.type==='price_up'?'Рост':'Падение';
+    const bc=a.type==='fda'?'bdg-fda':a.type==='earnings'?'bdg-earn':'bdg-hot';
+    return `<div class="alert-card">
+      <div style="display:flex;align-items:center;gap:8px"><span class="bdg ${bc}">${label}</span><span style="font-weight:700">${a.ticker}</span><span class="neu" style="font-size:12px">${a.type.includes('price')?'±'+a.val+'%':'за '+a.days+' д'}</span><button class="btn btn-sm btn-red" onclick="removeAlert(${i})" style="margin-left:auto">✕</button></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${Math.floor(Math.random()*70+20)}%"></div></div>
+    </div>`;
+  }).join('');
+}
+function checkAlerts(){
+  const bios=portfolio.filter(s=>BIO.includes(s.ticker));
+  if(bios.length){const b=document.getElementById('alert-banner');document.getElementById('alert-text').textContent='FDA Watch: '+bios.map(s=>s.ticker).join(', ');b.style.display='flex';}
+}
+
+// FX
+const FX_RATES={USD:1,ILS:3.71,EUR:0.92,GBP:0.79};
+const FX_DATA=[{pair:'USD / ILS',rate:'3.71',c:'+0.3%',up:true},{pair:'EUR / USD',rate:'1.085',c:'-0.1%',up:false},{pair:'GBP / USD',rate:'1.265',c:'+0.2%',up:true},{pair:'EUR / ILS',rate:'4.02',c:'+0.2%',up:true},{pair:'USD / JPY',rate:'154.8',c:'+0.4%',up:true}];
+function renderFX(){
+  document.getElementById('fx-metrics').innerHTML=`<div class="met"><div class="met-l">USD/ILS</div><div class="met-v">3.71</div><div class="met-s up">+0.3%</div></div><div class="met"><div class="met-l">EUR/USD</div><div class="met-v">1.085</div><div class="met-s dn">-0.1%</div></div><div class="met"><div class="met-l">USD → ₪</div><div class="met-v up">₪3.71</div></div><div class="met"><div class="met-l">Время</div><div class="met-v" style="font-size:14px">${new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}</div></div>`;
+  document.getElementById('fx-main').innerHTML=FX_DATA.map(f=>`<div class="fx-row"><span style="font-size:13px;font-weight:600">${f.pair}</span><span style="font-size:13px">${f.rate}</span><span class="row-chg ${f.up?'up':'dn'}">${f.c}</span></div>`).join('');
+  const cost=portfolio.reduce((s,p)=>s+p.qty*p.cost,0);
+  document.getElementById('fx-portfolio').innerHTML=cost>0
+    ?`<div class="row"><span class="row-name">USD $</span><span class="row-price">$${cost.toLocaleString('en',{maximumFractionDigits:0})}</span></div>
+       <div class="row"><span class="row-name">Шекель ₪</span><span class="row-price up">₪${Math.round(cost*3.71).toLocaleString('en')}</span></div>
+       <div class="row"><span class="row-name">Евро €</span><span class="row-price">€${Math.round(cost*0.92).toLocaleString('en')}</span></div>`
+    :'<div class="empty">Добавь позиции в портфель</div>';
+}
+function convertFX(){
+  const amt=parseFloat(document.getElementById('fx-amount').value)||0;
+  const from=document.getElementById('fx-from').value,to=document.getElementById('fx-to').value;
+  const result=(amt/FX_RATES[from]*FX_RATES[to]).toLocaleString('en',{maximumFractionDigits:2});
+  document.getElementById('fx-result').textContent=result+' '+to;
+}
+
+// CSV
+function dlCSV(name,content){
+  const b=new Blob(['\uFEFF'+content],{type:'text/csv;charset=utf-8'});
+  const u=URL.createObjectURL(b);const a=document.createElement('a');
+  a.href=u;a.download=name;document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(u);
+}
+function exportCSV(){if(!portfolio.length){alert('Портфель пустой');return;}dlCSV('portfolio.csv','Тикер,Кол-во,Цена,Рынок,Инвестировано,Биотех,Добавлено\n'+portfolio.map(s=>`${s.ticker},${s.qty},${s.cost},${s.market},${(s.qty*s.cost).toFixed(2)},${BIO.includes(s.ticker)?'Да':'Нет'},${s.added}`).join('\n'));}
+
+// INIT
+renderPortfolio();renderMarkets();renderNews();renderEvents();renderIPO();renderRecs();checkAlerts();
+setTimeout(()=>{drawPortfolioChart();},300);
+</script>
+</body>
+</html>
