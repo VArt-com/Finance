@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Israel Fit Tracker Pro</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --panel-bg: #1e1e1e;
+            --text-color: #ffffff;
+            --accent: #29abe0;
+            --accent-hover: #1c88b5;
+            --border-color: #333;
+            --protein-color: #ff5e5b;
+            --zinc-color: #4caf50;
+            --mag-color: #ff9800;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--panel-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .lang-switch select {
+            background-color: #333;
+            color: white;
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .kofi-btn {
+            background-color: var(--accent);
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .profile-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .input-group { flex: 1; min-width: 150px; }
+        .input-group label { display: block; margin-bottom: 5px; font-size: 14px; color: #aaa; }
+        .input-group input { width: 100%; padding: 10px; background-color: #333; border: 1px solid var(--border-color); color: white; border-radius: 5px; box-sizing: border-box; }
+
+        .food-entry { background-color: #2a2a2a; padding: 15px; border-radius: 8px; margin-bottom: 25px; }
+        .food-entry select, .food-entry input { padding: 10px; background-color: #333; border: 1px solid var(--border-color); color: white; border-radius: 5px; margin-bottom: 10px; }
+        
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-add { background-color: var(--accent); color: white; }
+        .btn-reset { background-color: #444; color: #ccc; margin-top: 20px; width: 100%; }
+        .btn-reset:hover { background-color: #555; color: white; }
+
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .stat-card { background-color: #2a2a2a; padding: 15px; border-radius: 8px; text-align: center; }
+        .stat-card h3 { margin: 0 0 10px 0; font-size: 16px; color: #ccc; }
+        .stat-card .value { font-size: 24px; font-weight: bold; }
+
+        #cal-val { color: var(--accent); }
+        #prot-val { color: var(--protein-color); }
+        #zinc-val { color: var(--zinc-color); }
+        #mag-val { color: var(--mag-color); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1 id="app-title">Трекер Питания</h1>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <select id="langSelect" onchange="changeLanguage()">
+                <option value="ru">Русский</option>
+                <option value="en">English</option>
+                <option value="he">עברית</option>
+            </select>
+            <a href="https://ko-fi.com/varthur" target="_blank" class="kofi-btn" id="kofi-text">☕ Поддержать</a>
+        </div>
+    </div>
+
+    <div class="profile-section">
+        <div class="input-group">
+            <label id="lbl-weight">Вес (кг)</label>
+            <input type="number" id="weight" onchange="saveProfile()">
+        </div>
+        <div class="input-group">
+            <label id="lbl-training">Тренировок в неделю</label>
+            <input type="number" id="training-days" min="0" max="7" onchange="saveProfile()">
+        </div>
+    </div>
+
+    <div class="food-entry">
+        <h3 id="lbl-add-food" style="margin-top: 0;">Добавить продукт</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <select id="food-select" style="flex: 2; min-width: 200px;"></select>
+            <input type="number" id="food-amount" placeholder="Грамм" value="100" style="flex: 1; min-width: 100px;">
+            <button onclick="addFood()" id="btn-add" class="btn btn-add">Добавить</button>
+        </div>
+    </div>
+
+    <h3 id="lbl-daily-totals">Итоги за день:</h3>
+    <div class="stats">
+        <div class="stat-card"><h3>Ккал</h3><div class="value" id="cal-val">0</div></div>
+        <div class="stat-card"><h3>Белок</h3><div class="value" id="prot-val">0</div></div>
+        <div class="stat-card"><h3>Цинк</h3><div class="value" id="zinc-val">0</div></div>
+        <div class="stat-card"><h3>Магний</h3><div class="value" id="mag-val">0</div></div>
+    </div>
+
+    <button onclick="resetDay()" class="btn btn-reset" id="btn-reset">Сбросить новый день</button>
+</div>
+
+<script>
+    const foodDatabase = [
+        { id: 1, ru: "Коттедж Tnuva 5%", en: "Cottage Cheese Tnuva 5%", he: "קוטג' תנובה 5%", cal: 94, prot: 10, zinc: 0.5, mag: 10 },
+        { id: 2, ru: "Куриная грудка (Свежая)", en: "Chicken Breast (Fresh)", he: "חזה עוף טри", cal: 165, prot: 31, zinc: 1.0, mag: 28 },
+        { id: 3, ru: "Хумус (Цабар)", en: "Hummus (Tzabar)", he: "חומוס צבר", cal: 330, prot: 8, zinc: 1.5, mag: 30 },
+        { id: 4, ru: "Тхина (Готовая)", en: "Tahini (Prepared)", he: "טחינה מוכנה", cal: 320, prot: 10, zinc: 2.5, mag: 45 },
+        { id: 5, ru: "Бамба (Осем)", en: "Bamba (Osem)", he: "במבה אסם", cal: 540, prot: 17, zinc: 2.0, mag: 50 }
+    ];
+
+    const translations = {
+        ru: { title: "Израильский Трекер", kofi: "☕ Поддержать", weight: "Вес (кг)", training: "Тренировок в неделю", addFood: "Добавить продукт", btnAdd: "Добавить", dailyTotals: "Итоги за день:", btnReset: "Сбросить день" },
+        en: { title: "Israel Fit Tracker", kofi: "☕ Support me", weight: "Weight (kg)", training: "Workouts/week", addFood: "Add Food", btnAdd: "Add", dailyTotals: "Daily Totals:", btnReset: "Reset Day" },
+        he: { title: "מעקב תזונה", kofi: "☕ תמכו בי", weight: "משקל (ק״ג)", training: "אימונים בשבוע", addFood: "הוסף מוצר", btnAdd: "הוסף", dailyTotals: "סיכום יומי:", btnReset: "אפס יום" }
+    };
+
+    let dailyData = { cal: 0, prot: 0, zinc: 0, mag: 0 };
+
+    function saveProfile() {
+        localStorage.setItem('fitProfile', JSON.stringify({
+            weight: document.getElementById('weight').value,
+            training: document.getElementById('training-days').value,
+            lang: document.getElementById('langSelect').value
+        }));
+    }
+
+    function saveDaily() {
+        localStorage.setItem('fitDaily', JSON.stringify(dailyData));
+    }
+
+    function addFood() {
+        const food = foodDatabase.find(f => f.id == document.getElementById('food-select').value);
+        const mult = document.getElementById('food-amount').value / 100;
+        dailyData.cal += food.cal * mult;
+        dailyData.prot += food.prot * mult;
+        dailyData.zinc += food.zinc * mult;
+        dailyData.mag += food.mag * mult;
+        updateDisplay();
+        saveDaily();
+    }
+
+    function updateDisplay() {
+        document.getElementById('cal-val').textContent = Math.round(dailyData.cal);
+        document.getElementById('prot-val').textContent = Math.round(dailyData.prot);
+        document.getElementById('zinc-val').textContent = dailyData.zinc.toFixed(1);
+        document.getElementById('mag-val').textContent = Math.round(dailyData.mag);
+    }
+
+    function resetDay() {
+        if(confirm("Очистить данные за сегодня? / בטוח שברצונך לאפס?")) {
+            dailyData = { cal: 0, prot: 0, zinc: 0, mag: 0 };
+            updateDisplay();
+            saveDaily();
+        }
+    }
+
+    function changeLanguage() {
+        const lang = document.getElementById('langSelect').value;
+        const dict = translations[lang];
+        document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+        document.getElementById('app-title').textContent = dict.title;
+        document.getElementById('kofi-text').textContent = dict.kofi;
+        document.getElementById('lbl-weight').textContent = dict.weight;
+        document.getElementById('lbl-training').textContent = dict.training;
+        document.getElementById('lbl-add-food').textContent = dict.addFood;
+        document.getElementById('btn-add').textContent = dict.btnAdd;
+        document.getElementById('lbl-daily-totals').textContent = dict.dailyTotals;
+        document.getElementById('btn-reset').textContent = dict.btnReset;
+        
+        const select = document.getElementById('food-select');
+        const currentVal = select.value;
+        select.innerHTML = '';
+        foodDatabase.forEach(item => {
+            let opt = document.createElement('option');
+            opt.value = item.id;
+            opt.text = item[lang];
+            select.appendChild(opt);
+        });
+        select.value = currentVal || 1;
+        saveProfile();
+    }
+
+    // Загрузка данных при старте
+    window.onload = () => {
+        const profile = JSON.parse(localStorage.getItem('fitProfile'));
+        if(profile) {
+            document.getElementById('weight').value = profile.weight;
+            document.getElementById('training-days').value = profile.training;
+            document.getElementById('langSelect').value = profile.lang;
+        } else {
+            document.getElementById('weight').value = 89;
+            document.getElementById('training-days').value = 6;
+        }
+
+        const savedDaily = JSON.parse(localStorage.getItem('fitDaily'));
+        if(savedDaily) dailyData = savedDaily;
+
+        changeLanguage();
+        updateDisplay();
+    };
+</script>
+
+</body>
+</html>
