@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="theme-color" content="#050510"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="FDA Monitor"/>
+<title>FDA Monitor</title>
+<link rel="manifest" id="pwa-manifest"/>
+<style>
+:root{--bg:#050510;--bg2:#0a0a1a;--bg3:#0f0f22;--bg4:#151530;--border:rgba(100,120,255,0.12);--border2:rgba(100,120,255,0.25);--text:#e8e8f8;--text2:#7878aa;--text3:#3a3a66;--accent:#5B8CFF;--accent2:#7BA7FF;--green:#00e5a0;--red:#FF4B6E;--amber:#FFB547;--purple:#B06EFF;--cyan:#00D4FF;--r:12px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow-x:hidden}
+.app{display:flex;flex-direction:column;min-height:100dvh}
+.hdr{background:rgba(5,5,16,.97);backdrop-filter:blur(20px);border-bottom:.5px solid var(--border);padding:env(safe-area-inset-top,10px) 12px 10px;position:sticky;top:0;z-index:100}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.logo{font-size:15px;font-weight:800;display:flex;align-items:center;gap:7px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 6px var(--green)}50%{opacity:.3;box-shadow:none}}
+.logo-fda{color:var(--red)}
+.kofi{display:flex;align-items:center;gap:5px;background:#FF5E5B;border:none;border-radius:20px;padding:5px 11px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;text-decoration:none}
+.kofi svg{width:15px;height:15px}
+.ticker-wrap{overflow:hidden;border:.5px solid var(--border);border-radius:6px;background:var(--bg2);margin-bottom:8px;padding:5px 0}
+.ticker-track{display:flex;animation:tick 35s linear infinite;width:max-content}
+.ticker-track:hover{animation-play-state:paused}
+.ti{display:flex;align-items:center;gap:6px;padding:0 16px;border-right:.5px solid var(--border);font-size:11px}
+.ti:last-child{border-right:none}
+.tn{color:var(--text2)}.tv{color:var(--text);font-weight:600}
+.tc.up{color:var(--green)}.tc.dn{color:var(--red)}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:6px 12px;font-size:11px;font-weight:700;border:.5px solid var(--border);border-radius:6px;cursor:pointer;background:transparent;color:var(--text2);transition:all .15s}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.content{flex:1;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px)}
+.pane{display:none}.pane.active{display:block}
+.card{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.card-hd{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.met{background:var(--bg3);border:.5px solid var(--border);border-radius:8px;padding:10px 12px}
+.ml{font-size:10px;color:var(--text3);margin-bottom:3px}
+.mv{font-size:18px;font-weight:800}
+.ms{font-size:10px;margin-top:2px}
+.up{color:var(--green)}.dn{color:var(--red)}.am{color:var(--amber)}.neu{color:var(--text2)}
+.row{display:flex;align-items:center;padding:9px 0;border-bottom:.5px solid var(--border);gap:8px}
+.row:last-child{border-bottom:none;padding-bottom:0}
+.rn{font-size:13px;font-weight:500;flex:1}
+.rsub{font-size:10px;color:var(--text3)}
+.rp{font-size:13px;font-weight:600;min-width:70px;text-align:right}
+.rc{font-size:12px;min-width:55px;text-align:right}
+.fda-item{padding:12px 0;border-bottom:.5px solid var(--border)}
+.fda-item:last-child{border-bottom:none;padding-bottom:0}
+.fda-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:5px;flex-wrap:wrap}
+.fda-ticker{font-size:14px;font-weight:800;color:var(--text);min-width:58px}
+.fda-drug{font-size:12px;color:var(--text2);flex:1;line-height:1.45}
+.fda-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px}
+.fda-date{font-size:11px;color:var(--amber)}
+.fda-note{font-size:11px;color:var(--text3);margin-top:3px}
+.cdbox{background:linear-gradient(135deg,rgba(255,75,110,.08),transparent);border:.5px solid rgba(255,75,110,.25);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.cdticker{font-weight:800;font-size:15px;color:var(--red);min-width:58px}
+.cdinfo{flex:1}
+.cddrug{font-size:12px;color:var(--text);font-weight:600}
+.cddays{font-size:11px;color:var(--amber);margin-top:2px}
+.b{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;white-space:nowrap}
+.b-pdufa{background:rgba(255,75,110,.15);color:var(--red);border:.5px solid rgba(255,75,110,.3)}
+.b-adcom{background:rgba(255,181,71,.15);color:var(--amber);border:.5px solid rgba(255,181,71,.3)}
+.b-p3{background:rgba(91,140,255,.15);color:var(--accent2);border:.5px solid rgba(91,140,255,.3)}
+.b-p2{background:rgba(176,110,255,.15);color:var(--purple);border:.5px solid rgba(176,110,255,.3)}
+.b-ok{background:rgba(0,229,160,.15);color:var(--green);border:.5px solid rgba(0,229,160,.3)}
+.b-no{background:rgba(255,75,110,.15);color:var(--red);border:.5px solid rgba(255,75,110,.3)}
+.b-us{background:rgba(91,140,255,.1);color:var(--accent2)}
+.b-il{background:rgba(0,212,255,.1);color:var(--cyan)}
+.b-eu{background:rgba(176,110,255,.1);color:var(--purple)}
+.b-hot{background:rgba(255,181,71,.15);color:var(--amber)}
+.ni{padding:10px 0;border-bottom:.5px solid var(--border)}
+.ni:last-child{border-bottom:none}
+.nt{font-size:13px;color:var(--text);line-height:1.45;margin-bottom:4px}
+.nm{display:flex;gap:7px;align-items:center;flex-wrap:wrap;font-size:10px;color:var(--text3)}
+.chips{display:flex;gap:5px;overflow-x:auto;margin-bottom:10px;scrollbar-width:none;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:4px 11px;font-size:11px;font-weight:600;border:.5px solid var(--border2);border-radius:20px;cursor:pointer;background:transparent;color:var(--text2);transition:all .15s}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.ai-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:linear-gradient(135deg,rgba(91,140,255,.12),rgba(176,110,255,.08));border:.5px solid var(--border2);border-radius:var(--r);font-size:13px;font-weight:700;color:var(--accent2);cursor:pointer;transition:all .15s;margin-top:6px}
+.ai-btn:hover{background:rgba(91,140,255,.2)}
+.ai-panel{background:var(--bg2);border:.5px solid var(--border2);border-radius:var(--r);margin-top:10px;overflow:hidden;display:none}
+.ai-panel.open{display:block}
+.ai-hd{padding:10px 14px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700;color:var(--accent2)}
+.ai-body{padding:14px;min-height:80px;font-size:13px;color:var(--text2);line-height:1.7;max-height:350px;overflow-y:auto}
+.ai-result{color:var(--text);white-space:pre-wrap;font-size:13px;line-height:1.7}
+.ai-loading{color:var(--text3);font-size:12px}
+.apr{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:.5px solid var(--border)}
+.apr:last-child{border-bottom:none}
+.apr-t{font-weight:800;font-size:13px;min-width:58px}
+.apr-i{flex:1;font-size:12px;color:var(--text2)}
+.apr-r{text-align:right}
+.apr-res{font-size:11px;font-weight:700}
+.apr-res.ok{color:var(--green)}.apr-res.no{color:var(--red)}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sc{background:var(--bg3);border:.5px solid var(--border);border-radius:10px;padding:12px;transition:all .15s}
+.sc:hover{border-color:var(--border2)}
+.si{font-size:22px;margin-bottom:5px}
+.sn{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px}
+.sp{font-size:13px;font-weight:700}
+.empty{color:var(--text3);font-size:12px;padding:20px 0;text-align:center}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="logo"><div class="dot"></div><span class="logo-fda">FDA</span>&nbsp;Monitor</div>
+    <a href="https://ko-fi.com/varthur" class="kofi" target="_blank">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
+      Ko-fi
+    </a>
+  </div>
+  <div class="ticker-wrap"><div class="ticker-track" id="ticker"></div></div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('fda',this)">🔴 FDA Calendar</button>
+    <button class="tab" onclick="showTab('news',this)">📡 Новости</button>
+    <button class="tab" onclick="showTab('markets',this)">📊 Рынки</button>
+    <button class="tab" onclick="showTab('approved',this)">✅ Одобрения</button>
+    <button class="tab" onclick="showTab('sectors',this)">🧬 Секторы</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="pane active" id="tab-fda">
+    <div class="card">
+      <div class="card-hd">⚡ Ближайшие FDA события</div>
+      <div id="countdowns"></div>
+      <button class="ai-btn" onclick="loadAI('fda')"><span class="dot"></span>Загрузить актуальный FDA календарь через AI</button>
+      <div class="ai-panel" id="ai-fda">
+        <div class="ai-hd"><span>🤖 AI — FDA Календарь</span><button onclick="closeAI('fda')" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:16px">✕</button></div>
+        <div class="ai-body" id="ai-fda-body"></div>
+      </div>
+    </div>
+    <div class="chips">
+      <button class="chip active" onclick="setFdaFilter('all',this)">Все</button>
+      <button class="chip" onclick="setFdaFilter('pdufa',this)">PDUFA</button>
+      <button class="chip" onclick="setFdaFilter('adcom',this)">AdCom</button>
+      <button class="chip" onclick="setFdaFilter('p3',this)">Phase 3</button>
+      <button class="chip" onclick="setFdaFilter('p2',this)">Phase 2</button>
+      <button class="chip" onclick="setFdaFilter('il',this)">🇮🇱 Израиль</button>
+      <button class="chip" onclick="setFdaFilter('eu',this)">🇪🇺 EMA</button>
+    </div>
+    <div class="card"><div class="card-hd">📅 FDA Календарь 2025</div><div id="fda-list"></div></div>
+  </div>
+
+  <div class="pane" id="tab-news">
+    <div class="chips">
+      <button class="chip active" onclick="setNewsFilter('all',this)">Все</button>
+      <button class="chip" onclick="setNewsFilter('fda',this)">FDA/EMA</button>
+      <button class="chip" onclick="setNewsFilter('bio',this)">Биотех</button>
+      <button class="chip" onclick="setNewsFilter('macro',this)">Макро</button>
+      <button class="chip" onclick="setNewsFilter('il',this)">🇮🇱 Израиль</button>
+      <button class="chip" onclick="setNewsFilter('eu',this)">🇪🇺 Европа</button>
+    </div>
+    <div class="card"><div class="card-hd">📡 Последние новости</div><div id="news-list"></div></div>
+    <button class="ai-btn" onclick="loadAI('news')"><span class="dot"></span>Загрузить актуальные новости через AI</button>
+    <div class="ai-panel" id="ai-news">
+      <div class="ai-hd"><span>🤖 AI — Новости</span><button onclick="closeAI('news')" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:16px">✕</button></div>
+      <div class="ai-body" id="ai-news-body"></div>
+    </div>
+  </div>
+
+  <div class="pane" id="tab-markets">
+    <div class="mg" id="mkt-top"></div>
+    <div class="card"><div class="card-hd">🇺🇸 США</div><div id="us-mkt"></div></div>
+    <div class="card"><div class="card-hd">🧬 Биотех ETF</div><div id="bio-mkt"></div></div>
+    <div class="card"><div class="card-hd">🇮🇱 Израиль</div><div id="il-mkt"></div></div>
+    <div class="card"><div class="card-hd">🇪🇺 Европа</div><div id="eu-mkt"></div></div>
+    <button class="ai-btn" onclick="loadAI('markets')"><span class="dot"></span>Обновить рыночные данные через AI</button>
+    <div class="ai-panel" id="ai-markets">
+      <div class="ai-hd"><span>🤖 AI — Рынки</span><button onclick="closeAI('markets')" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:16px">✕</button></div>
+      <div class="ai-body" id="ai-markets-body"></div>
+    </div>
+  </div>
+
+  <div class="pane" id="tab-approved">
+    <div class="chips">
+      <button class="chip active" onclick="setAprFilter('all',this)">Все</button>
+      <button class="chip" onclick="setAprFilter('ok',this)">✅ Одобрено</button>
+      <button class="chip" onclick="setAprFilter('no',this)">❌ Отказ</button>
+      <button class="chip" onclick="setAprFilter('us',this)">🇺🇸 FDA</button>
+      <button class="chip" onclick="setAprFilter('eu',this)">🇪🇺 EMA</button>
+    </div>
+    <div class="card"><div class="card-hd">📋 История одобрений</div><div id="apr-list"></div></div>
+    <button class="ai-btn" onclick="loadAI('approved')"><span class="dot"></span>Загрузить актуальную историю через AI</button>
+    <div class="ai-panel" id="ai-approved">
+      <div class="ai-hd"><span>🤖 AI — Одобрения</span><button onclick="closeAI('approved')" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:16px">✕</button></div>
+      <div class="ai-body" id="ai-approved-body"></div>
+    </div>
+  </div>
+
+  <div class="pane" id="tab-sectors">
+    <div class="card"><div class="card-hd">🧬 Секторы биотех/фарма</div><div class="sg" id="sectors-grid"></div></div>
+    <div class="card"><div class="card-hd">📈 Топ движения сегодня</div><div id="movers-list"></div></div>
+    <button class="ai-btn" onclick="loadAI('sectors')"><span class="dot"></span>Анализ секторов через AI</button>
+    <div class="ai-panel" id="ai-sectors">
+      <div class="ai-hd"><span>🤖 AI — Секторы</span><button onclick="closeAI('sectors')" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:16px">✕</button></div>
+      <div class="ai-body" id="ai-sectors-body"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+// PWA
+const mf={name:'FDA Monitor',short_name:'FDA',start_url:'./fda-monitor.html',display:'standalone',background_color:'#050510',theme_color:'#050510',icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%23050510"/><text y="72" font-size="60" text-anchor="middle" x="50">💊</text></svg>',sizes:'any',type:'image/svg+xml'}]};
+document.getElementById('pwa-manifest').href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/json'}));
+if('serviceWorker'in navigator){const sw=`const C='fda-v2';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll([location.pathname])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{});}
+
+let fdaFilter='all', newsFilter='all', aprFilter='all';
+
+function showTab(n,el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active');
+  if(el)el.classList.add('active');
+}
+
+// TICKER
+const TD=[{n:'S&P 500',p:'5,308',c:'+0.42%',up:true},{n:'NASDAQ',p:'16,742',c:'+0.61%',up:true},{n:'XBI',p:'$87.4',c:'+1.2%',up:true},{n:'IBB',p:'$139.2',c:'+0.9%',up:true},{n:'TA-125',p:'2,147',c:'+0.28%',up:true},{n:'USD/ILS',p:'3.71',c:'+0.3%',up:true},{n:'MRNA',p:'$74.3',c:'-2.1%',up:false},{n:'CRSP',p:'$58.7',c:'+3.4%',up:true},{n:'NVDA',p:'$874',c:'+1.8%',up:true},{n:'BTC',p:'$63,400',c:'+1.8%',up:true},{n:'DAX',p:'18,234',c:'+0.31%',up:true},{n:'EUR/USD',p:'1.085',c:'-0.1%',up:false}];
+function buildTicker(){
+  const items=[...TD,...TD].map(t=>`<div class="ti"><span class="tn">${t.n}</span><span class="tv">${t.p}</span><span class="tc ${t.up?'up':'dn'}">${t.c}</span></div>`).join('');
+  document.getElementById('ticker').innerHTML=items;
+}
+
+// FDA DATA
+const FDA=[
+  {ticker:'MRNA',drug:'mRNA-1345 — RSV вакцина',type:'pdufa',date:'12 Май 2025',days:18,market:'us',indication:'RSV у пожилых',catalyst:'Высокий'},
+  {ticker:'RARE',drug:'setrusumab — несовершенный остеогенез',type:'pdufa',date:'3 Июн 2025',days:40,market:'us',indication:'Редкое заболевание костей',catalyst:'Высокий'},
+  {ticker:'TEVA',drug:'Olanzapine LAI — шизофрения',type:'pdufa',date:'28 Июн 2025',days:65,market:'il',indication:'Шизофрения',catalyst:'Средний'},
+  {ticker:'SRPT',drug:'SRP-9001 — Дюшенн ДМД',type:'adcom',date:'15 Июл 2025',days:82,market:'us',indication:'Мышечная дистрофия',catalyst:'Средний'},
+  {ticker:'ACAD',drug:'trofinetide — синдром Ретта',type:'pdufa',date:'20 Авг 2025',days:118,market:'us',indication:'Неврологическое расстройство',catalyst:'Высокий'},
+  {ticker:'ALNY',drug:'vutrisiran — ATTR кардиомиопатия',type:'pdufa',date:'10 Сен 2025',days:139,market:'us',indication:'ATTR амилоидоз сердца',catalyst:'Очень высокий'},
+  {ticker:'IONS',drug:'eplontersen — ATTR PN',type:'adcom',date:'5 Окт 2025',days:164,market:'us',indication:'Полинейропатия',catalyst:'Средний'},
+  {ticker:'IMVT',drug:'batoclimab — болезнь Грейвса',type:'pdufa',date:'18 Ноя 2025',days:208,market:'us',indication:'Аутоиммунное',catalyst:'Высокий'},
+  {ticker:'BEAM',drug:'BEAM-101 — серповидно-клеточная',type:'p2',date:'Q3 2025',days:null,market:'us',indication:'SCD данные Phase 2',catalyst:'Средний'},
+  {ticker:'NTLA',drug:'NTLA-2001 — TTR амилоидоз',type:'p2',date:'Q3 2025',days:null,market:'us',indication:'Транстиретиновый амилоидоз',catalyst:'Высокий'},
+  {ticker:'PRAX',drug:'PRAX-628 — эпилепсия',type:'p3',date:'Q4 2025',days:null,market:'us',indication:'Генерализованная эпилепсия',catalyst:'Высокий'},
+  {ticker:'PTGX',drug:'rozanolixizumab — МГ',type:'p3',date:'Q3 2025',days:null,market:'eu',indication:'Миастения Гравис',catalyst:'Средний'},
+];
+
+function setFdaFilter(f,el){fdaFilter=f;el.closest('.chips').querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderFDA();}
+
+function renderFDA(){
+  const list=fdaFilter==='all'?FDA:FDA.filter(e=>fdaFilter==='il'?e.market==='il':fdaFilter==='eu'?e.market==='eu':e.type===fdaFilter);
+  const cd=FDA.filter(e=>e.days!==null).sort((a,b)=>a.days-b.days).slice(0,3);
+  document.getElementById('countdowns').innerHTML=cd.map(e=>`
+    <div class="cdbox">
+      <div class="cdticker">${e.ticker}</div>
+      <div class="cdinfo">
+        <div class="cddrug">${e.drug.split('—')[0].trim()} <span class="b b-${e.type}">${e.type.toUpperCase()}</span></div>
+        <div class="cddays">📅 ${e.date} · ⏱ через ${e.days} дней</div>
+      </div>
+      <span class="b b-${e.market}">${e.market.toUpperCase()}</span>
+    </div>`).join('');
+  document.getElementById('fda-list').innerHTML=list.length?list.map(e=>`
+    <div class="fda-item">
+      <div class="fda-top">
+        <div class="fda-ticker">${e.ticker}</div>
+        <div class="fda-drug">${e.drug}</div>
+        <span class="b b-${e.market}">${e.market.toUpperCase()}</span>
+      </div>
+      <div class="fda-meta">
+        <span class="b b-${e.type}">${e.type.toUpperCase()}</span>
+        <span class="fda-date">📅 ${e.date}</span>
+        ${e.days!==null?`<span class="fda-date">· ⏱ ${e.days}д</span>`:''}
+      </div>
+      <div class="fda-note">💡 ${e.indication} · Катализатор: ${e.catalyst}</div>
+    </div>`).join(''):'<div class="empty">Нет событий</div>';
+}
+
+// NEWS
+const NEWS=[
+  {t:'FDA одобрила CASGEVY (CRISPR) — историческое решение для β-талассемии',cat:'fda',src:'FDA.gov',time:'2ч',hot:true,market:'us'},
+  {t:'MRNA: положительное заключение консультативного комитета перед PDUFA',cat:'fda',src:'STAT News',time:'4ч',hot:true,market:'us'},
+  {t:'ФРС оставила ставку без изменений — сигнал о снижении в Q3 2025',cat:'macro',src:'Reuters',time:'6ч',hot:true,market:'us'},
+  {t:'EMA одобрила новую форму olanzapine от TEVA для европейского рынка',cat:'fda',src:'EMA',time:'8ч',hot:false,market:'eu'},
+  {t:'Израильский биотех Compugen объявил данные Phase 2 по COM902',cat:'bio',src:'Globes',time:'10ч',hot:false,market:'il'},
+  {t:'TA-35 вырос на 1.8% — банки Израиля показали сильные квартальные результаты',cat:'il',src:'Calcalist',time:'1д',hot:false,market:'il'},
+  {t:'RXRX и NVIDIA расширили партнёрство по AI drug discovery на $1.2 млрд',cat:'bio',src:'Bloomberg',time:'1д',hot:false,market:'us'},
+  {t:'XBI ETF вырос на 3.2% на волне позитивных FDA одобрений',cat:'bio',src:'MarketWatch',time:'2д',hot:false,market:'us'},
+  {t:'EMA рассматривает заявку AbbVie на новый препарат против болезни Паркинсона',cat:'fda',src:'FiercePharma',time:'2д',hot:false,market:'eu'},
+  {t:'Минздрав Израиля ускорил процедуру одобрения инновационных препаратов',cat:'il',src:'Haaretz',time:'2д',hot:false,market:'il'},
+];
+
+function setNewsFilter(f,el){newsFilter=f;el.closest('.chips').querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderNews();}
+
+function renderNews(){
+  const list=newsFilter==='all'?NEWS:NEWS.filter(n=>n.cat===newsFilter||n.market===newsFilter);
+  document.getElementById('news-list').innerHTML=list.map(n=>`
+    <div class="ni">
+      <div class="nt">${n.t}</div>
+      <div class="nm">
+        <span class="b ${n.cat==='fda'?'b-pdufa':n.cat==='macro'?'b-p3':n.cat==='il'?'b-il':n.cat==='eu'?'b-eu':'b-p2'}">${n.cat.toUpperCase()}</span>
+        <span>${n.src}</span><span>${n.time}</span>
+        ${n.hot?'<span class="b b-hot">🔥 ТОП</span>':''}
+      </div>
+    </div>`).join('');
+}
+
+// MARKETS
+const MKT={
+  top:[{l:'S&P 500',v:'5,308',s:'+0.42%',cls:'up'},{l:'NASDAQ',v:'16,742',s:'+0.61%',cls:'up'},{l:'TA-125',v:'2,147',s:'+0.28%',cls:'up'},{l:'USD/ILS',v:'3.71',s:'+0.3%',cls:'up'}],
+  us:[{n:'S&P 500',sub:'INDEX',p:'5,308',c:'+0.42%',up:true},{n:'NASDAQ',sub:'INDEX',p:'16,742',c:'+0.61%',up:true},{n:'Dow Jones',sub:'INDEX',p:'39,112',c:'-0.12%',up:false},{n:'Russell 2000',sub:'SMALL CAP',p:'2,089',c:'+0.33%',up:true},{n:'VIX',sub:'VOLATILITY',p:'14.2',c:'-5.3%',up:false}],
+  bio:[{n:'XBI',sub:'SPDR Biotech ETF',p:'$87.4',c:'+1.2%',up:true},{n:'IBB',sub:'iShares Biotech',p:'$139.2',c:'+0.9%',up:true},{n:'ARKG',sub:'ARK Genomics ETF',p:'$31.6',c:'+1.4%',up:true},{n:'CRSP',sub:'CRISPR Therapeutics',p:'$58.7',c:'+3.4%',up:true},{n:'MRNA',sub:'Moderna',p:'$74.3',c:'-2.1%',up:false}],
+  il:[{n:'TA-125',sub:'Широкий индекс',p:'2,147',c:'+0.28%',up:true},{n:'TA-35',sub:'Топ-35',p:'1,893',c:'+0.15%',up:true},{n:'TA-90',sub:'90 компаний',p:'1,562',c:'+0.44%',up:true},{n:'TA Banks-5',sub:'Банки',p:'2,341',c:'-0.08%',up:false},{n:'USD/ILS',sub:'Доллар/Шекель',p:'3.71',c:'+0.3%',up:true}],
+  eu:[{n:'DAX',sub:'Германия',p:'18,234',c:'+0.31%',up:true},{n:'CAC 40',sub:'Франция',p:'7,943',c:'+0.23%',up:true},{n:'FTSE 100',sub:'Великобритания',p:'8,312',c:'-0.15%',up:false},{n:'EUR/USD',sub:'Евро/Доллар',p:'1.0852',c:'-0.1%',up:false},{n:'STOXX 600',sub:'Европа',p:'512.4',c:'+0.23%',up:true}]
+};
+
+function renderMarkets(){
+  document.getElementById('mkt-top').innerHTML=MKT.top.map(m=>`<div class="met"><div class="ml">${m.l}</div><div class="mv ${m.cls}">${m.v}</div><div class="ms ${m.cls}">${m.s}</div></div>`).join('');
+  ['us','bio','il','eu'].forEach(k=>{
+    document.getElementById(k+'-mkt').innerHTML=MKT[k].map(m=>`<div class="row"><div><div class="rn">${m.n}</div><div class="rsub">${m.sub}</div></div><div class="rp ${m.up?'up':'dn'}">${m.p}</div><div class="rc ${m.up?'up':'dn'}">${m.c}</div></div>`).join('');
+  });
+}
+
+// APPROVALS
+const APR=[
+  {t:'CRSP/VRTX',drug:'CASGEVY (exa-cel)',r:'ok',ag:'us',date:'Дек 2023',ind:'Серповидно-клеточная анемия',note:'Первая CRISPR-терапия'},
+  {t:'BMRN',drug:'Roctavian (valoctocogene)',r:'ok',ag:'us',date:'Июн 2023',ind:'Гемофилия A',note:''},
+  {t:'SRPT',drug:'Elevidys (delandistrogene)',r:'ok',ag:'us',date:'Июн 2023',ind:'ДМД',note:'Ускоренное одобрение'},
+  {t:'ACAD',drug:'Daybue (trofinetide)',r:'ok',ag:'us',date:'Мар 2023',ind:'Синдром Ретта',note:'Первый препарат'},
+  {t:'ALNY',drug:'Amvuttra (vutrisiran)',r:'ok',ag:'us',date:'Июн 2022',ind:'ATTR полинейропатия',note:''},
+  {t:'RARE',drug:'Crysvita (burosumab)',r:'ok',ag:'eu',date:'Фев 2024',ind:'XLH гипофосфатемия',note:'EMA одобрение'},
+  {t:'IONS',drug:'eplontersen',r:'ok',ag:'us',date:'Дек 2023',ind:'ATTR полинейропатия',note:''},
+  {t:'TEVA',drug:'Austedo XR',r:'ok',ag:'us',date:'2023',ind:'Поздняя дискинезия',note:''},
+  {t:'NVAX',drug:'Updated COVID vaccine',r:'no',ag:'us',date:'Янв 2024',ind:'COVID-19',note:'Производственные проблемы'},
+  {t:'PTGX',drug:'rozanolixizumab CIDP',r:'no',ag:'eu',date:'Мар 2024',ind:'ХВДП',note:'EMA — повторная подача'},
+];
+
+function setAprFilter(f,el){aprFilter=f;el.closest('.chips').querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderApprovals();}
+
+function renderApprovals(){
+  let list=APR;
+  if(aprFilter==='ok')list=list.filter(a=>a.r==='ok');
+  else if(aprFilter==='no')list=list.filter(a=>a.r==='no');
+  else if(aprFilter==='us')list=list.filter(a=>a.ag==='us');
+  else if(aprFilter==='eu')list=list.filter(a=>a.ag==='eu');
+  document.getElementById('apr-list').innerHTML=list.map(a=>`
+    <div class="apr">
+      <div class="apr-t">${a.t}</div>
+      <div class="apr-i"><div style="color:var(--text);font-weight:600;font-size:12px">${a.drug}</div><div>${a.ind}</div>${a.note?`<div style="color:var(--accent2);font-size:10px;margin-top:1px">ℹ ${a.note}</div>`:''}</div>
+      <div class="apr-r"><div class="apr-res ${a.r}">${a.r==='ok'?'✅ OK':'❌ NO'}</div><div style="font-size:10px;color:var(--text3);margin-top:2px">${a.date}</div><span class="b b-${a.ag}">${a.ag.toUpperCase()}</span></div>
+    </div>`).join('');
+}
+
+// SECTORS
+const SECT=[{i:'🧬',n:'Генная терапия',p:'+3.4%',up:true},{i:'💊',n:'Онкология',p:'+1.8%',up:true},{i:'🧠',n:'Нейронауки',p:'+0.9%',up:true},{i:'🦠',n:'Иммунология',p:'-0.4%',up:false},{i:'✂️',n:'CRISPR/Геномика',p:'+4.2%',up:true},{i:'❤️',n:'Кардиология',p:'+0.3%',up:true},{i:'🏥',n:'Редкие болезни',p:'+2.1%',up:true},{i:'💉',n:'Вакцины',p:'-1.8%',up:false}];
+const MOVERS=[{t:'CRSP',n:'CRISPR Therapeutics',p:'$58.7',c:'+3.4%',up:true,w:'Позитивные данные Phase 2'},{t:'RXRX',n:'Recursion Pharma',p:'$8.2',c:'+5.1%',up:true,w:'Расширение партнёрства NVDA'},{t:'MRNA',n:'Moderna',p:'$74.3',c:'-2.1%',up:false,w:'Продажи ниже ожиданий'},{t:'NVAX',n:'Novavax',p:'$4.1',c:'-3.8%',up:false,w:'Производственные проблемы'},{t:'BEAM',n:'Beam Therapeutics',p:'$21.4',c:'+2.7%',up:true,w:'Данные Phase 1/2 SCD'}];
+
+function renderSectors(){
+  document.getElementById('sectors-grid').innerHTML=SECT.map(s=>`<div class="sc"><div class="si">${s.i}</div><div class="sn">${s.n}</div><div class="sp ${s.up?'up':'dn'}">${s.p}</div></div>`).join('');
+  document.getElementById('movers-list').innerHTML=MOVERS.map(m=>`<div class="row"><div><div class="rn" style="font-weight:800">${m.t}</div><div class="rsub">${m.n}</div></div><div style="flex:1;padding:0 8px;font-size:11px;color:var(--text3)">${m.w}</div><div style="text-align:right"><div class="rp ${m.up?'up':'dn'}">${m.p}</div><div class="rc ${m.up?'up':'dn'}">${m.c}</div></div></div>`).join('');
+}
+
+// AI
+const PROMPTS={
+  fda:'Дай актуальный список всех предстоящих FDA PDUFA дат и AdCom заседаний на ближайшие 90 дней. Для каждого: тикер, препарат, показание, тип события, дата, потенциал роста/падения акции. Также ближайшие EMA события.',
+  news:'Дай 10 самых важных финансовых и фармацевтических новостей прямо сейчас: FDA одобрения/отказы, EMA решения, израильский рынок, биотех, макроэкономика. Источник, время, важность 1-5 для каждой.',
+  markets:'Дай актуальные данные по рынкам: S&P 500, NASDAQ, Dow, XBI, IBB, TA-125, TA-35, CAC 40, DAX, FTSE, USD/ILS, EUR/USD, BTC. Цена и изменение за день. Прогноз на неделю.',
+  approved:'Список всех одобрений и отказов FDA и EMA за последние 3 месяца. Тикер, препарат, показание, дата, результат, влияние на акцию.',
+  sectors:'Анализ секторов биотех и фарма сегодня: какие растут/падают и почему. Топ 5 gainers и top 5 losers в биотехе за сегодня с тикерами и причинами.',
+};
+
+function loadAI(key){
+  const panel=document.getElementById('ai-'+key);
+  panel.classList.add('open');
+  const body=document.getElementById('ai-'+key+'-body');
+  body.innerHTML='<div class="ai-loading">⏳ Подключение к AI...</div>';
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,tools:[{type:'web_search_20250305',name:'web_search'}],messages:[{role:'user',content:PROMPTS[key]}]})
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    const text=data.content?.filter(b=>b.type==='text').map(b=>b.text).join('\n')||'Нет данных';
+    body.innerHTML=`<div class="ai-result">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
+  })
+  .catch(()=>{
+    body.innerHTML=`<div class="ai-result" style="color:var(--amber)">⚠️ Скопируй этот запрос в Claude для получения актуальных данных:\n\n${PROMPTS[key]}</div>`;
+  });
+}
+
+function closeAI(key){document.getElementById('ai-'+key).classList.remove('open');}
+
+// INIT
+buildTicker();
+renderFDA();
+renderNews();
+renderMarkets();
+renderApprovals();
+renderSectors();
+</script>
+</body>
+</html>
