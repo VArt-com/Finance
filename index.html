@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="Бесплатные веб-инструменты для инвестиций, финансов и продуктивности"/>
+<title>VArt Tools — Бесплатные инструменты</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #080810;
+  --bg2: #0f0f1a;
+  --bg3: #16162a;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #eeeef5;
+  --text2: #8888aa;
+  --text3: #444460;
+  --accent: #6C63FF;
+  --accent2: #9B89FF;
+  --green: #22d3a5;
+  --amber: #f59e0b;
+  --red: #FF5E5B;
+  --glow: rgba(108,99,255,0.15);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* BACKGROUND */
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(108,99,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(108,99,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+.bg-glow {
+  position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 600px;
+  background: radial-gradient(ellipse, rgba(108,99,255,0.12) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+/* LAYOUT */
+.container { max-width: 1000px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 16px 24px;
+  background: rgba(8,8,16,0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 18px;
+  color: var(--text);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-logo span { color: var(--accent); }
+.kofi-nav {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--red); border: none; border-radius: 100px;
+  padding: 8px 16px; font-size: 13px; font-weight: 600;
+  color: #fff; cursor: pointer; text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: transform 0.15s, opacity 0.15s;
+}
+.kofi-nav:hover { transform: translateY(-1px); opacity: 0.9; }
+.kofi-nav svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* HERO */
+.hero {
+  padding: 160px 0 80px;
+  text-align: center;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(108,99,255,0.1); border: 0.5px solid rgba(108,99,255,0.3);
+  border-radius: 100px; padding: 5px 14px; font-size: 12px;
+  color: var(--accent2); font-weight: 500; margin-bottom: 28px;
+  animation: fadeUp 0.6s ease both;
+}
+.hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
+
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(36px, 6vw, 68px);
+  font-weight: 800; line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 20px;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+h1 em { font-style: normal; color: var(--accent); }
+.hero-sub {
+  font-size: clamp(15px, 2vw, 18px);
+  color: var(--text2); max-width: 520px; margin: 0 auto 48px;
+  font-weight: 300; animation: fadeUp 0.6s 0.2s ease both;
+}
+.hero-actions {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; flex-wrap: wrap;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.btn-primary {
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 100px; padding: 14px 28px;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  text-decoration: none; font-family: 'DM Sans', sans-serif;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 0 30px rgba(108,99,255,0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(108,99,255,0.5); }
+.btn-kofi-hero {
+  display: flex; align-items: center; gap: 8px;
+  background: transparent; border: 0.5px solid var(--border2);
+  border-radius: 100px; padding: 14px 28px;
+  font-size: 15px; font-weight: 500; cursor: pointer;
+  text-decoration: none; color: var(--text); font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+}
+.btn-kofi-hero:hover { background: rgba(255,94,91,0.1); border-color: rgba(255,94,91,0.4); color: #FF5E5B; }
+.btn-kofi-hero svg { width: 18px; height: 18px; }
+
+/* STATS */
+.stats {
+  display: flex; justify-content: center; gap: 48px;
+  padding: 40px 0; flex-wrap: wrap;
+  border-top: 0.5px solid var(--border);
+  border-bottom: 0.5px solid var(--border);
+  margin-bottom: 80px;
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+.stat { text-align: center; }
+.stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px; font-weight: 800; color: var(--text);
+  display: block;
+}
+.stat-label { font-size: 13px; color: var(--text2); }
+
+/* SECTION */
+.section { margin-bottom: 80px; }
+.section-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+}
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(24px, 4vw, 36px); font-weight: 800;
+  letter-spacing: -0.02em; margin-bottom: 40px; color: var(--text);
+}
+
+/* APPS GRID */
+.apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.app-card {
+  background: var(--bg2);
+  border: 0.5px solid var(--border);
+  border-radius: 20px; padding: 28px;
+  text-decoration: none; color: var(--text);
+  position: relative; overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  display: flex; flex-direction: column;
+  animation: fadeUp 0.6s ease both;
+}
+.app-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--glow) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.app-card:hover { transform: translateY(-4px); border-color: var(--border2); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+.app-card:hover::before { opacity: 1; }
+.app-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; margin-bottom: 18px;
+  flex-shrink: 0;
+}
+.icon-purple { background: rgba(108,99,255,0.15); }
+.icon-green { background: rgba(34,211,165,0.12); }
+.icon-amber { background: rgba(245,158,11,0.12); }
+.icon-blue { background: rgba(59,130,246,0.12); }
+.icon-red { background: rgba(239,68,68,0.12); }
+.app-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px; font-weight: 700; margin-bottom: 8px;
+}
+.app-desc { font-size: 14px; color: var(--text2); line-height: 1.55; flex: 1; margin-bottom: 20px; }
+.app-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.tag {
+  font-size: 11px; padding: 3px 10px; border-radius: 100px;
+  font-weight: 500;
+}
+.tag-purple { background: rgba(108,99,255,0.15); color: var(--accent2); }
+.tag-green { background: rgba(34,211,165,0.12); color: var(--green); }
+.tag-amber { background: rgba(245,158,11,0.12); color: var(--amber); }
+.app-link {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600; color: var(--accent2);
+  margin-top: auto;
+}
+.app-link svg { width: 14px; height: 14px; transition: transform 0.2s; }
+.app-card:hover .app-link svg { transform: translateX(4px); }
+.badge-new {
+  position: absolute; top: 20px; right: 20px;
+  background: var(--green); color: #000;
+  font-size: 10px; font-weight: 700; padding: 3px 9px;
+  border-radius: 100px; letter-spacing: 0.05em;
+}
+.badge-soon {
+  position: absolute; top: 20px; right: 20px;
+  background: rgba(245,158,11,0.2); color: var(--amber);
+  font-size: 10px; font-weight: 700; padding: 3px 9px;
+  border-radius: 100px; letter-spacing: 0.05em;
+  border: 0.5px solid rgba(245,158,11,0.3);
+}
+
+/* SUPPORT SECTION */
+.support-section {
+  background: linear-gradient(135deg, rgba(108,99,255,0.08) 0%, rgba(255,94,91,0.06) 100%);
+  border: 0.5px solid var(--border2);
+  border-radius: 24px; padding: 60px 40px;
+  text-align: center; margin-bottom: 80px;
+  position: relative; overflow: hidden;
+}
+.support-section::before {
+  content: ''; position: absolute;
+  top: -100px; left: 50%; transform: translateX(-50%);
+  width: 400px; height: 300px;
+  background: radial-gradient(ellipse, rgba(255,94,91,0.08) 0%, transparent 70%);
+}
+.support-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(22px, 4vw, 32px); font-weight: 800;
+  margin-bottom: 14px; position: relative;
+}
+.support-desc { color: var(--text2); max-width: 480px; margin: 0 auto 32px; font-size: 15px; position: relative; }
+.kofi-big {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--red); border: none; border-radius: 100px;
+  padding: 16px 32px; font-size: 16px; font-weight: 700;
+  color: #fff; cursor: pointer; text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 0 30px rgba(255,94,91,0.25);
+  position: relative;
+}
+.kofi-big:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(255,94,91,0.4); }
+.kofi-big svg { width: 22px; height: 22px; }
+.support-note { font-size: 13px; color: var(--text3); margin-top: 16px; }
+
+/* FOOTER */
+footer {
+  border-top: 0.5px solid var(--border);
+  padding: 40px 0; text-align: center;
+  color: var(--text3); font-size: 13px;
+}
+footer a { color: var(--text2); text-decoration: none; }
+footer a:hover { color: var(--text); }
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.app-card:nth-child(1) { animation-delay: 0.1s; }
+.app-card:nth-child(2) { animation-delay: 0.2s; }
+.app-card:nth-child(3) { animation-delay: 0.3s; }
+.app-card:nth-child(4) { animation-delay: 0.4s; }
+.app-card:nth-child(5) { animation-delay: 0.5s; }
+
+@media (max-width: 600px) {
+  .stats { gap: 28px; }
+  .support-section { padding: 40px 24px; }
+  nav { padding: 12px 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">V<span>Art</span> Tools</a>
+  <a href="https://ko-fi.com/varthur" class="kofi-nav" target="_blank">
+    <svg viewBox="0 0 24 24" fill="white"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
+    Поддержать
+  </a>
+</nav>
+
+<!-- HERO -->
+<div class="container">
+  <section class="hero">
+    <div class="hero-badge">
+      <span>Все инструменты бесплатны</span>
+    </div>
+    <h1>Инструменты для<br/><em>умных решений</em></h1>
+    <p class="hero-sub">Бесплатные веб-приложения для инвестиций, финансов и продуктивности. Работают прямо в браузере — без установки.</p>
+    <div class="hero-actions">
+      <a href="#apps" class="btn-primary">Смотреть инструменты</a>
+      <a href="https://ko-fi.com/varthur" class="btn-kofi-hero" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
+        Поддержать на Ko-fi
+      </a>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><span class="stat-num">5+</span><span class="stat-label">Инструментов</span></div>
+    <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Бесплатно</span></div>
+    <div class="stat"><span class="stat-num">0</span><span class="stat-label">Установок не нужно</span></div>
+    <div class="stat"><span class="stat-num">∞</span><span class="stat-label">Возможностей</span></div>
+  </div>
+
+  <!-- APPS -->
+  <section class="section" id="apps">
+    <div class="section-label">Инструменты</div>
+    <div class="section-title">Все приложения</div>
+    <div class="apps-grid">
+
+      <a href="market-dashboard.html" class="app-card">
+        <div class="badge-new">NEW</div>
+        <div class="app-icon icon-purple">📈</div>
+        <div class="app-name">Инвестиционный дашборд</div>
+        <div class="app-desc">Мониторинг акций США и Израиля, FDA события, IPO, новости рынков, рекомендации и конвертер валют.</div>
+        <div class="app-tags">
+          <span class="tag tag-purple">Инвестиции</span>
+          <span class="tag tag-green">Бесплатно</span>
+          <span class="tag tag-amber">FDA Events</span>
+        </div>
+        <div class="app-link">Открыть <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </a>
+
+      <a href="work-tracker.html" class="app-card">
+        <div class="app-icon icon-green">⏱️</div>
+        <div class="app-name">Трекер рабочих часов</div>
+        <div class="app-desc">Учёт рабочего времени, расчёт зарплаты, экспорт отчётов. Идеально для фрилансеров.</div>
+        <div class="app-tags">
+          <span class="tag tag-green">Продуктивность</span>
+          <span class="tag tag-purple">Время</span>
+        </div>
+        <div class="app-link">Открыть <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </a>
+
+      <a href="card-analyzer.html" class="app-card">
+        <div class="app-icon icon-amber">💳</div>
+        <div class="app-name">Анализатор карт</div>
+        <div class="app-desc">Сравнение кредитных карт, анализ кэшбека и бонусов. Найди лучшую карту для твоих трат.</div>
+        <div class="app-tags">
+          <span class="tag tag-amber">Финансы</span>
+          <span class="tag tag-green">Сравнение</span>
+        </div>
+        <div class="app-link">Открыть <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </a>
+
+      <a href="cmd-reference.html" class="app-card">
+        <div class="app-icon icon-blue">💻</div>
+        <div class="app-name">CMD Справочник</div>
+        <div class="app-desc">Быстрый справочник по командам командной строки. Поиск, категории, копирование одним кликом.</div>
+        <div class="app-tags">
+          <span class="tag tag-purple">Разработка</span>
+          <span class="tag tag-green">Справочник</span>
+        </div>
+        <div class="app-link">Открыть <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </a>
+
+      <div class="app-card" style="cursor:default;opacity:0.6">
+        <div class="badge-soon">СКОРО</div>
+        <div class="app-icon icon-red">🔔</div>
+        <div class="app-name">FDA Алерты</div>
+        <div class="app-desc">Уведомления о предстоящих FDA решениях. Никогда не пропускай важные биотех события.</div>
+        <div class="app-tags">
+          <span class="tag tag-purple">Биотех</span>
+          <span class="tag tag-amber">FDA</span>
+        </div>
+        <div class="app-link" style="color:var(--text3)">В разработке</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SUPPORT -->
+  <section class="support-section">
+    <div class="support-title">☕ Нравятся инструменты?</div>
+    <p class="support-desc">Все инструменты создаются в свободное время и остаются полностью бесплатными. Если они приносят пользу — поддержи проект чашкой кофе!</p>
+    <a href="https://ko-fi.com/varthur" class="kofi-big" target="_blank">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
+      Поддержать на Ko-fi
+    </a>
+    <p class="support-note">Любая сумма — огромная мотивация продолжать 🙏</p>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p style="margin-bottom:8px">
+      <strong style="color:var(--text2)">VArt Tools</strong> — бесплатные инструменты для всех
+    </p>
+    <p>
+      <a href="https://ko-fi.com/varthur" target="_blank">☕ Ko-fi</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/VArt-com" target="_blank">GitHub</a>
+      &nbsp;·&nbsp;
+      <span>org-va.com</span>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
