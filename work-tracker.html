@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="theme-color" content="#0a0a14"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="שעות עבודה"/>
+<title>מעקב שעות עבודה | Трекер часов</title>
+<link rel="manifest" id="pwa-manifest"/>
+<style>
+:root {
+  --bg: #0a0a14;
+  --bg2: #12121f;
+  --bg3: #1a1a2e;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #f0f0f8;
+  --text2: #8888aa;
+  --text3: #444466;
+  --accent: #6C63FF;
+  --green: #22d3a5;
+  --red: #ff5e5b;
+  --amber: #f59e0b;
+  --blue: #3b82f6;
+  --r: 14px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow-x: hidden; }
+
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* HEADER */
+.header {
+  background: var(--bg2); border-bottom: 0.5px solid var(--border);
+  padding: env(safe-area-inset-top,12px) 16px 12px;
+  position: sticky; top: 0; z-index: 50;
+}
+.header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.logo { font-size: 16px; font-weight: 700; color: var(--text); }
+.logo span { color: var(--accent); }
+.kofi { display: flex; align-items: center; gap: 5px; background: #ff5e5b; border: none; border-radius: 20px; padding: 6px 12px; font-size: 12px; font-weight: 600; color: #fff; cursor: pointer; text-decoration: none; }
+.kofi svg { width: 16px; height: 16px; }
+
+/* LAW BANNER */
+.law-banner {
+  background: rgba(108,99,255,0.08); border: 0.5px solid rgba(108,99,255,0.2);
+  border-radius: 10px; padding: 10px 14px; font-size: 12px; color: var(--text2);
+  line-height: 1.6; margin-bottom: 14px;
+}
+.law-banner strong { color: var(--accent); }
+.law-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+.law-item { background: var(--bg3); border-radius: 8px; padding: 8px 10px; }
+.law-item .lv { font-size: 15px; font-weight: 700; color: var(--green); }
+.law-item .ll { font-size: 10px; color: var(--text3); margin-top: 1px; }
+
+/* TABS */
+.tabs { display: flex; gap: 4px; background: var(--bg3); border-radius: 10px; padding: 3px; }
+.tab { flex: 1; padding: 7px; font-size: 12px; border: none; background: transparent; color: var(--text2); border-radius: 8px; cursor: pointer; font-weight: 500; }
+.tab.active { background: var(--accent); color: #fff; font-weight: 600; }
+
+/* CONTENT */
+.content { flex: 1; padding: 14px 14px calc(env(safe-area-inset-bottom,0px) + 14px); }
+.pane { display: none; }
+.pane.active { display: block; }
+
+/* CARDS */
+.card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--r); padding: 14px; margin-bottom: 10px; }
+.card-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text2); margin-bottom: 12px; }
+
+/* METRICS */
+.metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.met { background: var(--bg3); border-radius: 10px; padding: 12px; }
+.met-l { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+.met-v { font-size: 20px; font-weight: 700; color: var(--text); }
+.met-v.green { color: var(--green); }
+.met-v.amber { color: var(--amber); }
+.met-v.red { color: var(--red); }
+.met-v.blue { color: var(--blue); }
+.met-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+/* FORM */
+.form-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; align-items: flex-end; }
+.form-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 100px; }
+.form-group label { font-size: 11px; color: var(--text2); }
+.inp { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 8px; padding: 9px 11px; font-size: 14px; color: var(--text); width: 100%; }
+.inp:focus { outline: none; border-color: var(--accent); }
+.sel { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 8px; padding: 9px 11px; font-size: 13px; color: var(--text); width: 100%; }
+.btn { border: none; border-radius: 8px; padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn-accent { background: var(--accent); color: #fff; }
+.btn-green { background: rgba(34,211,165,0.15); color: var(--green); border: 0.5px solid rgba(34,211,165,0.3); }
+.btn-red { background: rgba(255,94,91,0.12); color: var(--red); border: 0.5px solid rgba(255,94,91,0.3); }
+.btn-amber { background: rgba(245,158,11,0.12); color: var(--amber); border: 0.5px solid rgba(245,158,11,0.3); }
+.btn-sm { font-size: 11px; padding: 4px 9px; }
+.btn-full { width: 100%; margin-top: 6px; }
+
+/* ENTRIES */
+.entry { display: flex; align-items: center; padding: 10px 0; border-bottom: 0.5px solid var(--border); gap: 8px; }
+.entry:last-child { border-bottom: none; padding-bottom: 0; }
+.entry-date { font-size: 12px; font-weight: 600; color: var(--text); min-width: 80px; }
+.entry-info { flex: 1; }
+.entry-hours { font-size: 12px; color: var(--text2); }
+.entry-pay { font-size: 14px; font-weight: 700; color: var(--green); text-align: right; min-width: 80px; }
+.entry-extra { font-size: 11px; color: var(--amber); }
+
+/* BADGES */
+.bdg { font-size: 10px; padding: 2px 7px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
+.bdg-ot { background: rgba(245,158,11,0.15); color: var(--amber); }
+.bdg-shabbat { background: rgba(255,94,91,0.15); color: var(--red); }
+.bdg-ok { background: rgba(34,211,165,0.12); color: var(--green); }
+
+/* CALC */
+.calc-result { background: rgba(34,211,165,0.07); border: 0.5px solid rgba(34,211,165,0.2); border-radius: 10px; padding: 14px; margin-top: 10px; }
+.calc-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 0.5px solid rgba(255,255,255,0.05); font-size: 13px; }
+.calc-row:last-child { border-bottom: none; font-weight: 700; font-size: 15px; color: var(--green); margin-top: 4px; }
+.calc-label { color: var(--text2); }
+.calc-val { color: var(--text); font-weight: 600; }
+
+/* RIGHTS */
+.right-item { padding: 12px 0; border-bottom: 0.5px solid var(--border); }
+.right-item:last-child { border-bottom: none; }
+.right-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.right-desc { font-size: 12px; color: var(--text2); line-height: 1.55; }
+.right-val { font-size: 15px; font-weight: 700; color: var(--green); margin: 4px 0; }
+
+/* EXPORT */
+.export-box { background: var(--bg3); border-radius: 10px; padding: 14px; margin-top: 10px; }
+
+.empty { color: var(--text3); font-size: 13px; padding: 20px 0; text-align: center; }
+.divider { height: 0.5px; background: var(--border); margin: 10px 0; }
+.badge-law { background: rgba(108,99,255,0.15); color: var(--accent); font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+
+.timer-display { font-size: 42px; font-weight: 700; color: var(--accent); text-align: center; letter-spacing: -2px; font-variant-numeric: tabular-nums; padding: 20px 0; }
+.timer-status { text-align: center; font-size: 13px; color: var(--text2); margin-bottom: 16px; }
+.timer-btns { display: flex; gap: 8px; }
+
+.alert { background: rgba(245,158,11,0.1); border: 0.5px solid rgba(245,158,11,0.3); border-radius: 8px; padding: 8px 12px; font-size: 12px; color: var(--amber); margin-bottom: 10px; display: flex; gap: 8px; align-items: flex-start; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="logo">⏱ <span>שעות</span> עבודה</div>
+    <a href="https://ko-fi.com/varthur" class="kofi" target="_blank">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
+      Ko-fi
+    </a>
+  </div>
+
+  <!-- LAW INFO -->
+  <div class="law-banner">
+    <strong>חוק שעות עבודה ומנוחה | Закон о рабочих часах (01.04.2026)</strong>
+    <div class="law-grid">
+      <div class="law-item"><div class="lv">₪35.40</div><div class="ll">מינימום לשעה / мин. в час</div></div>
+      <div class="law-item"><div class="lv">₪6,443</div><div class="ll">מינימום לחודש / мин. в месяц</div></div>
+      <div class="law-item"><div class="lv">125%</div><div class="ll">2 שעות נוספות ראשונות / 1-2 сверхурочные</div></div>
+      <div class="law-item"><div class="lv">150%</div><div class="ll">שעות נוספות / далее + шаббат</div></div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('timer',this)">⏱ Таймер</button>
+    <button class="tab" onclick="showTab('add',this)">+ Добавить</button>
+    <button class="tab" onclick="showTab('history',this)">📋 История</button>
+    <button class="tab" onclick="showTab('summary',this)">💰 Итоги</button>
+    <button class="tab" onclick="showTab('rights',this)">⚖️ Права</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- TIMER TAB -->
+  <div class="pane active" id="tab-timer">
+    <div class="card">
+      <div class="card-title">Таймер рабочего дня</div>
+      <div class="timer-display" id="timer-display">00:00:00</div>
+      <div class="timer-status" id="timer-status">Нажми «Начать» чтобы начать отсчёт</div>
+      <div class="timer-btns">
+        <button class="btn btn-green btn-full" id="timer-btn" onclick="toggleTimer()">▶ Начать смену</button>
+        <button class="btn btn-red" onclick="resetTimer()" style="padding:10px 14px">✕</button>
+      </div>
+    </div>
+    <div class="card" id="timer-save-card" style="display:none">
+      <div class="card-title">Сохранить смену</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Тип дня</label>
+          <select id="t-daytype" class="sel">
+            <option value="regular">Обычный день</option>
+            <option value="friday">Пятница / канун праздника</option>
+            <option value="shabbat">Шаббат / праздник (+50%)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Часовая ставка ₪</label>
+          <input id="t-rate" type="number" class="inp" placeholder="35.40" value="35.40"/>
+        </div>
+      </div>
+      <button class="btn btn-accent btn-full" onclick="saveTimerEntry()">💾 Сохранить смену</button>
+    </div>
+
+    <!-- TODAY SUMMARY -->
+    <div class="card">
+      <div class="card-title">Сегодня</div>
+      <div class="metrics" id="today-metrics">
+        <div class="met"><div class="met-l">Обычные часы</div><div class="met-v blue" id="td-regular">0:00</div></div>
+        <div class="met"><div class="met-l">Сверхурочные</div><div class="met-v amber" id="td-ot">0:00</div></div>
+        <div class="met"><div class="met-l">Итого за день</div><div class="met-v green" id="td-pay">₪0</div></div>
+        <div class="met"><div class="met-l">Статус</div><div class="met-v" id="td-status" style="font-size:13px">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD TAB -->
+  <div class="pane" id="tab-add">
+    <div class="card">
+      <div class="card-title">Добавить рабочий день</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Дата</label>
+          <input id="a-date" type="date" class="inp"/>
+        </div>
+        <div class="form-group">
+          <label>Тип дня</label>
+          <select id="a-daytype" class="sel" onchange="updateDayLimit()">
+            <option value="regular">Обычный (до 8.6ч)</option>
+            <option value="friday">Пятница (до 7.6ч)</option>
+            <option value="shabbat">Шаббат/праздник</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Начало работы</label>
+          <input id="a-start" type="time" class="inp" value="09:00"/>
+        </div>
+        <div class="form-group">
+          <label>Конец работы</label>
+          <input id="a-end" type="time" class="inp" value="18:00"/>
+        </div>
+        <div class="form-group">
+          <label>Перерыв (мин)</label>
+          <input id="a-break" type="number" class="inp" value="45" min="0" max="120"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Часовая ставка ₪</label>
+          <input id="a-rate" type="number" class="inp" placeholder="35.40" step="0.01"/>
+        </div>
+        <div class="form-group">
+          <label>Заметка</label>
+          <input id="a-note" type="text" class="inp" placeholder="Необязательно"/>
+        </div>
+      </div>
+      <div id="add-preview" class="calc-result" style="display:none"></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn btn-green" style="flex:1" onclick="previewEntry()">Предпросмотр</button>
+        <button class="btn btn-accent" style="flex:1" onclick="addEntry()">+ Добавить</button>
+      </div>
+    </div>
+
+    <!-- QUICK ADD -->
+    <div class="card">
+      <div class="card-title">Быстрое добавление</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Часов отработано</label>
+          <input id="q-hours" type="number" class="inp" placeholder="8.6" step="0.5" min="0" max="16"/>
+        </div>
+        <div class="form-group">
+          <label>Ставка ₪/час</label>
+          <input id="q-rate" type="number" class="inp" placeholder="35.40" step="0.01"/>
+        </div>
+        <div class="form-group">
+          <label>Тип</label>
+          <select id="q-type" class="sel">
+            <option value="regular">Обычный</option>
+            <option value="friday">Пятница</option>
+            <option value="shabbat">Шаббат</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-accent btn-full" onclick="quickAdd()">+ Добавить быстро</button>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div class="pane" id="tab-history">
+    <div class="card">
+      <div class="card-title">История смен</div>
+      <div id="history-list"><div class="empty">Нет записей. Добавь первую смену!</div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-amber btn-full" onclick="exportCSV()">📊 Экспорт CSV</button>
+      <button class="btn btn-red" onclick="clearAll()" style="padding:10px 16px">🗑</button>
+    </div>
+  </div>
+
+  <!-- SUMMARY TAB -->
+  <div class="pane" id="tab-summary">
+    <div class="metrics" style="margin-bottom:10px">
+      <div class="met"><div class="met-l">Всего часов</div><div class="met-v blue" id="s-hours">0</div><div class="met-sub">за всё время</div></div>
+      <div class="met"><div class="met-l">Сверхурочные</div><div class="met-v amber" id="s-ot">0</div><div class="met-sub">часов</div></div>
+      <div class="met"><div class="met-l">Итого заработано</div><div class="met-v green" id="s-total">₪0</div><div class="met-sub">брутто</div></div>
+      <div class="met"><div class="met-l">Дней отработано</div><div class="met-v" id="s-days">0</div></div>
+    </div>
+
+    <!-- MONTHLY -->
+    <div class="card">
+      <div class="card-title">Текущий месяц</div>
+      <div class="metrics">
+        <div class="met"><div class="met-l">Часов</div><div class="met-v blue" id="m-hours">0</div></div>
+        <div class="met"><div class="met-l">Заработано</div><div class="met-v green" id="m-pay">₪0</div></div>
+        <div class="met"><div class="met-l">Сверхурочные</div><div class="met-v amber" id="m-ot">0ч</div></div>
+        <div class="met"><div class="met-l">Дней</div><div class="met-v" id="m-days">0</div></div>
+      </div>
+    </div>
+
+    <!-- WEEKLY -->
+    <div class="card">
+      <div class="card-title">Текущая неделя (лимит: 42ч)</div>
+      <div id="weekly-alert" class="alert" style="display:none">⚠️ Превышен недельный лимит 42 часа! По закону требуется оплата сверхурочных.</div>
+      <div class="metrics">
+        <div class="met"><div class="met-l">Часов за неделю</div><div class="met-v" id="w-hours">0</div></div>
+        <div class="met"><div class="met-l">Осталось до лимита</div><div class="met-v green" id="w-left">42ч</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHTS TAB -->
+  <div class="pane" id="tab-rights">
+    <div class="card">
+      <div class="card-title">⚖️ Твои права по закону Израиля <span class="badge-law">עדכון 01.04.2026</span></div>
+
+      <div class="right-item">
+        <div class="right-title">💰 Минимальная зарплата</div>
+        <div class="right-val">₪35.40 / час &nbsp;|&nbsp; ₪6,443.85 / месяц</div>
+        <div class="right-desc">Обновлено 01.04.2026. Работодатель обязан платить не меньше. Отказ от минимальной зарплаты юридически недействителен — даже если работник согласился.</div>
+      </div>
+
+      <div class="right-item">
+        <div class="right-title">🕐 Нормальный рабочий день</div>
+        <div class="right-val">8.6 часов (5 дней) &nbsp;|&nbsp; 7.6 часов (пятница)</div>
+        <div class="right-desc">Частный сектор: до 8.6 часов в день, пятница и канун праздника — до 7.6 часов. Госсектор: 8 часов. Недельная норма: 42 часа (частный), 40 часов (госсектор с 01.09.2024).</div>
+      </div>
+
+      <div class="right-item">
+        <div class="right-title">⏰ Сверхурочные — גמול שעות נוספות</div>
+        <div class="right-val">Первые 2ч: 125% &nbsp;|&nbsp; Дальше: 150%</div>
+        <div class="right-desc">Первые 2 сверхурочных часа в день оплачиваются по ставке 125% от обычного заработка. Каждый следующий час — 150%. Отказаться от этого права нельзя по закону.</div>
+      </div>
+
+      <div class="right-item">
+        <div class="right-title">✡️ Работа в шаббат и праздники</div>
+        <div class="right-val">Минимум 150% от обычной ставки</div>
+        <div class="right-desc">Работа в шаббат и праздники требует специального разрешения от работодателя и оплачивается минимум в 1.5 раза больше обычной ставки.</div>
+      </div>
+
+      <div class="right-item">
+        <div class="right-title">🌙 Ночная смена</div>
+        <div class="right-val">Неделя не более 58 часов включая сверхурочные</div>
+        <div class="right-desc">День ночной смены не превышает 7 часов. Рабочая неделя при ночных сменах — не более 58 часов суммарно.</div>
+      </div>
+
+      <div class="right-item">
+        <div class="right-title">☕ Обязательные перерывы</div>
+        <div class="right-val">При смене 6+ часов: 45 мин перерыва</div>
+        <div class="right-desc">При рабочем дне от 6 часов — обязательный перерыв не менее 45 минут, включая непрерывный перерыв не менее 30 минут.</div>
+      </div>
+
+      <div class="right-item">
+        <div class="right-title">📋 Табель учёта рабочего времени</div>
+        <div class="right-val">Работодатель обязан вести 7 лет</div>
+        <div class="right-desc">Работодатель обязан вести точный журнал рабочих часов и хранить его 7 лет. Если нет — нарушение закона.</div>
+      </div>
+
+      <div class="right-item">
+        <div class="right-title">🛡 Куда жаловаться</div>
+        <div class="right-desc">При нарушении прав — обратись в <strong style="color:var(--accent)">Министерство труда Израиля (משרד העבודה)</strong> или подай иск в <strong style="color:var(--accent)">Трудовой суд (בית הדין לעבודה)</strong>. Нарушение минимальной зарплаты — уголовное преступление.</div>
+      </div>
+    </div>
+
+    <!-- DIFFERENT SECTORS -->
+    <div class="card">
+      <div class="card-title">Минимум по отраслям (апрель 2026)</div>
+      <div class="right-item">
+        <div class="right-title">🔒 Охрана и безопасность</div>
+        <div class="right-val">от ₪37.75/час (от ₪6,872/мес)</div>
+        <div class="right-desc">На 10-60% выше общего минимума в зависимости от должности и квалификации.</div>
+      </div>
+      <div class="right-item">
+        <div class="right-title">🧹 Уборка</div>
+        <div class="right-val">₪35.40 + ₪675 надбавка</div>
+        <div class="right-desc">Общий минимум + надбавка ₪675 сверху согласно отраслевому соглашению.</div>
+      </div>
+      <div class="right-item">
+        <div class="right-title">🍽 Общественное питание</div>
+        <div class="right-val">+13% к общему минимуму</div>
+        <div class="right-desc">На 13% выше базового минимума согласно отраслевому расширенному ордеру.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<script>
+// PWA MANIFEST
+const manifest = {
+  name: 'מעקב שעות עבודה',
+  short_name: 'שעות',
+  start_url: './work-tracker.html',
+  display: 'standalone',
+  background_color: '#0a0a14',
+  theme_color: '#0a0a14',
+  icons: [{
+    src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%230a0a14"/><text y="72" font-size="60" text-anchor="middle" x="50">⏱</text></svg>',
+    sizes: 'any', type: 'image/svg+xml'
+  }]
+};
+const mblob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+document.getElementById('pwa-manifest').href = URL.createObjectURL(mblob);
+
+// SERVICE WORKER
+if ('serviceWorker' in navigator) {
+  const sw = `const C='work-tracker-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll([location.pathname])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;
+  const swBlob = new Blob([sw], {type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+}
+
+// LAW CONSTANTS (01.04.2026)
+const LAW = {
+  MIN_HOURLY: 35.40,
+  MIN_MONTHLY: 6443.85,
+  REGULAR_DAY_PRIVATE: 8.6,
+  FRIDAY_DAY: 7.6,
+  WEEKLY_PRIVATE: 42,
+  WEEKLY_PUBLIC: 40,
+  OT_RATE_1: 1.25, // first 2 hours
+  OT_RATE_2: 1.50, // after 2 hours
+  SHABBAT_RATE: 1.50,
+};
+
+// STATE
+let entries = [];
+let timerInterval = null;
+let timerStart = null;
+let timerRunning = false;
+let timerSeconds = 0;
+
+try { entries = JSON.parse(localStorage.getItem('wt_entries_v2') || '[]'); } catch(e) {}
+function save() { try { localStorage.setItem('wt_entries_v2', JSON.stringify(entries)); } catch(e) {} }
+
+// SET TODAY DATE
+document.getElementById('a-date').value = new Date().toISOString().split('T')[0];
+
+function showTab(n, el) {
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + n).classList.add('active');
+  if (el) el.classList.add('active');
+  if (n === 'history') renderHistory();
+  if (n === 'summary') renderSummary();
+}
+
+// CALCULATE PAY
+function calcPay(hours, rate, dayType) {
+  const r = parseFloat(rate) || LAW.MIN_HOURLY;
+  const limit = dayType === 'friday' ? LAW.FRIDAY_DAY : LAW.REGULAR_DAY_PRIVATE;
+
+  if (dayType === 'shabbat') {
+    return { regular: 0, ot1: 0, ot2: 0, shabbat: hours, pay: hours * r * LAW.SHABBAT_RATE, total: hours * r * LAW.SHABBAT_RATE };
+  }
+
+  const regular = Math.min(hours, limit);
+  const overtime = Math.max(0, hours - limit);
+  const ot1 = Math.min(overtime, 2);
+  const ot2 = Math.max(0, overtime - 2);
+
+  const pay = (regular * r) + (ot1 * r * LAW.OT_RATE_1) + (ot2 * r * LAW.OT_RATE_2);
+  return { regular, ot1, ot2, shabbat: 0, pay, total: pay };
+}
+
+function calcHoursFromTime(start, end, breakMin) {
+  const [sh, sm] = start.split(':').map(Number);
+  const [eh, em] = end.split(':').map(Number);
+  let mins = (eh * 60 + em) - (sh * 60 + sm);
+  if (mins < 0) mins += 24 * 60;
+  return Math.max(0, (mins - (parseInt(breakMin) || 0)) / 60);
+}
+
+// PREVIEW
+function previewEntry() {
+  const start = document.getElementById('a-start').value;
+  const end = document.getElementById('a-end').value;
+  const brk = document.getElementById('a-break').value;
+  const rate = document.getElementById('a-rate').value || LAW.MIN_HOURLY;
+  const dayType = document.getElementById('a-daytype').value;
+
+  const hours = calcHoursFromTime(start, end, brk);
+  const calc = calcPay(hours, rate, dayType);
+
+  const box = document.getElementById('add-preview');
+  box.style.display = 'block';
+  box.innerHTML = `
+    <div class="calc-row"><span class="calc-label">Отработано часов</span><span class="calc-val">${hours.toFixed(2)}ч</span></div>
+    <div class="calc-row"><span class="calc-label">Обычные часы (×₪${parseFloat(rate).toFixed(2)})</span><span class="calc-val">${calc.regular.toFixed(2)}ч = ₪${(calc.regular*parseFloat(rate)).toFixed(2)}</span></div>
+    ${calc.ot1 > 0 ? `<div class="calc-row"><span class="calc-label">Сверхурочные ×125%</span><span class="calc-val">${calc.ot1.toFixed(2)}ч = ₪${(calc.ot1*parseFloat(rate)*1.25).toFixed(2)}</span></div>` : ''}
+    ${calc.ot2 > 0 ? `<div class="calc-row"><span class="calc-label">Сверхурочные ×150%</span><span class="calc-val">${calc.ot2.toFixed(2)}ч = ₪${(calc.ot2*parseFloat(rate)*1.5).toFixed(2)}</span></div>` : ''}
+    ${calc.shabbat > 0 ? `<div class="calc-row"><span class="calc-label">Шаббат ×150%</span><span class="calc-val">${calc.shabbat.toFixed(2)}ч = ₪${calc.pay.toFixed(2)}</span></div>` : ''}
+    <div class="calc-row"><span class="calc-label">ИТОГО к оплате</span><span class="calc-val">₪${calc.pay.toFixed(2)}</span></div>
+  `;
+}
+
+function addEntry() {
+  const date = document.getElementById('a-date').value;
+  const start = document.getElementById('a-start').value;
+  const end = document.getElementById('a-end').value;
+  const brk = parseInt(document.getElementById('a-break').value) || 0;
+  const rate = parseFloat(document.getElementById('a-rate').value) || LAW.MIN_HOURLY;
+  const dayType = document.getElementById('a-daytype').value;
+  const note = document.getElementById('a-note').value;
+
+  if (!date || !start || !end) return alert('Заполни дату, начало и конец смены');
+
+  const hours = calcHoursFromTime(start, end, brk);
+  const calc = calcPay(hours, rate, dayType);
+
+  entries.push({ id: Date.now(), date, start, end, break: brk, hours, rate, dayType, pay: calc.pay, ot: calc.ot1 + calc.ot2, note, calc });
+  entries.sort((a, b) => new Date(b.date) - new Date(a.date));
+  save();
+
+  document.getElementById('add-preview').style.display = 'none';
+  document.getElementById('a-note').value = '';
+  alert(`Сохранено! К оплате: ₪${calc.pay.toFixed(2)}`);
+}
+
+function quickAdd() {
+  const hours = parseFloat(document.getElementById('q-hours').value);
+  const rate = parseFloat(document.getElementById('q-rate').value) || LAW.MIN_HOURLY;
+  const dayType = document.getElementById('q-type').value;
+  if (!hours) return alert('Введи количество часов');
+
+  const calc = calcPay(hours, rate, dayType);
+  const date = new Date().toISOString().split('T')[0];
+
+  entries.push({ id: Date.now(), date, start: '09:00', end: '—', break: 0, hours, rate, dayType, pay: calc.pay, ot: calc.ot1 + calc.ot2, note: '', calc });
+  entries.sort((a, b) => new Date(b.date) - new Date(a.date));
+  save();
+  alert(`Добавлено: ${hours}ч = ₪${calc.pay.toFixed(2)}`);
+  document.getElementById('q-hours').value = '';
+}
+
+// TIMER
+function toggleTimer() {
+  if (!timerRunning) {
+    timerRunning = true;
+    timerStart = Date.now() - timerSeconds * 1000;
+    timerInterval = setInterval(updateTimer, 1000);
+    document.getElementById('timer-btn').textContent = '⏸ Пауза';
+    document.getElementById('timer-btn').className = 'btn btn-amber btn-full';
+    document.getElementById('timer-status').textContent = 'Смена идёт...';
+    document.getElementById('timer-save-card').style.display = 'none';
+  } else {
+    timerRunning = false;
+    clearInterval(timerInterval);
+    document.getElementById('timer-btn').textContent = '▶ Продолжить';
+    document.getElementById('timer-btn').className = 'btn btn-green btn-full';
+    document.getElementById('timer-status').textContent = 'Пауза. Нажми «Продолжить» или сохрани.';
+    document.getElementById('timer-save-card').style.display = 'block';
+    updateTodayCalc();
+  }
+}
+
+function updateTimer() {
+  timerSeconds = Math.floor((Date.now() - timerStart) / 1000);
+  const h = Math.floor(timerSeconds / 3600);
+  const m = Math.floor((timerSeconds % 3600) / 60);
+  const s = timerSeconds % 60;
+  document.getElementById('timer-display').textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  updateTodayCalc();
+}
+
+function resetTimer() {
+  timerRunning = false;
+  clearInterval(timerInterval);
+  timerSeconds = 0;
+  document.getElementById('timer-display').textContent = '00:00:00';
+  document.getElementById('timer-btn').textContent = '▶ Начать смену';
+  document.getElementById('timer-btn').className = 'btn btn-green btn-full';
+  document.getElementById('timer-status').textContent = 'Нажми «Начать» чтобы начать отсчёт';
+  document.getElementById('timer-save-card').style.display = 'none';
+}
+
+function updateTodayCalc() {
+  const hours = timerSeconds / 3600;
+  const rate = parseFloat(document.getElementById('t-rate')?.value) || LAW.MIN_HOURLY;
+  const dayType = document.getElementById('t-daytype')?.value || 'regular';
+  const calc = calcPay(hours, rate, dayType);
+  const limit = dayType === 'friday' ? LAW.FRIDAY_DAY : LAW.REGULAR_DAY_PRIVATE;
+
+  document.getElementById('td-regular').textContent = `${Math.min(hours, limit).toFixed(1)}ч`;
+  document.getElementById('td-ot').textContent = `${(calc.ot1 + calc.ot2).toFixed(1)}ч`;
+  document.getElementById('td-pay').textContent = `₪${calc.pay.toFixed(0)}`;
+  const over = hours > limit;
+  document.getElementById('td-status').textContent = over ? '⚠️ Сверхурочные' : '✅ В норме';
+  document.getElementById('td-status').className = `met-v ${over ? 'amber' : 'green'}`;
+}
+
+function saveTimerEntry() {
+  const hours = timerSeconds / 3600;
+  if (hours < 0.1) return alert('Слишком мало времени');
+  const rate = parseFloat(document.getElementById('t-rate').value) || LAW.MIN_HOURLY;
+  const dayType = document.getElementById('t-daytype').value;
+  const calc = calcPay(hours, rate, dayType);
+  const date = new Date().toISOString().split('T')[0];
+
+  entries.push({ id: Date.now(), date, start: new Date(timerStart).toTimeString().slice(0,5), end: new Date().toTimeString().slice(0,5), break: 0, hours, rate, dayType, pay: calc.pay, ot: calc.ot1 + calc.ot2, note: 'Таймер', calc });
+  entries.sort((a, b) => new Date(b.date) - new Date(a.date));
+  save();
+  resetTimer();
+  alert(`Сохранено: ${hours.toFixed(1)}ч = ₪${calc.pay.toFixed(2)}`);
+}
+
+// HISTORY
+function renderHistory() {
+  const el = document.getElementById('history-list');
+  if (!entries.length) { el.innerHTML = '<div class="empty">Нет записей</div>'; return; }
+
+  el.innerHTML = entries.map(e => {
+    const dayLabel = e.dayType === 'shabbat' ? '<span class="bdg bdg-shabbat">שבת</span>' : e.dayType === 'friday' ? '<span class="bdg bdg-ot">שישי</span>' : '';
+    const otLabel = e.ot > 0 ? `<span class="bdg bdg-ot">+${e.ot.toFixed(1)}ч ОТ</span>` : '';
+    const d = new Date(e.date);
+    const dateStr = d.toLocaleDateString('ru', {day:'numeric', month:'short'});
+    return `<div class="entry">
+      <div>
+        <div class="entry-date">${dateStr}</div>
+        <div style="font-size:11px;color:var(--text3)">${e.start}${e.end !== '—' ? '–'+e.end : ''}</div>
+      </div>
+      <div class="entry-info">
+        <div class="entry-hours">${e.hours.toFixed(1)}ч ${dayLabel} ${otLabel}</div>
+        ${e.note ? `<div style="font-size:11px;color:var(--text3)">${e.note}</div>` : ''}
+      </div>
+      <div>
+        <div class="entry-pay">₪${e.pay.toFixed(0)}</div>
+        <div style="text-align:right;margin-top:4px"><button class="btn btn-red btn-sm" onclick="deleteEntry(${e.id})">✕</button></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deleteEntry(id) {
+  if (!confirm('Удалить запись?')) return;
+  entries = entries.filter(e => e.id !== id);
+  save();
+  renderHistory();
+  renderSummary();
+}
+
+function clearAll() {
+  if (!confirm('Удалить ВСЕ записи?')) return;
+  entries = [];
+  save();
+  renderHistory();
+  renderSummary();
+}
+
+// SUMMARY
+function renderSummary() {
+  const totalHours = entries.reduce((s, e) => s + e.hours, 0);
+  const totalOT = entries.reduce((s, e) => s + e.ot, 0);
+  const totalPay = entries.reduce((s, e) => s + e.pay, 0);
+
+  document.getElementById('s-hours').textContent = totalHours.toFixed(1) + 'ч';
+  document.getElementById('s-ot').textContent = totalOT.toFixed(1) + 'ч';
+  document.getElementById('s-total').textContent = '₪' + totalPay.toFixed(0);
+  document.getElementById('s-days').textContent = entries.length;
+
+  const now = new Date();
+  const monthEntries = entries.filter(e => {
+    const d = new Date(e.date);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+  document.getElementById('m-hours').textContent = monthEntries.reduce((s,e)=>s+e.hours,0).toFixed(1)+'ч';
+  document.getElementById('m-pay').textContent = '₪'+monthEntries.reduce((s,e)=>s+e.pay,0).toFixed(0);
+  document.getElementById('m-ot').textContent = monthEntries.reduce((s,e)=>s+e.ot,0).toFixed(1)+'ч';
+  document.getElementById('m-days').textContent = monthEntries.length;
+
+  // Weekly
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay());
+  weekStart.setHours(0,0,0,0);
+  const weekEntries = entries.filter(e => new Date(e.date) >= weekStart);
+  const weekHours = weekEntries.reduce((s,e)=>s+e.hours,0);
+  document.getElementById('w-hours').textContent = weekHours.toFixed(1)+'ч';
+  document.getElementById('w-left').textContent = Math.max(0, LAW.WEEKLY_PRIVATE - weekHours).toFixed(1)+'ч';
+  document.getElementById('w-hours').className = `met-v ${weekHours > LAW.WEEKLY_PRIVATE ? 'red' : weekHours > 38 ? 'amber' : 'blue'}`;
+  document.getElementById('weekly-alert').style.display = weekHours > LAW.WEEKLY_PRIVATE ? 'flex' : 'none';
+}
+
+function updateDayLimit() {
+  const t = document.getElementById('a-daytype').value;
+  document.getElementById('a-break').value = t === 'shabbat' ? '0' : '45';
+}
+
+// EXPORT CSV
+function exportCSV() {
+  if (!entries.length) return alert('Нет данных для экспорта');
+  let csv = 'Дата,Начало,Конец,Перерыв мин,Часов,Тип,Ставка ₪/ч,Обычные ч,Сверхурочные ч,Итого ₪,Заметка\n';
+  entries.forEach(e => {
+    csv += `${e.date},${e.start},${e.end},${e.break},${e.hours.toFixed(2)},${e.dayType},${e.rate},${(e.calc?.regular||0).toFixed(2)},${e.ot.toFixed(2)},${e.pay.toFixed(2)},"${e.note}"\n`;
+  });
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'work-hours.csv';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// INIT
+renderSummary();
+</script>
+</body>
+</html>
