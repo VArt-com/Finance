@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="theme-color" content="#0c0c14"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Radio World"/>
+<title>Radio World 🌍</title>
+<link rel="manifest" id="pwa-manifest"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0c0c14;--bg2:#12121e;--bg3:#181828;--bg4:#1e1e32;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#f0f0f8;--text2:#8888aa;--text3:#44445a;
+  --cyan:#00D4FF;--pink:#FF6B9D;--gold:#FFD060;--green:#00E5A0;--purple:#B06EFF;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+
+/* BG GLOW */
+.orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;animation:orb 10s ease-in-out infinite}
+.o1{width:350px;height:350px;background:rgba(0,212,255,0.05);top:-100px;right:-80px}
+.o2{width:280px;height:280px;background:rgba(255,107,157,0.04);bottom:80px;left:-60px;animation-delay:-5s}
+@keyframes orb{0%,100%{transform:scale(1)}50%{transform:scale(1.1) translateY(-15px)}}
+
+.app{display:flex;flex-direction:column;min-height:100dvh;position:relative;z-index:1}
+
+/* HEADER */
+.hdr{background:rgba(12,12,20,0.95);backdrop-filter:blur(24px);border-bottom:.5px solid var(--border);padding:env(safe-area-inset-top,10px) 14px 10px;position:sticky;top:0;z-index:100}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.logo{display:flex;align-items:center;gap:9px}
+.logo-icon{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--cyan),var(--purple));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.logo-text{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;letter-spacing:-.02em}
+.logo-text span{color:var(--cyan)}
+.kofi{display:flex;align-items:center;gap:5px;background:#FF5E5B;border:none;border-radius:20px;padding:6px 12px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;text-decoration:none;font-family:'DM Sans',sans-serif}
+.kofi svg{width:15px;height:15px}
+
+/* LANG */
+.lang-row{display:flex;gap:4px;margin-bottom:10px}
+.lb{flex:1;padding:6px;font-size:11px;font-weight:700;border:.5px solid var(--border);border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.lb.active{background:var(--bg3);color:var(--text);border-color:var(--border2)}
+
+/* COUNTRY TABS */
+.ctabs{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.ctabs::-webkit-scrollbar{display:none}
+.ct{flex-shrink:0;display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;border:.5px solid var(--border);background:transparent;color:var(--text2);transition:all .2s;font-family:'DM Sans',sans-serif}
+.ct.active{color:#fff;border-color:transparent}
+.ct-all.active{background:linear-gradient(135deg,var(--cyan),var(--purple))}
+.ct-ua.active{background:linear-gradient(135deg,#005BBB,#FFD700);color:#fff}
+.ct-ru.active{background:linear-gradient(135deg,#CC0000,#1C3578)}
+.ct-il.active{background:linear-gradient(135deg,#0038b8,#4488ff)}
+.ct-us.active{background:linear-gradient(135deg,#B22234,#3C3B6E)}
+
+/* CONTENT */
+.content{flex:1;padding:14px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 140px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+/* SEARCH */
+.search-wrap{position:relative;margin-bottom:14px}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none}
+.search-inp{width:100%;background:var(--bg2);border:.5px solid var(--border);border-radius:12px;padding:10px 14px 10px 38px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif}
+.search-inp::placeholder{color:var(--text3)}
+.search-inp:focus{outline:none;border-color:var(--border2)}
+
+/* SECTION */
+.sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:11px;padding-bottom:9px;border-bottom:.5px solid var(--border)}
+.sec-flag{font-size:22px}
+.sec-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:700}
+.sec-count{font-size:11px;color:var(--text2);margin-left:auto}
+.sec-wrap{margin-bottom:22px}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:9px}
+
+/* RADIO CARD */
+.rc{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r);padding:13px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.rc::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;background:linear-gradient(135deg,rgba(0,212,255,0.07),rgba(176,110,255,0.05))}
+.rc:hover{transform:translateY(-2px);border-color:var(--border2)}
+.rc:hover::before{opacity:1}
+.rc.active{border-color:var(--cyan);box-shadow:0 0 18px rgba(0,212,255,0.12)}
+.rc.active::before{opacity:1}
+.rc-favicon{width:38px;height:38px;border-radius:9px;margin-bottom:9px;object-fit:cover;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.rc-favicon img{width:100%;height:100%;border-radius:9px;object-fit:cover}
+.rc-name{font-size:12px;font-weight:700;line-height:1.3;margin-bottom:3px}
+.rc-genre{font-size:10px;color:var(--text2);margin-bottom:6px;line-height:1.3}
+.rc-bits{font-size:10px;color:var(--text3)}
+.rc-live{position:absolute;top:9px;right:9px;background:var(--cyan);border-radius:20px;padding:2px 7px;font-size:9px;font-weight:700;color:#000;opacity:0;transition:opacity .2s}
+.rc.active .rc-live{opacity:1}
+.rc-eq{margin-top:5px}
+
+/* EQ */
+.eq{display:flex;align-items:flex-end;gap:2px;height:14px}
+.eq-b{width:3px;border-radius:2px;background:var(--cyan);animation:eqA .7s ease-in-out infinite;height:4px}
+.eq-b:nth-child(1){animation-delay:0s}.eq-b:nth-child(2){animation-delay:.12s}.eq-b:nth-child(3){animation-delay:.24s}.eq-b:nth-child(4){animation-delay:.08s}.eq-b:nth-child(5){animation-delay:.18s}
+@keyframes eqA{0%,100%{height:3px;opacity:.4}50%{height:13px;opacity:1}}
+.eq.paused .eq-b{animation-play-state:paused;height:3px;opacity:.3}
+
+/* LOADER */
+.loader-wrap{text-align:center;padding:40px 0;color:var(--text3);font-size:13px}
+.spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:30px 0;color:var(--text3);font-size:13px}
+
+/* NOW PLAYING */
+.np{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(12,12,20,0.98);backdrop-filter:blur(30px);border-top:.5px solid var(--border2);padding:10px 14px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 10px)}
+.np-inner{display:flex;align-items:center;gap:11px}
+.np-art{width:46px;height:46px;border-radius:12px;flex-shrink:0;overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:22px;position:relative}
+.np-art.on::after{content:'';position:absolute;inset:0;border-radius:12px;border:1.5px solid var(--cyan);animation:ring 1.5s ease-in-out infinite}
+@keyframes ring{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.2;transform:scale(1.07)}}
+.np-art img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+.np-info{flex:1;min-width:0}
+.np-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.np-status{font-size:11px;color:var(--text2);margin-top:2px;display:flex;align-items:center;gap:5px}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:sd 2s infinite;flex-shrink:0}
+@keyframes sd{0%,100%{opacity:1}50%{opacity:.3}}
+.np-ctrl{display:flex;align-items:center;gap:7px}
+.vol-row{display:flex;align-items:center;gap:5px}
+.vol-sl{-webkit-appearance:none;width:65px;height:3px;background:var(--bg3);border-radius:2px;outline:none}
+.vol-sl::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--cyan);cursor:pointer}
+.stop-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.07);border:.5px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.play-btn{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:19px;transition:transform .15s;box-shadow:0 0 18px rgba(0,212,255,0.25);flex-shrink:0}
+.play-btn:active{transform:scale(.92)}
+.np-eq{display:flex;justify-content:center;margin-top:6px}
+
+/* ERROR TOAST */
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#FF4B6E;color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="orb o1"></div>
+<div class="orb o2"></div>
+
+<div class="app">
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="logo">
+      <div class="logo-icon">📻</div>
+      <div class="logo-text">Radio <span>World</span></div>
+    </div>
+    <a href="https://ko-fi.com/varthur" class="kofi" target="_blank">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
+      Ko-fi
+    </a>
+  </div>
+  <div class="lang-row">
+    <button class="lb active" onclick="setLang('ru',this)">RU</button>
+    <button class="lb" onclick="setLang('uk',this)">UA</button>
+    <button class="lb" onclick="setLang('en',this)">EN</button>
+    <button class="lb" onclick="setLang('he',this)">עב</button>
+  </div>
+  <div class="ctabs">
+    <button class="ct ct-all active" onclick="setCountry('all',this)">🌍 <span id="t-all">Все</span></button>
+    <button class="ct ct-ua" onclick="setCountry('UA',this)">🇺🇦 <span id="t-ua">Украина</span></button>
+    <button class="ct ct-ru" onclick="setCountry('RU',this)">🇷🇺 <span id="t-ru">Россия</span></button>
+    <button class="ct ct-il" onclick="setCountry('IL',this)">🇮🇱 <span id="t-il">Израиль</span></button>
+    <button class="ct ct-us" onclick="setCountry('US',this)">🇺🇸 <span id="t-us">США</span></button>
+  </div>
+</div>
+
+<div class="content">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-inp" id="search-inp" placeholder="Поиск станций..." oninput="filterStations()"/>
+  </div>
+  <div id="main-content"><div class="loader-wrap"><div class="spinner"></div>Загрузка станций...</div></div>
+</div>
+
+<div class="np">
+  <div class="np-inner">
+    <div class="np-art" id="np-art"><span id="np-art-emoji">📻</span></div>
+    <div class="np-info">
+      <div class="np-name" id="np-name">Выбери станцию</div>
+      <div class="np-status" id="np-status"><span id="np-status-txt">Готово</span></div>
+    </div>
+    <div class="np-ctrl">
+      <div class="vol-row">
+        <span style="font-size:12px">🔊</span>
+        <input type="range" class="vol-sl" id="vol" min="0" max="100" value="80" oninput="setVol(this.value)"/>
+      </div>
+      <button class="stop-btn" onclick="stopRadio()">⏹</button>
+      <button class="play-btn" id="play-btn" onclick="togglePlay()">▶</button>
+    </div>
+  </div>
+  <div class="np-eq"><div class="eq paused" id="np-eq"><div class="eq-b"></div><div class="eq-b"></div><div class="eq-b"></div><div class="eq-b"></div><div class="eq-b"></div></div></div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+<audio id="audio" preload="none"></audio>
+
+<script>
+// PWA
+const mf={name:'Radio World',short_name:'Radio',start_url:'./radio.html',display:'standalone',background_color:'#0c0c14',theme_color:'#0c0c14',icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%230c0c14"/><text y="72" font-size="65" text-anchor="middle" x="50">📻</text></svg>',sizes:'any',type:'image/svg+xml'}]};
+document.getElementById('pwa-manifest').href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/json'}));
+if('serviceWorker'in navigator){const sw=`const C='radio-v2';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll([location.pathname])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{});}
+
+// TRANSLATIONS
+const TR={
+  ru:{all:'Все',ua:'Украина',ru:'Россия',il:'Израиль',us:'США',choose:'Выбери станцию',ready:'Готово к воспроизведению',playing:'Слушаем',loading:'Подключение...',error:'Ошибка — пробую другой поток',search:'Поиск станций...',live:'ЭФИР',stations:'станций',loadingStations:'Загрузка станций...'},
+  uk:{all:'Всі',ua:'Україна',ru:'Росія',il:'Ізраїль',us:'США',choose:'Оберіть станцію',ready:'Готово до відтворення',playing:'Слухаємо',loading:'Підключення...',error:'Помилка — пробую інший потік',search:'Пошук станцій...',live:'ЕФІР',stations:'станцій',loadingStations:'Завантаження...'},
+  en:{all:'All',ua:'Ukraine',ru:'Russia',il:'Israel',us:'USA',choose:'Choose a station',ready:'Ready to play',playing:'Now Playing',loading:'Connecting...',error:'Error — trying another stream',search:'Search stations...',live:'LIVE',stations:'stations',loadingStations:'Loading stations...'},
+  he:{all:'הכל',ua:'אוקראינה',ru:'רוסיה',il:'ישראל',us:'ארה"ב',choose:'בחר תחנה',ready:'מוכן להשמעה',playing:'מאזינים',loading:'מתחבר...',error:'שגיאה — מנסה זרם אחר',search:'חיפוש תחנות...',live:'שידור חי',stations:'תחנות',loadingStations:'טוען תחנות...'},
+};
+
+let lang='ru', country='all', allStations={}, currentStation=null, isPlaying=false;
+const audio=document.getElementById('audio');
+const API='https://de1.api.radio-browser.info/json';
+
+function T(k){return TR[lang][k]||k;}
+
+function setLang(l,el){
+  lang=l;
+  document.querySelectorAll('.lb').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('search-inp').placeholder=T('search');
+  document.getElementById('np-name').textContent=currentStation?currentStation.name:T('choose');
+  updateTabLabels();
+  renderAll();
+}
+
+function updateTabLabels(){
+  document.getElementById('t-all').textContent=T('all');
+  document.getElementById('t-ua').textContent=T('ua');
+  document.getElementById('t-ru').textContent=T('ru');
+  document.getElementById('t-il').textContent=T('il');
+  document.getElementById('t-us').textContent=T('us');
+}
+
+function setCountry(c,el){
+  country=c;
+  document.querySelectorAll('.ct').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderAll();
+}
+
+// FETCH from radio-browser.info API
+async function loadCountry(cc, limit=20){
+  try{
+    const r=await fetch(`${API}/stations/bycountrycodeexact/${cc}?limit=${limit}&order=clickcount&reverse=true&hidebroken=true&has_geo_info=false`);
+    const data=await r.json();
+    return data.filter(s=>s.url_resolved&&s.lastcheckok==1).slice(0,limit);
+  }catch(e){return [];}
+}
+
+async function loadAll(){
+  document.getElementById('main-content').innerHTML=`<div class="loader-wrap"><div class="spinner"></div>${T('loadingStations')}</div>`;
+  const [ua,ru,il,us]=await Promise.all([
+    loadCountry('UA',20),
+    loadCountry('RU',20),
+    loadCountry('IL',20),
+    loadCountry('US',20),
+  ]);
+  allStations={UA:ua,RU:ru,IL:il,US:us};
+  renderAll();
+}
+
+function filterStations(){renderAll();}
+
+function renderAll(){
+  const q=document.getElementById('search-inp').value.toLowerCase().trim();
+  const container=document.getElementById('main-content');
+
+  const COUNTRIES=[
+    {code:'UA',flag:'🇺🇦',labelKey:'ua'},
+    {code:'RU',flag:'🇷🇺',labelKey:'ru'},
+    {code:'IL',flag:'🇮🇱',labelKey:'il'},
+    {code:'US',flag:'🇺🇸',labelKey:'us'},
+  ];
+
+  let html='';
+
+  const toShow = country==='all' ? COUNTRIES : COUNTRIES.filter(c=>c.code===country);
+
+  toShow.forEach(({code,flag,labelKey})=>{
+    let list=(allStations[code]||[]);
+    if(q) list=list.filter(s=>s.name.toLowerCase().includes(q)||(s.tags||'').toLowerCase().includes(q));
+    if(!list.length&&!q) return;
+
+    html+=`<div class="sec-wrap">
+      <div class="sec-hd">
+        <span class="sec-flag">${flag}</span>
+        <span class="sec-name">${T(labelKey)}</span>
+        <span class="sec-count">${list.length} ${T('stations')}</span>
+      </div>
+      <div class="grid">${list.map(s=>renderCard(s)).join('')}</div>
+    </div>`;
+  });
+
+  if(!html) html=`<div class="empty">📻 ${T('search')}...</div>`;
+  container.innerHTML=html;
+}
+
+function renderCard(s){
+  const active=currentStation&&currentStation.stationuuid===s.stationuuid;
+  const favicon=s.favicon&&s.favicon.startsWith('http')
+    ?`<img src="${s.favicon}" onerror="this.style.display='none';this.nextSibling.style.display='flex'" style="width:100%;height:100%;object-fit:cover;border-radius:9px"/><span style="display:none;align-items:center;justify-content:center;width:100%;height:100%;font-size:20px">📻</span>`
+    :'📻';
+  const genre=(s.tags||'').split(',').slice(0,2).join(', ')||'Radio';
+  return `<div class="rc${active?' active':''}" onclick="playStation('${s.stationuuid}')">
+    <div class="rc-favicon">${favicon}</div>
+    <div class="rc-name">${s.name}</div>
+    <div class="rc-genre">${genre}</div>
+    <div class="rc-bits">${s.bitrate?s.bitrate+'kbps':''} ${s.codec||''}</div>
+    <div class="rc-live">${T('live')}</div>
+    ${active?`<div class="rc-eq"><div class="eq${isPlaying?'':' paused'}"><div class="eq-b"></div><div class="eq-b"></div><div class="eq-b"></div><div class="eq-b"></div><div class="eq-b"></div></div></div>`:''}
+  </div>`;
+}
+
+function getStation(uuid){
+  for(const cc of Object.keys(allStations)){
+    const s=allStations[cc].find(s=>s.stationuuid===uuid);
+    if(s)return s;
+  }
+  return null;
+}
+
+function playStation(uuid){
+  const s=getStation(uuid);
+  if(!s)return;
+  currentStation=s;
+
+  // Update UI
+  const artEl=document.getElementById('np-art');
+  const emojiEl=document.getElementById('np-art-emoji');
+  if(s.favicon&&s.favicon.startsWith('http')){
+    artEl.innerHTML=`<img src="${s.favicon}" style="width:100%;height:100%;object-fit:cover;border-radius:12px" onerror="this.parentElement.innerHTML='<span id=np-art-emoji>📻</span>'"/>`;
+  }else{
+    emojiEl&&(emojiEl.textContent='📻');
+  }
+  artEl.className='np-art';
+
+  document.getElementById('np-name').textContent=s.name;
+  setStatus('loading',T('loading'));
+  document.getElementById('play-btn').textContent='⏸';
+  document.getElementById('np-eq').className='eq paused';
+
+  // Use url_resolved (auto-resolved by radio-browser API - handles playlists and redirects)
+  audio.src=s.url_resolved||s.url;
+  audio.volume=document.getElementById('vol').value/100;
+  audio.load();
+
+  const playPromise=audio.play();
+  if(playPromise){
+    playPromise.then(()=>{
+      isPlaying=true;
+      artEl.className='np-art on';
+      setStatus('on',T('playing')+' • '+(s.tags||'').split(',')[0]);
+      document.getElementById('np-eq').className='eq';
+      // Track click on radio-browser
+      fetch(`${API}/url/${s.stationuuid}`).catch(()=>{});
+      renderAll();
+    }).catch(()=>{
+      // Try original url as fallback
+      if(s.url&&s.url!==s.url_resolved){
+        audio.src=s.url;
+        audio.play().then(()=>{
+          isPlaying=true;
+          artEl.className='np-art on';
+          setStatus('on',T('playing'));
+          document.getElementById('np-eq').className='eq';
+          renderAll();
+        }).catch(()=>{
+          isPlaying=false;
+          setStatus('error',T('error'));
+          document.getElementById('np-eq').className='eq paused';
+          document.getElementById('play-btn').textContent='▶';
+          showToast(T('error'));
+          renderAll();
+        });
+      }else{
+        isPlaying=false;
+        setStatus('error',T('error'));
+        document.getElementById('np-eq').className='eq paused';
+        document.getElementById('play-btn').textContent='▶';
+        showToast(T('error'));
+        renderAll();
+      }
+    });
+  }
+  renderAll();
+}
+
+function setStatus(type,txt){
+  const el=document.getElementById('np-status');
+  if(type==='on'){
+    el.innerHTML=`<span class="sdot"></span><span>${txt}</span>`;
+  }else if(type==='error'){
+    el.innerHTML=`<span style="color:#FF4B6E">${txt}</span>`;
+  }else{
+    el.innerHTML=`<span style="color:var(--text3)">${txt}</span>`;
+  }
+}
+
+function togglePlay(){
+  if(!currentStation)return;
+  if(isPlaying){
+    audio.pause();isPlaying=false;
+    document.getElementById('play-btn').textContent='▶';
+    document.getElementById('np-eq').className='eq paused';
+    document.getElementById('np-art').className='np-art';
+    setStatus('ready',T('ready'));
+  }else{
+    audio.play().then(()=>{
+      isPlaying=true;
+      document.getElementById('play-btn').textContent='⏸';
+      document.getElementById('np-eq').className='eq';
+      document.getElementById('np-art').className='np-art on';
+      setStatus('on',T('playing'));
+    }).catch(()=>{playStation(currentStation.stationuuid);});
+  }
+  renderAll();
+}
+
+function stopRadio(){
+  audio.pause();audio.src='';
+  isPlaying=false;currentStation=null;
+  document.getElementById('np-art').className='np-art';
+  document.getElementById('np-art').innerHTML='<span id="np-art-emoji">📻</span>';
+  document.getElementById('np-name').textContent=T('choose');
+  document.getElementById('np-eq').className='eq paused';
+  document.getElementById('play-btn').textContent='▶';
+  setStatus('ready',T('ready'));
+  renderAll();
+}
+
+function setVol(v){audio.volume=v/100;}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+audio.addEventListener('error',()=>{
+  if(!currentStation)return;
+  isPlaying=false;
+  setStatus('error',T('error'));
+  document.getElementById('np-eq').className='eq paused';
+  document.getElementById('play-btn').textContent='▶';
+});
+
+audio.addEventListener('stalled',()=>{
+  if(isPlaying)setStatus('loading',T('loading'));
+});
+
+// INIT
+loadAll();
+</script>
+</body>
+</html>
