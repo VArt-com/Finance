@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Radio Portal</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #f4f4f9; padding: 20px; }
+        .lang-switch { margin-bottom: 20px; }
+        .station-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .station-btn { padding: 15px; border: none; border-radius: 8px; cursor: pointer; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 150px; }
+        .station-btn:hover { background: #e0e0e0; }
+        .kofi-container { margin-top: 40px; }
+        /* Поддержка RTL для иврита */
+        .rtl { direction: rtl; }
+    </style>
+</head>
+<body>
+
+<div class="lang-switch">
+    <button onclick="setLang('ru')">Русский</button>
+    <button onclick="setLang('ua')">Українська</button>
+    <button onclick="setLang('he')">עברית</button>
+</div>
+
+<h1 id="title">Радиостанции</h1>
+
+<div class="station-list" id="stations">
+    <!-- Станции будут добавлены скриптом -->
+</div>
+
+<div class="player-container" style="margin-top:30px;">
+    <audio id="audio-player" controls style="width: 80%;"></audio>
+    <p id="current-station"></p>
+</div>
+
+<div class="kofi-container">
+    <a href="https://ko-fi.com" target="_blank">
+        <img src="https://ko-fi.com" height="36" style="border:0px;height:36px;" alt="Buy Me a Coffee at ko-fi.com" />
+    </a>
+</div>
+
+<script>
+    const translations = {
+        ru: { title: "Выберите радиостанцию", playing: "Сейчас играет: " },
+        ua: { title: "Оберіть радіостанцію", playing: "Зараз лунає: " },
+        he: { title: "בחר תחנת רדיו", playing: "עכשיו מנגן: " }
+    };
+
+    const stations = [
+        { name: "Galgalatz (IL)", url: "https://bynetcdn.com", country: "israel" },
+        { name: "Kan Reka (IL)", url: "https://kan.org.il", country: "israel" },
+        { name: "Radio UA", url: "https://radioroks.ua", country: "ukraine" },
+        { name: "Hit FM (UA)", url: "https://hitfm.ua", country: "ukraine" },
+        { name: "Europa Plus (RU)", url: "https://hostingradio.ru", country: "russia" }
+    ];
+
+    function setLang(lang) {
+        document.getElementById('title').innerText = translations[lang].title;
+        if (lang === 'he') document.body.classList.add('rtl');
+        else document.body.classList.remove('rtl');
+    }
+
+    function playStation(name, url) {
+        const player = document.getElementById('audio-player');
+        player.src = url;
+        player.play();
+        document.getElementById('current-station').innerText = name;
+    }
+
+    // Инициализация списка
+    const list = document.getElementById('stations');
+    stations.forEach(s => {
+        const btn = document.createElement('button');
+        btn.className = 'station-btn';
+        btn.innerText = s.name;
+        btn.onclick = () => playStation(s.name, s.url);
+        list.appendChild(btn);
+    });
+</script>
+
+</body>
+</html>
