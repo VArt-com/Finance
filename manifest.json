@@ -1,0 +1,44 @@
+{
+  "name": "VArt Tools — Бесплатные инструменты",
+  "short_name": "VArt Tools",
+  "description": "Бесплатные веб-приложения для продуктивности и повседневных задач",
+  "start_url": "/Free-Work/",
+  "scope": "/Free-Work/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080810",
+  "theme_color": "#6C63FF",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Трекер часов",
+      "short_name": "Трекер",
+      "description": "Открыть трекер рабочих часов",
+      "url": "/Free-Work/work-tracker.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Radio World",
+      "short_name": "Радио",
+      "description": "Открыть радио",
+      "url": "/Free-Work/radio.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
