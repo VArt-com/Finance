@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="Бесплатные веб-инструменты для продуктивности и повседневных задач"/>
+<title>VArt Tools — Бесплатные инструменты</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#6C63FF"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #080810; --bg2: #0f0f1a; --bg3: #16162a;
+  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
+  --text: #eeeef5; --text2: #8888aa; --text3: #444460;
+  --accent: #6C63FF; --accent2: #9B89FF;
+  --green: #22d3a5; --amber: #f59e0b; --red: #FF5E5B;
+  --glow: rgba(108,99,255,0.15);
+}
+[data-theme="light"] {
+  --bg: #f4f4fb; --bg2: #ffffff; --bg3: #eaeaf5;
+  --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.15);
+  --text: #12121f; --text2: #555570; --text3: #aaaacc;
+  --glow: rgba(108,99,255,0.08);
+}
+[data-theme="light"] .bg-grid {
+  background-image: linear-gradient(rgba(108,99,255,0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(108,99,255,0.05) 1px, transparent 1px);
+}
+[data-theme="light"] .bg-glow {
+  background: radial-gradient(ellipse, rgba(108,99,255,0.07) 0%, transparent 70%);
+}
+[data-theme="light"] nav {
+  background: rgba(244,244,251,0.85);
+}
+[data-theme="light"] .form-input {
+  background: rgba(0,0,0,0.04); color: var(--text);
+}
+[data-theme="light"] .modal { background: #fff; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px; line-height: 1.6; overflow-x: hidden; }
+
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0;
+  background-image: linear-gradient(rgba(108,99,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(108,99,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px; pointer-events: none;
+}
+.bg-glow {
+  position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 600px;
+  background: radial-gradient(ellipse, rgba(108,99,255,0.12) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.container { max-width: 1000px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 16px 24px; background: rgba(8,8,16,0.85); backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+.nav-logo span { color: var(--accent); }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+
+/* Theme toggle */
+.btn-theme {
+  width: 36px; height: 36px; border-radius: 50%; border: 0.5px solid var(--border2);
+  background: rgba(255,255,255,0.04); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 16px; transition: background 0.15s; flex-shrink: 0;
+}
+.btn-theme:hover { background: rgba(255,255,255,0.1); }
+
+.btn-auth {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(108,99,255,0.12); border: 0.5px solid rgba(108,99,255,0.3);
+  border-radius: 100px; padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--accent2);
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; white-space: nowrap;
+}
+.btn-auth:hover { background: rgba(108,99,255,0.22); }
+.btn-auth svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+.user-pill {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(34,211,165,0.1); border: 0.5px solid rgba(34,211,165,0.25);
+  border-radius: 100px; padding: 6px 14px 6px 8px; cursor: pointer; transition: background 0.15s;
+}
+.user-pill:hover { background: rgba(34,211,165,0.18); }
+.user-avatar { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--green)); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.user-name { font-size: 13px; font-weight: 600; color: var(--green); }
+.user-dropdown {
+  position: absolute; top: calc(100% + 10px); right: 24px;
+  background: var(--bg3); border: 0.5px solid var(--border2); border-radius: 14px; padding: 8px; min-width: 180px;
+  z-index: 200; display: none; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+.user-dropdown.open { display: block; animation: fadeDown 0.15s ease; }
+@keyframes fadeDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+.dropdown-item { display: flex; align-items: center; gap: 9px; padding: 9px 12px; border-radius: 10px; cursor: pointer; font-size: 13px; color: var(--text2); transition: background 0.12s, color 0.12s; }
+.dropdown-item:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+.dropdown-item.danger:hover { background: rgba(255,94,91,0.1); color: var(--red); }
+.dropdown-sep { height: 0.5px; background: var(--border); margin: 6px 0; }
+
+.kofi-nav { display: flex; align-items: center; gap: 7px; background: var(--red); border: none; border-radius: 100px; padding: 8px 16px; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; text-decoration: none; font-family: 'DM Sans', sans-serif; transition: transform 0.15s, opacity 0.15s; }
+.kofi-nav:hover { transform: translateY(-1px); opacity: 0.9; }
+.kofi-nav svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* AUTH MODAL */
+.modal-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(8,8,16,0.85); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: 24px; padding: 40px 36px; width: 100%; max-width: 400px; position: relative; transform: translateY(20px); transition: transform 0.2s; }
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.06); border: none; cursor: pointer; color: var(--text2); font-size: 18px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+.modal-close:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+.modal-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; margin-bottom: 6px; }
+.modal-logo span { color: var(--accent); }
+.modal-tabs { display: flex; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 4px; margin: 24px 0 28px; }
+.modal-tab { flex: 1; text-align: center; padding: 9px; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--text2); transition: all 0.15s; border: none; background: transparent; font-family: 'DM Sans', sans-serif; }
+.modal-tab.active { background: var(--accent); color: #fff; }
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; display: block; letter-spacing: 0.05em; text-transform: uppercase; }
+.form-input { width: 100%; background: rgba(255,255,255,0.04); border: 0.5px solid var(--border2); border-radius: 12px; padding: 13px 16px; font-size: 15px; color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.15s; }
+.form-input:focus { border-color: var(--accent); background: rgba(108,99,255,0.06); }
+.form-input::placeholder { color: var(--text3); }
+.btn-submit { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 100px; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 4px; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 0 30px rgba(108,99,255,0.3); }
+.btn-submit:hover { transform: translateY(-1px); box-shadow: 0 0 40px rgba(108,99,255,0.5); }
+.form-error { background: rgba(255,94,91,0.1); border: 0.5px solid rgba(255,94,91,0.3); border-radius: 10px; padding: 10px 14px; font-size: 13px; color: var(--red); margin-bottom: 16px; display: none; }
+.form-error.show { display: block; }
+.form-success { background: rgba(34,211,165,0.1); border: 0.5px solid rgba(34,211,165,0.3); border-radius: 10px; padding: 10px 14px; font-size: 13px; color: var(--green); margin-bottom: 16px; display: none; }
+.form-success.show { display: block; }
+.modal-divider { text-align: center; font-size: 12px; color: var(--text3); margin: 18px 0; }
+
+/* ── HERO ── */
+.hero {
+  padding: 160px 0 80px;
+  text-align: center;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(108,99,255,0.1); border: 0.5px solid rgba(108,99,255,0.3);
+  border-radius: 100px; padding: 5px 14px; font-size: 12px;
+  color: var(--accent2); font-weight: 500; margin-bottom: 28px;
+  animation: fadeUp 0.6s ease both;
+}
+.hero-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
+h1 { font-family: 'Syne', sans-serif; font-size: clamp(32px, 5vw, 60px); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 20px; animation: fadeUp 0.6s 0.1s ease both; }
+h1 em { font-style: normal; color: var(--accent); }
+.hero-sub { font-size: clamp(15px, 2vw, 18px); color: var(--text2); max-width: 520px; margin: 0 auto 48px; font-weight: 300; animation: fadeUp 0.6s 0.2s ease both; }
+.hero-actions { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; animation: fadeUp 0.6s 0.3s ease both; }
+.btn-primary { background: var(--accent); color: #fff; border: none; border-radius: 100px; padding: 14px 28px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; font-family: 'DM Sans', sans-serif; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 0 30px rgba(108,99,255,0.3); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(108,99,255,0.5); }
+.btn-kofi-hero { display: flex; align-items: center; gap: 8px; background: transparent; border: 0.5px solid var(--border2); border-radius: 100px; padding: 14px 28px; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none; color: var(--text); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+.btn-kofi-hero:hover { background: rgba(255,94,91,0.1); border-color: rgba(255,94,91,0.4); color: #FF5E5B; }
+.btn-kofi-hero svg { width: 18px; height: 18px; }
+
+
+.hero-photo {
+  position: relative; z-index: 2;
+  width: 220px; height: 220px; border-radius: 50%; object-fit: cover; object-position: center top;
+  display: block;
+  filter: contrast(1.05) brightness(1.02);
+  border: 4px solid var(--bg);
+}
+.hero-photo-label {
+  position: absolute; bottom: -14px; left: 50%; transform: translateX(-50%);
+  background: var(--bg2); border: 0.5px solid var(--border2);
+  border-radius: 100px; padding: 5px 14px; font-size: 12px; font-weight: 600;
+  color: var(--text2); white-space: nowrap; z-index: 3;
+}
+
+
+/* ── LOCK OVERLAY ── */
+.app-card-locked { cursor: default; }
+.app-card-locked .app-link { display: none; }
+.lock-overlay {
+  display: none;
+}
+/* Visible lock button — always shown when locked */
+.lock-bar {
+  display: none;
+  align-items: center; justify-content: center; gap: 8px;
+  background: rgba(108,99,255,0.12);
+  border: 0.5px solid rgba(108,99,255,0.3);
+  border-radius: 100px; padding: 10px 20px;
+  cursor: pointer; margin-top: auto;
+  transition: background 0.15s, border-color 0.15s;
+  font-size: 13px; font-weight: 600; color: var(--accent2);
+  font-family: 'DM Sans', sans-serif;
+  width: 100%;
+}
+.lock-bar:hover { background: rgba(108,99,255,0.22); border-color: rgba(108,99,255,0.5); }
+.app-card-locked .lock-bar { display: flex; }
+.app-card-locked .app-footer { display: none; }
+
+/* STATS */
+.stats { display: flex; justify-content: center; gap: 48px; padding: 40px 0; flex-wrap: wrap; border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); margin-bottom: 72px; animation: fadeUp 0.6s 0.4s ease both; }
+.stat { text-align: center; }
+.stat-num { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--text); display: block; }
+.stat-label { font-size: 13px; color: var(--text2); }
+
+/* SECTION */
+.section { margin-bottom: 72px; }
+.section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+.section-title { font-family: 'Syne', sans-serif; font-size: clamp(24px, 4vw, 36px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 28px; color: var(--text); }
+
+/* ── SEARCH & FILTERS ── */
+.tools-controls { margin-bottom: 24px; display: flex; flex-direction: column; gap: 14px; }
+.search-wrap { position: relative; }
+.search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text3); pointer-events: none; }
+.search-icon svg { width: 16px; height: 16px; display: block; }
+#searchInput {
+  width: 100%; background: var(--bg2); border: 0.5px solid var(--border);
+  border-radius: 14px; padding: 13px 16px 13px 44px;
+  font-size: 14px; color: var(--text); font-family: 'DM Sans', sans-serif; outline: none;
+  transition: border-color 0.15s;
+}
+#searchInput:focus { border-color: var(--accent); }
+#searchInput::placeholder { color: var(--text3); }
+.filter-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.filter-pill {
+  padding: 7px 16px; border-radius: 100px; font-size: 12px; font-weight: 600;
+  border: 0.5px solid var(--border); background: transparent; color: var(--text2);
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+}
+.filter-pill:hover { border-color: var(--border2); color: var(--text); }
+.filter-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.no-results { text-align: center; padding: 48px 0; color: var(--text2); font-size: 15px; display: none; }
+
+/* APPS GRID */
+.apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.app-card {
+  background: var(--bg2); border: 0.5px solid var(--border); border-radius: 20px; padding: 28px;
+  text-decoration: none; color: var(--text); position: relative; overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  display: flex; flex-direction: column; animation: fadeUp 0.6s ease both;
+}
+.app-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg, var(--glow) 0%, transparent 60%); opacity:0; transition:opacity 0.3s; }
+.app-card:hover { transform: translateY(-4px); border-color: var(--border2); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+.app-card:hover::before { opacity: 1; }
+.app-card.hidden { display: none; }
+.app-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 18px; flex-shrink: 0; }
+.icon-purple { background: rgba(108,99,255,0.15); } .icon-green { background: rgba(34,211,165,0.12); }
+.icon-amber { background: rgba(245,158,11,0.12); } .icon-blue { background: rgba(59,130,246,0.12); }
+.app-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.app-desc { font-size: 14px; color: var(--text2); line-height: 1.55; flex: 1; margin-bottom: 20px; }
+.app-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.tag { font-size: 11px; padding: 3px 10px; border-radius: 100px; font-weight: 500; }
+.tag-purple { background: rgba(108,99,255,0.15); color: var(--accent2); }
+.tag-green { background: rgba(34,211,165,0.12); color: var(--green); }
+.tag-amber { background: rgba(245,158,11,0.12); color: var(--amber); }
+.app-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+.app-link { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--accent2); }
+.app-link svg { width: 14px; height: 14px; transition: transform 0.2s; }
+.app-card:hover .app-link svg { transform: translateX(4px); }
+
+/* Favorite button */
+.fav-btn {
+  width: 30px; height: 30px; border-radius: 50%; border: 0.5px solid var(--border);
+  background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 15px; transition: all 0.15s; flex-shrink: 0; position: relative; z-index: 2;
+}
+.fav-btn:hover { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4); }
+.fav-btn.active { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.5); }
+
+.badge-new { position:absolute; top:20px; right:20px; background:var(--green); color:#000; font-size:10px; font-weight:700; padding:3px 9px; border-radius:100px; letter-spacing:0.05em; }
+.badge-soon { position:absolute; top:20px; right:20px; background:rgba(245,158,11,0.2); color:var(--amber); font-size:10px; font-weight:700; padding:3px 9px; border-radius:100px; letter-spacing:0.05em; border:0.5px solid rgba(245,158,11,0.3); }
+
+
+/* SUPPORT */
+.support-section { background: linear-gradient(135deg, rgba(108,99,255,0.08) 0%, rgba(255,94,91,0.06) 100%); border: 0.5px solid var(--border2); border-radius: 24px; padding: 60px 40px; text-align: center; margin-bottom: 80px; position: relative; overflow: hidden; }
+.support-section::before { content:''; position:absolute; top:-100px; left:50%; transform:translateX(-50%); width:400px; height:300px; background:radial-gradient(ellipse, rgba(255,94,91,0.08) 0%, transparent 70%); }
+.support-title { font-family: 'Syne', sans-serif; font-size: clamp(22px, 4vw, 32px); font-weight: 800; margin-bottom: 14px; position: relative; }
+.support-desc { color: var(--text2); max-width: 480px; margin: 0 auto 32px; font-size: 15px; position: relative; }
+.kofi-big { display: inline-flex; align-items: center; gap: 10px; background: var(--red); border: none; border-radius: 100px; padding: 16px 32px; font-size: 16px; font-weight: 700; color: #fff; cursor: pointer; text-decoration: none; font-family: 'DM Sans', sans-serif; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 0 30px rgba(255,94,91,0.25); position: relative; }
+.kofi-big:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(255,94,91,0.4); }
+.kofi-big svg { width: 22px; height: 22px; }
+.support-note { font-size: 13px; color: var(--text3); margin-top: 16px; }
+
+/* FOOTER */
+footer { border-top: 0.5px solid var(--border); padding: 40px 0; text-align: center; color: var(--text3); font-size: 13px; }
+footer a { color: var(--text2); text-decoration: none; }
+footer a:hover { color: var(--text); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.app-card:nth-child(1){animation-delay:0.1s} .app-card:nth-child(2){animation-delay:0.2s}
+.app-card:nth-child(3){animation-delay:0.3s} .app-card:nth-child(4){animation-delay:0.4s}
+
+@media (max-width: 700px) {
+  .hero { flex-direction: column; text-align: center; padding: 110px 0 50px; }
+  .hero-sub { margin: 0 auto 40px; }
+  .hero-actions { justify-content: center; }
+  .hero-photo-wrap { order: -1; }
+  .hero-photo { width: 160px; height: 160px; }
+  .stats { gap: 28px; }
+  .support-section { padding: 40px 24px; }
+  nav { padding: 12px 16px; }
+  .kofi-nav { display: none; }
+  .modal { padding: 32px 24px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">V<span>Art</span> Tools</a>
+  <div class="nav-right">
+    <button class="btn-theme" id="btnTheme" onclick="toggleTheme()" title="Сменить тему">🌙</button>
+    <button class="btn-auth" id="btnOpenAuth" onclick="openModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      Войти
+    </button>
+    <div class="user-pill" id="userPill" style="display:none" onclick="toggleDropdown()">
+      <div class="user-avatar" id="userAvatar">A</div>
+      <span class="user-name" id="userNameDisplay">Артур</span>
+    </div>
+    <div class="user-dropdown" id="userDropdown">
+      <div class="dropdown-item" onclick="closeDropdown()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Профиль
+      </div>
+      <div class="dropdown-sep"></div>
+      <div class="dropdown-item danger" onclick="logout()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Выйти
+      </div>
+    </div>
+    <a href="https://ko-fi.com/varthur" class="kofi-nav" target="_blank">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
+      Поддержать
+    </a>
+  </div>
+</nav>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-logo">V<span>Art</span> Tools</div>
+    <p style="font-size:13px;color:var(--text2);margin-top:4px">Добро пожаловать!</p>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tabLogin" onclick="switchTab('login')">Войти</button>
+      <button class="modal-tab" id="tabRegister" onclick="switchTab('register')">Регистрация</button>
+    </div>
+    <div id="formError" class="form-error"></div>
+    <div id="formSuccess" class="form-success"></div>
+    <div id="loginForm">
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email"/></div>
+      <div class="form-group"><label class="form-label">Пароль</label><input class="form-input" id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password"/></div>
+      <button class="btn-submit" onclick="doLogin()">Войти</button>
+      <div class="modal-divider">Нет аккаунта? <a href="#" style="color:var(--accent2)" onclick="switchTab('register');return false">Зарегистрироваться</a></div>
+    </div>
+    <div id="registerForm" style="display:none">
+      <div class="form-group"><label class="form-label">Имя</label><input class="form-input" id="regName" type="text" placeholder="Ваше имя" autocomplete="name"/></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="regEmail" type="email" placeholder="you@example.com" autocomplete="email"/></div>
+      <div class="form-group"><label class="form-label">Пароль</label><input class="form-input" id="regPassword" type="password" placeholder="Минимум 6 символов" autocomplete="new-password"/></div>
+      <button class="btn-submit" onclick="doRegister()">Создать аккаунт</button>
+      <div class="modal-divider">Есть аккаунт? <a href="#" style="color:var(--accent2)" onclick="switchTab('login');return false">Войти</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="container">
+  <section class="hero">
+    
+      <div class="hero-badge"><span>Все инструменты бесплатны</span></div>
+      <h1>Инструменты для<br/><em>умных решений</em></h1>
+      <p class="hero-sub">Удобные инструменты для работы и повседневных задач — прямо в браузере. Можно установить как приложение на телефон или ПК и пользоваться даже без интернета.</p>
+      <div class="hero-actions">
+        <a href="#apps" class="btn-primary">Смотреть инструменты</a>
+        <a href="https://ko-fi.com/varthur" class="btn-kofi-hero" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
+          Поддержать на Ko-fi
+        </a>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><span class="stat-num">5+</span><span class="stat-label">Инструментов</span></div>
+    <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Бесплатно</span></div>
+    <div class="stat"><span class="stat-num">0</span><span class="stat-label">Установок не нужно</span></div>
+    <div class="stat"><span class="stat-num">∞</span><span class="stat-label">Возможностей</span></div>
+  </div>
+
+  <!-- APPS -->
+  <section class="section" id="apps">
+    <div class="section-label">Инструменты</div>
+    <div class="section-title">Все приложения</div>
+    <div class="tools-controls">
+      <div class="search-wrap">
+        <div class="search-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
+        <input id="searchInput" type="text" placeholder="Поиск инструментов..." oninput="filterApps()"/>
+      </div>
+      <div class="filter-pills">
+        <button class="filter-pill active" data-cat="all" onclick="setFilter(this)">Все</button>
+        <button class="filter-pill" data-cat="productivity" onclick="setFilter(this)">⏱ Продуктивность</button>
+        <button class="filter-pill" data-cat="media" onclick="setFilter(this)">📻 Медиа</button>
+        <button class="filter-pill" data-cat="fitness" onclick="setFilter(this)">💪 Фитнес</button>
+        <button class="filter-pill" data-cat="nav" onclick="setFilter(this)">🗺 Навигация</button>
+      </div>
+    </div>
+    <div class="apps-grid" id="appsGrid">
+
+      <a href="work-tracker.html" class="app-card" data-cat="productivity" data-name="трекер рабочих часов учёт время зарплата">
+        <div class="app-icon icon-green">⏱️</div>
+        <div class="app-name">Трекер рабочих часов</div>
+        <div class="app-desc">Учёт рабочего времени, расчёт зарплаты, экспорт отчётов. Идеально для фрилансеров.</div>
+        <div class="app-tags"><span class="tag tag-green">Продуктивность</span><span class="tag tag-purple">Время</span></div>
+        <div class="app-footer">
+          <div class="app-link">Открыть <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+          <button class="fav-btn" data-id="work-tracker" onclick="toggleFav(event, 'work-tracker')" title="В избранное">☆</button>
+        </div>
+        <div class="lock-overlay"></div>
+        <button class="lock-bar" onclick="event.preventDefault();event.stopPropagation();openModal()">🔒 Войти чтобы открыть</button>
+      </a>
+
+      <a href="radio.html" class="app-card" data-cat="media" data-name="радио radio музыка стримы украина израиль">
+        <div class="app-icon" style="background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(176,110,255,0.12))">📻</div>
+        <div class="app-name">Radio World</div>
+        <div class="app-desc">Радиостанции Украины, России, Израиля и США. 4 языка интерфейса: русский, украинский, английский, иврит.</div>
+        <div class="app-tags"><span class="tag tag-purple">🇺🇦 🇷🇺 🇮🇱 🇺🇸</span><span class="tag tag-green">4 языка</span><span class="tag tag-amber">Live</span></div>
+        <div class="app-footer">
+          <div class="app-link">Открыть <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+          <button class="fav-btn" data-id="radio" onclick="toggleFav(event, 'radio')" title="В избранное">☆</button>
+        </div>
+        <div class="lock-overlay"></div>
+        <button class="lock-bar" onclick="event.preventDefault();event.stopPropagation();openModal()">🔒 Войти чтобы открыть</button>
+      </a>
+
+    </div>
+    <div class="no-results" id="noResults">🔍 Ничего не найдено. Попробуй другой запрос.</div>
+  </section>
+
+
+  <!-- SUPPORT -->
+  <section class="support-section">
+    <div class="support-title">☕ Нравятся инструменты?</div>
+    <p class="support-desc">Все инструменты создаются в свободное время и остаются полностью бесплатными. Если они приносят пользу — поддержи проект чашкой кофе!</p>
+    <a href="https://ko-fi.com/varthur" class="kofi-big" target="_blank">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
+      Поддержать на Ko-fi
+    </a>
+    <p class="support-note">Любая сумма — огромная мотивация продолжать 🙏</p>
+  </section>
+</div>
+
+<footer>
+  <div class="container">
+    <p style="margin-bottom:8px"><strong style="color:var(--text2)">VArt Tools</strong> — бесплатные инструменты для всех</p>
+    <p>
+      <a href="https://ko-fi.com/varthur" target="_blank">☕ Ko-fi</a> &nbsp;·&nbsp;
+      <a href="https://github.com/VArt-com" target="_blank">GitHub</a> &nbsp;·&nbsp;
+      <span>org-va.com</span>
+    </p>
+  </div>
+</footer>
+
+<script>
+// ─── AUTH ────────────────────────────────────────
+const USERS_KEY='vart_users', SESSION_KEY='vart_session';
+function getUsers(){try{return JSON.parse(localStorage.getItem(USERS_KEY))||{}}catch{return{}}}
+function saveUsers(u){localStorage.setItem(USERS_KEY,JSON.stringify(u))}
+function getSession(){try{return JSON.parse(localStorage.getItem(SESSION_KEY))}catch{return null}}
+function saveSession(u){localStorage.setItem(SESSION_KEY,JSON.stringify(u))}
+function clearSession(){localStorage.removeItem(SESSION_KEY)}
+function showError(m){const e=document.getElementById('formError');e.textContent=m;e.classList.add('show');document.getElementById('formSuccess').classList.remove('show')}
+function showSuccess(m){const e=document.getElementById('formSuccess');e.textContent=m;e.classList.add('show');document.getElementById('formError').classList.remove('show')}
+function clearMessages(){document.getElementById('formError').classList.remove('show');document.getElementById('formSuccess').classList.remove('show')}
+function openModal(){document.getElementById('authModal').classList.add('open');clearMessages()}
+function closeModal(){document.getElementById('authModal').classList.remove('open')}
+function handleOverlayClick(e){if(e.target===document.getElementById('authModal'))closeModal()}
+function switchTab(t){const l=t==='login';document.getElementById('tabLogin').classList.toggle('active',l);document.getElementById('tabRegister').classList.toggle('active',!l);document.getElementById('loginForm').style.display=l?'':'none';document.getElementById('registerForm').style.display=l?'none':'';clearMessages()}
+function toggleDropdown(){document.getElementById('userDropdown').classList.toggle('open')}
+function closeDropdown(){document.getElementById('userDropdown').classList.remove('open')}
+document.addEventListener('click',e=>{if(!e.target.closest('.user-pill')&&!e.target.closest('.user-dropdown'))closeDropdown()})
+function doLogin(){const em=document.getElementById('loginEmail').value.trim().toLowerCase(),pw=document.getElementById('loginPassword').value;if(!em||!pw){showError('Заполните все поля');return}const u=getUsers()[em];if(!u||u.password!==btoa(pw)){showError('Неверный email или пароль');return}saveSession({email:em,name:u.name});applyLoggedIn({email:em,name:u.name});closeModal()}
+function doRegister(){const n=document.getElementById('regName').value.trim(),em=document.getElementById('regEmail').value.trim().toLowerCase(),pw=document.getElementById('regPassword').value;if(!n||!em||!pw){showError('Заполните все поля');return}if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){showError('Введите корректный email');return}if(pw.length<6){showError('Минимум 6 символов');return}const us=getUsers();if(us[em]){showError('Email уже зарегистрирован');return}us[em]={name:n,password:btoa(pw)};saveUsers(us);saveSession({email:em,name:n});showSuccess('Добро пожаловать, '+n+' 🎉');setTimeout(()=>{applyLoggedIn({email:em,name:n});closeModal()},1200)}
+function logout(){clearSession();applyLoggedOut();closeDropdown()}
+function setCardsLocked(locked){
+  document.querySelectorAll('#appsGrid .app-card').forEach(c=>{
+    c.classList.toggle('app-card-locked', locked);
+    if(locked){
+      c.dataset._href = c.getAttribute('href') || c.dataset._href || '';
+      c.removeAttribute('href');
+      c._lockHandler = function(e){ e.preventDefault(); openModal(); };
+      c.addEventListener('click', c._lockHandler);
+    } else {
+      if(c.dataset._href) c.setAttribute('href', c.dataset._href);
+      if(c._lockHandler){ c.removeEventListener('click', c._lockHandler); c._lockHandler=null; }
+    }
+  });
+}
+function applyLoggedIn(u){
+  document.getElementById('btnOpenAuth').style.display='none';
+  document.getElementById('userPill').style.display='flex';
+  document.getElementById('userAvatar').textContent=u.name.charAt(0).toUpperCase();
+  document.getElementById('userNameDisplay').textContent=u.name;
+  setCardsLocked(false);
+  loadFavs();
+}
+function applyLoggedOut(){
+  document.getElementById('btnOpenAuth').style.display='flex';
+  document.getElementById('userPill').style.display='none';
+  setCardsLocked(true);
+}
+
+// ─── THEME ────────────────────────────────────────
+function toggleTheme(){
+  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
+  document.documentElement.setAttribute('data-theme',isDark?'light':'dark');
+  document.getElementById('btnTheme').textContent=isDark?'🌙':'☀️';
+  localStorage.setItem('vart_theme',isDark?'light':'dark');
+}
+function initTheme(){
+  const t=localStorage.getItem('vart_theme')||'dark';
+  if(t==='light'){document.documentElement.setAttribute('data-theme','light');document.getElementById('btnTheme').textContent='🌙';}
+  else{document.documentElement.removeAttribute('data-theme');document.getElementById('btnTheme').textContent='☀️';}
+}
+
+// ─── SEARCH & FILTER ──────────────────────────────
+let activeFilter='all';
+function setFilter(btn){
+  document.querySelectorAll('.filter-pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter=btn.dataset.cat;
+  filterApps();
+}
+function filterApps(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const cards=document.querySelectorAll('#appsGrid .app-card');
+  let visible=0;
+  cards.forEach(c=>{
+    const matchCat=activeFilter==='all'||c.dataset.cat===activeFilter;
+    const matchQ=!q||c.dataset.name.includes(q)||c.querySelector('.app-name').textContent.toLowerCase().includes(q);
+    const show=matchCat&&matchQ;
+    c.classList.toggle('hidden',!show);
+    if(show)visible++;
+  });
+  document.getElementById('noResults').style.display=visible===0?'block':'none';
+}
+
+// ─── FAVOURITES ───────────────────────────────────
+const FAV_KEY='vart_favs';
+function getFavs(){try{return JSON.parse(localStorage.getItem(FAV_KEY))||[]}catch{return[]}}
+function saveFavs(f){localStorage.setItem(FAV_KEY,JSON.stringify(f))}
+function toggleFav(e,id){
+  e.preventDefault();e.stopPropagation();
+  let favs=getFavs();
+  const idx=favs.indexOf(id);
+  const btn=e.currentTarget;
+  if(idx===-1){favs.push(id);btn.textContent='★';btn.classList.add('active')}
+  else{favs.splice(idx,1);btn.textContent='☆';btn.classList.remove('active')}
+  saveFavs(favs);
+}
+function loadFavs(){
+  const favs=getFavs();
+  document.querySelectorAll('.fav-btn').forEach(btn=>{
+    const active=favs.includes(btn.dataset.id);
+    btn.textContent=active?'★':'☆';
+    btn.classList.toggle('active',active);
+  });
+}
+
+// ─── INIT ─────────────────────────────────────────
+(function init(){
+  const s=getSession(); if(s)applyLoggedIn(s); else { applyLoggedOut(); loadFavs(); }
+  initTheme();
+  ['loginEmail','loginPassword'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()}));
+  ['regName','regEmail','regPassword'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')doRegister()}));
+})();
+
+// ─── PWA SERVICE WORKER ───────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(r => console.log('SW registered:', r.scope))
+      .catch(e => console.log('SW error:', e));
+  });
+}
+</script>
+</body>
+</html>
