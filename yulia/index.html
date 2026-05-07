@@ -1,1 +1,607 @@
-hello
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Юлия Юлсон — Персональный тренер & Художник</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --cream:#f5f0e8;--parchment:#ede5d4;--sand:#d4c5a9;
+  --clay:#a8896a;--umber:#6b4f35;--ink:#1a1612;
+  --gold:#c9a84c;--gold2:#e8c97a;--white:#fdfaf5;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--ink);color:var(--cream);font-family:'Jost',sans-serif;font-weight:300;overflow-x:hidden;}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:20px 48px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:linear-gradient(to bottom,rgba(26,22,18,0.97),transparent);
+  transition:all 0.4s;
+}
+nav.scrolled{background:rgba(26,22,18,0.97);backdrop-filter:blur(16px);padding:14px 48px;border-bottom:0.5px solid rgba(255,255,255,0.06);}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;letter-spacing:0.08em;color:var(--cream);text-decoration:none;flex-shrink:0;}
+.nav-brand small{display:block;font-size:9px;font-weight:300;letter-spacing:0.28em;text-transform:uppercase;color:var(--sand);font-family:'Jost',sans-serif;margin-top:2px;}
+.nav-links{display:flex;gap:28px;align-items:center;}
+.nav-links a{font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--sand);text-decoration:none;transition:color 0.2s;}
+.nav-links a:hover{color:var(--gold);}
+.nav-social{display:flex;gap:8px;align-items:center;flex-shrink:0;}
+.nav-ig{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff;border-radius:100px;padding:8px 16px;font-size:11px;font-weight:600;text-decoration:none;font-family:'Jost',sans-serif;transition:opacity 0.2s,transform 0.15s;white-space:nowrap;}
+.nav-ig:hover{opacity:0.88;transform:translateY(-1px);}
+.nav-wa{display:flex;align-items:center;gap:6px;background:#25D366;color:#fff;border-radius:100px;padding:8px 16px;font-size:11px;font-weight:600;text-decoration:none;font-family:'Jost',sans-serif;transition:opacity 0.2s,transform 0.15s;white-space:nowrap;}
+.nav-wa:hover{opacity:0.88;transform:translateY(-1px);}
+
+/* ── HERO ── */
+.hero{height:100vh;min-height:600px;position:relative;display:flex;align-items:flex-end;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background-image:url('');background-size:cover;background-position:center top;}
+.hero-ov{position:absolute;inset:0;background:linear-gradient(to right,rgba(26,22,18,0.9) 0%,rgba(26,22,18,0.25) 65%,rgba(26,22,18,0.05) 100%),linear-gradient(to top,rgba(26,22,18,1) 0%,transparent 45%);}
+.hero-content{position:relative;z-index:2;padding:0 48px 80px;max-width:600px;}
+.hero-eyebrow{font-size:10px;font-weight:500;letter-spacing:0.4em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;display:flex;align-items:center;gap:12px;}
+.hero-eyebrow::before{content:'';width:36px;height:0.5px;background:var(--gold);}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(50px,7vw,90px);font-weight:300;line-height:0.95;margin-bottom:8px;}
+.hero-title em{font-style:italic;color:var(--gold);display:block;}
+.hero-sub{font-size:12px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--sand);margin-bottom:22px;}
+.hero-desc{font-size:15px;color:var(--sand);line-height:1.85;max-width:440px;margin-bottom:38px;border-left:1px solid var(--clay);padding-left:18px;}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-gold{background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;padding:15px 30px;border:none;cursor:pointer;text-decoration:none;transition:all 0.2s;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));}
+.btn-gold:hover{background:var(--gold2);transform:translateY(-2px);}
+.btn-out{border:0.5px solid rgba(245,240,232,0.28);color:var(--cream);font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;padding:15px 30px;background:transparent;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+.btn-out:hover{border-color:var(--cream);}
+.hero-scroll{position:absolute;bottom:30px;right:48px;z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--clay);}
+.scroll-ln{width:0.5px;height:44px;background:linear-gradient(to bottom,var(--clay),transparent);animation:sAnim 2s ease-in-out infinite;}
+@keyframes sAnim{0%,100%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}}
+
+/* ── SECTION HELPERS ── */
+.eyebrow{font-size:10px;font-weight:600;letter-spacing:0.35em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.eyebrow::before{content:'';width:26px;height:0.5px;background:var(--gold);}
+.eyebrow.center{justify-content:center;}
+.eyebrow.center::after{content:'';width:26px;height:0.5px;background:var(--gold);}
+.sh2{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,4vw,50px);font-weight:300;line-height:1.1;margin-bottom:22px;}
+.sh2 em{font-style:italic;color:var(--gold);}
+
+/* ── ABOUT ── */
+.about{background:linear-gradient(180deg,var(--ink) 0%,#1e1810 100%);padding:110px 48px;display:grid;grid-template-columns:1fr 1.1fr;gap:70px;align-items:center;}
+/* Single full photo */
+.about-photo-wrap{position:relative;}
+.about-photo-wrap::before{content:'';position:absolute;top:-12px;left:-12px;right:12px;bottom:12px;border:0.5px solid rgba(201,168,76,0.25);z-index:0;}
+.about-photo-wrap img{width:100%;height:600px;object-fit:cover;object-position:center top;position:relative;z-index:1;display:block;}
+.about-body{color:var(--sand);font-size:15px;line-height:1.9;}
+.about-body p+p{margin-top:14px;}
+.about-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:36px;}
+.stat-b{padding:16px;border:0.5px solid rgba(255,255,255,0.07);position:relative;}
+.stat-b::before{content:'';position:absolute;top:0;left:0;width:24px;height:1px;background:var(--gold);}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--gold);line-height:1;}
+.stat-l{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--clay);margin-top:4px;}
+
+/* ── SERVICES ── */
+.services{background:var(--white);padding:90px 48px;}
+.services .eyebrow{color:var(--umber);justify-content:center;}
+.services .eyebrow::before,.services .eyebrow::after{background:var(--umber);}
+.services .sh2{color:var(--ink);text-align:center;}
+.services .sh2 em{color:var(--umber);}
+.srv-intro{text-align:center;color:var(--umber);font-size:15px;max-width:500px;margin:0 auto 50px;}
+.srv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(0,0,0,0.08);}
+.srv-card{background:var(--white);padding:40px 28px;position:relative;overflow:hidden;transition:background 0.3s;}
+.srv-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transform:scaleX(0);transition:transform 0.4s;}
+.srv-card:hover{background:#faf5ec;}
+.srv-card:hover::after{transform:scaleX(1);}
+.srv-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0.06;transition:opacity 0.4s;}
+.srv-card:hover .srv-bg{opacity:0.13;}
+.srv-roman{font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;color:rgba(107,79,53,0.1);line-height:1;margin-bottom:18px;}
+.srv-title{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--ink);margin-bottom:10px;}
+.srv-desc{font-size:13px;color:var(--umber);line-height:1.8;margin-bottom:22px;}
+.srv-cta{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);display:inline-flex;align-items:center;gap:8px;text-decoration:none;background:none;border:none;font-family:'Jost',sans-serif;cursor:pointer;transition:gap 0.2s;}
+.srv-card:hover .srv-cta{gap:14px;}
+.srv-cta::after{content:'→';}
+
+/* ── GALLERY ── */
+.gallery-sec{background:var(--ink);padding:90px 0 70px;}
+.gallery-head{text-align:center;padding:0 24px 40px;}
+.gal-tabs{display:flex;justify-content:center;border-bottom:0.5px solid rgba(255,255,255,0.08);margin:0 24px 40px;}
+.gal-tab{font-size:12px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--clay);padding:12px 36px;cursor:pointer;border-bottom:1.5px solid transparent;transition:all 0.25s;background:transparent;border-top:none;border-left:none;border-right:none;font-family:'Jost',sans-serif;}
+.gal-tab.active,.gal-tab:hover{color:var(--gold);border-bottom-color:var(--gold);}
+.gal-panel{display:none;}
+.gal-panel.active{display:block;}
+
+/* CAROUSEL */
+.carousel-wrap{position:relative;padding:0 48px;}
+.carousel{display:flex;gap:6px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:8px;cursor:grab;}
+.carousel::-webkit-scrollbar{display:none;}
+.carousel.grabbing{cursor:grabbing;}
+.car-item{
+  flex-shrink:0;width:340px;height:480px;
+  position:relative;overflow:hidden;
+  scroll-snap-align:start;cursor:pointer;
+}
+.car-img{
+  width:100%;height:100%;
+  background-size:cover;background-position:center top;
+  transition:transform 0.5s ease;
+}
+.car-item:hover .car-img{transform:scale(1.05);}
+.car-cap{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(26,22,18,0.92) 0%,rgba(26,22,18,0.2) 50%,transparent 100%);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:22px 18px;transition:opacity 0.3s;
+}
+.car-item:hover .car-cap{opacity:0;}
+.car-title{font-family:'Cormorant Garamond',serif;font-size:20px;color:#fff;margin-bottom:4px;}
+.car-hint{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);}
+
+/* Carousel nav arrows */
+.car-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(26,22,18,0.85);border:0.5px solid rgba(201,168,76,0.3);
+  color:var(--gold);font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.2s;z-index:10;
+}
+.car-arrow:hover{background:rgba(201,168,76,0.15);}
+.car-arrow.prev{left:4px;}
+.car-arrow.next{right:4px;}
+
+/* Carousel dots */
+.car-dots{display:flex;justify-content:center;gap:6px;margin-top:24px;}
+.car-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.15);transition:all 0.2s;cursor:pointer;}
+.car-dot.active{background:var(--gold);width:20px;border-radius:3px;}
+
+/* Art placeholder */
+.art-placeholder{margin:0 48px;border:0.5px solid rgba(201,168,76,0.15);background:linear-gradient(135deg,rgba(201,168,76,0.04),rgba(107,79,53,0.08));display:flex;align-items:center;justify-content:center;min-height:280px;padding:60px 40px;}
+.art-ph-inner{text-align:center;}
+.art-ph-inner h3{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--cream);margin-bottom:10px;}
+.art-ph-inner p{color:var(--clay);font-size:14px;margin-bottom:24px;}
+.ig-btn-big{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff;border-radius:100px;padding:13px 28px;font-size:13px;font-weight:600;text-decoration:none;font-family:'Jost',sans-serif;transition:transform 0.2s,opacity 0.2s;}
+.ig-btn-big:hover{opacity:0.88;transform:translateY(-1px);}
+
+/* ── CONTACT ── */
+.contact-sec{background:linear-gradient(180deg,#1e1810 0%,var(--ink) 100%);padding:100px 48px;display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:start;}
+.c-title{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,4vw,50px);font-weight:300;line-height:1.1;margin-bottom:14px;}
+.c-title em{font-style:italic;color:var(--gold);}
+.c-sub{color:var(--sand);font-size:15px;line-height:1.8;margin-bottom:36px;}
+.c-channels{display:flex;flex-direction:column;gap:12px;}
+.c-ch{display:flex;align-items:center;gap:14px;padding:16px 18px;border:0.5px solid rgba(255,255,255,0.07);transition:border-color 0.2s;text-decoration:none;}
+.c-ch:hover{border-color:var(--gold);}
+.c-icon{width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:17px;background:rgba(201,168,76,0.1);flex-shrink:0;border-radius:10px;}
+.c-label{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--clay);}
+.c-val{font-size:14px;color:var(--cream);margin-top:2px;}
+.c-form{display:flex;flex-direction:column;gap:14px;}
+.f-label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--clay);margin-bottom:5px;display:block;}
+.f-input{width:100%;background:transparent;border:0.5px solid rgba(255,255,255,0.1);padding:13px 15px;color:var(--cream);font-family:'Jost',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+.f-input:focus{border-color:var(--gold);}
+.f-input::placeholder{color:rgba(255,255,255,0.18);}
+textarea.f-input{height:100px;resize:none;}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.f-btn{background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;padding:15px;border:none;cursor:pointer;transition:background 0.2s;width:100%;margin-top:4px;}
+.f-btn:hover{background:var(--gold2);}
+
+/* ── FOOTER ── */
+footer{background:var(--ink);border-top:0.5px solid rgba(255,255,255,0.06);padding:32px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.f-brand{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--cream);}
+.f-brand small{display:block;font-size:9px;letter-spacing:0.28em;text-transform:uppercase;color:var(--clay);font-family:'Jost',sans-serif;margin-top:2px;}
+.f-links{display:flex;gap:20px;}
+.f-links a{font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--clay);text-decoration:none;transition:color 0.2s;}
+.f-links a:hover{color:var(--gold);}
+.f-soc{display:flex;gap:8px;}
+.f-ig{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff;padding:8px 14px;border-radius:100px;font-size:11px;font-weight:600;text-decoration:none;font-family:'Jost',sans-serif;}
+.f-wa{display:inline-flex;align-items:center;gap:6px;background:#25D366;color:#fff;padding:8px 14px;border-radius:100px;font-size:11px;font-weight:600;text-decoration:none;font-family:'Jost',sans-serif;}
+
+/* ── LIGHTBOX ── */
+.lb{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.96);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.lb.open{opacity:1;pointer-events:all;}
+.lb-img{max-width:92vw;max-height:82vh;object-fit:contain;animation:lbIn 0.3s ease;}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes lbIn{from{transform:scale(0.93);opacity:0}to{transform:scale(1);opacity:1}}
+.lb-close{position:fixed;top:18px;right:22px;font-size:30px;color:rgba(255,255,255,0.4);background:none;border:none;cursor:pointer;transition:color 0.2s;z-index:2001;}
+.lb-close:hover{color:#fff;}
+.lb-title{font-family:'Cormorant Garamond',serif;font-size:22px;color:#fff;text-align:center;}
+.lb-desc{font-size:13px;color:rgba(255,255,255,0.4);text-align:center;max-width:480px;}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.8s,transform 0.8s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  nav{padding:14px 16px;}
+  .nav-links{display:none;}
+  .nav-brand small{display:none;}
+  .nav-ig span,.nav-wa span{display:none;}
+  .hero-content{padding:0 20px 56px;}
+  .about{grid-template-columns:1fr;padding:56px 20px;gap:36px;}
+  .about-photo-wrap img{height:420px;}
+  .about-photo-wrap::before{display:none;}
+  .about-stats{grid-template-columns:repeat(3,1fr);gap:10px;}
+  .services{padding:56px 20px;}
+  .srv-grid{grid-template-columns:1fr;}
+  .gallery-sec{padding:56px 0 50px;}
+  .gallery-head{padding:0 20px 32px;}
+  .gal-tabs{margin:0 20px 32px;}
+  .carousel-wrap{padding:0 16px;}
+  .car-item{width:280px;height:380px;}
+  .car-arrow{display:none;}
+  .art-placeholder{margin:0 20px;min-height:220px;padding:40px 24px;}
+  .contact-sec{grid-template-columns:1fr;padding:56px 20px;gap:36px;}
+  .f-row{grid-template-columns:1fr;}
+  footer{padding:24px 20px;flex-direction:column;align-items:center;text-align:center;}
+  .f-links,.f-soc{justify-content:center;}
+  .hero-scroll{display:none;}
+  .carousel-wrap{padding:0 0 0 20px;}
+  .carousel{padding-right:20px;}
+}
+
+@keyframes pulse-ig {
+  0%,100%{box-shadow:0 0 0 0 rgba(131,58,180,0.4)}
+  50%{box-shadow:0 0 0 8px rgba(131,58,180,0)}
+}
+@keyframes pulse-wa {
+  0%,100%{box-shadow:0 0 0 0 rgba(37,211,102,0.4)}
+  50%{box-shadow:0 0 0 8px rgba(37,211,102,0)}
+}
+.nav-ig{animation:pulse-ig 2.5s ease-in-out infinite;}
+.nav-wa{animation:pulse-wa 2.5s ease-in-out 1.2s infinite;}
+.f-ig{animation:pulse-ig 2.5s ease-in-out infinite;}
+.f-wa{animation:pulse-wa 2.5s ease-in-out 1.2s infinite;}
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="#" class="nav-brand">Юлия Юлсон<small>Тренер · Спортсменка · Художник</small></a>
+  <div class="nav-links">
+    <a href="#about">Обо мне</a>
+    <a href="#services">Услуги</a>
+    <a href="#gallery">Галерея</a>
+    <a href="#contact">Контакт</a>
+  </div>
+  <div class="nav-social">
+    <a href="https://www.instagram.com/yulia_yulson" target="_blank" class="nav-ig">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      <span>Instagram</span>
+    </a>
+    <a href="https://wa.me/972000000000" target="_blank" class="nav-wa">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      <span>WhatsApp</span>
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-ov"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Натуральный бодибилдинг · Online & Offline</div>
+    <div class="hero-title">Юлия<br/><em>Юлсон</em></div>
+    <div class="hero-sub">Персональный тренер · Натуральный бодибилдинг · Художник</div>
+    <p class="hero-desc">Помогаю клиентам создать тело, которым они будут гордиться — без химии, без фанатизма, с уважением к себе.</p>
+    <div class="hero-btns">
+      <a href="https://wa.me/972000000000?text=Привет! Хочу записаться на тренировку" target="_blank" class="btn-gold">Записаться</a>
+      <a href="#gallery" class="btn-out">Смотреть галерею</a>
+    </div>
+  </div>
+  <div class="hero-scroll"><span>Scroll</span><div class="scroll-ln"></div></div>
+</section>
+
+<!-- ABOUT -->
+<section class="about reveal" id="about">
+  <div class="about-photo-wrap">
+    <img src="" alt="Юлия Юлсон — персональный тренер"/>
+  </div>
+  <div>
+    <div class="eyebrow">Обо мне</div>
+    <h2 class="sh2">Сила — это <em>искусство</em></h2>
+    <div class="about-body">
+      <p>Я Юлия — персональный тренер по натуральному бодибилдингу и художник. Живу и работаю в Бат-Яме и Тель-Авиве, также тренирую онлайн.</p>
+      <p>Моя философия: тело — это холст. Мышцы, пропорции, симметрия — это те же принципы что и в живописи: тень, свет, форма. Я помогаю клиентам создать тело, которым они будут гордиться — без химии, без фанатизма, с уважением к себе.</p>
+      <p>Каждая программа составляется индивидуально — с учётом твоих целей, образа жизни и возможностей. Я рядом на каждом шаге пути.</p>
+    </div>
+    <div class="about-stats">
+      <div class="stat-b reveal"><div class="stat-n">8+</div><div class="stat-l">Лет в спорте</div></div>
+      <div class="stat-b reveal"><div class="stat-n">100+</div><div class="stat-l">Клиентов</div></div>
+      <div class="stat-b reveal"><div class="stat-n">∞</div><div class="stat-l">Без химии</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services reveal" id="services">
+  <div class="eyebrow center">Услуги</div>
+  <h2 class="sh2" style="text-align:center;color:var(--ink)">Программы <em style="color:var(--umber)">тренировок</em></h2>
+  <p class="srv-intro">Каждая программа адаптируется под твои индивидуальные цели. Онлайн и офлайн.</p>
+  <div class="srv-grid">
+    <div class="srv-card">
+      <div class="srv-bg" style="background-image:url('')"></div>
+      <div class="srv-roman">I</div>
+      <div class="srv-title">Персональные тренировки</div>
+      <div class="srv-desc">Индивидуальный план с учётом твоих целей и уровня подготовки.</div>
+      <a href="https://wa.me/972000000000?text=Привет! Хочу записаться на тренировку" target="_blank" class="srv-cta">Записаться</a>
+    </div>
+    <div class="srv-card">
+      <div class="srv-bg" style="background-image:url('')"></div>
+      <div class="srv-roman">II</div>
+      <div class="srv-title">Онлайн-тренировки</div>
+      <div class="srv-desc">Тренируйся где удобно — составлю программу и буду на связи.</div>
+      <a href="https://wa.me/972000000000?text=Привет! Хочу записаться на тренировку" target="_blank" class="srv-cta">Записаться</a>
+    </div>
+    <div class="srv-card">
+      <div class="srv-bg" style="background-image:url('')"></div>
+      <div class="srv-roman">III</div>
+      <div class="srv-title">Комплексное сопровождение</div>
+      <div class="srv-desc">Тренировки + питание + постоянная обратная связь. Для тех кто хочет максимальный результат.</div>
+      <a href="https://wa.me/972000000000?text=Привет! Хочу записаться на тренировку" target="_blank" class="srv-cta">Записаться</a>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery-sec" id="gallery">
+  <div class="gallery-head reveal">
+    <div class="eyebrow center">Галерея</div>
+    <h2 class="sh2" style="text-align:center">Спорт &amp; <em>Искусство</em></h2>
+    <p style="color:var(--sand);font-size:14px;margin-top:6px">Листайте карточки влево или вправо</p>
+  </div>
+  <div class="gal-tabs">
+    <button class="gal-tab active" onclick="switchTab('sport',this)">💪 Спорт & Позирование</button>
+    <button class="gal-tab" onclick="switchTab('art',this)">🎨 Живопись & Арт</button>
+  </div>
+
+  <!-- SPORT CAROUSEL -->
+  <div class="gal-panel active" id="panel-sport">
+    <div class="carousel-wrap">
+      <button class="car-arrow prev" onclick="scrollCar(-1)">‹</button>
+      
+      <div class="carousel" id="carousel">
+        <div class="car-loading" id="carLoading" style="display:flex;align-items:center;justify-content:center;min-width:100%;padding:80px 40px;color:var(--clay);flex-direction:column;gap:16px;">
+          <div style="font-size:32px;animation:spin 1s linear infinite;display:inline-block">⟳</div>
+          <span style="font-size:13px;letter-spacing:0.1em">Загружаем фото...</span>
+        </div>
+      </div>
+      <button class="car-arrow next" onclick="scrollCar(1)">›</button>
+    </div>
+    <div class="car-dots" id="carDots"></div>
+  </div>
+
+  <!-- ART PANEL -->
+    <div class="gal-panel" id="panel-art">
+    <div class="carousel-wrap">
+      <button class="car-arrow prev" onclick="scrollCar2(-1)">‹</button>
+      
+      <div class="carousel" id="carousel2">
+        <div class="car-loading" style="display:flex;align-items:center;justify-content:center;min-width:100%;padding:80px 40px;color:var(--clay);flex-direction:column;gap:16px;">
+          <div style="font-size:32px;animation:spin 1s linear infinite;display:inline-block">⟳</div>
+          <span style="font-size:13px;letter-spacing:0.1em">Загружаем работы...</span>
+        </div>
+      </div>
+      <button class="car-arrow next" onclick="scrollCar2(1)">›</button>
+    </div>
+    <div class="car-dots" id="carDots2"></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-sec reveal" id="contact">
+  <div>
+    <div class="eyebrow">Контакт</div>
+    <div class="c-title">Начнём <em>вместе?</em></div>
+    <p class="c-sub">Напиши мне — расскажи о своей цели. Первая консультация бесплатна. Отвечаю в течение 24 часов.</p>
+    <div class="c-channels">
+      <a href="https://wa.me/972000000000" target="_blank" class="c-ch">
+        <div class="c-icon">📱</div>
+        <div><div class="c-label">WhatsApp</div><div class="c-val">+972 XX XXX XXXX</div></div>
+      </a>
+      <a href="https://www.instagram.com/yulia_yulson" target="_blank" class="c-ch">
+        <div class="c-icon">📸</div>
+        <div><div class="c-label">Instagram</div><div class="c-val">@yulia_yulson</div></div>
+      </a>
+      
+    </div>
+  </div>
+  <div class="c-form">
+    <div class="f-row">
+      <div><label class="f-label">Имя</label><input class="f-input" type="text" placeholder="Твоё имя"/></div>
+      <div><label class="f-label">Телефон</label><input class="f-input" type="tel" placeholder="+972"/></div>
+    </div>
+    <div>
+      <label class="f-label">Цель</label>
+      <select class="f-input" style="cursor:pointer">
+        <option value="">Выбери направление</option>
+        <option>Похудение и рельеф</option>
+        <option>Набор мышечной массы</option>
+        <option>Общая физическая форма</option>
+        <option>Онлайн-тренировки</option>
+        <option>Питание и план</option>
+      </select>
+    </div>
+    <div><label class="f-label">Сообщение</label><textarea class="f-input" placeholder="Расскажи о себе и своей цели..."></textarea></div>
+    <button class="f-btn" onclick="sendMsg()">Отправить →</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-brand">Юлия Юлсон<small>© 2025 · Israel</small></div>
+  <div class="f-links">
+    <a href="#about">Обо мне</a>
+    <a href="#services">Услуги</a>
+    <a href="#gallery">Галерея</a>
+    <a href="#contact">Контакт</a>
+  </div>
+  <div class="f-soc">
+    <a href="https://www.instagram.com/yulia_yulson" target="_blank" class="f-ig">📸 Instagram</a>
+    <a href="https://wa.me/972000000000" target="_blank" class="f-wa">💬 WhatsApp</a>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lb" id="lb" onclick="closeLB(event)">
+  <button class="lb-close" onclick="closeLB()">×</button>
+  <img class="lb-img" id="lbImg" src="" alt=""/>
+  <div class="lb-title" id="lbTitle"></div>
+  <div class="lb-desc" id="lbDesc"></div>
+</div>
+
+<script>
+
+// ═══ CLOUDINARY PHOTO LOADER ═══
+const SUPABASE_FUNC = 'https://ovklfunnasqnvmluqbmm.supabase.co/functions/v1/cloudinary-photos';
+const SUPA_KEY = 'sb_publishable_BaA9a_oZiX21Qa2drWirsg_8Ctf7iuE';
+const CLOUD_NAME = 'dtfficnog';
+
+const SPORT_META = [['Соревновательная форма', 'Результат лет натурального тренинга — каждая деталь выверена до совершенства'], ['Сила', 'Тренировка в зале — любимое место где рождается результат'], ['Грация', 'Сила и элегантность — не противоречие, а единое целое'], ['Детали', 'Каждая мышца — результат осознанной работы и дисциплины'], ['Тяга', 'Становая тяга — упражнение которое строит спину мечты'], ['Блок', 'Работа на верхнем блоке формирует V-образный силуэт'], ['Спина', 'Спина — визитная карточка бодибилдера'], ['Задний бицепс', 'Классическая соревновательная поза — двойной бицепс сзади']];
+
+async function loadCloudinaryPhotos(folder) {
+  try {
+    const resp = await fetch(`${SUPABASE_FUNC}?folder=${encodeURIComponent(folder)}`, {
+      headers: { 'Authorization': `Bearer ${SUPA_KEY}` }
+    });
+    const data = await resp.json();
+    return data.photos || [];
+  } catch(e) {
+    console.warn('Cloudinary load error:', e);
+    return [];
+  }
+}
+
+async function initSportCarousel() {
+  const car = document.getElementById('carousel');
+  const photos = await loadCloudinaryPhotos('Yulia/Sport');
+  
+  if(!photos.length) {
+    car.innerHTML = '<div style="padding:60px;text-align:center;color:var(--clay)">Фото скоро появятся</div>';
+    return;
+  }
+  
+  car.innerHTML = photos.map((p,i) => {
+    const meta = SPORT_META[i] || ['Фото', ''];
+    return `
+      <div class="car-item" onclick="openLB('${p.url}','${meta[0]}','${meta[1]}')">
+        <div class="car-img" style="background-image:url('${p.thumb}');"></div>
+        <div class="car-cap">
+          <div class="car-title">${meta[0]}</div>
+          <div class="car-hint">Нажми чтобы открыть</div>
+        </div>
+      </div>`;
+  }).join('');
+  
+  // Init dots
+  initCarDots('carousel', 'carDots');
+}
+
+async function initArtCarousel() {
+  const car2 = document.getElementById('carousel2');
+  const photos = await loadCloudinaryPhotos('Yulia/Art');
+  
+  const artMeta = [
+    ['Цифровая иллюстрация', 'Персонаж · Цифровое искусство · 2024'],
+    ['Гарри Поттер · Роспись', 'Роспись по дереву · Акрил · 2024'],
+  ];
+  
+  let items = photos.map((p,i) => {
+    const meta = artMeta[i] || [`Работа ${i+1}`, 'Живопись · 2024'];
+    return `
+      <div class="car-item" onclick="openLB('${p.url}','${meta[0]}','${meta[1]}')">
+        <div class="car-img" style="background-image:url('${p.thumb}');background-color:#fff;background-position:center;background-size:contain;"></div>
+        <div class="car-cap">
+          <div class="car-title">${meta[0]}</div>
+          <div class="car-hint">Нажми чтобы открыть</div>
+        </div>
+      </div>`;
+  }).join('');
+  
+  // Add Instagram card
+  items += `
+    <div class="car-item" style="background:linear-gradient(135deg,#2d2318,#3d2e22);display:flex;align-items:center;justify-content:center;">
+      <div style="text-align:center;color:var(--clay);padding:24px;">
+        <div style="font-size:32px;margin-bottom:12px">🎨</div>
+        <div style="font-family:Cormorant Garamond,serif;font-size:20px;color:var(--cream);margin-bottom:16px">Больше работ<br/>в Instagram</div>
+        <a href="https://www.instagram.com/yulia_yulson" target="_blank" class="ig-btn-big">
+          @yulia_yulson
+        </a>
+      </div>
+    </div>`;
+  
+  car2.innerHTML = items;
+  initCarDots('carousel2', 'carDots2');
+}
+
+async function loadHeroPhoto() {
+  const photos = await loadCloudinaryPhotos('Yulia/Sport');
+  if(photos.length) {
+    const hero = document.querySelector('.hero-bg');
+    if(hero) hero.style.backgroundImage = `url('${photos[0].url}')`;
+    // About photo
+    const aboutImg = document.querySelector('.about-photo-wrap img');
+    if(aboutImg && photos[1]) aboutImg.src = photos[1].url;
+    // Service cards
+    const srvBgs = document.querySelectorAll('.srv-bg');
+    const indices = [2, 4, 7];
+    srvBgs.forEach((bg, i) => {
+      const idx = indices[i] || i;
+      if(photos[idx]) bg.style.backgroundImage = `url('${photos[idx].thumb}')`;
+    });
+  }
+}
+
+function initCarDots(carId, dotsId) {
+  const car = document.getElementById(carId);
+  const dotsWrap = document.getElementById(dotsId);
+  if(!car || !dotsWrap) return;
+  const items = car.querySelectorAll('.car-item');
+  dotsWrap.innerHTML = '';
+  items.forEach((_,i) => {
+    const d = document.createElement('div');
+    d.className = 'car-dot' + (i===0?' active':'');
+    d.onclick = () => car.scrollTo({left: i*(car.querySelector('.car-item').offsetWidth+6), behavior:'smooth'});
+    dotsWrap.appendChild(d);
+  });
+  car.addEventListener('scroll', () => {
+    const idx = Math.round(car.scrollLeft / (car.scrollWidth / items.length));
+    dotsWrap.querySelectorAll('.car-dot').forEach((d,i) => d.classList.toggle('active', i===Math.min(idx,items.length-1)));
+  });
+  // Drag
+  let dn=false, sx, sl;
+  car.addEventListener('mousedown', e=>{dn=true;car.classList.add('grabbing');sx=e.pageX-car.offsetLeft;sl=car.scrollLeft;});
+  car.addEventListener('mouseleave', ()=>{dn=false;car.classList.remove('grabbing');});
+  car.addEventListener('mouseup', ()=>{dn=false;car.classList.remove('grabbing');});
+  car.addEventListener('mousemove', e=>{if(!dn)return;e.preventDefault();car.scrollLeft=sl-(e.pageX-car.offsetLeft-sx)*1.2;});
+}
+
+// Init everything
+(async function() {
+  await Promise.all([loadHeroPhoto(), initSportCarousel(), initArtCarousel()]);
+})();
+
+// Nav scroll
+window.addEventListener('scroll',()=>document.getElementById('mainNav').classList.toggle('scrolled',scrollY>60));
+
+// Reveal
+const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');}),{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Gallery tabs
+function switchTab(tab,btn){
+  document.querySelectorAll('.gal-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.gal-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+}
+
+
+
+// Form
+function sendMsg(){
+  const b=document.querySelector('.f-btn');
+  b.textContent='Отправлено ✓';b.style.background='#22d3a5';
+  setTimeout(()=>{b.textContent='Отправить →';b.style.background='';},2500);
+}
+</script>
+</body>
+</html>
