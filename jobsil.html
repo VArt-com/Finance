@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>JobsIL — משרות עבודה בישראל | Работа в Израиле</title>
+<title>JobsIL — Работа в Израиле | עבודה בישראל</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -22,7 +22,6 @@
 html { scroll-behavior:smooth; }
 body { background:var(--bg); color:var(--text); font-family:'Heebo','Rubik',sans-serif; font-size:15px; line-height:1.6; overflow-x:hidden; transition:background .3s,color .3s; }
 
-/* BG */
 .bg-mesh { position:fixed; inset:0; z-index:0; pointer-events:none;
   background: radial-gradient(ellipse 600px 400px at 15% 15%, rgba(79,110,247,0.07) 0%, transparent 60%),
               radial-gradient(ellipse 500px 400px at 85% 85%, rgba(0,229,160,0.05) 0%, transparent 60%); }
@@ -43,16 +42,7 @@ nav { position:fixed; top:0; left:0; right:0; z-index:100; height:62px;
   display:flex; align-items:center; justify-content:center; font-size:18px; }
 .nav-logo-text { font-size:20px; font-weight:800; letter-spacing:-0.03em; color:var(--text); }
 .nav-logo-text span { color:var(--accent); }
-.nav-center { flex:1; max-width:400px; position:relative; }
-.nav-search { width:100%; background:var(--bg3); border:0.5px solid var(--border2);
-  border-radius:12px; padding:9px 14px 9px 40px; font-size:14px; color:var(--text);
-  font-family:'Heebo',sans-serif; outline:none; transition:border-color .2s; }
-[dir="rtl"] .nav-search { padding:9px 40px 9px 14px; }
-.nav-search:focus { border-color:var(--accent); }
-.nav-search::placeholder { color:var(--text3); }
-.nav-search-icon { position:absolute; top:50%; transform:translateY(-50%); left:12px; color:var(--text3); pointer-events:none; }
-[dir="rtl"] .nav-search-icon { left:auto; right:12px; }
-.nav-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.nav-right { display:flex; align-items:center; gap:8px; flex-shrink:0; margin-left:auto; }
 .btn-lang { background:var(--bg3); border:0.5px solid var(--border2); border-radius:100px;
   padding:6px 12px; font-size:11px; font-weight:700; color:var(--text2);
   cursor:pointer; font-family:'Heebo',sans-serif; transition:all .15s; }
@@ -60,13 +50,9 @@ nav { position:fixed; top:0; left:0; right:0; z-index:100; height:62px;
 .btn-theme { width:34px; height:34px; border-radius:50%; background:var(--bg3);
   border:0.5px solid var(--border2); cursor:pointer; font-size:15px;
   display:flex; align-items:center; justify-content:center; transition:background .15s; }
-.btn-post { background:var(--accent); color:#fff; border:none; border-radius:100px;
-  padding:8px 18px; font-size:12px; font-weight:700; cursor:pointer;
-  font-family:'Heebo',sans-serif; transition:opacity .15s,transform .15s; white-space:nowrap; }
-.btn-post:hover { opacity:.88; transform:translateY(-1px); }
 
 /* HERO */
-.hero { padding:90px 24px 40px; text-align:center; position:relative; z-index:1; }
+.hero { padding:100px 24px 44px; text-align:center; position:relative; z-index:1; }
 .hero-badge { display:inline-flex; align-items:center; gap:7px;
   background:rgba(79,110,247,0.1); border:0.5px solid rgba(79,110,247,0.25);
   border-radius:100px; padding:5px 16px; font-size:12px; font-weight:600;
@@ -74,13 +60,23 @@ nav { position:fixed; top:0; left:0; right:0; z-index:100; height:62px;
 .hero-badge::before { content:''; width:6px; height:6px; border-radius:50%;
   background:var(--green); animation:pulse 1.5s infinite; }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.8)} }
-.hero h1 { font-size:clamp(28px,5vw,52px); font-weight:900; letter-spacing:-0.03em;
-  line-height:1.05; margin-bottom:10px; }
+.hero h1 { font-size:clamp(28px,5vw,52px); font-weight:900; letter-spacing:-0.03em; line-height:1.05; margin-bottom:10px; }
 .hero h1 em { font-style:normal; color:var(--accent); }
-.hero-sub { font-size:15px; color:var(--text2); max-width:500px; margin:0 auto 32px; }
+.hero-sub { font-size:15px; color:var(--text2); max-width:520px; margin:0 auto 24px; }
+
+/* SEARCH BAR */
+.search-wrap { max-width:540px; margin:0 auto 36px; position:relative; }
+.search-wrap input { width:100%; background:var(--bg2); border:1px solid var(--border2);
+  border-radius:14px; padding:14px 20px 14px 48px; font-size:15px; color:var(--text);
+  font-family:'Heebo',sans-serif; outline:none; transition:border-color .2s,box-shadow .2s; }
+.search-wrap input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(79,110,247,0.12); }
+.search-wrap input::placeholder { color:var(--text3); }
+.search-icon { position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--text3); pointer-events:none; }
+[dir="rtl"] .search-wrap input { padding:14px 48px 14px 20px; }
+[dir="rtl"] .search-icon { left:auto; right:16px; }
 
 /* STATS */
-.hero-stats { display:flex; justify-content:center; gap:32px; flex-wrap:wrap; margin-bottom:36px; }
+.hero-stats { display:flex; justify-content:center; gap:32px; flex-wrap:wrap; margin-bottom:0; }
 .h-stat-n { font-size:26px; font-weight:800; display:block; letter-spacing:-0.02em; }
 .h-stat-l { font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.07em; }
 
@@ -97,100 +93,87 @@ nav { position:fixed; top:0; left:0; right:0; z-index:100; height:62px;
   cursor:pointer; transition:all .15s; white-space:nowrap; font-family:'Heebo',sans-serif; }
 .f-chip:hover { border-color:var(--border2); color:var(--text); }
 .f-chip.active { background:var(--accent); border-color:var(--accent); color:#fff; }
-.f-chip.region.active { background:var(--green); border-color:var(--green); color:#000; }
 .f-sep { width:1px; height:20px; background:var(--border); flex-shrink:0; }
 
 /* MAIN */
-.main { max-width:1200px; margin:0 auto; padding:28px 24px; position:relative; z-index:1; }
-.section-header { display:flex; align-items:center; justify-content:space-between;
-  margin-bottom:16px; }
-.section-title { font-size:11px; font-weight:700; letter-spacing:0.1em;
+.main { max-width:1200px; margin:0 auto; padding:36px 24px; position:relative; z-index:1; }
+
+/* SECTION LABEL */
+.section-label { font-size:11px; font-weight:700; letter-spacing:0.1em;
   text-transform:uppercase; color:var(--text3);
-  display:flex; align-items:center; gap:10px; }
-.section-title::after { content:''; flex:1; height:0.5px; background:var(--border); }
-.jobs-count { font-size:12px; color:var(--text3); }
+  display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+.section-label::after { content:''; flex:1; height:0.5px; background:var(--border); }
 
-/* JOB GRID */
-.jobs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:14px; }
+/* SITES GRID */
+.sites-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; margin-bottom:48px; }
 
-/* JOB CARD */
-.job-card { background:var(--bg2); border:0.5px solid var(--border); border-radius:18px;
-  padding:0; overflow:hidden; cursor:pointer;
+/* SITE CARD */
+.site-card { background:var(--bg2); border:0.5px solid var(--border); border-radius:20px;
+  padding:22px 20px; display:flex; flex-direction:column; gap:14px;
   transition:transform .2s,border-color .2s,box-shadow .2s;
-  display:flex; flex-direction:column;
   animation:cardIn .4s ease both; }
-@keyframes cardIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-.job-card:hover { transform:translateY(-3px); border-color:var(--border2);
-  box-shadow:0 16px 36px rgba(0,0,0,0.35); }
-.job-card-top { padding:16px 18px 12px; display:flex; align-items:flex-start; gap:12px; }
-.job-logo { width:44px; height:44px; border-radius:12px; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center; font-size:22px;
+@keyframes cardIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.site-card:hover { transform:translateY(-4px); border-color:var(--border2);
+  box-shadow:0 18px 40px rgba(0,0,0,0.35); }
+
+.site-card-head { display:flex; align-items:center; gap:12px; }
+.site-logo { width:48px; height:48px; border-radius:14px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:24px;
   border:0.5px solid var(--border); }
-.job-meta { flex:1; min-width:0; }
-.job-company { font-size:11px; color:var(--text2); font-weight:500; margin-bottom:3px; }
-.job-title { font-size:15px; font-weight:700; color:var(--text); line-height:1.3;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.job-badges { display:flex; gap:6px; flex-wrap:wrap; padding:0 18px 12px; }
-.badge { font-size:10px; font-weight:600; padding:3px 10px; border-radius:100px; }
-.badge-cat { background:rgba(79,110,247,0.12); color:var(--accent2); }
-.badge-region { background:rgba(0,229,160,0.1); color:var(--green); }
-.badge-type { background:rgba(255,184,0,0.1); color:var(--amber); }
-.badge-lang { background:rgba(167,139,250,0.1); color:var(--purple); }
-.badge-new { background:rgba(255,77,109,0.12); color:var(--red); }
-.badge-source { background:rgba(255,255,255,0.06); color:var(--text3); border:0.5px solid var(--border); }
-.job-desc { font-size:13px; color:var(--text2); padding:0 18px 14px; line-height:1.6;
-  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.job-footer { padding:12px 18px; border-top:0.5px solid var(--border);
-  display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:auto; }
-.job-salary { font-size:13px; font-weight:700; color:var(--green); }
-.job-date { font-size:11px; color:var(--text3); }
-.job-apply { background:var(--accent); color:#fff; border:none; border-radius:100px;
-  padding:8px 18px; font-size:12px; font-weight:700; cursor:pointer;
-  font-family:'Heebo',sans-serif; transition:opacity .15s,transform .15s;
-  text-decoration:none; }
-.job-apply:hover { opacity:.85; transform:translateY(-1px); }
-.job-save { width:32px; height:32px; border-radius:50%; background:var(--bg3);
-  border:0.5px solid var(--border2); display:flex; align-items:center;
-  justify-content:center; font-size:15px; cursor:pointer; transition:all .15s; flex-shrink:0; }
-.job-save:hover { background:rgba(255,184,0,0.12); border-color:var(--amber); }
-.job-save.saved { background:rgba(255,184,0,0.15); border-color:var(--amber); }
+.site-info { flex:1; }
+.site-name { font-size:16px; font-weight:800; color:var(--text); line-height:1.2; }
+.site-domain { font-size:11px; color:var(--text3); margin-top:2px; }
+
+.site-tags { display:flex; gap:6px; flex-wrap:wrap; }
+.tag { font-size:10px; font-weight:600; padding:3px 9px; border-radius:100px; }
+.tag-blue { background:rgba(79,110,247,0.12); color:var(--accent2); }
+.tag-green { background:rgba(0,229,160,0.1); color:var(--green); }
+.tag-amber { background:rgba(255,184,0,0.1); color:var(--amber); }
+.tag-purple { background:rgba(167,139,250,0.1); color:var(--purple); }
+.tag-red { background:rgba(255,77,109,0.12); color:var(--red); }
+
+.site-desc { font-size:13px; color:var(--text2); line-height:1.55; flex:1; }
+
+.site-actions { display:flex; flex-direction:column; gap:8px; margin-top:auto; }
+
+.btn-goto { display:flex; align-items:center; justify-content:center; gap:7px;
+  background:var(--accent); color:#fff; border:none; border-radius:100px;
+  padding:11px 18px; font-size:13px; font-weight:700; cursor:pointer;
+  font-family:'Heebo',sans-serif; text-decoration:none;
+  transition:opacity .15s,transform .15s; }
+.btn-goto:hover { opacity:.88; transform:translateY(-1px); }
+
+.btn-search { display:flex; align-items:center; justify-content:center; gap:6px;
+  background:var(--bg3); color:var(--text2); border:0.5px solid var(--border2); border-radius:100px;
+  padding:9px 16px; font-size:12px; font-weight:600; cursor:pointer;
+  font-family:'Heebo',sans-serif; text-decoration:none;
+  transition:all .15s; }
+.btn-search:hover { color:var(--text); border-color:var(--accent); }
+
+/* TIPS SECTION */
+.tips-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; margin-bottom:48px; }
+.tip-card { background:var(--bg2); border:0.5px solid var(--border); border-radius:16px; padding:18px 18px; display:flex; gap:14px; }
+.tip-icon { font-size:26px; flex-shrink:0; line-height:1; }
+.tip-title { font-size:14px; font-weight:700; margin-bottom:4px; }
+.tip-text { font-size:12px; color:var(--text2); line-height:1.55; }
+
+/* DONATE BANNER */
+.donate-banner { background:linear-gradient(135deg,rgba(79,110,247,0.12),rgba(0,229,160,0.08));
+  border:0.5px solid rgba(79,110,247,0.2); border-radius:18px;
+  padding:28px 28px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;
+  margin-bottom:48px; }
+.donate-text { flex:1; min-width:200px; }
+.donate-text h3 { font-size:18px; font-weight:800; margin-bottom:6px; }
+.donate-text p { font-size:13px; color:var(--text2); }
+.btn-donate { background:var(--amber); color:#000; border:none; border-radius:100px;
+  padding:12px 24px; font-size:13px; font-weight:800; cursor:pointer;
+  font-family:'Heebo',sans-serif; text-decoration:none; flex-shrink:0;
+  transition:opacity .15s,transform .15s; display:inline-flex; align-items:center; gap:6px; }
+.btn-donate:hover { opacity:.88; transform:translateY(-1px); }
 
 /* NO RESULTS */
 .no-results { text-align:center; padding:60px 20px; display:none; }
 .no-results-icon { font-size:44px; margin-bottom:14px; }
-
-/* SUBMIT MODAL */
-.modal-ov { position:fixed; inset:0; z-index:1000;
-  background:rgba(7,7,15,0.88); backdrop-filter:blur(12px);
-  display:flex; align-items:center; justify-content:center; padding:20px;
-  opacity:0; pointer-events:none; transition:opacity .2s; }
-.modal-ov.open { opacity:1; pointer-events:all; }
-.modal { background:var(--bg2); border:0.5px solid var(--border2);
-  border-radius:22px; padding:32px 28px; width:100%; max-width:520px;
-  position:relative; transform:translateY(18px); transition:transform .2s;
-  max-height:90vh; overflow-y:auto; }
-.modal-ov.open .modal { transform:translateY(0); }
-.modal-close { position:absolute; top:14px; right:16px; width:28px; height:28px;
-  border-radius:50%; background:var(--bg3); border:none; cursor:pointer;
-  color:var(--text2); font-size:16px; display:flex; align-items:center; justify-content:center; }
-[dir="rtl"] .modal-close { right:auto; left:16px; }
-.modal-title { font-size:20px; font-weight:800; margin-bottom:4px; }
-.modal-sub { font-size:13px; color:var(--text2); margin-bottom:24px; }
-.form-g { margin-bottom:14px; }
-.form-l { font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
-  color:var(--text3); margin-bottom:5px; display:block; }
-.form-i { width:100%; background:var(--bg3); border:0.5px solid var(--border2);
-  border-radius:10px; padding:11px 13px; font-size:14px; color:var(--text);
-  font-family:'Heebo',sans-serif; outline:none; transition:border-color .15s; }
-.form-i:focus { border-color:var(--accent); }
-.form-i::placeholder { color:var(--text3); }
-select.form-i { cursor:pointer; }
-.form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-.form-submit { width:100%; background:var(--accent); color:#fff; border:none;
-  border-radius:100px; padding:13px; font-size:14px; font-weight:700;
-  cursor:pointer; font-family:'Heebo',sans-serif; margin-top:6px;
-  transition:opacity .15s; }
-.form-submit:hover { opacity:.88; }
 
 /* FOOTER */
 footer { border-top:0.5px solid var(--border); padding:28px 24px;
@@ -198,24 +181,14 @@ footer { border-top:0.5px solid var(--border); padding:28px 24px;
 footer a { color:var(--text2); text-decoration:none; }
 footer a:hover { color:var(--text); }
 
-/* TOAST */
-.toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(16px);
-  background:var(--green); color:#000; font-weight:700; font-size:13px;
-  padding:10px 24px; border-radius:100px; z-index:2000;
-  opacity:0; transition:all .25s; pointer-events:none; }
-.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
 /* MOBILE */
 @media(max-width:640px) {
   .hero h1 { font-size:28px; }
   .main { padding:20px 14px; }
-  .jobs-grid { grid-template-columns:1fr; }
+  .sites-grid { grid-template-columns:1fr; }
   nav { padding:0 14px; }
-  .nav-center { display:none; }
   .filters-inner { padding:10px 14px; }
-  .modal { padding:24px 18px; }
-  .form-row { grid-template-columns:1fr; }
-  .btn-post span.ru-text,.btn-post span.he-text { }
+  .donate-banner { padding:20px; }
 }
 </style>
 </head>
@@ -229,358 +202,320 @@ footer a:hover { color:var(--text); }
     <div class="nav-logo-badge">💼</div>
     <div class="nav-logo-text">Jobs<span>IL</span></div>
   </a>
-  <div class="nav-center">
-    <svg class="nav-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-    <input class="nav-search" id="searchInput" type="text" oninput="filterJobs()"/>
-  </div>
   <div class="nav-right">
     <button class="btn-lang active" id="btnRu" onclick="setLang('ru')">РУС</button>
     <button class="btn-lang" id="btnHe" onclick="setLang('he')">עב</button>
     <button class="btn-theme" id="btnTheme" onclick="toggleTheme()">🌙</button>
-    <button class="btn-post" onclick="openModal()">
-      <span class="ru-text">+ Добавить вакансию</span>
-      <span class="he-text" style="display:none">+ הוסף משרה</span>
-    </button>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-badge">
-    <span class="ru-text">🔥 Обновлено сегодня</span>
-    <span class="he-text" style="display:none">🔥 עודכן היום</span>
+    <span class="ru-text">🇮🇱 Все сайты вакансий Израиля</span>
+    <span class="he-text" style="display:none">🇮🇱 כל אתרי המשרות בישראל</span>
   </div>
   <h1 class="ru-text">Найди работу в <em>Израиле</em></h1>
   <h1 class="he-text" style="display:none">מצא עבודה ב<em>ישראל</em></h1>
-  <p class="hero-sub ru-text">Все вакансии Израиля в одном месте — из AllJobs, Drushim, Jobnet и других сайтов</p>
-  <p class="hero-sub he-text" style="display:none">כל המשרות בישראל במקום אחד — מ-AllJobs, דרושים, Jobnet ועוד</p>
+  <p class="hero-sub ru-text">Выбери сайт — и нажми кнопку. Мы откроем поиск по нужной категории прямо на AllJobs, Drushim, Jobnet и других.</p>
+  <p class="hero-sub he-text" style="display:none">בחר אתר ולחץ על הכפתור. נפתח חיפוש לפי קטגוריה ב-AllJobs, דרושים, Jobnet ועוד.</p>
+
+  <div class="search-wrap">
+    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input id="searchInput" type="text" oninput="filterSites()" />
+  </div>
+
   <div class="hero-stats">
-    <div class="h-stat"><span class="h-stat-n" id="statJobs">0</span><span class="h-stat-l ru-text">Вакансий</span><span class="h-stat-l he-text" style="display:none">משרות</span></div>
-    <div class="h-stat"><span class="h-stat-n">8</span><span class="h-stat-l ru-text">Категорий</span><span class="h-stat-l he-text" style="display:none">קטגוריות</span></div>
-    <div class="h-stat"><span class="h-stat-n">4</span><span class="h-stat-l ru-text">Региона</span><span class="h-stat-l he-text" style="display:none">אזורים</span></div>
-    <div class="h-stat"><span class="h-stat-n">3</span><span class="h-stat-l ru-text">Источника</span><span class="h-stat-l he-text" style="display:none">מקורות</span></div>
+    <div class="h-stat"><span class="h-stat-n">6</span><span class="h-stat-l ru-text">Сайтов</span><span class="h-stat-l he-text" style="display:none">אתרים</span></div>
+    <div class="h-stat"><span class="h-stat-n">10</span><span class="h-stat-l ru-text">Категорий</span><span class="h-stat-l he-text" style="display:none">קטגוריות</span></div>
+    <div class="h-stat"><span class="h-stat-n">100K+</span><span class="h-stat-l ru-text">Вакансий</span><span class="h-stat-l he-text" style="display:none">משרות</span></div>
   </div>
 </section>
 
 <!-- FILTERS -->
 <div class="sticky-bar">
   <div class="filters-inner">
-    <!-- Categories -->
-    <button class="f-chip active" data-type="cat" data-val="all" onclick="setFilter(this,'cat')"><span class="ru-text">Все</span><span class="he-text" style="display:none">הכל</span></button>
-    <button class="f-chip" data-type="cat" data-val="security" onclick="setFilter(this,'cat')">🛡 <span class="ru-text">Охрана</span><span class="he-text" style="display:none">אבטחה</span></button>
-    <button class="f-chip" data-type="cat" data-val="construction" onclick="setFilter(this,'cat')">🏗 <span class="ru-text">Строительство</span><span class="he-text" style="display:none">בנייה</span></button>
-    <button class="f-chip" data-type="cat" data-val="it" onclick="setFilter(this,'cat')">💻 IT</button>
-    <button class="f-chip" data-type="cat" data-val="medical" onclick="setFilter(this,'cat')">⚕️ <span class="ru-text">Медицина</span><span class="he-text" style="display:none">רפואה</span></button>
-    <button class="f-chip" data-type="cat" data-val="trade" onclick="setFilter(this,'cat')">🛍 <span class="ru-text">Торговля</span><span class="he-text" style="display:none">מסחר</span></button>
-    <button class="f-chip" data-type="cat" data-val="warehouse" onclick="setFilter(this,'cat')">📦 <span class="ru-text">Склад</span><span class="he-text" style="display:none">מחסן</span></button>
-    <button class="f-chip" data-type="cat" data-val="cleaning" onclick="setFilter(this,'cat')">🧹 <span class="ru-text">Уборка</span><span class="he-text" style="display:none">ניקיון</span></button>
-    <button class="f-chip" data-type="cat" data-val="driver" onclick="setFilter(this,'cat')">🚗 <span class="ru-text">Водители</span><span class="he-text" style="display:none">נהגים</span></button>
-    <button class="f-chip" data-type="cat" data-val="food" onclick="setFilter(this,'cat')">🍽 <span class="ru-text">Общепит</span><span class="he-text" style="display:none">מסעדות</span></button>
-    <div class="f-sep"></div>
-    <!-- Regions -->
-    <button class="f-chip region" data-type="region" data-val="center" onclick="setFilter(this,'region')"><span class="ru-text">🏙 Центр</span><span class="he-text" style="display:none">🏙 מרכז</span></button>
-    <button class="f-chip region" data-type="region" data-val="north" onclick="setFilter(this,'region')"><span class="ru-text">🌿 Север</span><span class="he-text" style="display:none">🌿 צפון</span></button>
-    <button class="f-chip region" data-type="region" data-val="south" onclick="setFilter(this,'region')"><span class="ru-text">☀️ Юг</span><span class="he-text" style="display:none">☀️ דרום</span></button>
-    <button class="f-chip region" data-type="region" data-val="jerusalem" onclick="setFilter(this,'region')"><span class="ru-text">🕍 Иерусалим</span><span class="he-text" style="display:none">🕍 ירושלים</span></button>
+    <button class="f-chip active" data-val="all" onclick="setFilter(this)"><span class="ru-text">Все</span><span class="he-text" style="display:none">הכל</span></button>
+    <button class="f-chip" data-val="security" onclick="setFilter(this)">🛡 <span class="ru-text">Охрана</span><span class="he-text" style="display:none">אבטחה</span></button>
+    <button class="f-chip" data-val="construction" onclick="setFilter(this)">🏗 <span class="ru-text">Строительство</span><span class="he-text" style="display:none">בנייה</span></button>
+    <button class="f-chip" data-val="it" onclick="setFilter(this)">💻 IT</button>
+    <button class="f-chip" data-val="medical" onclick="setFilter(this)">⚕️ <span class="ru-text">Медицина</span><span class="he-text" style="display:none">רפואה</span></button>
+    <button class="f-chip" data-val="trade" onclick="setFilter(this)">🛍 <span class="ru-text">Торговля</span><span class="he-text" style="display:none">מסחר</span></button>
+    <button class="f-chip" data-val="warehouse" onclick="setFilter(this)">📦 <span class="ru-text">Склад</span><span class="he-text" style="display:none">מחסן</span></button>
+    <button class="f-chip" data-val="cleaning" onclick="setFilter(this)">🧹 <span class="ru-text">Уборка</span><span class="he-text" style="display:none">ניקיון</span></button>
+    <button class="f-chip" data-val="driver" onclick="setFilter(this)">🚗 <span class="ru-text">Водители</span><span class="he-text" style="display:none">נהגים</span></button>
+    <button class="f-chip" data-val="food" onclick="setFilter(this)">🍽 <span class="ru-text">Общепит</span><span class="he-text" style="display:none">מסעדות</span></button>
+    <button class="f-chip" data-val="remote" onclick="setFilter(this)">🌐 <span class="ru-text">Удалённо</span><span class="he-text" style="display:none">מרחוק</span></button>
   </div>
 </div>
 
 <!-- MAIN -->
 <main class="main">
-  <div class="section-header">
-    <div class="section-title ru-text" style="flex:1">Актуальные вакансии</div>
-    <div class="section-title he-text" style="flex:1;display:none">משרות עדכניות</div>
-    <div class="jobs-count" id="jobsCount"></div>
+
+  <!-- SITES GRID -->
+  <div class="section-label">
+    <span class="ru-text">Перейти на сайт вакансий</span>
+    <span class="he-text" style="display:none">עבור לאתר משרות</span>
   </div>
-  <div class="jobs-grid" id="jobsGrid"></div>
+  <div class="sites-grid" id="sitesGrid"></div>
   <div class="no-results" id="noResults">
     <div class="no-results-icon">🔍</div>
     <h3 class="ru-text">Ничего не найдено</h3>
     <h3 class="he-text" style="display:none">לא נמצאו תוצאות</h3>
-    <p class="ru-text" style="color:var(--text2);margin-top:8px">Попробуй другой запрос или фильтр</p>
-    <p class="he-text" style="display:none;color:var(--text2);margin-top:8px">נסה חיפוש אחר</p>
+    <p style="color:var(--text2);margin-top:8px" class="ru-text">Попробуй другой фильтр</p>
+    <p style="color:var(--text2);margin-top:8px;display:none" class="he-text">נסה מסנן אחר</p>
   </div>
+
+  <!-- TIPS -->
+  <div class="section-label" style="margin-top:12px">
+    <span class="ru-text">Советы по поиску</span>
+    <span class="he-text" style="display:none">טיפים לחיפוש עבודה</span>
+  </div>
+  <div class="tips-grid">
+    <div class="tip-card">
+      <div class="tip-icon">📝</div>
+      <div>
+        <div class="tip-title"><span class="ru-text">Резюме на иврите</span><span class="he-text" style="display:none">קורות חיים בעברית</span></div>
+        <div class="tip-text ru-text">На большинстве израильских сайтов работодатели ожидают CV на иврите. Используй Google Translate для базового перевода.</div>
+        <div class="tip-text he-text" style="display:none">ברוב אתרי המשרות מעסיקים מצפים לקורות חיים בעברית. השתמש בתרגום אוטומטי לתרגום בסיסי.</div>
+      </div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">📱</div>
+      <div>
+        <div class="tip-title"><span class="ru-text">WhatsApp важен</span><span class="he-text" style="display:none">WhatsApp חשוב</span></div>
+        <div class="tip-text ru-text">В Израиле большинство работодателей общаются через WhatsApp. Укажи номер +972 в профиле.</div>
+        <div class="tip-text he-text" style="display:none">בישראל רוב המעסיקים מתקשרים דרך WhatsApp. הוסף מספר +972 בפרופיל שלך.</div>
+      </div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🕐</div>
+      <div>
+        <div class="tip-title"><span class="ru-text">Реагируй быстро</span><span class="he-text" style="display:none">הגב מהר</span></div>
+        <div class="tip-text ru-text">Вакансии в Израиле закрываются быстро. Откликайся в течение 24 часов после публикации.</div>
+        <div class="tip-text he-text" style="display:none">משרות בישראל נסגרות במהירות. הגש מועמדות תוך 24 שעות מפרסום המשרה.</div>
+      </div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🔔</div>
+      <div>
+        <div class="tip-title"><span class="ru-text">Поставь алерт</span><span class="he-text" style="display:none">הגדר התראה</span></div>
+        <div class="tip-text ru-text">На AllJobs и Drushim можно создать email-уведомление — новые вакансии придут сами.</div>
+        <div class="tip-text he-text" style="display:none">ב-AllJobs ובדרושים ניתן להגדיר התראות מייל — משרות חדשות יגיעו אוטומטית.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DONATE -->
+  <div class="donate-banner">
+    <div style="font-size:42px;flex-shrink:0">☕</div>
+    <div class="donate-text">
+      <h3 class="ru-text">Проект бесплатный — поддержи кофе!</h3>
+      <h3 class="he-text" style="display:none">הפרויקט חינמי — תמוך בקפה!</h3>
+      <p class="ru-text">JobsIL работает без рекламы и регистрации. Если помог — купи кофе автору 🙏</p>
+      <p class="he-text" style="display:none">JobsIL עובד ללא פרסומות ורישום. אם עזר — קנה קפה למפתח 🙏</p>
+    </div>
+    <a href="https://ko-fi.com/varthur" target="_blank" rel="noopener" class="btn-donate">☕ <span class="ru-text">Ko-fi</span></a>
+  </div>
+
 </main>
 
-<!-- SUBMIT MODAL -->
-<div class="modal-ov" id="modal" onclick="handleMO(event)">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">×</button>
-    <div class="modal-title ru-text">Добавить вакансию 💼</div>
-    <div class="modal-title he-text" style="display:none">הוסף משרה 💼</div>
-    <div class="modal-sub ru-text">Вакансия будет опубликована после проверки</div>
-    <div class="modal-sub he-text" style="display:none">המשרה תפורסם לאחר בדיקה</div>
-
-    <div class="form-g">
-      <label class="form-l ru-text">Название должности</label>
-      <label class="form-l he-text" style="display:none">שם המשרה</label>
-      <input class="form-i" id="fTitle" type="text"/>
-    </div>
-    <div class="form-g">
-      <label class="form-l ru-text">Компания</label>
-      <label class="form-l he-text" style="display:none">חברה</label>
-      <input class="form-i" id="fCompany" type="text"/>
-    </div>
-    <div class="form-row">
-      <div class="form-g">
-        <label class="form-l ru-text">Категория</label>
-        <label class="form-l he-text" style="display:none">קטגוריה</label>
-        <select class="form-i" id="fCat">
-          <option value="security" class="ru-text">🛡 Охрана</option>
-          <option value="construction" class="ru-text">🏗 Строительство</option>
-          <option value="it" class="ru-text">💻 IT</option>
-          <option value="medical" class="ru-text">⚕️ Медицина</option>
-          <option value="trade" class="ru-text">🛍 Торговля</option>
-          <option value="warehouse" class="ru-text">📦 Склад</option>
-          <option value="cleaning" class="ru-text">🧹 Уборка</option>
-          <option value="driver" class="ru-text">🚗 Водители</option>
-          <option value="food" class="ru-text">🍽 Общепит</option>
-        </select>
-      </div>
-      <div class="form-g">
-        <label class="form-l ru-text">Регион</label>
-        <label class="form-l he-text" style="display:none">אזור</label>
-        <select class="form-i" id="fRegion">
-          <option value="center" class="ru-text">🏙 Центр</option>
-          <option value="north" class="ru-text">🌿 Север</option>
-          <option value="south" class="ru-text">☀️ Юг</option>
-          <option value="jerusalem" class="ru-text">🕍 Иерусалим</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-g">
-        <label class="form-l ru-text">Зарплата (₪)</label>
-        <label class="form-l he-text" style="display:none">משכורת (₪)</label>
-        <input class="form-i" id="fSalary" type="text" placeholder="6,000 - 8,000"/>
-      </div>
-      <div class="form-g">
-        <label class="form-l ru-text">Тип занятости</label>
-        <label class="form-l he-text" style="display:none">סוג משרה</label>
-        <select class="form-i" id="fType">
-          <option class="ru-text">Полная ставка</option>
-          <option class="ru-text">Частичная ставка</option>
-          <option class="ru-text">Вахта</option>
-          <option class="ru-text">Временная</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-g">
-      <label class="form-l ru-text">Описание вакансии</label>
-      <label class="form-l he-text" style="display:none">תיאור המשרה</label>
-      <textarea class="form-i" id="fDesc" style="height:80px;resize:none"></textarea>
-    </div>
-    <div class="form-g">
-      <label class="form-l ru-text">Ссылка на вакансию</label>
-      <label class="form-l he-text" style="display:none">קישור למשרה</label>
-      <input class="form-i" id="fLink" type="url" placeholder="https://"/>
-    </div>
-    <div class="form-g">
-      <label class="form-l ru-text">Контактный телефон / WhatsApp</label>
-      <label class="form-l he-text" style="display:none">טלפון / WhatsApp</label>
-      <input class="form-i" id="fPhone" type="tel" placeholder="+972"/>
-    </div>
-    <button class="form-submit" onclick="submitJob()">
-      <span class="ru-text">Отправить на проверку ✓</span>
-      <span class="he-text" style="display:none">שלח לבדיקה ✓</span>
-    </button>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
-
 <footer>
-  <p>JobsIL &nbsp;·&nbsp; <a href="#">О проекте</a> &nbsp;·&nbsp; <a href="#">Реклама</a> &nbsp;·&nbsp; <a href="#">Партнёрам</a></p>
-  <p style="margin-top:6px;font-size:11px">Вакансии собраны из открытых источников · המשרות נאספות ממקורות פתוחים</p>
+  <p>JobsIL &nbsp;·&nbsp; <a href="#">О проекте</a> &nbsp;·&nbsp; <a href="https://ko-fi.com/varthur" target="_blank">Поддержать</a></p>
+  <p style="margin-top:6px;font-size:11px">Агрегатор ссылок на израильские сайты вакансий · אגרגטור קישורים לאתרי משרות ישראליים</p>
 </footer>
 
 <script>
-// ═══ MOCK DATA ═══
-const JOBS = [
-  { id:1, title_ru:'Охранник торгового центра', title_he:'שומר מרכז קניות',
-    company:'SecureGuard IL', cat:'security', region:'center',
-    salary:'₪7,500–9,000', type_ru:'Полная ставка', type_he:'משרה מלאה',
-    desc_ru:'Охрана торгового центра в Тель-Авиве. Опыт не обязателен. Обучение за счёт компании.',
-    desc_he:'שמירה במרכז קניות בתל אביב. ניסיון לא חובה. הכשרה על חשבון החברה.',
-    lang:['ru','he'], source:'AllJobs', link:'https://www.alljobs.co.il',
-    date:'09.05', emoji:'🛡', featured:true, isNew:true },
-  { id:2, title_ru:'Разработчик React', title_he:'מפתח React',
-    company:'TechStart TLV', cat:'it', region:'center',
-    salary:'₪25,000–35,000', type_ru:'Полная ставка', type_he:'משרה מלאה',
-    desc_ru:'Ищем опытного React разработчика для работы в стартапе. TypeScript, Node.js — преимущество.',
-    desc_he:'מחפשים מפתח React מנוסה לעבוד בסטארטאפ. TypeScript, Node.js — יתרון.',
-    lang:['ru','he'], source:'LinkedIn', link:'https://www.linkedin.com',
-    date:'09.05', emoji:'💻', featured:true, isNew:true },
-  { id:3, title_ru:'Медсестра / Медбрат', title_he:'אחות / אח',
-    company:'Hadassah Medical', cat:'medical', region:'jerusalem',
-    salary:'₪12,000–16,000', type_ru:'Полная ставка', type_he:'משרה מלאה',
-    desc_ru:'Требуется медсестра с лицензией для работы в отделении терапии. Знание иврита обязательно.',
-    desc_he:'דרושה אחות מוסמכת לעבודה במחלקה פנימית. ידיעת עברית חובה.',
-    lang:['ru','he'], source:'Jobnet', link:'https://www.jobnet.gov.il',
-    date:'08.05', emoji:'⚕️', featured:false, isNew:true },
-  { id:4, title_ru:'Водитель грузового автомобиля', title_he:'נהג משאית',
-    company:'TransIL Logistics', cat:'driver', region:'center',
-    salary:'₪10,000–14,000', type_ru:'Полная ставка', type_he:'משרה מלאה',
-    desc_ru:'Нужен водитель с правами категории C+E. Развоз по центральному округу.',
-    desc_he:'דרוש נהג עם רישיון C+E. חלוקה במחוז המרכז.',
-    lang:['ru','he'], source:'Drushim', link:'https://www.drushim.co.il',
-    date:'08.05', emoji:'🚗', featured:false, isNew:false },
-  { id:5, title_ru:'Рабочий склада', title_he:'עובד מחסן',
-    company:'Amazon IL Fulfillment', cat:'warehouse', region:'center',
-    salary:'₪6,500–8,000', type_ru:'Полная / Частичная', type_he:'מלאה / חלקית',
-    desc_ru:'Работа на складе в Кирьят-Гате. Комплектация заказов, работа с ПК. Ночные смены — доплата.',
-    desc_he:'עבודה במחסן בקריית גת. ליקוט הזמנות, עבודה עם מחשב. משמרות לילה — תוספת.',
-    lang:['ru','he'], source:'AllJobs', link:'https://www.alljobs.co.il',
-    date:'07.05', emoji:'📦', featured:false, isNew:false },
-  { id:6, title_ru:'Продавец-консультант электроники', title_he:'יועץ מכירות אלקטרוניקה',
-    company:'KSP Electronics', cat:'trade', region:'center',
-    salary:'₪7,000–11,000', type_ru:'Полная ставка', type_he:'משרה מלאה',
-    desc_ru:'Продажа электроники и бытовой техники. Опыт в продажах приветствуется. Бонусы за результат.',
-    desc_he:'מכירת אלקטרוניקה ומכשירי חשמל. ניסיון במכירות רצוי. בונוסים על תוצאות.',
-    lang:['ru','he'], source:'LinkedIn', link:'https://www.linkedin.com',
-    date:'07.05', emoji:'🛍', featured:false, isNew:false },
-  { id:7, title_ru:'Уборщица в офисный комплекс', title_he:'מנקה במתחם משרדים',
-    company:'CleanPro Services', cat:'cleaning', region:'north',
-    salary:'₪5,500–6,500', type_ru:'Частичная ставка', type_he:'משרה חלקית',
-    desc_ru:'Уборка офисов в Хайфе. Утренние часы. Опыт не требуется.',
-    desc_he:'ניקיון משרדים בחיפה. שעות בוקר. ניסיון לא נדרש.',
-    lang:['ru','he'], source:'Jobnet', link:'https://www.jobnet.gov.il',
-    date:'06.05', emoji:'🧹', featured:false, isNew:false },
-  { id:8, title_ru:'Строитель / Отделочник', title_he:'פועל בניין / גמר',
-    company:'BuildRight Construction', cat:'construction', region:'south',
-    salary:'₪8,000–12,000', type_ru:'Вахта', type_he:'עבודה בסיבובים',
-    desc_ru:'Строительные работы в Беэр-Шеве. Опыт в отделке приветствуется. Жильё предоставляется.',
-    desc_he:'עבודות בנייה בבאר שבע. ניסיון בגמר רצוי. דיור מסופק.',
-    lang:['ru','he'], source:'Drushim', link:'https://www.drushim.co.il',
-    date:'06.05', emoji:'🏗', featured:false, isNew:false },
-  { id:9, title_ru:'Повар / Помощник повара', title_he:'טבח / עוזר טבח',
-    company:'Café Dizengoff', cat:'food', region:'center',
-    salary:'₪7,000–9,500', type_ru:'Полная ставка', type_he:'משרה מלאה',
-    desc_ru:'Требуется повар в популярное кафе на Дизенгоф. Опыт от 1 года. Вечерние смены.',
-    desc_he:'דרוש טבח לקפה פופולרי בדיזנגוף. ניסיון מ-1 שנה. משמרות ערב.',
-    lang:['ru','he'], source:'AllJobs', link:'https://www.alljobs.co.il',
-    date:'05.05', emoji:'🍽', featured:false, isNew:false },
-  { id:10, title_ru:'DevOps Engineer', title_he:'מהנדס DevOps',
-    company:'CyberSec IL', cat:'it', region:'center',
-    salary:'₪28,000–40,000', type_ru:'Полная ставка', type_he:'משרה מלאה',
-    desc_ru:'AWS, Docker, Kubernetes. Опыт от 3 лет. Гибридный формат работы.',
-    desc_he:'AWS, Docker, Kubernetes. ניסיון מ-3 שנים. פורמט עבודה היברידי.',
-    lang:['ru','he'], source:'LinkedIn', link:'https://www.linkedin.com',
-    date:'05.05', emoji:'💻', featured:true, isNew:false },
+// ═══ SITES DATA ═══
+const SITES = [
+  {
+    id:'alljobs',
+    emoji:'🔵',
+    name:'AllJobs',
+    domain:'alljobs.co.il',
+    tags:['ru-text:Крупнейший в Израиле','he-text:הגדול בישראל','tag-blue'],
+    desc_ru:'Самый большой сайт вакансий в Израиле. Более 60,000 актуальных позиций. Есть фильтр по русскоязычным работодателям.',
+    desc_he:'האתר הגדול ביותר למשרות בישראל. מעל 60,000 משרות עדכניות. יש סינון לפי מעסיקים דוברי רוסית.',
+    cats:['security','construction','it','medical','trade','warehouse','cleaning','driver','food','remote'],
+    baseUrl:'https://www.alljobs.co.il',
+    catUrls:{
+      security:'https://www.alljobs.co.il/SearchResults.aspx?fromAgg=1&type=4&industry=101',
+      construction:'https://www.alljobs.co.il/SearchResults.aspx?fromAgg=1&type=4&industry=103',
+      it:'https://www.alljobs.co.il/SearchResults.aspx?fromAgg=1&type=4&industry=4',
+      medical:'https://www.alljobs.co.il/SearchResults.aspx?fromAgg=1&type=4&industry=7',
+      trade:'https://www.alljobs.co.il/SearchResults.aspx?fromAgg=1&type=4&industry=13',
+      warehouse:'https://www.alljobs.co.il/SearchResults.aspx?fromAgg=1&type=4&industry=21',
+      cleaning:'https://www.alljobs.co.il/SearchResults.aspx?fromAgg=1&type=4&industry=22',
+      driver:'https://www.alljobs.co.il/SearchResults.aspx?fromAgg=1&type=4&industry=24',
+      food:'https://www.alljobs.co.il/SearchResults.aspx?fromAgg=1&type=4&industry=15',
+      remote:'https://www.alljobs.co.il/SearchResults.aspx?fromAgg=1&type=4&scope=3',
+    }
+  },
+  {
+    id:'drushim',
+    emoji:'🟠',
+    name:'דרושים',
+    domain:'drushim.co.il',
+    tags:['ru-text:Популярный','he-text:פופולרי','tag-amber'],
+    desc_ru:'Один из лидеров рынка. Много вакансий без опыта и для новых репатриантов. Простой иврит.',
+    desc_he:'אחד ממובילי השוק. משרות רבות ללא ניסיון ולעולים חדשים. עברית פשוטה.',
+    cats:['security','construction','it','medical','trade','warehouse','cleaning','driver','food'],
+    baseUrl:'https://www.drushim.co.il',
+    catUrls:{
+      security:'https://www.drushim.co.il/jobs/cat14/',
+      construction:'https://www.drushim.co.il/jobs/cat5/',
+      it:'https://www.drushim.co.il/jobs/cat1/',
+      medical:'https://www.drushim.co.il/jobs/cat8/',
+      trade:'https://www.drushim.co.il/jobs/cat13/',
+      warehouse:'https://www.drushim.co.il/jobs/cat22/',
+      cleaning:'https://www.drushim.co.il/jobs/cat23/',
+      driver:'https://www.drushim.co.il/jobs/cat18/',
+      food:'https://www.drushim.co.il/jobs/cat11/',
+    }
+  },
+  {
+    id:'jobnet',
+    emoji:'🟢',
+    name:'Jobnet',
+    domain:'jobnet.gov.il',
+    tags:['ru-text:Государственный','he-text:ממשלתי','tag-green'],
+    desc_ru:'Официальный государственный сайт вакансий. Через него подаётся заявка на биржу труда (לשכת התעסוקה).',
+    desc_he:'האתר הממשלתי הרשמי למשרות. דרכו מגישים בקשה ללשכת התעסוקה.',
+    cats:['security','construction','it','medical','trade','warehouse','cleaning','driver','food'],
+    baseUrl:'https://www.jobnet.gov.il',
+    catUrls:{
+      security:'https://www.jobnet.gov.il/JobSearch?SectorId=14',
+      construction:'https://www.jobnet.gov.il/JobSearch?SectorId=5',
+      it:'https://www.jobnet.gov.il/JobSearch?SectorId=1',
+      medical:'https://www.jobnet.gov.il/JobSearch?SectorId=8',
+      trade:'https://www.jobnet.gov.il/JobSearch?SectorId=13',
+      warehouse:'https://www.jobnet.gov.il/JobSearch',
+      cleaning:'https://www.jobnet.gov.il/JobSearch',
+      driver:'https://www.jobnet.gov.il/JobSearch?SectorId=18',
+      food:'https://www.jobnet.gov.il/JobSearch?SectorId=11',
+    }
+  },
+  {
+    id:'linkedin',
+    emoji:'🔷',
+    name:'LinkedIn Jobs',
+    domain:'linkedin.com/jobs',
+    tags:['ru-text:Для IT и офиса','he-text:להייטק ומשרדים','tag-blue'],
+    desc_ru:'Лучший вариант для IT, маркетинга, финансов. Профиль на английском. Можно откликнуться в 1 клик.',
+    desc_he:'האפשרות הטובה ביותר להייטק, שיווק, פיננסים. פרופיל באנגלית. ניתן להגיש מועמדות בלחיצה אחת.',
+    cats:['it','medical','trade','remote'],
+    baseUrl:'https://www.linkedin.com/jobs/search/?location=Israel',
+    catUrls:{
+      it:'https://www.linkedin.com/jobs/search/?keywords=developer&location=Israel',
+      medical:'https://www.linkedin.com/jobs/search/?keywords=medical+nurse&location=Israel',
+      trade:'https://www.linkedin.com/jobs/search/?keywords=sales&location=Israel',
+      remote:'https://www.linkedin.com/jobs/search/?f_WT=2&location=Israel',
+    }
+  },
+  {
+    id:'gotfriends',
+    emoji:'🟣',
+    name:'GotFriends',
+    domain:'gotfriends.co.il',
+    tags:['ru-text:Агентство','he-text:סוכנות השמה','tag-purple'],
+    desc_ru:'Крупное кадровое агентство Израиля. Специализируется на найме через рекрутеров. Хорош для Hi-Tech.',
+    desc_he:'סוכנות גיוס גדולה בישראל. מתמחה בגיוס דרך מגייסים. מצוין להייטק.',
+    cats:['it','medical','trade'],
+    baseUrl:'https://www.gotfriends.co.il',
+    catUrls:{
+      it:'https://www.gotfriends.co.il/Jobs?category=software',
+      medical:'https://www.gotfriends.co.il/Jobs?category=medical',
+      trade:'https://www.gotfriends.co.il/Jobs?category=sales',
+    }
+  },
+  {
+    id:'jbp',
+    emoji:'🔴',
+    name:'Jobs For Olim',
+    domain:'jobsforolim.com',
+    tags:['ru-text:Для репатриантов','he-text:לעולים','tag-red'],
+    desc_ru:'Специальный сайт вакансий для новых репатриантов. Работодатели, которые ищут русско- и англоязычных.',
+    desc_he:'אתר משרות מיוחד לעולים חדשים. מעסיקים המחפשים דוברי רוסית ואנגלית.',
+    cats:['security','it','trade','food','remote'],
+    baseUrl:'https://www.jobsforolim.com',
+    catUrls:{
+      security:'https://www.jobsforolim.com/jobs/?category=security',
+      it:'https://www.jobsforolim.com/jobs/?category=technology',
+      trade:'https://www.jobsforolim.com/jobs/?category=sales',
+      food:'https://www.jobsforolim.com/jobs/?category=hospitality',
+      remote:'https://www.jobsforolim.com/jobs/?remote=true',
+    }
+  },
 ];
 
 // ═══ STATE ═══
 let lang = 'ru';
 let activeCat = 'all';
-let activeRegion = null;
 let searchQ = '';
-let saved = JSON.parse(localStorage.getItem('jobsil_saved') || '[]');
 
 // ═══ RENDER ═══
-function renderJobs(jobs) {
-  const grid = document.getElementById('jobsGrid');
+function renderSites() {
+  const grid = document.getElementById('sitesGrid');
   const no = document.getElementById('noResults');
-  const cnt = document.getElementById('jobsCount');
-  if (!jobs.length) {
+
+  let filtered = SITES.filter(s => {
+    const matchCat = activeCat === 'all' || s.cats.includes(activeCat);
+    const matchQ = !searchQ || (s.name + s.desc_ru + s.desc_he).toLowerCase().includes(searchQ);
+    return matchCat && matchQ;
+  });
+
+  if (!filtered.length) {
     grid.innerHTML = '';
     no.style.display = 'block';
-    cnt.textContent = '';
     return;
   }
   no.style.display = 'none';
-  cnt.textContent = lang === 'ru' ? `${jobs.length} вакансий` : `${jobs.length} משרות`;
-  grid.innerHTML = jobs.map((j, i) => buildCard(j, i)).join('');
-  saved.forEach(id => {
-    const b = document.querySelector(`.job-save[data-id="${id}"]`);
-    if (b) { b.textContent = '⭐'; b.classList.add('saved'); }
-  });
+
+  grid.innerHTML = filtered.map((s, i) => buildCard(s, i)).join('');
 }
 
-const SRC_COLORS = { AllJobs:'rgba(255,77,109,0.12)', LinkedIn:'rgba(0,119,181,0.12)', Drushim:'rgba(255,184,0,0.12)', Jobnet:'rgba(0,229,160,0.1)' };
-const REGION_LABELS = { center:{ru:'🏙 Центр',he:'🏙 מרכז'}, north:{ru:'🌿 Север',he:'🌿 צפון'}, south:{ru:'☀️ Юг',he:'☀️ דרום'}, jerusalem:{ru:'🕍 Иерусалим',he:'🕍 ירושלים'} };
+function buildCard(s, i) {
+  const desc = lang === 'ru' ? s.desc_ru : s.desc_he;
+  const gotoLabel = lang === 'ru' ? 'Открыть сайт →' : 'פתח אתר →';
+  const searchLabel = lang === 'ru' ? '🔍 Искать по категории' : '🔍 חפש לפי קטגוריה';
 
-function buildCard(j, i) {
-  const t = lang === 'ru' ? j.title_ru : j.title_he;
-  const desc = lang === 'ru' ? j.desc_ru : j.desc_he;
-  const type = lang === 'ru' ? j.type_ru : j.type_he;
-  const region = REGION_LABELS[j.region] ? REGION_LABELS[j.region][lang] : j.region;
-  const isSaved = saved.includes(j.id);
-  const applyLabel = lang === 'ru' ? 'Откликнуться' : 'להגיש מועמדות';
-  const saveLabel = lang === 'ru' ? 'Сохранить' : 'שמור';
+  // Get the correct URL for current category
+  const targetUrl = (activeCat !== 'all' && s.catUrls[activeCat]) ? s.catUrls[activeCat] : s.baseUrl;
+  const hasFilter = activeCat !== 'all' && s.catUrls[activeCat];
+
   return `
-  <div class="job-card" style="animation-delay:${i*0.04}s">
-    <div class="job-card-top">
-      <div class="job-logo" style="background:${SRC_COLORS[j.source]||'var(--bg3)'}">${j.emoji}</div>
-      <div class="job-meta">
-        <div class="job-company">${j.company}</div>
-        <div class="job-title">${t}</div>
+  <div class="site-card" style="animation-delay:${i*0.06}s">
+    <div class="site-card-head">
+      <div class="site-logo" style="font-size:26px">${s.emoji}</div>
+      <div class="site-info">
+        <div class="site-name">${s.name}</div>
+        <div class="site-domain">${s.domain}</div>
       </div>
     </div>
-    <div class="job-badges">
-      ${j.isNew ? `<span class="badge badge-new">${lang==='ru'?'Новая':'חדש'}</span>` : ''}
-      <span class="badge badge-region">${region}</span>
-      <span class="badge badge-type">${type}</span>
-      <span class="badge badge-source">${j.source}</span>
+    <div class="site-tags">
+      <span class="tag tag-${s.tags[2] || 'blue'}">${lang === 'ru' ? s.tags[0].replace('ru-text:','') : s.tags[1].replace('he-text:','')}</span>
+      ${s.cats.includes('remote') ? `<span class="tag tag-green">${lang==='ru'?'Удалёнка':'מרחוק'}</span>` : ''}
     </div>
-    <div class="job-desc">${desc}</div>
-    <div class="job-footer">
-      <div>
-        <div class="job-salary">${j.salary}</div>
-        <div class="job-date">${j.date}</div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="job-save${isSaved?' saved':''}" data-id="${j.id}"
-          onclick="toggleSave(${j.id},this)" title="${saveLabel}">
-          ${isSaved?'⭐':'🤍'}
-        </button>
-        <a href="${j.link}" target="_blank" rel="noopener" class="job-apply"
-          onclick="trackApply(${j.id})">${applyLabel}</a>
-      </div>
+    <div class="site-desc">${desc}</div>
+    <div class="site-actions">
+      <a href="${targetUrl}" target="_blank" rel="noopener" class="btn-goto">${gotoLabel}</a>
+      ${hasFilter ? `<a href="${targetUrl}" target="_blank" rel="noopener" class="btn-search">${searchLabel}</a>` : ''}
     </div>
   </div>`;
 }
 
 // ═══ FILTER ═══
-function filterJobs() {
+function filterSites() {
   searchQ = document.getElementById('searchInput').value.toLowerCase();
-  let res = JOBS.filter(j => {
-    const matchCat = activeCat === 'all' || j.cat === activeCat;
-    const matchReg = !activeRegion || j.region === activeRegion;
-    const t = j.title_ru + j.title_he + j.company + j.desc_ru + j.desc_he;
-    const matchQ = !searchQ || t.toLowerCase().includes(searchQ);
-    return matchCat && matchReg && matchQ;
-  });
-  res.sort((a,b) => b.featured - a.featured || b.isNew - a.isNew);
-  renderJobs(res);
+  renderSites();
 }
 
-function setFilter(btn, type) {
-  if (type === 'cat') {
-    document.querySelectorAll('[data-type="cat"]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeCat = btn.dataset.val;
-  } else {
-    const val = btn.dataset.val;
-    if (activeRegion === val) { btn.classList.remove('active'); activeRegion = null; }
-    else {
-      document.querySelectorAll('[data-type="region"]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      activeRegion = val;
-    }
-  }
-  filterJobs();
+function setFilter(btn) {
+  document.querySelectorAll('.f-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeCat = btn.dataset.val;
+  renderSites();
 }
-
-// ═══ SAVE ═══
-function toggleSave(id, btn) {
-  const idx = saved.indexOf(id);
-  if (idx === -1) { saved.push(id); btn.textContent = '⭐'; btn.classList.add('saved'); }
-  else { saved.splice(idx,1); btn.textContent = '🤍'; btn.classList.remove('saved'); }
-  localStorage.setItem('jobsil_saved', JSON.stringify(saved));
-}
-
-function trackApply(id) { console.log('Apply click job:', id); }
 
 // ═══ LANG ═══
 function setLang(l) {
@@ -592,9 +527,11 @@ function setLang(l) {
   document.getElementById('btnHe').classList.toggle('active', isHe);
   document.querySelectorAll('.ru-text').forEach(el => el.style.display = isHe ? 'none' : '');
   document.querySelectorAll('.he-text').forEach(el => el.style.display = isHe ? '' : 'none');
-  document.getElementById('searchInput').placeholder = isHe ? 'חפש משרה, עיר, חברה...' : 'Поиск вакансии, города, компании...';
+  document.getElementById('searchInput').placeholder = isHe
+    ? 'חפש אתר משרות...'
+    : 'Поиск по сайтам...';
   localStorage.setItem('jobsil_lang', l);
-  filterJobs();
+  renderSites();
 }
 
 // ═══ THEME ═══
@@ -605,36 +542,15 @@ function toggleTheme() {
   document.getElementById('btnTheme').textContent = next === 'light' ? '🌙' : '☀️';
   localStorage.setItem('jobsil_theme', next);
 }
-function initTheme() {
-  const t = localStorage.getItem('jobsil_theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', t);
-  document.getElementById('btnTheme').textContent = t === 'light' ? '🌙' : '☀️';
-}
-
-// ═══ MODAL ═══
-function openModal() { document.getElementById('modal').classList.add('open'); }
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
-function handleMO(e) { if (e.target === document.getElementById('modal')) closeModal(); }
-function submitJob() {
-  const title = document.getElementById('fTitle').value;
-  if (!title) { showToast(lang==='ru'?'Укажите название вакансии':'נא למלא שם משרה'); return; }
-  showToast(lang==='ru'?'Вакансия отправлена на проверку ✓':'המשרה נשלחה לבדיקה ✓');
-  setTimeout(closeModal, 1500);
-}
-
-// ═══ TOAST ═══
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
 
 // ═══ INIT ═══
 (function init() {
-  initTheme();
-  const savedLang = localStorage.getItem('jobsil_lang') || 'ru';
-  setLang(savedLang);
-  document.getElementById('statJobs').textContent = JOBS.length;
+  const t = localStorage.getItem('jobsil_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('btnTheme').textContent = t === 'light' ? '🌙' : '☀️';
+
+  const l = localStorage.getItem('jobsil_lang') || 'ru';
+  setLang(l);
 })();
 </script>
 </body>
