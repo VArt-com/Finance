@@ -35,10 +35,22 @@ body{
   min-height:100vh;
 }
 
-/* ── LTR override for Russian mode ── */
+/* ── LTR override for Russian/English mode ── */
 body.lang-ru { direction:ltr; }
+body.lang-en { direction:ltr; }
+body.lang-en { direction:ltr; }
 body.lang-ru .rtl-only { display:none; }
+body.lang-en .rtl-only { display:none; }
 body.lang-he .ltr-only { display:none; }
+.en-text { display:none; }
+body.lang-en .he-text { display:none!important; }
+body.lang-en .ru-text { display:none!important; }
+body.lang-en .en-text { display:revert!important; }
+/* Auth reset tab */
+#tabReset { font-size:11px; }
+#tabReset.active { background:var(--amber); border-color:var(--amber); color:#000; }
+.auth-tabs { gap:3px; }
+.auth-tab  { font-size:13px; padding:8px 5px; }
 
 /* ── BACKGROUND ── */
 .bg-mesh {
@@ -638,6 +650,7 @@ body.lang-he .user-dropdown{right:auto;left:0;}
     <button class="btn-theme-toggle" id="btnTheme" onclick="toggleTheme()" title="שנה ערכת נושא">🌙</button>
     <button class="lang-btn active" id="btnHe" onclick="setLang('he')">🇮🇱 עב</button>
     <button class="lang-btn" id="btnRu" onclick="setLang('ru')">🇷🇺 РУС</button>
+    <button class="lang-btn" id="btnEn" onclick="setLang('en')">🇺🇸 EN</button>
     <a href="https://ko-fi.com/varthur" class="kofi-nav" target="_blank">☕ Ko-fi</a>
     <!-- Login btn (shown when logged out) -->
     <button class="nav-submit-btn" id="btnOpenAuth" onclick="openAuthModal()" style="background:var(--bg3);color:var(--text2);border:0.5px solid var(--border2)">
@@ -735,10 +748,13 @@ body.lang-he .user-dropdown{right:auto;left:0;}
     <div class="auth-modal-sub ru-text" style="display:none">Добро пожаловать!</div>
     <div class="auth-tabs">
       <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">
-        <span class="he-text">כניסה</span><span class="ru-text" style="display:none">Войти</span>
+        <span class="he-text">כניסה</span><span class="ru-text" style="display:none">Войти</span><span class="en-text">Login</span>
       </button>
       <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">
-        <span class="he-text">הרשמה</span><span class="ru-text" style="display:none">Регистрация</span>
+        <span class="he-text">הרשמה</span><span class="ru-text" style="display:none">Регистрация</span><span class="en-text">Register</span>
+      </button>
+      <button class="auth-tab" id="tabReset" onclick="switchAuthTab('reset')">
+        <span class="he-text">שכחתי</span><span class="ru-text" style="display:none">Забыл</span><span class="en-text">Reset</span>
       </button>
     </div>
     <div class="auth-error" id="authError"></div>
@@ -762,6 +778,7 @@ body.lang-he .user-dropdown{right:auto;left:0;}
       <div class="auth-switch">
         <span class="he-text">אין חשבון? <a onclick="switchAuthTab('register')">הירשם עכשיו</a></span>
         <span class="ru-text" style="display:none">Нет аккаунта? <a onclick="switchAuthTab('register')">Зарегистрироваться</a></span>
+        <span class="en-text">No account? <a onclick="switchAuthTab('register')">Register</a></span>
       </div>
     </div>
 
@@ -788,8 +805,52 @@ body.lang-he .user-dropdown{right:auto;left:0;}
       <div class="auth-switch">
         <span class="he-text">יש חשבון? <a onclick="switchAuthTab('login')">כניסה</a></span>
         <span class="ru-text" style="display:none">Есть аккаунт? <a onclick="switchAuthTab('login')">Войти</a></span>
+        <span class="en-text">Have account? <a onclick="switchAuthTab('login')">Login</a></span>
       </div>
     </div>
+
+    <!-- RESET PASSWORD FORM -->
+    <div id="resetForm" style="display:none">
+      <div id="resetStep1">
+        <div class="auth-form-group">
+          <label class="auth-form-label he-text">אימייל רשום</label>
+          <label class="auth-form-label ru-text" style="display:none">Ваш email</label>
+          <label class="auth-form-label en-text">Your email</label>
+          <input class="auth-input" id="resetEmail" type="email" placeholder="you@example.com"/>
+        </div>
+        <button class="auth-submit" onclick="doResetStep1()">
+          <span class="he-text">קבל קוד אימות</span>
+          <span class="ru-text" style="display:none">Получить код</span>
+          <span class="en-text">Send reset code</span>
+        </button>
+        <div class="auth-switch">
+          <span class="he-text">נזכרת? <a onclick="switchAuthTab('login')">כניסה</a></span>
+          <span class="ru-text" style="display:none">Вспомнил? <a onclick="switchAuthTab('login')">Войти</a></span>
+          <span class="en-text">Remembered? <a onclick="switchAuthTab('login')">Login</a></span>
+        </div>
+      </div>
+      <div id="resetStep2" style="display:none">
+        <div class="auth-form-group">
+          <label class="auth-form-label he-text">קוד אימות</label>
+          <label class="auth-form-label ru-text" style="display:none">Код из подсказки</label>
+          <label class="auth-form-label en-text">Verification code</label>
+          <input class="auth-input" id="resetCode" type="text" placeholder="123456"
+            maxlength="6" style="letter-spacing:0.25em;text-align:center;font-size:20px;font-weight:700"/>
+        </div>
+        <div class="auth-form-group">
+          <label class="auth-form-label he-text">סיסמה חדשה</label>
+          <label class="auth-form-label ru-text" style="display:none">Новый пароль</label>
+          <label class="auth-form-label en-text">New password</label>
+          <input class="auth-input" id="resetNewPwd" type="password" placeholder="••••••••"/>
+        </div>
+        <button class="auth-submit" onclick="doResetStep2()">
+          <span class="he-text">שמור סיסמה חדשה ✓</span>
+          <span class="ru-text" style="display:none">Сохранить пароль ✓</span>
+          <span class="en-text">Save new password ✓</span>
+        </button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1260,20 +1321,26 @@ function setFilter(btn, type) {
 // ═══════════════════════════════════════════
 function setLang(l) {
   lang = l;
+  localStorage.setItem('dz_lang', l);
   document.documentElement.setAttribute('lang', l);
   document.documentElement.setAttribute('dir', l==='he'?'rtl':'ltr');
-  document.body.classList.toggle('lang-ru', l==='ru');
+  document.body.className = document.body.className.replace(/lang-\w+/g,'').trim();
+  document.body.classList.add('lang-'+l);
   document.getElementById('btnHe').classList.toggle('active', l==='he');
   document.getElementById('btnRu').classList.toggle('active', l==='ru');
+  const btnEn = document.getElementById('btnEn');
+  if(btnEn) btnEn.classList.toggle('active', l==='en');
   // show/hide text elements
   document.querySelectorAll('.he-text').forEach(el => el.style.display = l==='he'?'':'none');
   document.querySelectorAll('.ru-text').forEach(el => el.style.display = l==='ru'?'':'none');
+  document.querySelectorAll('.en-text').forEach(el => el.style.display = l==='en'?'':'none');
   // update placeholder
-  document.getElementById('searchInput').placeholder = l==='he' ? 'חפש מבצע, מוצר, רשת...' : 'Поиск акции, товара, магазина...';
+  const ph = {he:'חפש מבצע, מוצר, רשת...', ru:'Поиск акции, товара, магазина...', en:'Search deals, products, stores...'};
+  document.getElementById('searchInput').placeholder = ph[l]||ph.he;
   filterDeals();
   // update lock bar text
   document.querySelectorAll('.lock-bar').forEach(b=>{
-    b.innerHTML = l==='he' ? '🔒 כניסה לצפייה במבצע' : '🔒 Войдите чтобы открыть';
+    b.innerHTML = l==='he' ? '🔒 כניסה לצפייה במבצע' : l==='en' ? '🔒 Login to view deal' : '🔒 Войдите чтобы открыть';
   });
 }
 
@@ -1341,7 +1408,7 @@ async function submitDeal() {
 //  INIT
 // ═══════════════════════════════════════════
 (function init() {
-  setLang('he');
+  setLang(localStorage.getItem('dz_lang') || 'he');
   loadAllDeals();
 })();
 
@@ -1361,12 +1428,20 @@ function closeAuthModal(){ document.getElementById('authOverlay').classList.remo
 function handleAuthOverlay(e){ if(e.target===document.getElementById('authOverlay')) closeAuthModal(); }
 
 function switchAuthTab(t){
-  const isLogin = t==='login';
-  document.getElementById('tabLogin').classList.toggle('active',isLogin);
-  document.getElementById('tabRegister').classList.toggle('active',!isLogin);
-  document.getElementById('loginForm').style.display = isLogin?'':'none';
-  document.getElementById('registerForm').style.display = isLogin?'none':'';
+  ['login','register','reset'].forEach(tab=>{
+    const btn = document.getElementById('tab'+tab.charAt(0).toUpperCase()+tab.slice(1));
+    if(btn) btn.classList.toggle('active', tab===t);
+    const form = document.getElementById(tab+'Form');
+    if(form) form.style.display = tab===t ? '' : 'none';
+  });
   clearAuthMsg();
+  if(t==='reset'){
+    document.getElementById('resetStep1').style.display='';
+    document.getElementById('resetStep2').style.display='none';
+    document.getElementById('resetEmail').value='';
+    document.getElementById('resetCode').value='';
+    document.getElementById('resetNewPwd').value='';
+  }
 }
 function showAuthErr(m){ const e=document.getElementById('authError'); e.textContent=m; e.classList.add('show'); document.getElementById('authSuccess').classList.remove('show'); }
 function showAuthOk(m){ const e=document.getElementById('authSuccess'); e.textContent=m; e.classList.add('show'); document.getElementById('authError').classList.remove('show'); }
@@ -1453,6 +1528,63 @@ function initTheme(){
   const t = localStorage.getItem('dz_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', t);
   document.getElementById('btnTheme').textContent = t==='light' ? '☀️' : '🌙';
+}
+
+// ═══ RESET PASSWORD ═══════════════════════════════════════
+let _resetData = null;
+
+function doResetStep1(){
+  const email = document.getElementById('resetEmail').value.trim().toLowerCase();
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    showAuthErr(lang==='he'?'נא להזין אימייל תקין': lang==='en'?'Enter a valid email':'Введите корректный email');
+    return;
+  }
+  const users = getUsers();
+  if(!users[email]){
+    showAuthErr(lang==='he'?'אימייל לא רשום במערכת': lang==='en'?'Email not registered':'Email не найден');
+    return;
+  }
+  const code = Math.floor(100000+Math.random()*900000).toString();
+  _resetData = { email, code, expires: Date.now()+15*60*1000 };
+  const msg = lang==='he' ? `קוד האימות: ${code} (תקף 15 דקות)` :
+              lang==='en' ? `Your code: ${code} (valid 15 min)` :
+              `Ваш код: ${code} (действует 15 минут)`;
+  showAuthOk(msg);
+  setTimeout(()=>{
+    document.getElementById('resetStep1').style.display='none';
+    document.getElementById('resetStep2').style.display='';
+    clearAuthMsg();
+  }, 2500);
+}
+
+function doResetStep2(){
+  const code = document.getElementById('resetCode').value.trim();
+  const newPwd = document.getElementById('resetNewPwd').value;
+  if(!_resetData){
+    showAuthErr(lang==='he'?'התחל מחדש': lang==='en'?'Start over':'Начни заново');
+    return;
+  }
+  if(Date.now()>_resetData.expires){
+    showAuthErr(lang==='he'?'הקוד פג תוקף': lang==='en'?'Code expired':'Код устарел');
+    _resetData=null;
+    document.getElementById('resetStep1').style.display='';
+    document.getElementById('resetStep2').style.display='none';
+    return;
+  }
+  if(code!==_resetData.code){
+    showAuthErr(lang==='he'?'קוד שגוי': lang==='en'?'Wrong code':'Неверный код');
+    return;
+  }
+  if(newPwd.length<6){
+    showAuthErr(lang==='he'?'מינימום 6 תווים': lang==='en'?'Min 6 characters':'Минимум 6 символов');
+    return;
+  }
+  const users=getUsers();
+  users[_resetData.email].pw=btoa(newPwd);
+  saveUsers(users);
+  _resetData=null;
+  showAuthOk(lang==='he'?'הסיסמה שונתה בהצלחה ✓': lang==='en'?'Password changed ✓':'Пароль изменён ✓');
+  setTimeout(()=>{ switchAuthTab('login'); clearAuthMsg(); }, 1800);
 }
 
 // ═══ AUTH INIT ═══

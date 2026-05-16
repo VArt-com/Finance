@@ -205,6 +205,7 @@ footer a:hover { color:var(--text); }
   <div class="nav-right">
     <button class="btn-lang active" id="btnRu" onclick="setLang('ru')">РУС</button>
     <button class="btn-lang" id="btnHe" onclick="setLang('he')">עב</button>
+    <button class="btn-lang" id="btnEn" onclick="setLang('en')">EN</button>
     <button class="btn-theme" id="btnTheme" onclick="toggleTheme()">🌙</button>
   </div>
 </nav>
@@ -217,8 +218,10 @@ footer a:hover { color:var(--text); }
   </div>
   <h1 class="ru-text">Найди работу в <em>Израиле</em></h1>
   <h1 class="he-text" style="display:none">מצא עבודה ב<em>ישראל</em></h1>
+  <h1 class="en-text" style="display:none">Find Work in <em>Israel</em></h1>
   <p class="hero-sub ru-text">Выбери сайт — и нажми кнопку. Мы откроем поиск по нужной категории прямо на AllJobs, Drushim, Jobnet и других.</p>
   <p class="hero-sub he-text" style="display:none">בחר אתר ולחץ על הכפתור. נפתח חיפוש לפי קטגוריה ב-AllJobs, דרושים, Jobnet ועוד.</p>
+  <p class="hero-sub en-text" style="display:none">Choose a site and click the button. We'll open a search by category on AllJobs, Drushim, Jobnet and more.</p>
 
   <div class="search-wrap">
     <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -226,26 +229,26 @@ footer a:hover { color:var(--text); }
   </div>
 
   <div class="hero-stats">
-    <div class="h-stat"><span class="h-stat-n">6</span><span class="h-stat-l ru-text">Сайтов</span><span class="h-stat-l he-text" style="display:none">אתרים</span></div>
-    <div class="h-stat"><span class="h-stat-n">10</span><span class="h-stat-l ru-text">Категорий</span><span class="h-stat-l he-text" style="display:none">קטגוריות</span></div>
-    <div class="h-stat"><span class="h-stat-n">100K+</span><span class="h-stat-l ru-text">Вакансий</span><span class="h-stat-l he-text" style="display:none">משרות</span></div>
+    <div class="h-stat"><span class="h-stat-n">6</span><span class="h-stat-l ru-text">Сайтов</span><span class="h-stat-l he-text" style="display:none">אתרים</span><span class="h-stat-l en-text" style="display:none">Sites</span></div>
+    <div class="h-stat"><span class="h-stat-n">10</span><span class="h-stat-l ru-text">Категорий</span><span class="h-stat-l he-text" style="display:none">קטגוריות</span><span class="h-stat-l en-text" style="display:none">Categories</span></div>
+    <div class="h-stat"><span class="h-stat-n">100K+</span><span class="h-stat-l ru-text">Вакансий</span><span class="h-stat-l he-text" style="display:none">משרות</span><span class="h-stat-l en-text" style="display:none">Jobs</span></div>
   </div>
 </section>
 
 <!-- FILTERS -->
 <div class="sticky-bar">
   <div class="filters-inner">
-    <button class="f-chip active" data-val="all" onclick="setFilter(this)"><span class="ru-text">Все</span><span class="he-text" style="display:none">הכל</span></button>
-    <button class="f-chip" data-val="security" onclick="setFilter(this)">🛡 <span class="ru-text">Охрана</span><span class="he-text" style="display:none">אבטחה</span></button>
-    <button class="f-chip" data-val="construction" onclick="setFilter(this)">🏗 <span class="ru-text">Строительство</span><span class="he-text" style="display:none">בנייה</span></button>
+    <button class="f-chip active" data-val="all" onclick="setFilter(this)"><span class="ru-text">Все</span><span class="he-text" style="display:none">הכל</span><span class="en-text" style="display:none">All</span></button>
+    <button class="f-chip" data-val="security" onclick="setFilter(this)">🛡 <span class="ru-text">Охрана</span><span class="he-text" style="display:none">אבטחה</span><span class="en-text" style="display:none">Security</span></button>
+    <button class="f-chip" data-val="construction" onclick="setFilter(this)">🏗 <span class="ru-text">Строительство</span><span class="he-text" style="display:none">בנייה</span><span class="en-text" style="display:none">Construction</span></button>
     <button class="f-chip" data-val="it" onclick="setFilter(this)">💻 IT</button>
-    <button class="f-chip" data-val="medical" onclick="setFilter(this)">⚕️ <span class="ru-text">Медицина</span><span class="he-text" style="display:none">רפואה</span></button>
-    <button class="f-chip" data-val="trade" onclick="setFilter(this)">🛍 <span class="ru-text">Торговля</span><span class="he-text" style="display:none">מסחר</span></button>
-    <button class="f-chip" data-val="warehouse" onclick="setFilter(this)">📦 <span class="ru-text">Склад</span><span class="he-text" style="display:none">מחסן</span></button>
-    <button class="f-chip" data-val="cleaning" onclick="setFilter(this)">🧹 <span class="ru-text">Уборка</span><span class="he-text" style="display:none">ניקיון</span></button>
-    <button class="f-chip" data-val="driver" onclick="setFilter(this)">🚗 <span class="ru-text">Водители</span><span class="he-text" style="display:none">נהגים</span></button>
-    <button class="f-chip" data-val="food" onclick="setFilter(this)">🍽 <span class="ru-text">Общепит</span><span class="he-text" style="display:none">מסעדות</span></button>
-    <button class="f-chip" data-val="remote" onclick="setFilter(this)">🌐 <span class="ru-text">Удалённо</span><span class="he-text" style="display:none">מרחוק</span></button>
+    <button class="f-chip" data-val="medical" onclick="setFilter(this)">⚕️ <span class="ru-text">Медицина</span><span class="he-text" style="display:none">רפואה</span><span class="en-text" style="display:none">Medical</span></button>
+    <button class="f-chip" data-val="trade" onclick="setFilter(this)">🛍 <span class="ru-text">Торговля</span><span class="he-text" style="display:none">מסחר</span><span class="en-text" style="display:none">Trade</span></button>
+    <button class="f-chip" data-val="warehouse" onclick="setFilter(this)">📦 <span class="ru-text">Склад</span><span class="he-text" style="display:none">מחסן</span><span class="en-text" style="display:none">Warehouse</span></button>
+    <button class="f-chip" data-val="cleaning" onclick="setFilter(this)">🧹 <span class="ru-text">Уборка</span><span class="he-text" style="display:none">ניקיון</span><span class="en-text" style="display:none">Cleaning</span></button>
+    <button class="f-chip" data-val="driver" onclick="setFilter(this)">🚗 <span class="ru-text">Водители</span><span class="he-text" style="display:none">נהגים</span><span class="en-text" style="display:none">Drivers</span></button>
+    <button class="f-chip" data-val="food" onclick="setFilter(this)">🍽 <span class="ru-text">Общепит</span><span class="he-text" style="display:none">מסעדות</span><span class="en-text" style="display:none">Food</span></button>
+    <button class="f-chip" data-val="remote" onclick="setFilter(this)">🌐 <span class="ru-text">Удалённо</span><span class="he-text" style="display:none">מרחוק</span><span class="en-text" style="display:none">Remote</span></button>
   </div>
 </div>
 
@@ -256,6 +259,7 @@ footer a:hover { color:var(--text); }
   <div class="section-label">
     <span class="ru-text">Перейти на сайт вакансий</span>
     <span class="he-text" style="display:none">עבור לאתר משרות</span>
+    <span class="en-text" style="display:none">Go to job site</span>
   </div>
   <div class="sites-grid" id="sitesGrid"></div>
   <div class="no-results" id="noResults">
@@ -270,6 +274,7 @@ footer a:hover { color:var(--text); }
   <div class="section-label" style="margin-top:12px">
     <span class="ru-text">Советы по поиску</span>
     <span class="he-text" style="display:none">טיפים לחיפוש עבודה</span>
+    <span class="en-text" style="display:none">Search Tips</span>
   </div>
   <div class="tips-grid">
     <div class="tip-card">
@@ -312,6 +317,7 @@ footer a:hover { color:var(--text); }
     <div class="donate-text">
       <h3 class="ru-text">Проект бесплатный — поддержи кофе!</h3>
       <h3 class="he-text" style="display:none">הפרויקט חינמי — תמוך בקפה!</h3>
+      <h3 class="en-text" style="display:none">Free project — buy me a coffee!</h3>
       <p class="ru-text">JobsIL работает без рекламы и регистрации. Если помог — купи кофе автору 🙏</p>
       <p class="he-text" style="display:none">JobsIL עובד ללא פרסומות ורישום. אם עזר — קנה קפה למפתח 🙏</p>
     </div>
@@ -330,6 +336,7 @@ footer a:hover { color:var(--text); }
 const SITES = [
   {
     id:'alljobs',
+    desc_en:'Israel's largest job site. Over 60,000 active positions. Filter by Russian-speaking employers.',
     emoji:'🔵',
     name:'AllJobs',
     domain:'alljobs.co.il',
@@ -353,6 +360,7 @@ const SITES = [
   },
   {
     id:'drushim',
+    desc_en:'One of the market leaders. Many entry-level jobs and positions for new immigrants. Simple Hebrew interface.',
     emoji:'🟠',
     name:'דרושים',
     domain:'drushim.co.il',
@@ -375,28 +383,30 @@ const SITES = [
   },
   {
     id:'jobnet',
+    desc_en:'One of Israel's leading job sites. Thousands of current positions in all fields.',
     emoji:'🟢',
     name:'Jobnet',
-    domain:'jobnet.gov.il',
-    tags:['ru-text:Государственный','he-text:ממשלתי','tag-green'],
-    desc_ru:'Официальный государственный сайт вакансий. Через него подаётся заявка на биржу труда (לשכת התעסוקה).',
-    desc_he:'האתר הממשלתי הרשמי למשרות. דרכו מגישים בקשה ללשכת התעסוקה.',
+    domain:'lp.jobnet.co.il',
+    tags:['ru-text:Популярный','he-text:פופולרי','tag-green'],
+    desc_ru:'Один из ведущих сайтов вакансий Израиля. Тысячи актуальных предложений во всех сферах.',
+    desc_he:'אחד מאתרי המשרות המובילים בישראל. אלפי משרות עדכניות בכל התחומים.',
     cats:['security','construction','it','medical','trade','warehouse','cleaning','driver','food'],
-    baseUrl:'https://www.jobnet.gov.il',
+    baseUrl:'https://lp.jobnet.co.il/',
     catUrls:{
-      security:'https://www.jobnet.gov.il/JobSearch?SectorId=14',
-      construction:'https://www.jobnet.gov.il/JobSearch?SectorId=5',
-      it:'https://www.jobnet.gov.il/JobSearch?SectorId=1',
-      medical:'https://www.jobnet.gov.il/JobSearch?SectorId=8',
-      trade:'https://www.jobnet.gov.il/JobSearch?SectorId=13',
-      warehouse:'https://www.jobnet.gov.il/JobSearch',
-      cleaning:'https://www.jobnet.gov.il/JobSearch',
-      driver:'https://www.jobnet.gov.il/JobSearch?SectorId=18',
-      food:'https://www.jobnet.gov.il/JobSearch?SectorId=11',
+      security:'https://lp.jobnet.co.il/',
+      construction:'https://lp.jobnet.co.il/',
+      it:'https://lp.jobnet.co.il/',
+      medical:'https://lp.jobnet.co.il/',
+      trade:'https://lp.jobnet.co.il/',
+      warehouse:'https://lp.jobnet.co.il/',
+      cleaning:'https://lp.jobnet.co.il/',
+      driver:'https://lp.jobnet.co.il/',
+      food:'https://lp.jobnet.co.il/',
     }
   },
   {
     id:'linkedin',
+    desc_en:'Best option for IT, marketing, finance. English profile. Apply with one click.',
     emoji:'🔷',
     name:'LinkedIn Jobs',
     domain:'linkedin.com/jobs',
@@ -414,6 +424,7 @@ const SITES = [
   },
   {
     id:'gotfriends',
+    desc_en:'Large Israeli staffing agency. Specializes in recruiter-based hiring. Great for Hi-Tech.',
     emoji:'🟣',
     name:'GotFriends',
     domain:'gotfriends.co.il',
@@ -429,21 +440,22 @@ const SITES = [
     }
   },
   {
-    id:'jbp',
+    id:'nbn',
+    desc_en:'Job board from Nativ organization. Specifically for new immigrants — employers seeking English and Russian speakers.',
     emoji:'🔴',
-    name:'Jobs For Olim',
-    domain:'jobsforolim.com',
+    name:'NBN Job Board',
+    domain:'nbn.org.il/jobboard',
     tags:['ru-text:Для репатриантов','he-text:לעולים','tag-red'],
-    desc_ru:'Специальный сайт вакансий для новых репатриантов. Работодатели, которые ищут русско- и англоязычных.',
-    desc_he:'אתר משרות מיוחד לעולים חדשים. מעסיקים המחפשים דוברי רוסית ואנגלית.',
+    desc_ru:'Сайт вакансий от организации Натив. Специально для новых репатриантов — работодатели, ищущие англо- и русскоязычных.',
+    desc_he:'אתר משרות של ארגון נתיב. במיוחד לעולים חדשים — מעסיקים המחפשים דוברי אנגלית ורוסית.',
     cats:['security','it','trade','food','remote'],
-    baseUrl:'https://www.jobsforolim.com',
+    baseUrl:'https://www.nbn.org.il/jobboard/',
     catUrls:{
-      security:'https://www.jobsforolim.com/jobs/?category=security',
-      it:'https://www.jobsforolim.com/jobs/?category=technology',
-      trade:'https://www.jobsforolim.com/jobs/?category=sales',
-      food:'https://www.jobsforolim.com/jobs/?category=hospitality',
-      remote:'https://www.jobsforolim.com/jobs/?remote=true',
+      security:'https://www.nbn.org.il/jobboard/',
+      it:'https://www.nbn.org.il/jobboard/',
+      trade:'https://www.nbn.org.il/jobboard/',
+      food:'https://www.nbn.org.il/jobboard/',
+      remote:'https://www.nbn.org.il/jobboard/',
     }
   },
 ];
@@ -475,9 +487,9 @@ function renderSites() {
 }
 
 function buildCard(s, i) {
-  const desc = lang === 'ru' ? s.desc_ru : s.desc_he;
-  const gotoLabel = lang === 'ru' ? 'Открыть сайт →' : 'פתח אתר →';
-  const searchLabel = lang === 'ru' ? '🔍 Искать по категории' : '🔍 חפש לפי קטגוריה';
+  const desc = lang === 'ru' ? s.desc_ru : lang === 'he' ? s.desc_he : (s.desc_en || s.desc_ru);
+  const gotoLabel = lang === 'ru' ? 'Открыть сайт →' : lang === 'he' ? 'פתח אתר →' : 'Open site →';
+  const searchLabel = lang === 'ru' ? '🔍 Искать по категории' : lang === 'he' ? '🔍 חפש לפי קטגוריה' : '🔍 Search by category';
 
   // Get the correct URL for current category
   const targetUrl = (activeCat !== 'all' && s.catUrls[activeCat]) ? s.catUrls[activeCat] : s.baseUrl;
@@ -521,15 +533,18 @@ function setFilter(btn) {
 function setLang(l) {
   lang = l;
   const isHe = l === 'he';
+  const isEn = l === 'en';
   document.documentElement.setAttribute('lang', l);
   document.documentElement.setAttribute('dir', isHe ? 'rtl' : 'ltr');
-  document.getElementById('btnRu').classList.toggle('active', !isHe);
+  document.getElementById('btnRu').classList.toggle('active', l === 'ru');
   document.getElementById('btnHe').classList.toggle('active', isHe);
-  document.querySelectorAll('.ru-text').forEach(el => el.style.display = isHe ? 'none' : '');
+  const btnEn = document.getElementById('btnEn');
+  if (btnEn) btnEn.classList.toggle('active', isEn);
+  document.querySelectorAll('.ru-text').forEach(el => el.style.display = l === 'ru' ? '' : 'none');
   document.querySelectorAll('.he-text').forEach(el => el.style.display = isHe ? '' : 'none');
-  document.getElementById('searchInput').placeholder = isHe
-    ? 'חפש אתר משרות...'
-    : 'Поиск по сайтам...';
+  document.querySelectorAll('.en-text').forEach(el => el.style.display = isEn ? '' : 'none');
+  const placeholders = {ru:'Поиск по сайтам...', he:'חפש אתר משרות...', en:'Search job sites...'};
+  document.getElementById('searchInput').placeholder = placeholders[l] || placeholders.ru;
   localStorage.setItem('jobsil_lang', l);
   renderSites();
 }

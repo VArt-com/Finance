@@ -215,6 +215,7 @@ function T(k){return TR[lang][k]||k;}
 
 function setLang(l,el){
   lang=l;
+  localStorage.setItem('radio_lang',l);
   document.querySelectorAll('.lb').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('search-inp').placeholder=T('search');
@@ -448,7 +449,14 @@ audio.addEventListener('stalled',()=>{
   if(isPlaying)setStatus('loading',T('loading'));
 });
 
-// INIT
+// INIT — restore saved language
+(function(){
+  const saved = localStorage.getItem('radio_lang') || 'ru';
+  const btn = document.querySelector(`.lb[onclick*="setLang('${saved}'"]`) ||
+               [...document.querySelectorAll('.lb')].find(b => b.textContent.trim() === (saved==='he'?'עב':saved.toUpperCase()));
+  if(btn) setLang(saved, btn);
+  else { const first = document.querySelector('.lb'); if(first) setLang('ru', first); }
+})();
 loadAll();
 </script>
 </body>

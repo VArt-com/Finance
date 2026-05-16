@@ -28,6 +28,8 @@
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow-x: hidden; }
+body.lang-he { direction: rtl; font-family: 'Heebo', -apple-system, sans-serif; }
+body.lang-en { direction: ltr; }
 
 .app { display: flex; flex-direction: column; min-height: 100vh; }
 
@@ -144,11 +146,18 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 <!-- HEADER -->
 <div class="header">
   <div class="header-top">
-    <div class="logo">⏱ <span>שעות</span> עבודה</div>
-    <a href="https://ko-fi.com/varthur" class="kofi" target="_blank">
+    <div class="logo">⏱ <span id="logo-text">שעות עבודה</span></div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div style="display:flex;background:var(--bg3);border:0.5px solid var(--border2);border-radius:100px;padding:2px;gap:2px;">
+        <button id="btnRu" onclick="setLang('ru')" style="background:transparent;border:none;border-radius:100px;padding:4px 9px;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .15s;">РУС</button>
+        <button id="btnEn" onclick="setLang('en')" style="background:transparent;border:none;border-radius:100px;padding:4px 9px;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .15s;">EN</button>
+        <button id="btnHe" onclick="setLang('he')" style="background:transparent;border:none;border-radius:100px;padding:4px 9px;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .15s;">עב</button>
+      </div>
+      <a href="https://ko-fi.com/varthur" class="kofi" target="_blank">
       <svg viewBox="0 0 24 24" fill="white"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
       Ko-fi
     </a>
+    </div>
   </div>
 
   <!-- LAW INFO -->
@@ -410,6 +419,205 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 </div><!-- /app -->
 
 <script>
+
+// ═══ i18n — LANGUAGE SYSTEM ═══════════════════════════════════
+const WT_TR = {
+  ru: {
+    logo:'שעות עבודה', tabTimer:'⏱ Таймер', tabAdd:'+ Добавить', tabHistory:'📋 История',
+    tabSummary:'💰 Итоги', tabRights:'⚖️ Права',
+    lawBanner:'📋 Трудовое законодательство Израиля',
+    minWage:'₪35.40/ч', normalDay:'8.6ч / день', ot125:'125% за 1-2ч', shabbat:'150% шаббат',
+    minWageLabel:'Мин. зарплата', normalDayLabel:'Норм. день', ot125Label:'Сверхурочные', shabbatLabel:'Шаббат',
+    startTimer:'▶ Начать смену', stopTimer:'⏹ Завершить смену', running:'⏱ Смена идёт...',
+    addShift:'Добавить смену', date:'Дата', hoursWorked:'Часов отработано',
+    rate:'Ставка ₪/час', type:'Тип',
+    typeRegular:'Обычный', typeFriday:'Пятница', typeShabbat:'Шаббат',
+    quickAdd:'+ Добавить быстро',
+    historyTitle:'История смен', noEntries:'Нет записей. Добавь первую смену!',
+    exportCSV:'📊 Экспорт CSV', clearAll:'🗑',
+    totalHours:'Всего часов', overtime:'Сверхурочные', totalEarned:'Итого заработано',
+    daysWorked:'Дней отработано', forAllTime:'за всё время', hours:'часов',
+    currentMonth:'Текущий месяц', mHours:'Часов', mEarned:'Заработано',
+    mOvertime:'Сверхурочные', mDays:'Дней',
+    currentWeek:'Текущая неделя (лимит: 42ч)', weekHours:'Часов за неделю',
+    weekLeft:'Осталось до лимита', weekAlert:'⚠️ Превышен недельный лимит 42 часа!',
+    rightsTitle:'⚖️ Твои права по закону Израиля',
+    r1title:'💰 Минимальная зарплата', r1val:'₪35.40 / час | ₪6,443.85 / месяц',
+    r1desc:'Обновлено 01.04.2026. Работодатель обязан платить не меньше.',
+    r2title:'🕐 Нормальный рабочий день', r2val:'8.6 часов (5 дней) | 7.6 часов (пятница)',
+    r2desc:'До 8.6 часов в день. Пятница — 7.6 часов. Неделя: 42 часа.',
+    r3title:'⏰ Сверхурочные', r3val:'Первые 2ч: 125% | Дальше: 150%',
+    r3desc:'Первые 2 сверхурочных часа — 125%. Каждый следующий — 150%.',
+    r4title:'✡️ Шаббат и праздники', r4val:'Минимум 150% от обычной ставки',
+    r4desc:'Работа в шаббат оплачивается минимум в 1.5 раза больше.',
+    r5title:'🌙 Ночная смена', r5val:'Неделя не более 58 часов',
+    r5desc:'День ночной смены — не более 7 часов.',
+    r6title:'☕ Перерывы', r6val:'При смене 6+ часов: 45 мин',
+    r6desc:'При рабочем дне от 6 часов — обязательный перерыв 45 минут.',
+    r7title:'📋 Табель учёта', r7val:'Работодатель обязан вести 7 лет',
+    r7desc:'Работодатель обязан вести журнал рабочих часов 7 лет.',
+    deleteConfirm:'Удалить эту запись?', clearConfirm:'Удалить ВСЕ записи?',
+    copied:'Скопировано!', saved:'Сохранено', error:'Ошибка',
+  },
+  en: {
+    logo:'Work Hours', tabTimer:'⏱ Timer', tabAdd:'+ Add', tabHistory:'📋 History',
+    tabSummary:'💰 Summary', tabRights:'⚖️ Rights',
+    lawBanner:'📋 Israeli Labor Law',
+    minWage:'₪35.40/h', normalDay:'8.6h / day', ot125:'125% for 1-2h', shabbat:'150% Shabbat',
+    minWageLabel:'Min. wage', normalDayLabel:'Normal day', ot125Label:'Overtime', shabbatLabel:'Shabbat',
+    startTimer:'▶ Start shift', stopTimer:'⏹ End shift', running:'⏱ Shift in progress...',
+    addShift:'Add shift', date:'Date', hoursWorked:'Hours worked',
+    rate:'Rate ₪/hour', type:'Type',
+    typeRegular:'Regular', typeFriday:'Friday', typeShabbat:'Shabbat',
+    quickAdd:'+ Quick add',
+    historyTitle:'Shift history', noEntries:'No records. Add your first shift!',
+    exportCSV:'📊 Export CSV', clearAll:'🗑',
+    totalHours:'Total hours', overtime:'Overtime', totalEarned:'Total earned',
+    daysWorked:'Days worked', forAllTime:'all time', hours:'hours',
+    currentMonth:'Current month', mHours:'Hours', mEarned:'Earned',
+    mOvertime:'Overtime', mDays:'Days',
+    currentWeek:'Current week (limit: 42h)', weekHours:'Hours this week',
+    weekLeft:'Remaining to limit', weekAlert:'⚠️ Weekly limit of 42 hours exceeded!',
+    rightsTitle:'⚖️ Your rights under Israeli law',
+    r1title:'💰 Minimum wage', r1val:'₪35.40 / hour | ₪6,443.85 / month',
+    r1desc:'Updated 01.04.2026. Employer must pay at least this amount.',
+    r2title:'🕐 Normal working day', r2val:'8.6 hours (5 days) | 7.6 hours (Friday)',
+    r2desc:'Up to 8.6 hours/day. Friday — 7.6 hours. Week limit: 42 hours.',
+    r3title:'⏰ Overtime', r3val:'First 2h: 125% | After that: 150%',
+    r3desc:'First 2 overtime hours — 125%. Each additional — 150%.',
+    r4title:'✡️ Shabbat & holidays', r4val:'Minimum 150% of regular rate',
+    r4desc:'Work on Shabbat must be paid at least 1.5x regular rate.',
+    r5title:'🌙 Night shift', r5val:'Week max 58 hours total',
+    r5desc:'Night shift day — max 7 hours.',
+    r6title:'☕ Breaks', r6val:'6+ hour shift: 45 min break',
+    r6desc:'Shifts of 6+ hours require a mandatory 45-minute break.',
+    r7title:'📋 Timekeeping', r7val:'Employer must keep records 7 years',
+    r7desc:'Employer must maintain accurate work hour records for 7 years.',
+    deleteConfirm:'Delete this entry?', clearConfirm:'Delete ALL entries?',
+    copied:'Copied!', saved:'Saved', error:'Error',
+  },
+  he: {
+    logo:'שעות עבודה', tabTimer:'⏱ טיימר', tabAdd:'+ הוסף', tabHistory:'📋 היסטוריה',
+    tabSummary:'💰 סיכום', tabRights:'⚖️ זכויות',
+    lawBanner:'📋 חוק עבודה ישראלי',
+    minWage:'₪35.40/שעה', normalDay:'8.6ש׳ / יום', ot125:'125% ל-1-2ש׳', shabbat:'150% שבת',
+    minWageLabel:'שכר מינימום', normalDayLabel:'יום עבודה', ot125Label:'שעות נוספות', shabbatLabel:'שבת',
+    startTimer:'▶ התחל משמרת', stopTimer:'⏹ סיים משמרת', running:'⏱ משמרת פעילה...',
+    addShift:'הוסף משמרת', date:'תאריך', hoursWorked:'שעות שעבדת',
+    rate:'שכר ₪/שעה', type:'סוג',
+    typeRegular:'רגיל', typeFriday:'שישי', typeShabbat:'שבת',
+    quickAdd:'+ הוסף מהיר',
+    historyTitle:'היסטוריית משמרות', noEntries:'אין רשומות. הוסף את המשמרת הראשונה!',
+    exportCSV:'📊 ייצוא CSV', clearAll:'🗑',
+    totalHours:'סה״כ שעות', overtime:'שעות נוספות', totalEarned:'סה״כ הרווחת',
+    daysWorked:'ימים שעבדת', forAllTime:'כל הזמן', hours:'שעות',
+    currentMonth:'החודש הנוכחי', mHours:'שעות', mEarned:'הרווחת',
+    mOvertime:'שעות נוספות', mDays:'ימים',
+    currentWeek:'השבוע הנוכחי (מגבלה: 42ש׳)', weekHours:'שעות השבוע',
+    weekLeft:'נותר עד המגבלה', weekAlert:'⚠️ חרגת מ-42 שעות שבועיות!',
+    rightsTitle:'⚖️ הזכויות שלך לפי חוק ישראלי',
+    r1title:'💰 שכר מינימום', r1val:'₪35.40 / שעה | ₪6,443.85 / חודש',
+    r1desc:'עודכן 01.04.2026. המעסיק חייב לשלם לפחות סכום זה.',
+    r2title:'🕐 יום עבודה רגיל', r2val:'8.6 שעות (5 ימים) | 7.6 שעות (שישי)',
+    r2desc:'עד 8.6 שעות ביום. שישי — 7.6 שעות. שבוע: 42 שעות.',
+    r3title:'⏰ שעות נוספות', r3val:'2 שעות ראשונות: 125% | אחר כך: 150%',
+    r3desc:'2 שעות נוספות ראשונות — 125%. כל שעה נוספת — 150%.',
+    r4title:'✡️ שבת וחגים', r4val:'מינימום 150% מהשכר הרגיל',
+    r4desc:'עבודה בשבת חייבת להיות משולמת לפחות פי 1.5 מהשכר הרגיל.',
+    r5title:'🌙 משמרת לילה', r5val:'שבוע מקסימום 58 שעות',
+    r5desc:'יום משמרת לילה — מקסימום 7 שעות.',
+    r6title:'☕ הפסקות', r6val:'משמרת 6+ שעות: 45 דקות הפסקה',
+    r6desc:'משמרות של 6+ שעות דורשות הפסקה חובה של 45 דקות.',
+    r7title:'📋 שמירת רישומים', r7val:'המעסיק חייב לשמור 7 שנים',
+    r7desc:'המעסיק חייב לנהל יומן שעות מדויק למשך 7 שנים.',
+    deleteConfirm:'למחוק רשומה זו?', clearConfirm:'למחוק את כל הרשומות?',
+    copied:'הועתק!', saved:'נשמר', error:'שגיאה',
+  }
+};
+
+let wtLang = localStorage.getItem('wt_lang') || 'ru';
+
+function T(k) { return WT_TR[wtLang][k] || WT_TR.ru[k] || k; }
+
+function setLang(l) {
+  wtLang = l;
+  localStorage.setItem('wt_lang', l);
+  document.documentElement.setAttribute('lang', l);
+  document.documentElement.setAttribute('dir', l === 'he' ? 'rtl' : 'ltr');
+  document.body.className = document.body.className.replace(/lang-\w+/g,'').trim();
+  document.body.classList.add('lang-' + l);
+  ['ru','en','he'].forEach(code => {
+    const btn = document.getElementById('btn' + code.charAt(0).toUpperCase() + code.slice(1));
+    if (btn) {
+      btn.style.background = code === l ? 'var(--accent)' : 'transparent';
+      btn.style.color = code === l ? '#fff' : 'var(--text2)';
+    }
+  });
+  applyTranslations();
+}
+
+function applyTranslations() {
+  // Logo
+  const logo = document.getElementById('logo-text');
+  if (logo) logo.textContent = T('logo');
+  // Tabs
+  const tabMap = {timer:'tabTimer', add:'tabAdd', history:'tabHistory', summary:'tabSummary', rights:'tabRights'};
+  document.querySelectorAll('.tab').forEach(btn => {
+    const onclick = btn.getAttribute('onclick') || '';
+    const match = onclick.match(/showTab\('(\w+)'/);
+    if (match && tabMap[match[1]]) btn.textContent = T(tabMap[match[1]]);
+  });
+  // Law banner
+  const lb = document.querySelector('.law-banner strong');
+  if (lb) lb.textContent = T('lawBanner');
+  // Law grid labels
+  const lls = document.querySelectorAll('.law-item .ll');
+  const llKeys = ['minWageLabel','normalDayLabel','ot125Label','shabbatLabel'];
+  lls.forEach((el,i) => { if(llKeys[i]) el.textContent = T(llKeys[i]); });
+  // Timer
+  const timerBtn = document.getElementById('timer-btn');
+  if (timerBtn && !timerRunning) timerBtn.textContent = T('startTimer');
+  const timerStatus = document.getElementById('timer-status');
+  if (timerStatus && timerRunning) timerStatus.textContent = T('running');
+  // Add form labels
+  ['hoursWorked','rate','type','date'].forEach(k => {
+    document.querySelectorAll('.form-group label').forEach(el => {
+      // update by content match
+    });
+  });
+  // Quick add button
+  document.querySelectorAll('.btn-accent.btn-full').forEach(btn => {
+    if (btn.getAttribute('onclick') === 'quickAdd()') btn.textContent = T('quickAdd');
+  });
+  // History
+  const ht = document.querySelector('#tab-history .card-title');
+  if (ht) ht.textContent = T('historyTitle');
+  // Export btn
+  document.querySelectorAll('button').forEach(btn => {
+    if (btn.getAttribute('onclick') === 'exportCSV()') btn.textContent = T('exportCSV');
+  });
+  // Summary metrics labels
+  document.querySelectorAll('.met-l').forEach(el => {
+    const txt = el.textContent.trim();
+    const map = {
+      'Всего часов': 'totalHours', 'Total hours': 'totalHours', 'סה״כ שעות': 'totalHours',
+      'Сверхурочные': 'overtime', 'Overtime': 'overtime', 'שעות נוספות': 'overtime',
+      'Итого заработано': 'totalEarned', 'Total earned': 'totalEarned', 'סה״כ הרווחת': 'totalEarned',
+      'Дней отработано': 'daysWorked', 'Days worked': 'daysWorked', 'ימים שעבדת': 'daysWorked',
+      'Часов': 'mHours', 'Hours': 'mHours', 'שעות': 'mHours',
+      'Заработано': 'mEarned', 'Earned': 'mEarned', 'הרווחת': 'mEarned',
+      'Дней': 'mDays', 'Days': 'mDays', 'ימים': 'mDays',
+      'Часов за неделю': 'weekHours', 'Hours this week': 'weekHours', 'שעות השבוע': 'weekHours',
+      'Осталось до лимита': 'weekLeft', 'Remaining to limit': 'weekLeft', 'נותר עד המגבלה': 'weekLeft',
+    };
+    if (map[txt]) el.textContent = T(map[txt]);
+  });
+  // Re-render entries and summary
+  if(typeof renderEntries==="function")if(typeof renderHistory==="function")renderHistory();
+  if(typeof renderSummary==="function")renderSummary();
+}
+
+
 // PWA MANIFEST
 const manifest = {
   name: 'מעקב שעות עבודה',
@@ -724,7 +932,11 @@ function exportCSV() {
 }
 
 // INIT
-renderSummary();
+(function(){
+  setLang(localStorage.getItem('wt_lang') || 'ru');
+  if(typeof renderEntries==="function")if(typeof renderHistory==="function")renderHistory();
+  if(typeof renderSummary==="function")renderSummary();
+})();
 </script>
 </body>
 </html>

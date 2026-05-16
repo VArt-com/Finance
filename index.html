@@ -1,123 +1,130 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4502841289225255" crossorigin="anonymous"></script>
+<head>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4502841289225255" crossorigin="anonymous"></script>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="description" content="Бесплатные веб-инструменты для продуктивности и повседневных задач"/>
-<title>VArt Tools — Бесплатные инструменты</title>
+<meta name="description" content="Бесплатные веб-инструменты / Free web tools / כלים חינמיים"/>
+<title>VArt Tools</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#6C63FF"/>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --bg:#080810;--bg2:#0f0f1a;--bg3:#16162a;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
-  --text:#eeeef5;--text2:#8888aa;--text3:#444460;
-  --accent:#6C63FF;--accent2:#9B89FF;
-  --green:#22d3a5;--amber:#f59e0b;--red:#FF5E5B;
-  --glow:rgba(108,99,255,0.15);
-}
+:root{--bg:#080810;--bg2:#0f0f1a;--bg3:#16162a;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#eeeef5;--text2:#8888aa;--text3:#444460;--accent:#6C63FF;--accent2:#9B89FF;--green:#22d3a5;--amber:#f59e0b;--red:#FF5E5B;--glow:rgba(108,99,255,0.15);}
 [data-theme="light"]{--bg:#f4f4fb;--bg2:#fff;--bg3:#eaeaf5;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.15);--text:#12121f;--text2:#555570;--text3:#aaaacc;--glow:rgba(108,99,255,0.08);}
 [data-theme="light"] .bg-grid{background-image:linear-gradient(rgba(108,99,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(108,99,255,0.05) 1px,transparent 1px);}
-[data-theme="light"] .bg-glow{background:radial-gradient(ellipse,rgba(108,99,255,0.07) 0%,transparent 70%);}
-[data-theme="light"] nav{background:rgba(244,244,251,0.85);}
+[data-theme="light"] nav{background:rgba(244,244,251,0.9);}
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden;}
+body.lang-he{font-family:'Heebo',sans-serif;direction:rtl;}
+body.lang-he .ltr-only{display:none!important;}
+body:not(.lang-he) .rtl-only{display:none!important;}
+
 .bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(108,99,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,99,255,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
 .bg-glow{position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:600px;background:radial-gradient(ellipse,rgba(108,99,255,0.12) 0%,transparent 70%);pointer-events:none;z-index:0;}
 .container{max-width:1000px;margin:0 auto;padding:0 24px;position:relative;z-index:1;}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 24px;background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
-.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:8px;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 24px;background:rgba(8,8,16,0.88);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .nav-logo span{color:var(--accent);}
-.nav-right{display:flex;align-items:center;gap:10px;}
-.btn-theme{width:36px;height:36px;border-radius:50%;border:0.5px solid var(--border2);background:rgba(255,255,255,0.04);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:background .15s;flex-shrink:0;}
+.nav-right{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;}
+
+/* Language buttons */
+.lang-group{display:flex;background:var(--bg3);border:0.5px solid var(--border2);border-radius:100px;padding:3px;gap:2px;}
+.btn-lang{background:transparent;border:none;border-radius:100px;padding:5px 10px;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;}
+.btn-lang.active{background:var(--accent);color:#fff;}
+.btn-lang:hover:not(.active){color:var(--text);}
+
+.btn-theme{width:34px;height:34px;border-radius:50%;border:0.5px solid var(--border2);background:rgba(255,255,255,0.04);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:background .15s;flex-shrink:0;}
 .btn-theme:hover{background:rgba(255,255,255,0.1);}
-.kofi-nav{display:flex;align-items:center;gap:7px;background:var(--red);border:none;border-radius:100px;padding:8px 16px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;text-decoration:none;font-family:'DM Sans',sans-serif;transition:transform .15s,opacity .15s;}
+.kofi-nav{display:flex;align-items:center;gap:6px;background:var(--red);border:none;border-radius:100px;padding:7px 14px;font-size:12px;font-weight:600;color:#fff;cursor:pointer;text-decoration:none;font-family:inherit;transition:transform .15s,opacity .15s;white-space:nowrap;}
 .kofi-nav:hover{transform:translateY(-1px);opacity:.9;}
-.kofi-nav svg{width:16px;height:16px;flex-shrink:0;}
+.kofi-nav svg{width:14px;height:14px;flex-shrink:0;}
 
 /* HERO */
-.hero{padding:160px 0 80px;text-align:center;}
-.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(108,99,255,0.1);border:0.5px solid rgba(108,99,255,0.3);border-radius:100px;padding:5px 14px;font-size:12px;color:var(--accent2);font-weight:500;margin-bottom:28px;animation:fadeUp .6s ease both;}
+.hero{padding:150px 0 70px;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(108,99,255,0.1);border:0.5px solid rgba(108,99,255,0.3);border-radius:100px;padding:5px 14px;font-size:12px;color:var(--accent2);font-weight:500;margin-bottom:24px;animation:fadeUp .6s ease both;}
 .hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-h1{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,60px);font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin-bottom:20px;animation:fadeUp .6s .1s ease both;}
+h1{font-family:'Syne',sans-serif;font-size:clamp(30px,5vw,58px);font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin-bottom:18px;animation:fadeUp .6s .1s ease both;}
 h1 em{font-style:normal;color:var(--accent);}
-.hero-sub{font-size:clamp(15px,2vw,18px);color:var(--text2);max-width:520px;margin:0 auto 48px;font-weight:300;animation:fadeUp .6s .2s ease both;}
+.hero-sub{font-size:clamp(14px,2vw,17px);color:var(--text2);max-width:520px;margin:0 auto 44px;font-weight:300;animation:fadeUp .6s .2s ease both;}
 .hero-actions{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;animation:fadeUp .6s .3s ease both;}
-.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:100px;padding:14px 28px;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;font-family:'DM Sans',sans-serif;transition:transform .15s,box-shadow .15s;box-shadow:0 0 30px rgba(108,99,255,0.3);}
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:100px;padding:13px 26px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;font-family:inherit;transition:transform .15s,box-shadow .15s;box-shadow:0 0 30px rgba(108,99,255,0.3);}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(108,99,255,0.5);}
-.btn-kofi-hero{display:flex;align-items:center;gap:8px;background:transparent;border:0.5px solid var(--border2);border-radius:100px;padding:14px 28px;font-size:15px;font-weight:500;cursor:pointer;text-decoration:none;color:var(--text);font-family:'DM Sans',sans-serif;transition:all .15s;}
+.btn-kofi-hero{display:flex;align-items:center;gap:8px;background:transparent;border:0.5px solid var(--border2);border-radius:100px;padding:13px 26px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;color:var(--text);font-family:inherit;transition:all .15s;}
 .btn-kofi-hero:hover{background:rgba(255,94,91,0.1);border-color:rgba(255,94,91,0.4);color:#FF5E5B;}
-.btn-kofi-hero svg{width:18px;height:18px;}
+.btn-kofi-hero svg{width:16px;height:16px;}
 
 /* STATS */
-.stats{display:flex;justify-content:center;gap:48px;padding:40px 0;flex-wrap:wrap;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);margin-bottom:72px;animation:fadeUp .6s .4s ease both;}
+.stats{display:flex;justify-content:center;gap:44px;padding:36px 0;flex-wrap:wrap;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);margin-bottom:64px;animation:fadeUp .6s .4s ease both;}
 .stat{text-align:center;}
-.stat-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--text);display:block;}
-.stat-label{font-size:13px;color:var(--text2);}
+.stat-num{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--text);display:block;}
+.stat-label{font-size:12px;color:var(--text2);}
 
 /* SECTION */
-.section{margin-bottom:72px;}
-.section-label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
-.section-title{font-family:'Syne',sans-serif;font-size:clamp(24px,4vw,36px);font-weight:800;letter-spacing:-0.02em;margin-bottom:28px;color:var(--text);}
+.section{margin-bottom:64px;}
+.section-label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.section-title{font-family:'Syne',sans-serif;font-size:clamp(22px,4vw,34px);font-weight:800;letter-spacing:-0.02em;margin-bottom:24px;color:var(--text);}
 
 /* SEARCH */
-.tools-controls{margin-bottom:24px;display:flex;flex-direction:column;gap:14px;}
+.tools-controls{margin-bottom:22px;display:flex;flex-direction:column;gap:12px;}
 .search-wrap{position:relative;}
 .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;}
-.search-icon svg{width:16px;height:16px;display:block;}
-#searchInput{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:14px;padding:13px 16px 13px 44px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;}
+body.lang-he .search-icon{left:auto;right:16px;}
+.search-icon svg{width:15px;height:15px;display:block;}
+#searchInput{width:100%;background:var(--bg2);border:0.5px solid var(--border);border-radius:14px;padding:12px 16px 12px 44px;font-size:14px;color:var(--text);font-family:inherit;outline:none;transition:border-color .15s;}
+body.lang-he #searchInput{padding:12px 44px 12px 16px;}
 #searchInput:focus{border-color:var(--accent);}
 #searchInput::placeholder{color:var(--text3);}
 .filter-pills{display:flex;gap:8px;flex-wrap:wrap;}
-.filter-pill{padding:7px 16px;border-radius:100px;font-size:12px;font-weight:600;border:0.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.filter-pill{padding:7px 14px;border-radius:100px;font-size:12px;font-weight:600;border:0.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s;}
 .filter-pill:hover{border-color:var(--border2);color:var(--text);}
 .filter-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 .no-results{text-align:center;padding:48px 0;color:var(--text2);font-size:15px;display:none;}
 
 /* APPS GRID */
 .apps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
-.app-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:28px;text-decoration:none;color:var(--text);position:relative;overflow:hidden;transition:transform .22s cubic-bezier(.22,.68,0,1.2),box-shadow .22s ease,border-color .22s ease;display:flex;flex-direction:column;}
+.app-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:26px;text-decoration:none;color:var(--text);position:relative;overflow:hidden;transition:transform .22s cubic-bezier(.22,.68,0,1.2),box-shadow .22s ease,border-color .22s ease;display:flex;flex-direction:column;}
 .app-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--glow) 0%,transparent 60%);opacity:0;transition:opacity .3s;}
 .app-card:hover{transform:translateY(-5px) scale(1.016);border-color:var(--border2);box-shadow:0 20px 48px rgba(0,0,0,0.5),0 0 0 1px rgba(108,99,255,0.22);}
 .app-card:hover::before{opacity:1;}
 .app-card.hidden{display:none;}
-.app-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:18px;flex-shrink:0;transition:transform .2s ease;}
+.app-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px;flex-shrink:0;transition:transform .2s ease;}
 .app-card:hover .app-icon{transform:scale(1.1) rotate(-4deg);}
 .icon-green{background:rgba(34,211,165,0.12);}
-.app-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;}
-.app-desc{font-size:14px;color:var(--text2);line-height:1.55;flex:1;margin-bottom:20px;}
-.app-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
-.tag{font-size:11px;padding:3px 10px;border-radius:100px;font-weight:500;}
+.app-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:8px;}
+.app-desc{font-size:13px;color:var(--text2);line-height:1.55;flex:1;margin-bottom:18px;}
+.app-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+.tag{font-size:10px;padding:3px 9px;border-radius:100px;font-weight:500;}
 .tag-purple{background:rgba(108,99,255,0.15);color:var(--accent2);}
 .tag-green{background:rgba(34,211,165,0.12);color:var(--green);}
 .tag-amber{background:rgba(245,158,11,0.12);color:var(--amber);}
 .app-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto;}
 .app-link{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--accent2);}
-.app-link svg{width:14px;height:14px;transition:transform .2s;}
+.app-link svg{width:13px;height:13px;transition:transform .2s;}
 .app-card:hover .app-link svg{transform:translateX(4px);}
-.fav-btn{width:30px;height:30px;border-radius:50%;border:0.5px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0;position:relative;z-index:2;}
+body.lang-he .app-card:hover .app-link svg{transform:translateX(-4px);}
+.fav-btn{width:30px;height:30px;border-radius:50%;border:0.5px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;flex-shrink:0;position:relative;z-index:2;}
 .fav-btn:hover{background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.4);}
 .fav-btn.active{background:rgba(245,158,11,0.15);border-color:rgba(245,158,11,0.5);}
-.badge-new{position:absolute;top:20px;right:20px;background:var(--green);color:#000;font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;letter-spacing:.05em;animation:badgePop .45s cubic-bezier(.22,.68,0,1.5) .6s both;}
-@keyframes badgePop{from{opacity:0;transform:scale(0.4) rotate(-8deg)}to{opacity:1;transform:scale(1) rotate(0deg)}}
+.badge-new{position:absolute;top:18px;right:18px;background:var(--green);color:#000;font-size:9px;font-weight:700;padding:3px 8px;border-radius:100px;letter-spacing:.05em;}
+body.lang-he .badge-new{right:auto;left:18px;}
 
 /* SUPPORT */
-.support-section{background:linear-gradient(135deg,rgba(108,99,255,0.08) 0%,rgba(255,94,91,0.06) 100%);border:0.5px solid var(--border2);border-radius:24px;padding:60px 40px;text-align:center;margin-bottom:80px;position:relative;overflow:hidden;}
+.support-section{background:linear-gradient(135deg,rgba(108,99,255,0.08) 0%,rgba(255,94,91,0.06) 100%);border:0.5px solid var(--border2);border-radius:24px;padding:56px 36px;text-align:center;margin-bottom:72px;position:relative;overflow:hidden;}
 .support-section::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:400px;height:300px;background:radial-gradient(ellipse,rgba(255,94,91,0.08) 0%,transparent 70%);}
-.support-title{font-family:'Syne',sans-serif;font-size:clamp(22px,4vw,32px);font-weight:800;margin-bottom:14px;position:relative;}
-.support-desc{color:var(--text2);max-width:480px;margin:0 auto 32px;font-size:15px;position:relative;}
-.kofi-big{display:inline-flex;align-items:center;gap:10px;background:var(--red);border:none;border-radius:100px;padding:16px 32px;font-size:16px;font-weight:700;color:#fff;cursor:pointer;text-decoration:none;font-family:'DM Sans',sans-serif;transition:transform .15s,box-shadow .15s;box-shadow:0 0 30px rgba(255,94,91,0.25);position:relative;}
+.support-title{font-family:'Syne',sans-serif;font-size:clamp(20px,4vw,30px);font-weight:800;margin-bottom:12px;position:relative;}
+.support-desc{color:var(--text2);max-width:460px;margin:0 auto 28px;font-size:14px;position:relative;}
+.kofi-big{display:inline-flex;align-items:center;gap:10px;background:var(--red);border:none;border-radius:100px;padding:14px 28px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;text-decoration:none;font-family:inherit;transition:transform .15s,box-shadow .15s;box-shadow:0 0 30px rgba(255,94,91,0.25);position:relative;}
 .kofi-big:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(255,94,91,0.4);}
-.kofi-big svg{width:22px;height:22px;}
-.support-note{font-size:13px;color:var(--text3);margin-top:16px;}
+.kofi-big svg{width:20px;height:20px;}
+.support-note{font-size:12px;color:var(--text3);margin-top:14px;}
 
-footer{border-top:0.5px solid var(--border);padding:40px 0;text-align:center;color:var(--text3);font-size:13px;}
+footer{border-top:0.5px solid var(--border);padding:36px 0;text-align:center;color:var(--text3);font-size:13px;}
 footer a{color:var(--text2);text-decoration:none;}
 footer a:hover{color:var(--text);}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -128,198 +135,257 @@ footer a:hover{color:var(--text);}
 #appsGrid .app-card:nth-child(4){animation:cardFadeUp .5s cubic-bezier(.22,.68,0,1.2) .26s both}
 @media(max-width:700px){
   .hero{padding:110px 0 50px;}
-  .stats{gap:28px;}
-  .support-section{padding:40px 24px;}
+  .stats{gap:24px;}
+  .support-section{padding:36px 20px;}
   nav{padding:12px 16px;}
-  .kofi-nav span{display:none;}
+  .kofi-nav .kofi-text{display:none;}
+  .lang-group{gap:1px;}
+  .btn-lang{padding:5px 7px;font-size:10px;}
 }
 </style>
 </head>
-<body>
+<body class="lang-ru">
 <div class="bg-grid"></div>
 <div class="bg-glow"></div>
 
 <nav>
   <a href="/" class="nav-logo">V<span>Art</span> Tools</a>
   <div class="nav-right">
+    <!-- Language switcher -->
+    <div class="lang-group">
+      <button class="btn-lang active" onclick="setLang('ru')">РУС</button>
+      <button class="btn-lang" onclick="setLang('en')">EN</button>
+      <button class="btn-lang" onclick="setLang('he')">עב</button>
+    </div>
     <button class="btn-theme" id="btnTheme" onclick="toggleTheme()">🌙</button>
     <a href="https://ko-fi.com/varthur" class="kofi-nav" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="white"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
-      <span>☕ Поддержать</span>
+      <span class="kofi-text">☕ <span data-ru="Поддержать" data-en="Support" data-he="תמוך"></span></span>
     </a>
   </div>
 </nav>
 
 <div class="container">
   <section class="hero">
-    <div class="hero-badge">✅ Все инструменты бесплатны — без регистрации</div>
-    <h1>Инструменты для<br/><em>умных решений</em></h1>
-    <p class="hero-sub">Удобные инструменты для работы и повседневных задач — прямо в браузере. Никакой регистрации. Можно установить как приложение на телефон или ПК.</p>
+    <div class="hero-badge">
+      ✅ <span data-ru="Все инструменты бесплатны — без регистрации" data-en="All tools are free — no registration" data-he="כל הכלים חינמיים — ללא הרשמה"></span>
+    </div>
+    <h1>
+      <span data-ru="Инструменты для" data-en="Tools for" data-he="כלים ל"></span><br/>
+      <em><span data-ru="умных решений" data-en="smart decisions" data-he="החלטות חכמות"></span></em>
+    </h1>
+    <p class="hero-sub">
+      <span data-ru="Удобные инструменты для работы и повседневных задач — прямо в браузере. Никакой регистрации. Устанавливается как приложение на телефон или ПК." data-en="Handy tools for work and everyday tasks — right in your browser. No registration needed. Install as an app on your phone or PC." data-he="כלים נוחים לעבודה ולמשימות יומיות — ישירות בדפדפן. ללא הרשמה. ניתן להתקין כאפליקציה בטלפון או במחשב."></span>
+    </p>
     <div class="hero-actions">
-      <a href="#apps" class="btn-primary">Смотреть инструменты</a>
+      <a href="#apps" class="btn-primary">
+        <span data-ru="Смотреть инструменты" data-en="Browse tools" data-he="ראה כלים"></span>
+      </a>
       <a href="https://ko-fi.com/varthur" class="btn-kofi-hero" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
-        Поддержать на Ko-fi
+        <span data-ru="Поддержать на Ko-fi" data-en="Support on Ko-fi" data-he="תמוך ב-Ko-fi"></span>
       </a>
     </div>
   </section>
 
   <div class="stats">
-    <div class="stat"><span class="stat-num">5+</span><span class="stat-label">Инструментов</span></div>
-    <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Бесплатно</span></div>
-    <div class="stat"><span class="stat-num">0</span><span class="stat-label">Регистраций</span></div>
-    <div class="stat"><span class="stat-num">∞</span><span class="stat-label">Возможностей</span></div>
+    <div class="stat"><span class="stat-num">5+</span><span class="stat-label" data-ru="Инструментов" data-en="Tools" data-he="כלים"></span></div>
+    <div class="stat"><span class="stat-num">100%</span><span class="stat-label" data-ru="Бесплатно" data-en="Free" data-he="חינם"></span></div>
+    <div class="stat"><span class="stat-num">0</span><span class="stat-label" data-ru="Регистраций" data-en="Sign-ups" data-he="הרשמות"></span></div>
+    <div class="stat"><span class="stat-num">∞</span><span class="stat-label" data-ru="Возможностей" data-en="Possibilities" data-he="אפשרויות"></span></div>
   </div>
 
   <section class="section" id="apps">
-    <div class="section-label">Инструменты</div>
-    <div class="section-title">Все приложения</div>
+    <div class="section-label" data-ru="Инструменты" data-en="Tools" data-he="כלים"></div>
+    <div class="section-title" data-ru="Все приложения" data-en="All applications" data-he="כל האפליקציות"></div>
+
     <div class="tools-controls">
       <div class="search-wrap">
         <div class="search-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
-        <input id="searchInput" type="text" placeholder="Поиск инструментов..." oninput="filterApps()"/>
+        <input id="searchInput" type="text" oninput="filterApps()"/>
       </div>
       <div class="filter-pills">
-        <button class="filter-pill active" data-cat="all" onclick="setFilter(this)">Все</button>
-        <button class="filter-pill" data-cat="productivity" onclick="setFilter(this)">⏱ Продуктивность</button>
-        <button class="filter-pill" data-cat="media" onclick="setFilter(this)">📻 Медиа</button>
-        <button class="filter-pill" data-cat="fitness" onclick="setFilter(this)">💪 Фитнес</button>
-        <button class="filter-pill" data-cat="nav" onclick="setFilter(this)">🗺 Навигация</button>
+        <button class="filter-pill active" data-cat="all" onclick="setFilter(this)">
+          <span data-ru="Все" data-en="All" data-he="הכל"></span>
+        </button>
+        <button class="filter-pill" data-cat="productivity" onclick="setFilter(this)">⏱ <span data-ru="Продуктивность" data-en="Productivity" data-he="פרודוקטיביות"></span></button>
+        <button class="filter-pill" data-cat="media" onclick="setFilter(this)">📻 <span data-ru="Медиа" data-en="Media" data-he="מדיה"></span></button>
+        <button class="filter-pill" data-cat="fitness" onclick="setFilter(this)">💪 <span data-ru="Фитнес" data-en="Fitness" data-he="כושר"></span></button>
+        <button class="filter-pill" data-cat="nav" onclick="setFilter(this)">🗺 <span data-ru="Навигация" data-en="Navigation" data-he="ניווט"></span></button>
       </div>
     </div>
+
     <div class="apps-grid" id="appsGrid">
 
-      <a href="work-tracker.html" class="app-card" data-cat="productivity" data-name="трекер рабочих часов учёт время зарплата">
+      <a href="work-tracker.html" class="app-card" data-cat="productivity" data-name="tracker hours work salary time зарплата трекер שעות עבודה">
         <div class="app-icon icon-green">⏱️</div>
-        <div class="app-name">Трекер рабочих часов</div>
-        <div class="app-desc">Учёт рабочего времени по израильскому трудовому законодательству. Расчёт зарплаты, ночные и сверхурочные, экспорт отчётов.</div>
-        <div class="app-tags"><span class="tag tag-green">Продуктивность</span><span class="tag tag-purple">🇮🇱 Израиль</span></div>
+        <div class="app-name" data-ru="Трекер рабочих часов" data-en="Work Hours Tracker" data-he="מעקב שעות עבודה"></div>
+        <div class="app-desc" data-ru="Учёт рабочего времени по израильскому трудовому законодательству. Расчёт зарплаты, сверхурочные, экспорт отчётов." data-en="Track working hours under Israeli labor law. Calculate salary, overtime, and export reports." data-he="מעקב שעות עבודה לפי חוק העבודה הישראלי. חישוב שכר, שעות נוספות, ייצוא דוחות."></div>
+        <div class="app-tags"><span class="tag tag-green" data-ru="Продуктивность" data-en="Productivity" data-he="פרודוקטיביות"></span><span class="tag tag-purple">🇮🇱</span></div>
         <div class="app-footer">
-          <div class="app-link">Открыть <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+          <div class="app-link"><span data-ru="Открыть" data-en="Open" data-he="פתח"></span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
           <button class="fav-btn" data-id="work-tracker" onclick="toggleFav(event,'work-tracker')">☆</button>
         </div>
       </a>
 
-      <a href="radio.html" class="app-card" data-cat="media" data-name="радио radio музыка стримы украина израиль">
+      <a href="radio.html" class="app-card" data-cat="media" data-name="radio радио music стримы israel ukraine">
         <div class="app-icon" style="background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(176,110,255,0.12))">📻</div>
-        <div class="app-name">Radio World</div>
-        <div class="app-desc">Радиостанции Украины, России, Израиля и США. 4 языка интерфейса: русский, украинский, английский, иврит.</div>
-        <div class="app-tags"><span class="tag tag-purple">🇺🇦 🇷🇺 🇮🇱 🇺🇸</span><span class="tag tag-green">4 языка</span><span class="tag tag-amber">Live</span></div>
+        <div class="app-name" data-ru="Radio World" data-en="Radio World" data-he="Radio World"></div>
+        <div class="app-desc" data-ru="Радиостанции Украины, России, Израиля и США. 4 языка интерфейса: РУ, УК, EN, עב." data-en="Radio stations from Ukraine, Russia, Israel and USA. 4 interface languages: RU, UK, EN, HE." data-he="תחנות רדיו מאוקראינה, רוסיה, ישראל וארה&quot;ב. 4 שפות ממשק: RU, UK, EN, עב."></div>
+        <div class="app-tags"><span class="tag tag-purple">🇺🇦 🇷🇺 🇮🇱 🇺🇸</span><span class="tag tag-amber">Live</span></div>
         <div class="app-footer">
-          <div class="app-link">Открыть <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+          <div class="app-link"><span data-ru="Открыть" data-en="Open" data-he="פתח"></span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
           <button class="fav-btn" data-id="radio" onclick="toggleFav(event,'radio')">☆</button>
         </div>
       </a>
 
-      <a href="jobsil.html" class="app-card" data-cat="productivity" data-name="работа вакансии израиль поиск работы משרות עבודה ישראל">
+      <a href="jobsil.html" class="app-card" data-cat="productivity" data-name="jobs work israel vakansii rabota משרות עבודה ישראל">
         <div class="badge-new">NEW</div>
         <div class="app-icon" style="background:rgba(79,110,247,0.15)">💼</div>
-        <div class="app-name">JobsIL</div>
-        <div class="app-desc">Агрегатор вакансий Израиля — охрана, IT, медицина, строительство. Ссылки на AllJobs, Drushim, Jobnet и другие. На русском и иврите.</div>
-        <div class="app-tags"><span class="tag tag-purple">🇮🇱 ישראל</span><span class="tag tag-green">Вакансии</span><span class="tag tag-amber">RU / עב</span></div>
+        <div class="app-name" data-ru="JobsIL" data-en="JobsIL" data-he="JobsIL"></div>
+        <div class="app-desc" data-ru="Агрегатор вакансий Израиля — охрана, IT, медицина, строительство. Ссылки на AllJobs, Drushim, Jobnet и другие." data-en="Israel job aggregator — security, IT, medical, construction. Links to AllJobs, Drushim, Jobnet and more." data-he="אגרגטור משרות ישראלי — אבטחה, IT, רפואה, בנייה. קישורים ל-AllJobs, דרושים, Jobnet ועוד."></div>
+        <div class="app-tags"><span class="tag tag-purple">🇮🇱 ישראל</span><span class="tag tag-green" data-ru="Вакансии" data-en="Jobs" data-he="משרות"></span></div>
         <div class="app-footer">
-          <div class="app-link">Открыть <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+          <div class="app-link"><span data-ru="Открыть" data-en="Open" data-he="פתח"></span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
           <button class="fav-btn" data-id="jobsil" onclick="toggleFav(event,'jobsil')">☆</button>
         </div>
       </a>
 
-      <a href="dealzone.html" class="app-card" data-cat="productivity" data-name="dealzone акции купоны скидки израиль מבצעים">
+      <a href="dealzone.html" class="app-card" data-cat="productivity" data-name="deals coupons discounts скидки купоны מבצעים קופונים">
         <div class="badge-new">NEW</div>
         <div class="app-icon" style="background:rgba(255,96,16,0.12)">🔥</div>
-        <div class="app-name">DealZone IL</div>
-        <div class="app-desc">אגרגטור מבצעים וקופונים ישראלי — Агрегатор акций и купонов Израиля. AliExpress, Shufersal, KSP и другие.</div>
-        <div class="app-tags"><span class="tag tag-amber">🇮🇱 ישראל</span><span class="tag tag-purple">Купоны</span><span class="tag tag-green">Акции</span></div>
+        <div class="app-name" data-ru="DealZone IL" data-en="DealZone IL" data-he="DealZone IL"></div>
+        <div class="app-desc" data-ru="Агрегатор акций и купонов Израиля. AliExpress, Shufersal, KSP и другие магазины." data-en="Israeli deals and coupons aggregator. AliExpress, Shufersal, KSP and other stores." data-he="אגרגטור מבצעים וקופונים ישראלי. AliExpress, שופרסל, KSP וחנויות נוספות."></div>
+        <div class="app-tags"><span class="tag tag-amber">🇮🇱 ישראל</span><span class="tag tag-purple" data-ru="Купоны" data-en="Coupons" data-he="קופונים"></span></div>
         <div class="app-footer">
-          <div class="app-link">Открыть <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+          <div class="app-link"><span data-ru="Открыть" data-en="Open" data-he="פתח"></span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
           <button class="fav-btn" data-id="dealzone" onclick="toggleFav(event,'dealzone')">☆</button>
         </div>
       </a>
 
     </div>
-    <div class="no-results" id="noResults">🔍 Ничего не найдено.</div>
+    <div class="no-results" id="noResults">🔍 <span data-ru="Ничего не найдено" data-en="Nothing found" data-he="לא נמצאו תוצאות"></span></div>
   </section>
 
   <section class="support-section">
-    <div class="support-title">☕ Нравятся инструменты?</div>
-    <p class="support-desc">Все инструменты создаются в свободное время и остаются полностью бесплатными. Если они приносят пользу — поддержи проект чашкой кофе!</p>
+    <div class="support-title">☕ <span data-ru="Нравятся инструменты?" data-en="Like the tools?" data-he="אוהב את הכלים?"></span></div>
+    <p class="support-desc"><span data-ru="Все инструменты создаются в свободное время и остаются полностью бесплатными. Если они приносят пользу — поддержи проект!" data-en="All tools are built in free time and stay completely free. If they help you — support the project!" data-he="כל הכלים נבנים בזמן הפנוי ונשארים חינמיים לחלוטין. אם הם עוזרים לך — תמוך בפרויקט!"></span></p>
     <a href="https://ko-fi.com/varthur" class="kofi-big" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="white"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/></svg>
-      Поддержать на Ko-fi
+      <span data-ru="Поддержать на Ko-fi" data-en="Support on Ko-fi" data-he="תמוך ב-Ko-fi"></span>
     </a>
-    <p class="support-note">Любая сумма — огромная мотивация продолжать 🙏</p>
+    <p class="support-note"><span data-ru="Любая сумма — огромная мотивация продолжать 🙏" data-en="Any amount is a huge motivation to keep going 🙏" data-he="כל סכום הוא מוטיבציה עצומה להמשיך 🙏"></span></p>
   </section>
 </div>
 
 <footer>
   <div class="container">
-    <p style="margin-bottom:8px"><strong style="color:var(--text2)">VArt Tools</strong> — бесплатные инструменты для всех</p>
+    <p style="margin-bottom:8px"><strong style="color:var(--text2)">VArt Tools</strong> — <span data-ru="бесплатные инструменты для всех" data-en="free tools for everyone" data-he="כלים חינמיים לכולם"></span></p>
     <p><a href="https://ko-fi.com/varthur" target="_blank">☕ Ko-fi</a> &nbsp;·&nbsp; <a href="https://github.com/VArt-com" target="_blank">GitHub</a> &nbsp;·&nbsp; <span>org-va.com</span></p>
   </div>
 </footer>
 
 <script>
-// ТЕМА
-function toggleTheme(){
-  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
-  document.documentElement.setAttribute('data-theme',isDark?'light':'dark');
-  document.getElementById('btnTheme').textContent=isDark?'🌙':'☀️';
-  localStorage.setItem('vart_theme',isDark?'light':'dark');
-}
-function initTheme(){
-  const t=localStorage.getItem('vart_theme')||'dark';
-  if(t==='light'){document.documentElement.setAttribute('data-theme','light');document.getElementById('btnTheme').textContent='🌙';}
-  else{document.documentElement.removeAttribute('data-theme');document.getElementById('btnTheme').textContent='☀️';}
-}
+// ═══ ЯЗЫК ═══════════════════════════════════════════════
+let lang = localStorage.getItem('vart_lang') || 'ru';
 
-// ПОИСК И ФИЛЬТР
-let activeFilter='all';
-function setFilter(btn){
-  document.querySelectorAll('.filter-pill').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
-  activeFilter=btn.dataset.cat;
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('vart_lang', l);
+  document.documentElement.setAttribute('lang', l);
+
+  // RTL для иврита
+  const isHe = l === 'he';
+  document.documentElement.setAttribute('dir', isHe ? 'rtl' : 'ltr');
+  document.body.className = document.body.className.replace(/lang-\w+/, '');
+  document.body.classList.add('lang-' + l);
+
+  // Обновляем все data-атрибуты
+  document.querySelectorAll('[data-ru],[data-en],[data-he]').forEach(el => {
+    const txt = el.getAttribute('data-' + l);
+    if (txt !== null) el.textContent = txt;
+  });
+
+  // Кнопки языка
+  document.querySelectorAll('.btn-lang').forEach(btn => {
+    btn.classList.toggle('active',
+      (btn.textContent.trim() === 'РУС' && l === 'ru') ||
+      (btn.textContent.trim() === 'EN'  && l === 'en') ||
+      (btn.textContent.trim() === 'עב'  && l === 'he')
+    );
+  });
+
+  // Плейсхолдер поиска
+  const placeholders = {ru:'Поиск инструментов...', en:'Search tools...', he:'חפש כלים...'};
+  document.getElementById('searchInput').placeholder = placeholders[l];
+
+  // Перерисовываем карточки (теги внутри app-card)
   filterApps();
 }
-function filterApps(){
-  const q=document.getElementById('searchInput').value.toLowerCase();
-  let visible=0;
-  document.querySelectorAll('#appsGrid .app-card').forEach(c=>{
-    const matchCat=activeFilter==='all'||c.dataset.cat===activeFilter;
-    const matchQ=!q||c.dataset.name.includes(q)||c.querySelector('.app-name').textContent.toLowerCase().includes(q);
-    const show=matchCat&&matchQ;
-    c.classList.toggle('hidden',!show);
-    if(show)visible++;
-  });
-  document.getElementById('noResults').style.display=visible===0?'block':'none';
+
+// ═══ ТЕМА ═══════════════════════════════════════════════
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('btnTheme').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('vart_theme', isDark ? 'light' : 'dark');
+}
+function initTheme() {
+  const t = localStorage.getItem('vart_theme') || 'dark';
+  if (t === 'light') { document.documentElement.setAttribute('data-theme','light'); document.getElementById('btnTheme').textContent = '🌙'; }
+  else { document.documentElement.removeAttribute('data-theme'); document.getElementById('btnTheme').textContent = '☀️'; }
 }
 
-// ИЗБРАННОЕ (без логина)
-function getFavs(){try{return JSON.parse(localStorage.getItem('vart_favs'))||[];}catch{return[];}}
-function toggleFav(e,id){
-  e.preventDefault();e.stopPropagation();
-  let favs=getFavs();
-  const idx=favs.indexOf(id);
-  const btn=e.currentTarget;
-  if(idx===-1){favs.push(id);btn.textContent='★';btn.classList.add('active');}
-  else{favs.splice(idx,1);btn.textContent='☆';btn.classList.remove('active');}
-  localStorage.setItem('vart_favs',JSON.stringify(favs));
+// ═══ ПОИСК И ФИЛЬТР ═════════════════════════════════════
+let activeFilter = 'all';
+function setFilter(btn) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = btn.dataset.cat;
+  filterApps();
 }
-function loadFavs(){
-  const favs=getFavs();
-  document.querySelectorAll('.fav-btn').forEach(btn=>{
-    const a=favs.includes(btn.dataset.id);
-    btn.textContent=a?'★':'☆';
-    btn.classList.toggle('active',a);
+function filterApps() {
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  let visible = 0;
+  document.querySelectorAll('#appsGrid .app-card').forEach(c => {
+    const matchCat = activeFilter === 'all' || c.dataset.cat === activeFilter;
+    const matchQ = !q || c.dataset.name.includes(q) || c.querySelector('.app-name').textContent.toLowerCase().includes(q);
+    const show = matchCat && matchQ;
+    c.classList.toggle('hidden', !show);
+    if (show) visible++;
+  });
+  document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+}
+
+// ═══ ИЗБРАННОЕ ═══════════════════════════════════════════
+function getFavs() { try { return JSON.parse(localStorage.getItem('vart_favs')) || []; } catch { return []; } }
+function toggleFav(e, id) {
+  e.preventDefault(); e.stopPropagation();
+  let favs = getFavs();
+  const idx = favs.indexOf(id);
+  const btn = e.currentTarget;
+  if (idx === -1) { favs.push(id); btn.textContent = '★'; btn.classList.add('active'); }
+  else { favs.splice(idx, 1); btn.textContent = '☆'; btn.classList.remove('active'); }
+  localStorage.setItem('vart_favs', JSON.stringify(favs));
+}
+function loadFavs() {
+  const favs = getFavs();
+  document.querySelectorAll('.fav-btn').forEach(btn => {
+    const a = favs.includes(btn.dataset.id);
+    btn.textContent = a ? '★' : '☆';
+    btn.classList.toggle('active', a);
   });
 }
 
-// INIT
-(function(){
+// ═══ INIT ════════════════════════════════════════════════
+(function init() {
   initTheme();
+  setLang(lang);
   loadFavs();
 })();
 
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
 </script>
 </body>
