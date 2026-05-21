@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="Chance Analyzer - מפעל הפיס"/>
+<title>Шанс Анализатор</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Hebrew:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#09090f;--bg2:#111118;--bg3:#1a1a26;--bg4:#22222f;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);
+  --text:#e8e8f0;--text2:#8888aa;--text3:#44445a;
+  --gold:#f0c040;--gold2:#c8982a;
+  --red2:#ff7070;--blue2:#6aadff;--green2:#60d98a;
+  --spade:#c8d4ff;--heart:#ff7070;--diamond:#ff9960;--club:#60d98a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;line-height:1.5;overflow-x:hidden;min-height:100vh;}
+body[dir="rtl"]{font-family:'Noto Sans Hebrew','Rajdhani',sans-serif}
+body::before{content:'';position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 16px 80px}
+header{padding:24px 0 18px;border-bottom:1px solid var(--border);margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-suits{font-size:22px;letter-spacing:2px}
+.logo-suits span:nth-child(1){color:var(--spade)}
+.logo-suits span:nth-child(2){color:var(--heart)}
+.logo-suits span:nth-child(3){color:var(--diamond)}
+.logo-suits span:nth-child(4){color:var(--club)}
+.logo-text h1{font-size:20px;font-weight:700;letter-spacing:2px}
+.logo-text p{font-size:11px;color:var(--text2);letter-spacing:1px;font-family:'IBM Plex Mono',monospace}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lang-sw{display:flex;gap:4px}
+.lbtn{padding:5px 10px;font-size:13px;font-weight:700;border:1px solid var(--border2);border-radius:5px;background:none;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s;}
+.lbtn:hover{color:var(--text)}
+.lbtn.on{border-color:var(--gold2);color:var(--gold);background:rgba(240,192,64,.08)}
+.kofi{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--gold2);color:var(--gold);padding:7px 13px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:600;text-decoration:none;transition:all .15s;}
+.kofi:hover{background:rgba(240,192,64,.1)}
+.tabs{display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:10px 16px;font-size:13px;font-weight:600;letter-spacing:.8px;cursor:pointer;border:none;background:none;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;font-family:inherit;transition:all .15s;}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold)}
+.tab:hover:not(.on){color:var(--text)}
+.panel{display:none}.panel.on{display:block}
+.s1{color:var(--spade)}.s2{color:var(--heart)}.s3{color:var(--diamond)}.s4{color:var(--club)}
+.ibox{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px;font-size:14px;color:var(--text2);line-height:1.8;}
+.ibox strong{color:var(--text)}
+.ibox a{color:var(--blue2);text-decoration:none}
+.sec{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin:18px 0 8px;font-family:'IBM Plex Mono',monospace}
+.prizeg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+@media(min-width:480px){.prizeg{grid-template-columns:repeat(4,1fr)}}
+.pcard{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 8px;text-align:center}
+.pmatch{font-size:12px;color:var(--text2);margin-bottom:4px}
+.pmult{font-size:20px;font-weight:700;color:var(--gold)}
+.pcard.top{border-color:var(--gold2)}
+.sg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:560px){.sg{grid-template-columns:repeat(4,1fr)}}
+.sc{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 10px}
+.sh{font-size:22px;text-align:center;margin-bottom:4px}
+.sn{font-size:11px;color:var(--text2);text-align:center;margin-bottom:10px;letter-spacing:1px}
+.crow{display:flex;align-items:center;gap:5px;margin-bottom:4px}
+.crank{font-size:13px;font-weight:700;min-width:18px;font-family:'IBM Plex Mono',monospace}
+.bbg{flex:1;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.bf{height:100%;border-radius:2px;transition:width .4s}
+.fhot{background:var(--red2)}.fwarm{background:var(--gold)}.fmid{background:var(--blue2)}.fcold{background:var(--text3)}
+.cpct{font-size:10px;color:var(--text2);min-width:30px;text-align:right;font-family:'IBM Plex Mono',monospace}
+.hlbl{font-size:10px;letter-spacing:.5px;padding:1px 4px;border-radius:3px;font-weight:700}
+.hh{background:rgba(255,112,112,.15);color:var(--red2)}.hc{background:rgba(96,217,138,.15);color:var(--green2)}
+.simrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.sbtn{padding:9px 18px;background:transparent;border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.5px;transition:all .15s;}
+.sbtn:hover{border-color:var(--gold);color:var(--gold)}
+.sbtn.pri{border-color:var(--gold2);color:var(--gold);background:rgba(240,192,64,.08)}
+.sinfo{font-size:12px;color:var(--text2)}
+.clist{display:flex;flex-direction:column;gap:8px}
+.ccombo{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;transition:all .15s;}
+.ccombo:hover{border-color:var(--border2);background:var(--bg3)}
+.ctitle{font-size:15px;font-weight:700;margin-bottom:3px}
+.cdesc{font-size:12px;color:var(--text2)}
+.chand{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.pc{background:var(--bg3);border:1.5px solid var(--border2);border-radius:7px;width:40px;height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:700;line-height:1.2;font-family:'IBM Plex Mono',monospace;}
+.crt{text-align:right;flex-shrink:0}
+.csco{font-size:26px;font-weight:700}
+.cslbl{font-size:10px;color:var(--text2);letter-spacing:1px}
+.badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;padding:2px 7px;border-radius:4px;margin-left:5px}
+.bh{background:rgba(255,112,112,.15);color:var(--red2)}.bc{background:rgba(96,217,138,.15);color:var(--green2)}.bm{background:rgba(74,144,217,.15);color:var(--blue2)}.bg{background:rgba(240,192,64,.15);color:var(--gold)}
+.pkg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+@media(min-width:480px){.pkg{grid-template-columns:repeat(4,1fr)}}
+.pcol{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 8px}
+.phead{font-size:20px;text-align:center;margin-bottom:3px}
+.psn{font-size:10px;color:var(--text2);text-align:center;letter-spacing:1px;margin-bottom:8px}
+.pbtns{display:flex;flex-direction:column;gap:3px}
+.pkb{padding:6px 0;font-size:13px;font-weight:700;border:1px solid var(--border);border-radius:5px;background:none;cursor:pointer;color:var(--text2);font-family:'IBM Plex Mono',monospace;transition:all .1s;}
+.pkb:hover{background:var(--bg3);color:var(--text)}
+.pkb.p1{background:rgba(200,212,255,.12);color:var(--spade);border-color:var(--spade)}
+.pkb.p2{background:rgba(255,112,112,.12);color:var(--heart);border-color:var(--heart)}
+.pkb.p3{background:rgba(255,153,96,.12);color:var(--diamond);border-color:var(--diamond)}
+.pkb.p4{background:rgba(96,217,138,.12);color:var(--club);border-color:var(--club)}
+.yhand{display:flex;gap:8px;flex-wrap:wrap;min-height:64px;align-items:center;margin-bottom:14px}
+.hph{font-size:14px;color:var(--text3)}
+.bigc{background:var(--bg3);border:2px solid var(--border2);border-radius:8px;width:48px;height:66px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:14px;font-weight:700;line-height:1.2;font-family:'IBM Plex Mono',monospace;}
+.abox{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 16px}
+.arow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.arow:last-child{border-bottom:none}
+.albl{color:var(--text2)}.aval{font-weight:700;font-family:'IBM Plex Mono',monospace}
+.aval.hot{color:var(--red2)}.aval.warm{color:var(--gold)}.aval.good{color:var(--green2)}
+.hlist{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;scrollbar-width:thin}
+.hitem{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.hnum{font-size:11px;color:var(--text3);font-family:'IBM Plex Mono',monospace;min-width:22px}
+.hcards{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.hc2{display:inline-flex;align-items:center;gap:2px;font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace}
+.htime{font-size:10px;color:var(--text3);white-space:nowrap}
+.hdel{background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;padding:0 3px}
+.hdel:hover{color:var(--red2)}
+.addrow{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.asel{flex:1;min-width:70px;padding:7px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-family:inherit;font-size:13px;}
+.abtn{padding:7px 15px;background:rgba(240,192,64,.1);border:1px solid var(--gold2);border-radius:5px;color:var(--gold);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:all .15s;}
+.abtn:hover{background:rgba(240,192,64,.2)}
+.wbox{background:rgba(224,80,80,.08);border:1px solid rgba(224,80,80,.2);border-radius:7px;padding:10px 14px;font-size:13px;color:rgba(255,120,120,.8);margin-bottom:14px;line-height:1.7;}
+/* GENERATOR */
+.gsg{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:14px}
+@media(min-width:560px){.gsg{grid-template-columns:repeat(5,1fr)}}
+.gsb{padding:10px 6px;font-size:12px;font-weight:700;border:1px solid var(--border);border-radius:8px;background:none;cursor:pointer;color:var(--text2);font-family:inherit;transition:all .15s;text-align:center;line-height:1.4;}
+.gsb:hover{border-color:var(--border2);color:var(--text)}
+.gsb.on{border-color:var(--gold2);color:var(--gold);background:rgba(240,192,64,.1)}
+.gcards{display:flex;justify-content:center;gap:12px;margin:20px 0;flex-wrap:wrap}
+.gcard{background:var(--bg3);border:2px solid var(--border2);border-radius:12px;width:64px;height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;opacity:.35;transform:scale(.9);transition:opacity .3s,transform .3s;}
+.gcard.show{opacity:1;transform:scale(1)}
+.gcsym{font-size:24px}
+.gcrank{font-size:17px;font-weight:700;font-family:'IBM Plex Mono',monospace}
+.gscrow{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:16px;flex-wrap:wrap}
+.gsbox{text-align:center}
+.gsnum{font-size:30px;font-weight:700}
+.gslbl{font-size:10px;color:var(--text2);letter-spacing:1.5px;margin-top:2px}
+.gexpl{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:14px;}
+.gexpl strong{color:var(--text)}
+.grow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.gmbtn{flex:1;min-width:150px;padding:13px 18px;font-size:15px;font-weight:700;letter-spacing:.8px;border:1.5px solid var(--gold2);border-radius:9px;background:rgba(240,192,64,.1);color:var(--gold);cursor:pointer;font-family:inherit;transition:all .15s;}
+.gmbtn:hover{background:rgba(240,192,64,.2)}
+.gmbtn:active{transform:scale(.97)}
+.gsbtn{padding:13px 15px;font-size:13px;font-weight:600;border:1px solid var(--border2);border-radius:9px;background:none;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s;}
+.gsbtn:hover{border-color:var(--green2);color:var(--green2)}
+.ghist{display:flex;flex-direction:column;gap:5px;max-height:180px;overflow-y:auto;scrollbar-width:thin}
+.ghrow{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12px;}
+.ghcards{display:flex;gap:5px;flex:1}
+.ghsco{font-size:12px;font-weight:700;color:var(--gold);min-width:26px;text-align:right;font-family:'IBM Plex Mono',monospace}
+footer{position:fixed;bottom:0;left:0;right:0;background:rgba(9,9,15,.93);backdrop-filter:blur(10px);border-top:1px solid var(--border);padding:9px 16px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text3);z-index:100;}
+.fsuits{letter-spacing:4px;font-size:13px}
+.fsuits span:nth-child(1){color:var(--spade)}.fsuits span:nth-child(2){color:var(--heart)}.fsuits span:nth-child(3){color:var(--diamond)}.fsuits span:nth-child(4){color:var(--club)}
+@media(max-width:420px){.logo-text h1{font-size:16px}.tab{padding:8px 11px;font-size:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="logo">
+    <div class="logo-suits"><span>&#9824;</span><span>&#9829;</span><span>&#9830;</span><span>&#9827;</span></div>
+    <div class="logo-text">
+      <h1 id="T_appTitle">ШАНС АНАЛИЗАТОР</h1>
+      <p>&#x05DE;&#x05E4;&#x05E2;&#x05DC; &#x05D4;&#x05E4;&#x05D9;&#x05E1; · CHAN STATISTICS</p>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="lang-sw">
+      <button class="lbtn on"  onclick="setLang('ru')">RU</button>
+      <button class="lbtn"     onclick="setLang('en')">EN</button>
+      <button class="lbtn"     onclick="setLang('he')">HE</button>
+    </div>
+    <a class="kofi" href="https://ko-fi.com/varthur" target="_blank">&#9749; Ko-fi</a>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab on"  onclick="goTab('info')"    id="TAB_info">О ИГРЕ</button>
+  <button class="tab"     onclick="goTab('stats')"   id="TAB_stats">СТАТИСТИКА</button>
+  <button class="tab"     onclick="goTab('combos')"  id="TAB_combos">КОМБИНАЦИИ</button>
+  <button class="tab"     onclick="goTab('gen')"     id="TAB_gen">ГЕНЕРАТОР</button>
+  <button class="tab"     onclick="goTab('pick')"    id="TAB_pick">ПОДОБРАТЬ</button>
+  <button class="tab"     onclick="goTab('history')" id="TAB_history">ИСТОРИЯ</button>
+</div>
+
+<!-- ═══════ INFO ═══════ -->
+<div id="P_info" class="panel on">
+  <div class="ibox" id="T_infoMain"></div>
+  <div class="sec" id="T_secSuits"></div>
+  <div class="sg">
+    <div class="sc"><div class="sh s1">&#9824;</div><div class="sn" id="T_snS"></div><div style="font-size:13px;color:var(--text2);text-align:center">7·8·9·10·J·Q·K·A</div></div>
+    <div class="sc"><div class="sh s2">&#9829;</div><div class="sn" id="T_snH"></div><div style="font-size:13px;color:var(--text2);text-align:center">7·8·9·10·J·Q·K·A</div></div>
+    <div class="sc"><div class="sh s3">&#9830;</div><div class="sn" id="T_snD"></div><div style="font-size:13px;color:var(--text2);text-align:center">7·8·9·10·J·Q·K·A</div></div>
+    <div class="sc"><div class="sh s4">&#9827;</div><div class="sn" id="T_snC"></div><div style="font-size:13px;color:var(--text2);text-align:center">7·8·9·10·J·Q·K·A</div></div>
+  </div>
+  <div class="sec" id="T_secPrizes"></div>
+  <div class="prizeg">
+    <div class="pcard"><div class="pmatch" id="T_pr1"></div><div class="pmult">&times;0.5</div></div>
+    <div class="pcard"><div class="pmatch" id="T_pr2"></div><div class="pmult">&times;2</div></div>
+    <div class="pcard"><div class="pmatch" id="T_pr3"></div><div class="pmult">&times;20</div></div>
+    <div class="pcard top"><div class="pmatch" id="T_pr4"></div><div class="pmult">&times;1000</div></div>
+  </div>
+  <div class="wbox" id="T_warn"></div>
+  <div class="ibox">
+    <span id="T_lblStat"></span>: <a href="https://www.pais.co.il/chance/statistics.aspx" target="_blank">pais.co.il/chance/statistics.aspx</a><br>
+    <span id="T_lblArch"></span>: <a href="https://www.pais.co.il/chance/archive.aspx" target="_blank">pais.co.il/chance/archive.aspx</a>
+  </div>
+</div>
+
+<!-- ═══════ STATS ═══════ -->
+<div id="P_stats" class="panel">
+  <div class="ibox" id="T_statsInfo"></div>
+  <div class="simrow">
+    <button class="sbtn pri" onclick="runSim(1000)"  id="T_b1k"></button>
+    <button class="sbtn"     onclick="runSim(10000)" id="T_b10k"></button>
+    <button class="sbtn"     onclick="runSim(50000)" id="T_b50k"></button>
+    <span class="sinfo" id="simInfo"></span>
+  </div>
+  <div class="sg" id="statGrid"></div>
+  <div id="statLegend" style="display:none;margin-top:10px;display:flex;gap:14px;flex-wrap:wrap">
+    <span id="T_legH" style="font-size:12px;color:var(--red2)"></span>
+    <span id="T_legW" style="font-size:12px;color:var(--gold)"></span>
+    <span id="T_legM" style="font-size:12px;color:var(--blue2)"></span>
+    <span id="T_legC" style="font-size:12px;color:var(--green2)"></span>
+  </div>
+</div>
+
+<!-- ═══════ COMBOS ═══════ -->
+<div id="P_combos" class="panel">
+  <div class="ibox" id="T_combosInfo"></div>
+  <div class="clist" id="comboList"></div>
+</div>
+
+<!-- ═══════ GENERATOR ═══════ -->
+<div id="P_gen" class="panel">
+  <div class="ibox" id="T_genInfo"></div>
+  <div class="sec" id="T_secGenStrat"></div>
+  <div class="gsg" id="genStratGrid"></div>
+  <div class="grow">
+    <button class="gmbtn" id="T_btnGen" onclick="generateCombo()"></button>
+    <button class="gsbtn" id="T_btnGenSave" onclick="saveGenResult()"></button>
+  </div>
+  <div class="gcards" id="genCards"></div>
+  <div class="gscrow" id="genScoreRow" style="display:none">
+    <div class="gsbox">
+      <div class="gsnum" id="genScoreNum" style="color:var(--gold)">0</div>
+      <div class="gslbl" id="T_genScoreLbl"></div>
+    </div>
+    <div class="gsbox">
+      <div class="gsnum" style="color:var(--blue2)">0.024%</div>
+      <div class="gslbl" id="T_genProbLbl"></div>
+    </div>
+  </div>
+  <div class="gexpl" id="genExpl" style="display:none"></div>
+  <div id="genHistWrap" style="display:none">
+    <div class="sec" id="T_secGenHist"></div>
+    <div class="ghist" id="genHistList"></div>
+    <div style="margin-top:8px">
+      <button class="sbtn" onclick="clearGenHist()" id="T_btnGenClr" style="font-size:12px"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ PICK ═══════ -->
+<div id="P_pick" class="panel">
+  <div class="sec" id="T_secPickTitle"></div>
+  <div class="pkg" id="pickerGrid"></div>
+  <div class="sec" id="T_secYourHand"></div>
+  <div class="yhand" id="yourHand"></div>
+  <div id="pickAnalysis" style="display:none">
+    <div class="sec" id="T_secAnalysis"></div>
+    <div class="abox" id="analysisBox"></div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="sbtn" onclick="savePickToHist()" id="T_btnSavePick"></button>
+      <button class="sbtn" onclick="clearPick()"      id="T_btnResetPick"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ HISTORY ═══════ -->
+<div id="P_history" class="panel">
+  <div class="ibox" id="T_histInfo"></div>
+  <div class="sec" id="T_secAddDraw"></div>
+  <div class="addrow" id="addRow"></div>
+  <div style="margin-bottom:12px">
+    <button class="abtn" onclick="addHistEntry()" id="T_btnAddEntry"></button>
+  </div>
+  <div>
+    <div class="sec"><span id="T_secRecorded"></span> (<span id="histCount">0</span>)</div>
+    <div class="hlist" id="histList"></div>
+    <div style="margin-top:8px">
+      <button class="sbtn" onclick="clearHist()" id="T_btnClrHist" style="font-size:12px"></button>
+    </div>
+  </div>
+  <div id="histStatBox" style="display:none;margin-top:18px">
+    <div class="sec" id="T_secYourStats"></div>
+    <div class="sg" id="histStatGrid"></div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<footer>
+  <div class="fsuits"><span>&#9824;</span><span>&#9829;</span><span>&#9830;</span><span>&#9827;</span></div>
+  <div id="T_footTitle">ШАНС АНАЛИЗАТОР · VArt Tools</div>
+  <div>32 · 4</div>
+</footer>
+
+<script>
+// ═══════════════════ TRANSLATIONS ═══════════════════
+var TR = {
+  ru: {
+    appTitle:"ШАНС АНАЛИЗАТОР",
+    tabs:["О ИГРЕ","СТАТИСТИКА","КОМБИНАЦИИ","ГЕНЕРАТОР","ПОДОБРАТЬ","ИСТОРИЯ"],
+    infoMain:"<strong>Шанс (Chan)</strong> — карточная игра мифаль хапаис.<br>Колода из <strong>32 карт</strong>, 4 масти, 8 карт в каждой масти.<br>На каждом тираже вытаскивается <strong>по 1 карте из каждой масти</strong> — итого 4 карты.<br>Тиражи: Пн–Пт 10:00–22:00 · Пт/пр.праздника 10:00–14:00 · Мотц“ш 21:00 и 23:05",
+    secSuits:"Карты в каждой масти",
+    snS:"ПИК (עלה)", snH:"ЧЕРВЬ (לב)", snD:"БУБНА (יהלום)", snC:"ТРЕФ (תלתן)",
+    secPrizes:"Призы — Рав Шанс",
+    pr1:"1 карта", pr2:"2 карты", pr3:"3 карты", pr4:"4 карты ✓",
+    warn:"⚠️ Шанс — игра случайности. Вероятность угадать одну карту: <strong>1/8 (12.5%)</strong>. Все 4: <strong>1/4096 (0.024%)</strong>. Никакая статистика не увеличивает шансы. Играйте ответственно.",
+    lblStat:"Официальная статистика", lblArch:"Архив результатов",
+    statsInfo:"Запустите симуляцию чтобы увидеть распределение карт по каждой масти.",
+    b1k:"▶ 1 000 тиражей", b10k:"▶ 10 000", b50k:"▶ 50 000",
+    simDone:"Симулировано", draws:"тиражей",
+    legH:"■ Горячая", legW:"■ Тёплая", legM:"■ Средняя", legC:"■ Холодная",
+    lHot:"ГОР", lCold:"ХОЛ",
+    combosInfo:"Все комбинации математически равновероятны. Ниже стратегические рекомендации.",
+    rating:"РЕЙТИНГ", tHot:"ПОПУЛЯРНО", tCold:"РЕДКО", tMid:"БАЛАНС", tGold:"ТОП",
+    combos:[
+      {t:"Четыре туза",d:"Максимальный ранг во всех мастях"},
+      {t:"Четыре короля",d:"Второй по силе квартет"},
+      {t:"Старшие карты",d:"J, Q, K, A — психологически популярно"},
+      {t:"Микс силы",d:"Высокие + средние карты"},
+      {t:"Средний ряд",d:"Часто недооценённые карты"},
+      {t:"Лесенка",d:"Возрастающая последовательность"},
+      {t:"Четыре семёрки",d:"Минимальный ранг — редкий выбор"},
+      {t:"Четыре дамы",d:"Симметричная ставка на дам"}
+    ],
+    genInfo:"Выберите стратегию и нажмите кнопку. Генератор подберёт комбинацию из 4 карт (по 1 из каждой масти) по алгоритму.",
+    secGenStrat:"Стратегия генерации",
+    btnGen:"🎲 Сгенерировать",
+    btnGenSave:"💾 Сохранить",
+    genScoreLbl:"СИЛА РУКИ",
+    genProbLbl:"ШАНС УГАДАТЬ 4",
+    genStrats:[
+      {id:"max",    lbl:"Макс. сила",  d:"Туз или король"},
+      {id:"hot",    lbl:"Горячие",     d:"Высокие ранги"},
+      {id:"balance",lbl:"Баланс",      d:"Покрытие диапазона"},
+      {id:"smart",  lbl:"Умный микс",  d:"Анализ + случай"},
+      {id:"random", lbl:"Случайный",   d:"Полная случайность"}
+    ],
+    genExpl:{
+      max:"Выбран туз или король в каждой масти — максимальный ранг. Психологически сильная комбинация.",
+      hot:"Высокие ранги (10–A) — наиболее популярные выборы игроков. Равная вероятность, привлекательная рука.",
+      balance:"По одной карте из каждого диапазона: низкие (7–9), средние (10–J), высокие (Q–K), туз. Максимальное покрытие.",
+      smart:"Алгоритм взвешивает все ранги: A=30%, K=20%, Q=13%, J=10%, 10=9%, остальные меньше. Псевдо-оптимальная стратегия.",
+      random:"Полностью случайная выборка. Каждая карта — 1/8 шанс. Лучшая стратегия с точки зрения теории вероятностей."
+    },
+    secGenHist:"Последние сгенерированные",
+    btnGenClr:"🗑 Очистить",
+    secPickTitle:"Выберите по 1 карте из каждой масти",
+    secYourHand:"Ваша комбинация",
+    handPh:"← Выберите карты выше",
+    secAnalysis:"Анализ комбинации",
+    btnSavePick:"💾 Сохранить в историю",
+    btnResetPick:"✕ Сбросить",
+    aAvg:"Средний ранг", aHigh:"Старших (K,A)", aMid:"Средних (10,J,Q)", aLow:"Младших (7,8,9)",
+    aUniq:"Уникальных рангов", aStr:"Сила комбинации", aP1:"Угадать 1 карту", aP4:"Угадать все 4",
+    strVH:"Очень высокая", strH:"Высокая", strM:"Средняя", strL:"Низкая",
+    of4:"из 4",
+    histInfo:"Записывайте результаты тиражей — программа покажет вашу личную статистику.",
+    secAddDraw:"Добавить тираж",
+    btnAddEntry:"+ Добавить",
+    secRecorded:"Записанные тиражи",
+    btnClrHist:"🗑 Очистить историю",
+    secYourStats:"Ваша статистика",
+    noHist:"Нет записей. Добавьте результаты тиражей.",
+    confirmClr:"Очистить?",
+    alertSel:"Выберите карту в каждой масти",
+    footTitle:"ШАНС АНАЛИЗАТОР · VArt Tools",
+    sn:{spade:"ПИК",heart:"ЧЕРВЬ",diamond:"БУБНА",club:"ТРЕФ"}
+  },
+  en: {
+    appTitle:"CHANCE ANALYZER",
+    tabs:["ABOUT","STATISTICS","COMBOS","GENERATOR","PICK CARDS","HISTORY"],
+    infoMain:"<strong>Chance (Chan)</strong> — a card game by Mifal HaPais (Israeli lottery).<br>Deck of <strong>32 cards</strong>, 4 suits, 8 cards per suit.<br>Each draw reveals <strong>1 card from each suit</strong> — 4 cards total.<br>Draws: Mon–Fri 10:00–22:00 · Fri/holidays 10:00–14:00 · Sat night 21:00 & 23:05",
+    secSuits:"Cards in each suit",
+    snS:"SPADES (עלה)", snH:"HEARTS (לב)", snD:"DIAMONDS (יהלום)", snC:"CLUBS (תלתן)",
+    secPrizes:"Prizes — Rav Chance",
+    pr1:"1 card", pr2:"2 cards", pr3:"3 cards", pr4:"4 cards ✓",
+    warn:"⚠️ Chance is a game of luck. Odds for 1 card: <strong>1/8 (12.5%)</strong>. All 4: <strong>1/4096 (0.024%)</strong>. No statistics improve your odds. Play responsibly.",
+    lblStat:"Official statistics", lblArch:"Results archive",
+    statsInfo:"Run a simulation to see card distribution across all suits.",
+    b1k:"▶ 1,000 draws", b10k:"▶ 10,000", b50k:"▶ 50,000",
+    simDone:"Simulated", draws:"draws",
+    legH:"■ Hot", legW:"■ Warm", legM:"■ Average", legC:"■ Cold",
+    lHot:"HOT", lCold:"COLD",
+    combosInfo:"All combinations are mathematically equal. Below are strategic recommendations.",
+    rating:"RATING", tHot:"POPULAR", tCold:"RARE", tMid:"BALANCED", tGold:"TOP",
+    combos:[
+      {t:"Four Aces",d:"Maximum rank in all suits"},
+      {t:"Four Kings",d:"Second strongest quad"},
+      {t:"High cards",d:"J, Q, K, A — psychologically popular"},
+      {t:"Power mix",d:"High + mid cards"},
+      {t:"Middle row",d:"Often underestimated cards"},
+      {t:"Ladder",d:"Ascending sequence"},
+      {t:"Four Sevens",d:"Minimum rank — rare choice"},
+      {t:"Four Queens",d:"Symmetric bet on queens"}
+    ],
+    genInfo:"Choose a strategy and press the button. The generator picks a 4-card combination (1 per suit) using the selected algorithm.",
+    secGenStrat:"Generation strategy",
+    btnGen:"🎲 Generate",
+    btnGenSave:"💾 Save",
+    genScoreLbl:"HAND STRENGTH",
+    genProbLbl:"ODDS ALL 4",
+    genStrats:[
+      {id:"max",    lbl:"Max power",   d:"Ace or king"},
+      {id:"hot",    lbl:"Hot cards",   d:"High ranks"},
+      {id:"balance",lbl:"Balance",     d:"Range coverage"},
+      {id:"smart",  lbl:"Smart mix",   d:"Analysis + random"},
+      {id:"random", lbl:"Random",      d:"Full randomness"}
+    ],
+    genExpl:{
+      max:"Ace or king in every suit — maximum rank. Psychologically strong combination.",
+      hot:"High ranks (10–A) — most popular player choices. Equal probability, attractive hand.",
+      balance:"One card from each range: low (7–9), mid (10–J), high (Q–K), ace. Maximum coverage.",
+      smart:"Algorithm weighs all ranks: A=30%, K=20%, Q=13%, J=10%, 10=9%, less for others. Pseudo-optimal strategy.",
+      random:"Fully random selection. Each card has equal 1/8 odds. Best strategy from probability theory."
+    },
+    secGenHist:"Last generated",
+    btnGenClr:"🗑 Clear",
+    secPickTitle:"Pick 1 card from each suit",
+    secYourHand:"Your combination",
+    handPh:"← Pick cards above",
+    secAnalysis:"Combination analysis",
+    btnSavePick:"💾 Save to history",
+    btnResetPick:"✕ Reset",
+    aAvg:"Average rank", aHigh:"High (K,A)", aMid:"Mid (10,J,Q)", aLow:"Low (7,8,9)",
+    aUniq:"Unique ranks", aStr:"Strength", aP1:"Odds: guess 1", aP4:"Odds: guess all 4",
+    strVH:"Very high", strH:"High", strM:"Medium", strL:"Low",
+    of4:"of 4",
+    histInfo:"Record real draw results — the app will show your personal statistics.",
+    secAddDraw:"Add draw result",
+    btnAddEntry:"+ Add",
+    secRecorded:"Recorded draws",
+    btnClrHist:"🗑 Clear history",
+    secYourStats:"Your statistics",
+    noHist:"No records. Add draw results.",
+    confirmClr:"Clear all?",
+    alertSel:"Select a card for each suit",
+    footTitle:"CHANCE ANALYZER · VArt Tools",
+    sn:{spade:"SPADES",heart:"HEARTS",diamond:"DIAMONDS",club:"CLUBS"}
+  },
+  he: {
+    appTitle:"\u05DE\u05E0\u05EA\u05D7 \u05E6'\u05D0\u05E0\u05E1",
+    tabs:["\u05D0\u05D5\u05D3\u05D5\u05EA","\u05E1\u05D8\u05D8\u05D9\u05E1\u05D8\u05D9\u05E7\u05D4","\u05E7\u05D5\u05DE\u05D1\u05D9\u05E0\u05E6\u05D9\u05D5\u05EA","\u05D2'\u05E0\u05E8\u05D8\u05D5\u05E8","\u05D1\u05D7\u05D9\u05E8\u05EA \u05E7\u05DC\u05E4\u05D9\u05DD","\u05D4\u05D9\u05E1\u05D8\u05D5\u05E8\u05D9\u05D4"],
+    infoMain:"<strong>\u05E6'\u05D0\u05E0\u05E1</strong> — \u05DE\u05E9\u05D7\u05E7 \u05E7\u05DC\u05E4\u05D9\u05DD \u05E9\u05DC \u05DE\u05E4\u05E2\u05DC \u05D4\u05E4\u05D9\u05E1.<br>\u05D7\u05E4\u05D9\u05E1\u05D4 \u05E9\u05DC <strong>32 \u05E7\u05DC\u05E4\u05D9\u05DD</strong>, 4 \u05E1\u05D3\u05E8\u05D5\u05EA, 8 \u05E7\u05DC\u05E4\u05D9\u05DD \u05D1\u05DB\u05DC \u05E1\u05D3\u05E8\u05D4.<br>\u05D1\u05DB\u05DC \u05D4\u05D2\u05E8\u05DC\u05D4 \u05E2\u05D5\u05DC\u05D4 <strong>\u05E7\u05DC\u05E3 \u05D0\u05D7\u05D3 \u05DE\u05DB\u05DC \u05E1\u05D3\u05E8\u05D4</strong> — \u05E1\u05D4''\u05DB 4 \u05E7\u05DC\u05E4\u05D9\u05DD.",
+    secSuits:"\u05E7\u05DC\u05E4\u05D9\u05DD \u05D1\u05DB\u05DC \u05E1\u05D3\u05E8\u05D4",
+    snS:"\u05E2\u05DC\u05D4 (\u2660)", snH:"\u05DC\u05D1 (\u2665)", snD:"\u05D9\u05D4\u05DC\u05D5\u05DD (\u2666)", snC:"\u05EA\u05DC\u05EA\u05DF (\u2663)",
+    secPrizes:"\u05E4\u05E8\u05E1\u05D9\u05DD — \u05E8\u05D1 \u05E6'\u05D0\u05E0\u05E1",
+    pr1:"\u05E7\u05DC\u05E3 1", pr2:"2 \u05E7\u05DC\u05E4\u05D9\u05DD", pr3:"3 \u05E7\u05DC\u05E4\u05D9\u05DD", pr4:"4 \u05E7\u05DC\u05E4\u05D9\u05DD \u2713",
+    warn:"\u26A0\uFE0F \u05E6'\u05D0\u05E0\u05E1 \u05D4\u05D5\u05D0 \u05DE\u05E9\u05D7\u05E7 \u05DE\u05D6\u05DC. \u05E1\u05D9\u05DB\u05D5\u05D9 \u05DC\u05E0\u05D7\u05E9 \u05E7\u05DC\u05E3 \u05D0\u05D7\u05D3: <strong>1/8 (12.5%)</strong>. \u05DB\u05DC 4: <strong>1/4096</strong>. \u05E9\u05D7\u05E7\u05D5 \u05D1\u05D0\u05D7\u05E8\u05D9\u05D5\u05EA.",
+    lblStat:"\u05E1\u05D8\u05D8\u05D9\u05E1\u05D8\u05D9\u05E7\u05D4 \u05E8\u05E9\u05DE\u05D9\u05EA", lblArch:"\u05D0\u05E8\u05DB\u05D9\u05D5\u05DF \u05EA\u05D5\u05E6\u05D0\u05D5\u05EA",
+    statsInfo:"\u05D4\u05E4\u05E2\u05D9\u05DC\u05D5 \u05E1\u05D9\u05DE\u05D5\u05DC\u05E6\u05D9\u05D4 \u05DC\u05E8\u05D0\u05D5\u05EA \u05D0\u05EA \u05D4\u05EA\u05E4\u05DC\u05D2\u05D5\u05EA \u05D4\u05E7\u05DC\u05E4\u05D9\u05DD.",
+    b1k:"\u25BA 1,000 \u05D4\u05D2\u05E8\u05DC\u05D5\u05EA", b10k:"\u25BA 10,000", b50k:"\u25BA 50,000",
+    simDone:"\u05E1\u05D5\u05DE\u05DC\u05E6\u05D5", draws:"\u05D4\u05D2\u05E8\u05DC\u05D5\u05EA",
+    legH:"\u25A0 \u05D7\u05DD", legW:"\u25A0 \u05E4\u05D5\u05E9\u05E8", legM:"\u25A0 \u05DE\u05DE\u05D5\u05E6\u05E2", legC:"\u25A0 \u05E7\u05E8",
+    lHot:"\u05D7\u05DD", lCold:"\u05E7\u05E8",
+    combosInfo:"\u05DB\u05DC \u05D4\u05E7\u05D5\u05DE\u05D1\u05D9\u05E0\u05E6\u05D9\u05D5\u05EA \u05E9\u05D5\u05D5\u05EA \u05DE\u05EA\u05DE\u05D8\u05D9\u05EA. \u05DC\u05D4\u05DC\u05DF \u05D4\u05DE\u05DC\u05E6\u05D5\u05EA \u05D0\u05E1\u05D8\u05E8\u05D8\u05D2\u05D9\u05D5\u05EA.",
+    rating:"\u05D3\u05D9\u05E8\u05D5\u05D2", tHot:"\u05E4\u05D5\u05E4\u05D5\u05DC\u05E8\u05D9", tCold:"\u05E0\u05D3\u05D9\u05E8", tMid:"\u05DE\u05D0\u05D5\u05D6\u05DF", tGold:"\u05D8\u05D5\u05E4",
+    combos:[
+      {t:"\u05D0\u05E8\u05D1\u05E2\u05D4 \u05D0\u05E1\u05D9\u05DD",d:"\u05D4\u05D3\u05E8\u05D2\u05D4 \u05D4\u05DE\u05E7\u05E1\u05D9\u05DE\u05DC\u05D9\u05EA"},
+      {t:"\u05D0\u05E8\u05D1\u05E2\u05D4 \u05DE\u05DC\u05DB\u05D9\u05DD",d:"\u05D4\u05E8\u05D1\u05D9\u05E2\u05D9\u05D9\u05D4 \u05D4\u05E9\u05E0\u05D9\u05D9\u05D4"},
+      {t:"\u05E7\u05DC\u05E4\u05D9\u05DD \u05D2\u05D1\u05D5\u05D4\u05D9\u05DD",d:"J, Q, K, A \u2014 \u05E4\u05D5\u05E4\u05D5\u05DC\u05E8\u05D9"},
+      {t:"\u05DE\u05D9\u05E7\u05E1 \u05DB\u05D5\u05D7",d:"\u05D2\u05D1\u05D5\u05D4\u05D9\u05DD + \u05D1\u05D9\u05E0\u05D5\u05E0\u05D9\u05D9\u05DD"},
+      {t:"\u05E9\u05D5\u05E8\u05D4 \u05D0\u05DE\u05E6\u05E2\u05D9\u05EA",d:"\u05E7\u05DC\u05E4\u05D9\u05DD \u05DE\u05D5\u05E2\u05E8\u05DB\u05D9\u05DD \u05DC\u05E2\u05EA\u05D9\u05DD"},
+      {t:"\u05E1\u05D5\u05DC\u05DD",d:"\u05E8\u05E6\u05E3 \u05E2\u05D5\u05DC\u05D4"},
+      {t:"\u05D0\u05E8\u05D1\u05E2\u05D4 \u05E9\u05D1\u05D9\u05E2\u05D9\u05D5\u05EA",d:"\u05D3\u05E8\u05D2\u05D4 \u05DE\u05D9\u05E0\u05D9\u05DE\u05DC\u05D9\u05EA"},
+      {t:"\u05D0\u05E8\u05D1\u05E2\u05D4 \u05D3\u05D0\u05DE\u05D5\u05EA",d:"\u05D4\u05D9\u05DE\u05D5\u05E8 \u05E1\u05D9\u05DE\u05D8\u05E8\u05D9"}
+    ],
+    genInfo:"\u05D1\u05D7\u05E8\u05D5 \u05D0\u05E1\u05D8\u05E8\u05D8\u05D2\u05D9\u05D4 \u05D5\u05DC\u05D7\u05E6\u05D5 \u05E2\u05DC \u05D4\u05DB\u05E4\u05EA\u05D5\u05E8.",
+    secGenStrat:"\u05D0\u05E1\u05D8\u05E8\u05D8\u05D2\u05D9\u05D9\u05EA \u05D4\u05D2\u05E8\u05DC\u05D4",
+    btnGen:"\uD83C\uDFB2 \u05E6\u05D5\u05E8 \u05E7\u05D5\u05DE\u05D1\u05D9\u05E0\u05E6\u05D9\u05D4",
+    btnGenSave:"\uD83D\uDCBE \u05E9\u05DE\u05D5\u05E8",
+    genScoreLbl:"\u05E2\u05D5\u05E6\u05DE\u05EA \u05D4\u05E7\u05DC\u05E4\u05D9\u05DD",
+    genProbLbl:"\u05E1\u05D9\u05DB\u05D5\u05D9 \u05DC-4",
+    genStrats:[
+      {id:"max",    lbl:"\u05DB\u05D5\u05D7 \u05DE\u05E7\u05E1\u05D9\u05DE\u05DC\u05D9", d:"\u05D0\u05E1 \u05D0\u05D5 \u05DE\u05DC\u05DA"},
+      {id:"hot",    lbl:"\u05E7\u05DC\u05E4\u05D9\u05DD \u05D7\u05DE\u05D9\u05DD",        d:"\u05D3\u05E8\u05D2\u05D5\u05EA \u05D2\u05D1\u05D5\u05D4\u05D5\u05EA"},
+      {id:"balance",lbl:"\u05D0\u05D9\u05D6\u05D5\u05DF",                                  d:"\u05DB\u05D9\u05E1\u05D5\u05D9 \u05D8\u05D5\u05D5\u05D7"},
+      {id:"smart",  lbl:"\u05DE\u05D9\u05E7\u05E1 \u05D7\u05DB\u05DD",                   d:"\u05E0\u05D9\u05EA\u05D5\u05D7 + \u05D0\u05E7\u05E8\u05D0\u05D9"},
+      {id:"random", lbl:"\u05D0\u05E7\u05E8\u05D0\u05D9",                                  d:"\u05D0\u05E7\u05E8\u05D0\u05D9\u05D5\u05EA \u05DE\u05DC\u05D0\u05D4"}
+    ],
+    genExpl:{
+      max:"\u05E0\u05D1\u05D7\u05E8 \u05D0\u05E1 \u05D0\u05D5 \u05DE\u05DC\u05DA \u05D1\u05DB\u05DC \u05E1\u05D3\u05E8\u05D4.",
+      hot:"\u05D3\u05E8\u05D2\u05D5\u05EA \u05D2\u05D1\u05D5\u05D4\u05D5\u05EA (10–A) \u2014 \u05D4\u05D1\u05D7\u05D9\u05E8\u05D5\u05EA \u05D4\u05E4\u05D5\u05E4\u05D5\u05DC\u05E8\u05D9\u05D5\u05EA.",
+      balance:"\u05E7\u05DC\u05E3 \u05D0\u05D7\u05D3 \u05DE\u05DB\u05DC \u05D8\u05D5\u05D5\u05D7: \u05E0\u05DE\u05D5\u05DB (7–9), \u05D1\u05D9\u05E0\u05D5\u05E0\u05D9 (10–J), \u05D2\u05D1\u05D5\u05D4 (Q–K), \u05D0\u05E1.",
+      smart:"\u05D0\u05DC\u05D2\u05D5\u05E8\u05D9\u05EA\u05DD \u05D3\u05D9\u05E8\u05D5\u05D2 \u05DE\u05E9\u05E7\u05DC\u05D5\u05EA: A=30%, K=20%, Q=13%...",
+      random:"\u05D1\u05D7\u05D9\u05E8\u05D4 \u05D0\u05E7\u05E8\u05D0\u05D9\u05EA \u05DC\u05D2\u05DE\u05E8\u05D9. \u05DC\u05DB\u05DC \u05E7\u05DC\u05E3 \u05E1\u05D9\u05DB\u05D5\u05D9 \u05E9\u05D5\u05D5\u05D4 1/8."
+    },
+    secGenHist:"\u05D0\u05D7\u05E8\u05D5\u05E0\u05D9\u05DD \u05E9\u05E0\u05D5\u05E6\u05E8\u05D5",
+    btnGenClr:"\uD83D\uDDD1 \u05E0\u05E7\u05D4",
+    secPickTitle:"\u05D1\u05D7\u05E8\u05D5 \u05E7\u05DC\u05E3 \u05D0\u05D7\u05D3 \u05DE\u05DB\u05DC \u05E1\u05D3\u05E8\u05D4",
+    secYourHand:"\u05D4\u05E7\u05D5\u05DE\u05D1\u05D9\u05E0\u05E6\u05D9\u05D4 \u05E9\u05DC\u05DB\u05DD",
+    handPh:"\u2190 \u05D1\u05D7\u05E8\u05D5 \u05E7\u05DC\u05E4\u05D9\u05DD \u05DC\u05DE\u05E2\u05DC\u05D4",
+    secAnalysis:"\u05E0\u05D9\u05EA\u05D5\u05D7 \u05D4\u05E7\u05D5\u05DE\u05D1\u05D9\u05E0\u05E6\u05D9\u05D4",
+    btnSavePick:"\uD83D\uDCBE \u05E9\u05DE\u05D5\u05E8 \u05DC\u05D4\u05D9\u05E1\u05D8\u05D5\u05E8\u05D9\u05D4",
+    btnResetPick:"\u2715 \u05D0\u05E4\u05E1",
+    aAvg:"\u05D3\u05E8\u05D2\u05D4 \u05DE\u05DE\u05D5\u05E6\u05E2\u05EA", aHigh:"\u05D2\u05D1\u05D5\u05D4\u05D9\u05DD (K,A)", aMid:"\u05D1\u05D9\u05E0\u05D5\u05E0\u05D9\u05D9\u05DD", aLow:"\u05E0\u05DE\u05D5\u05DB\u05D9\u05DD",
+    aUniq:"\u05D3\u05E8\u05D2\u05D5\u05EA \u05D9\u05D9\u05D7\u05D5\u05D3\u05D9\u05D5\u05EA", aStr:"\u05E2\u05D5\u05E6\u05DE\u05D4", aP1:"\u05E1\u05D9\u05DB\u05D5\u05D9 1", aP4:"\u05E1\u05D9\u05DB\u05D5\u05D9 \u05DB\u05DC 4",
+    strVH:"\u05D2\u05D1\u05D5\u05D4 \u05DE\u05D0\u05D5\u05D3", strH:"\u05D2\u05D1\u05D5\u05D4", strM:"\u05D1\u05D9\u05E0\u05D5\u05E0\u05D9", strL:"\u05E0\u05DE\u05D5\u05DA",
+    of4:"\u05DE\u05EA\u05D5\u05DA 4",
+    histInfo:"\u05EA\u05E2\u05D3\u05D5 \u05EA\u05D5\u05E6\u05D0\u05D5\u05EA \u05D4\u05D2\u05E8\u05DC\u05D5\u05EA.",
+    secAddDraw:"\u05D4\u05D5\u05E1\u05E3 \u05EA\u05D5\u05E6\u05D0\u05EA \u05D4\u05D2\u05E8\u05DC\u05D4",
+    btnAddEntry:"+ \u05D4\u05D5\u05E1\u05E3",
+    secRecorded:"\u05D4\u05D2\u05E8\u05DC\u05D5\u05EA \u05DE\u05EA\u05D5\u05E2\u05D3\u05D5\u05EA",
+    btnClrHist:"\uD83D\uDDD1 \u05E0\u05E7\u05D4 \u05D4\u05D9\u05E1\u05D8\u05D5\u05E8\u05D9\u05D4",
+    secYourStats:"\u05D4\u05E1\u05D8\u05D8\u05D9\u05E1\u05D8\u05D9\u05E7\u05D4 \u05E9\u05DC\u05DB\u05DD",
+    noHist:"\u05D0\u05D9\u05DF \u05E8\u05E9\u05D5\u05DE\u05D5\u05EA.",
+    confirmClr:"\u05DC\u05DE\u05D7\u05D5\u05E7?",
+    alertSel:"\u05D1\u05D7\u05E8\u05D5 \u05E7\u05DC\u05E3 \u05D1\u05DB\u05DC \u05E1\u05D3\u05E8\u05D4",
+    footTitle:"\u05DE\u05E0\u05EA\u05D7 \u05E6'\u05D0\u05E0\u05E1 · VArt Tools",
+    sn:{spade:"\u05E2\u05DC\u05D4",heart:"\u05DC\u05D1",diamond:"\u05D9\u05D4\u05DC\u05D5\u05DD",club:"\u05EA\u05DC\u05EA\u05DF"}
+  }
+};
+
+// ═══════════════════ CONSTANTS ═══════════════════
+var SUITS = [
+  {id:"spade",  sym:"♠", cls:"s1"},
+  {id:"heart",  sym:"♥", cls:"s2"},
+  {id:"diamond",sym:"♦", cls:"s3"},
+  {id:"club",   sym:"♣", cls:"s4"}
+];
+var RANKS = ["7","8","9","10","J","Q","K","A"];
+var RV = {7:7,8:8,9:9,10:10,J:11,Q:12,K:13,A:14};
+var COMBO_CARDS = [
+  {cards:["A","A","A","A"],score:88,tag:"gold"},
+  {cards:["K","K","K","K"],score:84,tag:"hot"},
+  {cards:["A","K","Q","J"],score:78,tag:"hot"},
+  {cards:["A","Q","10","8"],score:72,tag:"mid"},
+  {cards:["9","10","J","Q"],score:68,tag:"mid"},
+  {cards:["7","8","9","10"],score:62,tag:"cold"},
+  {cards:["7","7","7","7"],score:58,tag:"cold"},
+  {cards:["Q","Q","Q","Q"],score:70,tag:"mid"}
+];
+
+// ═══════════════════ STATE ═══════════════════
+var lang = localStorage.getItem("cl") || "ru";
+var curTab = "info";
+var chosen = {spade:null, heart:null, diamond:null, club:null};
+var pickerDone = false;
+var addRowDone = false;
+var genStrat = "smart";
+var genResult = null;
+
+// ═══════════════════ LANG ═══════════════════
+function setLang(l) {
+  lang = l;
+  localStorage.setItem("cl", l);
+  document.querySelectorAll(".lbtn").forEach(function(b) {
+    b.classList.toggle("on", b.getAttribute("onclick").indexOf("'"+l+"'") >= 0);
+  });
+  var isHe = (l === "he");
+  document.documentElement.lang = l;
+  document.body.dir = isHe ? "rtl" : "ltr";
+  applyTR();
+  // Reset dynamic sections
+  pickerDone = false; addRowDone = false;
+  document.getElementById("comboList").innerHTML = "";
+  document.getElementById("pickerGrid").innerHTML = "";
+  document.getElementById("add-row-inner") && (document.getElementById("add-row-inner").innerHTML = "");
+  document.getElementById("genStratGrid").innerHTML = "";
+  // Re-render current tab
+  if (curTab === "combos") renderCombos();
+  if (curTab === "pick") { renderPicker(); updateHand(); }
+  if (curTab === "history") { addRowDone = false; renderHistory(); }
+  if (curTab === "gen") renderGenPanel();
+}
+
+function t(k) { return (TR[lang] && TR[lang][k] !== undefined) ? TR[lang][k] : (TR.ru[k] || ""); }
+
+function applyTR() {
+  var d = TR[lang];
+  function s(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+  function h(id, v) { var e = document.getElementById(id); if (e) e.innerHTML = v; }
+  s("T_appTitle", d.appTitle);
+  var tabs = ["info","stats","combos","gen","pick","history"];
+  tabs.forEach(function(id, i) {
+    var e = document.getElementById("TAB_"+id);
+    if (e && d.tabs[i]) e.textContent = d.tabs[i];
+  });
+  h("T_infoMain", d.infoMain);
+  s("T_secSuits", d.secSuits);
+  s("T_snS", d.snS); s("T_snH", d.snH); s("T_snD", d.snD); s("T_snC", d.snC);
+  s("T_secPrizes", d.secPrizes);
+  s("T_pr1", d.pr1); s("T_pr2", d.pr2); s("T_pr3", d.pr3); s("T_pr4", d.pr4);
+  h("T_warn", d.warn);
+  s("T_lblStat", d.lblStat); s("T_lblArch", d.lblArch);
+  s("T_statsInfo", d.statsInfo);
+  s("T_b1k", d.b1k); s("T_b10k", d.b10k); s("T_b50k", d.b50k);
+  s("T_legH", d.legH); s("T_legW", d.legW); s("T_legM", d.legM); s("T_legC", d.legC);
+  s("T_combosInfo", d.combosInfo);
+  s("T_genInfo", d.genInfo); s("T_secGenStrat", d.secGenStrat);
+  s("T_btnGen", d.btnGen); s("T_btnGenSave", d.btnGenSave);
+  s("T_genScoreLbl", d.genScoreLbl); s("T_genProbLbl", d.genProbLbl);
+  s("T_secGenHist", d.secGenHist); s("T_btnGenClr", d.btnGenClr);
+  s("T_secPickTitle", d.secPickTitle); s("T_secYourHand", d.secYourHand);
+  s("T_secAnalysis", d.secAnalysis);
+  s("T_btnSavePick", d.btnSavePick); s("T_btnResetPick", d.btnResetPick);
+  s("T_histInfo", d.histInfo); s("T_secAddDraw", d.secAddDraw);
+  s("T_btnAddEntry", d.btnAddEntry); s("T_secRecorded", d.secRecorded);
+  s("T_btnClrHist", d.btnClrHist); s("T_secYourStats", d.secYourStats);
+  h("T_footTitle", d.footTitle);
+  var ph = document.getElementById("yourHand");
+  if (ph && !SUITS.some(function(s){return chosen[s.id];})) {
+    ph.innerHTML = '<span class="hph">'+d.handPh+"</span>";
+  }
+}
+
+// ═══════════════════ TABS ═══════════════════
+function goTab(id) {
+  curTab = id;
+  document.querySelectorAll(".tab").forEach(function(b) {
+    b.classList.toggle("on", b.id === "TAB_"+id);
+  });
+  document.querySelectorAll(".panel").forEach(function(p) { p.classList.remove("on"); });
+  document.getElementById("P_"+id).classList.add("on");
+  if (id === "combos") renderCombos();
+  if (id === "pick")   renderPicker();
+  if (id === "history") renderHistory();
+  if (id === "gen")    renderGenPanel();
+  if (id === "stats" && !document.getElementById("statGrid").innerHTML) runSim(1000);
+}
+
+// ═══════════════════ STATS ═══════════════════
+function runSim(N) {
+  var d = TR[lang];
+  var counts = {};
+  SUITS.forEach(function(s){ counts[s.id]={}; RANKS.forEach(function(r){ counts[s.id][r]=0; }); });
+  for (var i=0; i<N; i++) {
+    SUITS.forEach(function(s){ counts[s.id][RANKS[Math.floor(Math.random()*8)]]++; });
+  }
+  var grid = document.getElementById("statGrid"), html = "";
+  SUITS.forEach(function(s) {
+    var sorted = RANKS.slice().sort(function(a,b){ return counts[s.id][b]-counts[s.id][a]; });
+    var max = counts[s.id][sorted[0]];
+    html += '<div class="sc"><div class="sh '+s.cls+'">'+s.sym+'</div><div class="sn">'+d.sn[s.id]+"</div>";
+    sorted.forEach(function(r,i) {
+      var cnt=counts[s.id][r], pct=Math.round(cnt/N*1000)/10, w=Math.round(cnt/max*100);
+      var fc="fmid", hl="";
+      if(i===0){fc="fhot";hl='<span class="hlbl hh">'+d.lHot+"</span>";}
+      else if(i<=2){fc="fwarm";}
+      else if(i===7){fc="fcold";hl='<span class="hlbl hc">'+d.lCold+"</span>";}
+      html += '<div class="crow"><span class="crank '+s.cls+'">'+r+'</span><div class="bbg"><div class="bf '+fc+'" style="width:'+w+'%"></div></div><span class="cpct">'+pct+'%</span>'+hl+"</div>";
+    });
+    html += "</div>";
+  });
+  grid.innerHTML = html;
+  document.getElementById("simInfo").textContent = d.simDone+" "+N.toLocaleString()+" "+d.draws;
+  document.getElementById("statLegend").style.display = "flex";
+}
+
+// ═══════════════════ COMBOS ═══════════════════
+function renderCombos() {
+  var el = document.getElementById("comboList");
+  if (el.innerHTML) return;
+  var d = TR[lang];
+  var tmap={hot:"bh",cold:"bc",mid:"bm",gold:"bg"};
+  var tlbl={hot:d.tHot,cold:d.tCold,mid:d.tMid,gold:d.tGold};
+  var html = "";
+  COMBO_CARDS.forEach(function(c, i) {
+    var info = d.combos[i] || {t:"",d:""};
+    html += '<div class="ccombo"><div><div class="ctitle">'+info.t+' <span class="badge '+tmap[c.tag]+'">'+tlbl[c.tag]+"</span></div>";
+    html += '<div class="cdesc">'+info.d+'</div><div class="chand">';
+    SUITS.forEach(function(s, si) {
+      html += '<div class="pc"><span class="'+s.cls+'">'+s.sym+'</span><span class="'+s.cls+'">'+(c.cards[si]||c.cards[0])+"</span></div>";
+    });
+    html += '</div></div><div class="crt"><div class="csco">'+c.score+'</div><div class="cslbl">'+d.rating+"</div></div></div>";
+  });
+  el.innerHTML = html;
+}
+
+// ═══════════════════ GENERATOR ═══════════════════
+function renderGenPanel() {
+  buildGenStratGrid();
+  buildGenCardSlots();
+}
+
+function buildGenStratGrid() {
+  var el = document.getElementById("genStratGrid");
+  if (el.innerHTML) return;
+  var d = TR[lang];
+  var html = "";
+  d.genStrats.forEach(function(s) {
+    var on = (s.id === genStrat) ? " on" : "";
+    html += "<button class=\"gsb"+on+"\" onclick=\"pickStrat('" + s.id + "')\">" +
+            "<div style=\"font-size:14px;margin-bottom:2px\">" + s.lbl + "</div>" +
+            "<div style=\"font-size:10px;color:var(--text3);font-weight:400\">"+s.d+"</div></button>";
+  });
+  el.innerHTML = html;
+}
+
+function buildGenCardSlots() {
+  var el = document.getElementById("genCards");
+  if (el.innerHTML) return;
+  var html = "";
+  SUITS.forEach(function(s) {
+    html += '<div class="gcard" id="GC_'+s.id+'">'+
+            '<div class="gcsym '+s.cls+'">'+s.sym+'</div>'+
+            '<div class="gcrank '+s.cls+'">?</div></div>';
+  });
+  el.innerHTML = html;
+}
+
+function pickStrat(id) {
+  genStrat = id;
+  document.querySelectorAll(".gsb").forEach(function(b) {
+    b.classList.toggle("on", b.getAttribute("onclick").indexOf("'"+id+"'") >= 0);
+  });
+}
+
+function generateCombo() {
+  var d = TR[lang];
+  var result = {};
+  SUITS.forEach(function(s) {
+    var r;
+    if (genStrat === "max") {
+      r = Math.random() < 0.65 ? "A" : "K";
+    } else if (genStrat === "hot") {
+      var pool = ["A","A","A","A","A","K","K","K","K","Q","Q","Q","J","J","J","10","10","9","8","7"];
+      r = pool[Math.floor(Math.random()*pool.length)];
+    } else if (genStrat === "balance") {
+      var tiers = [["7","8","9"],["10","J"],["Q","K"],["A"]];
+      var si = SUITS.indexOf(s);
+      var tier = tiers[si % tiers.length];
+      r = tier[Math.floor(Math.random()*tier.length)];
+    } else if (genStrat === "smart") {
+      var rnd = Math.random();
+      if      (rnd < 0.30) r = "A";
+      else if (rnd < 0.50) r = "K";
+      else if (rnd < 0.63) r = "Q";
+      else if (rnd < 0.73) r = "J";
+      else if (rnd < 0.82) r = "10";
+      else if (rnd < 0.89) r = "9";
+      else if (rnd < 0.95) r = "8";
+      else r = "7";
+    } else {
+      r = RANKS[Math.floor(Math.random()*8)];
+    }
+    result[s.id] = r;
+  });
+  genResult = result;
+
+  // Animate cards
+  SUITS.forEach(function(s, i) {
+    var card = document.getElementById("GC_"+s.id);
+    if (!card) return;
+    card.classList.remove("show");
+    var rankEl = card.querySelector(".gcrank");
+    if (rankEl) rankEl.textContent = "?";
+    setTimeout(function() {
+      if (rankEl) rankEl.textContent = result[s.id];
+      card.classList.add("show");
+    }, i * 130 + 80);
+  });
+
+  // Score after animation
+  setTimeout(function() {
+    var vals = SUITS.map(function(s){ return RV[result[s.id]] || 7; });
+    var avg = vals.reduce(function(a,b){return a+b;},0) / 4;
+    var score = Math.round((avg - 7) / (14 - 7) * 100);
+    var sn = document.getElementById("genScoreNum");
+    if (sn) {
+      sn.textContent = score;
+      sn.style.color = score>=85 ? "var(--red2)" : score>=65 ? "var(--gold)" : score>=45 ? "var(--blue2)" : "var(--green2)";
+    }
+    document.getElementById("genScoreRow").style.display = "flex";
+
+    var cardsStr = SUITS.map(function(s){ return '<span class="'+s.cls+'">'+s.sym+result[s.id]+"</span>"; }).join(" ");
+    var exEl = document.getElementById("genExpl");
+    var exText = (d.genExpl && d.genExpl[genStrat]) ? d.genExpl[genStrat] : "";
+    exEl.innerHTML = "<strong>"+cardsStr+"</strong><br>"+exText;
+    exEl.style.display = "block";
+
+    renderGenHist();
+  }, SUITS.length * 130 + 160);
+}
+
+function saveGenResult() {
+  if (!genResult) return;
+  var hist = getHist();
+  hist.unshift({ cards: SUITS.map(function(s){ return {suit:s.id, rank:genResult[s.id]}; }), ts: Date.now() });
+  saveHist(hist);
+  renderGenHist();
+  renderHistory();
+  var btn = document.getElementById("T_btnGenSave");
+  if (btn) { var orig = btn.textContent; btn.textContent = "✓"; setTimeout(function(){ btn.textContent = orig; }, 1200); }
+}
+
+function renderGenHist() {
+  var hist = getHist();
+  var wrap = document.getElementById("genHistWrap");
+  var list = document.getElementById("genHistList");
+  if (!hist.length) { wrap.style.display = "none"; return; }
+  wrap.style.display = "block";
+  var html = "";
+  hist.slice(0, 8).forEach(function(e) {
+    var vals = e.cards.map(function(c){ return RV[c.rank] || 7; });
+    var score = Math.round((vals.reduce(function(a,b){return a+b;},0)/4 - 7) / (14-7) * 100);
+    html += '<div class="ghrow"><div class="ghcards">';
+    e.cards.forEach(function(c) {
+      var s = SUITS.find(function(x){ return x.id === c.suit; });
+      if (s) html += '<span class="hc2 '+s.cls+'">'+s.sym+c.rank+"</span>";
+    });
+    html += '</div><div class="ghsco">'+score+"</div></div>";
+  });
+  list.innerHTML = html;
+}
+
+function clearGenHist() {
+  if (confirm(t("confirmClr"))) { saveHist([]); renderGenHist(); renderHistory(); }
+}
+
+// ═══════════════════ PICKER ═══════════════════
+function renderPicker() {
+  if (pickerDone) return;
+  pickerDone = true;
+  var d = TR[lang];
+  var el = document.getElementById("pickerGrid"), html = "";
+  SUITS.forEach(function(s) {
+    html += '<div class="pcol"><div class="phead '+s.cls+'">'+s.sym+'</div><div class="psn">'+d.sn[s.id]+'</div><div class="pbtns">';
+    RANKS.forEach(function(r) {
+      var sel = (chosen[s.id] === r) ? " p"+({spade:1,heart:2,diamond:3,club:4}[s.id]) : "";
+      html += "<button class=\"pkb"+sel+"\" id=\"PKB_"+s.id+"_"+r+"\" onclick=\"pickCard('" + s.id + "','" + r + "')\">"+r+"</button>";
+    });
+    html += "</div></div>";
+  });
+  el.innerHTML = html;
+  updateHand();
+}
+
+function pickCard(sid, rank) {
+  var prev = chosen[sid];
+  if (prev) { var ob = document.getElementById("PKB_"+sid+"_"+prev); if(ob) ob.className = "pkb"; }
+  chosen[sid] = rank;
+  var nb = document.getElementById("PKB_"+sid+"_"+rank);
+  var idx = {spade:1,heart:2,diamond:3,club:4}[sid];
+  if (nb) nb.className = "pkb p"+idx;
+  updateHand();
+}
+
+function clearPick() {
+  SUITS.forEach(function(s) {
+    var prev = chosen[s.id];
+    if (prev) { var ob = document.getElementById("PKB_"+s.id+"_"+prev); if(ob) ob.className = "pkb"; }
+    chosen[s.id] = null;
+  });
+  updateHand();
+}
+
+function updateHand() {
+  var handEl = document.getElementById("yourHand");
+  if (!handEl) return;
+  var d = TR[lang];
+  var filled = SUITS.filter(function(s){ return chosen[s.id]; });
+  if (!filled.length) {
+    handEl.innerHTML = '<span class="hph">'+d.handPh+"</span>";
+    document.getElementById("pickAnalysis").style.display = "none";
+    return;
+  }
+  handEl.innerHTML = filled.map(function(s){
+    return '<div class="bigc"><span class="'+s.cls+'">'+s.sym+'</span><span class="'+s.cls+'">'+chosen[s.id]+"</span></div>";
+  }).join("");
+  if (filled.length === 4) { document.getElementById("pickAnalysis").style.display = "block"; buildAnalysis(); }
+  else document.getElementById("pickAnalysis").style.display = "none";
+}
+
+function buildAnalysis() {
+  var d = TR[lang];
+  var cards = SUITS.map(function(s){ return chosen[s.id]; });
+  var vals = cards.map(function(c){ return RV[c] || 7; });
+  var avg = (vals.reduce(function(a,b){return a+b;},0)/4).toFixed(1);
+  var high = cards.filter(function(c){ return ["K","A"].indexOf(c)>=0; }).length;
+  var mid  = cards.filter(function(c){ return ["Q","J","10"].indexOf(c)>=0; }).length;
+  var low  = cards.filter(function(c){ return ["7","8","9"].indexOf(c)>=0; }).length;
+  var uniq = (new Set(cards)).size;
+  var avgN = parseFloat(avg), sl, sc;
+  if(avgN>=13){sl=d.strVH;sc="hot";}else if(avgN>=11){sl=d.strH;sc="warm";}else if(avgN>=9){sl=d.strM;sc="";}else{sl=d.strL;sc="good";}
+  var of4 = d.of4;
+  document.getElementById("analysisBox").innerHTML =
+    '<div class="arow"><span class="albl">'+d.aAvg+'</span><span class="aval">'+avg+' / 14</span></div>'+
+    '<div class="arow"><span class="albl">'+d.aHigh+'</span><span class="aval '+sc+'">'+high+" "+of4+'</span></div>'+
+    '<div class="arow"><span class="albl">'+d.aMid+'</span><span class="aval">'+mid+" "+of4+'</span></div>'+
+    '<div class="arow"><span class="albl">'+d.aLow+'</span><span class="aval '+(low>2?"good":"")+'">'+low+" "+of4+'</span></div>'+
+    '<div class="arow"><span class="albl">'+d.aUniq+'</span><span class="aval">'+uniq+" "+of4+'</span></div>'+
+    '<div class="arow"><span class="albl">'+d.aStr+'</span><span class="aval '+sc+'">'+sl+'</span></div>'+
+    '<div class="arow"><span class="albl">'+d.aP1+'</span><span class="aval">12.5%</span></div>'+
+    '<div class="arow"><span class="albl">'+d.aP4+'</span><span class="aval">0.024%</span></div>';
+}
+
+function savePickToHist() {
+  var cards = SUITS.map(function(s){ return chosen[s.id]; });
+  if (cards.some(function(c){ return !c; })) return;
+  var hist = getHist();
+  hist.unshift({ cards: cards.map(function(c,i){ return {suit:SUITS[i].id, rank:c}; }), ts: Date.now() });
+  saveHist(hist);
+  goTab("history");
+}
+
+// ═══════════════════ HISTORY ═══════════════════
+function getHist(){ try{return JSON.parse(localStorage.getItem("ch_hist")||"[]");}catch(e){return[];} }
+function saveHist(h){ localStorage.setItem("ch_hist", JSON.stringify(h)); }
+function clearHist(){ if(confirm(t("confirmClr"))){ saveHist([]); renderHistory(); } }
+
+function renderHistory() {
+  buildAddRow();
+  var d = TR[lang];
+  var hist = getHist();
+  document.getElementById("histCount").textContent = hist.length;
+  var listEl = document.getElementById("histList");
+  if (!hist.length) {
+    listEl.innerHTML = '<div style="color:var(--text3);font-size:13px;padding:10px 0">'+d.noHist+"</div>";
+    document.getElementById("histStatBox").style.display = "none";
+    return;
+  }
+  var isHe = (lang==="he"), html = "";
+  hist.forEach(function(e, i) {
+    var dd = new Date(e.ts);
+    var loc = isHe?"he-IL":lang==="en"?"en-US":"ru-RU";
+    var ds = dd.toLocaleDateString(loc)+" "+dd.toLocaleTimeString(loc,{hour:"2-digit",minute:"2-digit"});
+    html += '<div class="hitem"><span class="hnum">#'+(hist.length-i)+'</span><div class="hcards">';
+    e.cards.forEach(function(c) {
+      var s = SUITS.find(function(x){ return x.id===c.suit; });
+      if (s) html += '<span class="hc2 '+s.cls+'">'+s.sym+c.rank+"</span>";
+    });
+    html += '</div><span class="htime">'+ds+'</span><button class="hdel" onclick="delEntry('+i+')">✕</button></div>';
+  });
+  listEl.innerHTML = html;
+  renderHistStat(hist);
+}
+
+function delEntry(idx){ var h=getHist(); h.splice(idx,1); saveHist(h); renderHistory(); }
+
+function buildAddRow() {
+  if (addRowDone) return;
+  addRowDone = true;
+  var d = TR[lang];
+  var el = document.getElementById("addRow"), html = "";
+  SUITS.forEach(function(s) {
+    html += '<select class="asel" id="ADDs_'+s.id+'"><option value="" disabled selected>'+s.sym+" "+d.sn[s.id]+"</option>";
+    RANKS.forEach(function(r){ html += '<option value="'+r+'">'+s.sym+" "+r+"</option>"; });
+    html += "</select>";
+  });
+  el.innerHTML = html;
+}
+
+function addHistEntry() {
+  var d = TR[lang];
+  var cards = SUITS.map(function(s){ var sel=document.getElementById("ADDs_"+s.id); return {suit:s.id,rank:sel?sel.value:""}; });
+  if (cards.some(function(c){ return !c.rank; })) { alert(d.alertSel); return; }
+  var hist = getHist();
+  hist.unshift({cards:cards, ts:Date.now()});
+  saveHist(hist);
+  SUITS.forEach(function(s){ var el=document.getElementById("ADDs_"+s.id); if(el)el.value=""; });
+  renderHistory();
+}
+
+function renderHistStat(hist) {
+  var box = document.getElementById("histStatBox");
+  if (!hist.length) { box.style.display="none"; return; }
+  box.style.display = "block";
+  var d = TR[lang], counts={};
+  SUITS.forEach(function(s){ counts[s.id]={}; RANKS.forEach(function(r){ counts[s.id][r]=0; }); });
+  hist.forEach(function(e){ e.cards.forEach(function(c){ if(c.suit&&c.rank) counts[c.suit][c.rank]++; }); });
+  var N=hist.length, grid=document.getElementById("histStatGrid"), html="";
+  SUITS.forEach(function(s) {
+    var sorted = RANKS.slice().sort(function(a,b){ return counts[s.id][b]-counts[s.id][a]; });
+    var max = counts[s.id][sorted[0]] || 1;
+    html += '<div class="sc"><div class="sh '+s.cls+'">'+s.sym+'</div><div class="sn">'+d.sn[s.id]+"</div>";
+    sorted.forEach(function(r,i) {
+      var cnt=counts[s.id][r], pct=cnt?Math.round(cnt/N*100):0, w=Math.round(cnt/max*100);
+      var fc = i===0?"fhot":i<=2?"fwarm":i>=6?"fcold":"fmid";
+      html += '<div class="crow"><span class="crank '+s.cls+'">'+r+'</span><div class="bbg"><div class="bf '+fc+'" style="width:'+w+'%"></div></div><span class="cpct">'+pct+"%</span></div>";
+    });
+    html += "</div>";
+  });
+  grid.innerHTML = html;
+}
+
+// ═══════════════════ INIT ═══════════════════
+setLang(lang);
+</script>
+</body>
+</html>
