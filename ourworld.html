@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#060608">
+<title>OurWorld</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #060608;
+  --abyss: #0c0c10;
+  --crypt: #121218;
+  --tomb: #1a1a24;
+  --ash: #242432;
+  --bone: #e8e0d4;
+  --parchment: #c9bfa8;
+  --shadow: #b8aa98;
+  --dust: #8a8070;
+  --blood: #8b1a1a;
+  --crimson: #c0392b;
+  --rose: #d4516a;
+  --ember: #c9a96e;
+  --silver: #9ca3af;
+  --border-goth: rgba(139,26,26,0.3);
+  --border-bone: rgba(232,224,212,0.08);
+  --border-rose: rgba(212,81,106,0.25);
+  --glow-blood: rgba(139,26,26,0.2);
+  --glow-rose: rgba(212,81,106,0.15);
+  --radius: 2px;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background:var(--void);
+  color:var(--bone);
+  font-family:'Crimson Text', serif;
+  font-size:16px;
+  min-height:100vh;
+  overflow-x:hidden;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='4' fill='%238b1a1a' opacity='0.8'/%3E%3Ccircle cx='10' cy='10' r='1.5' fill='%23c0392b'/%3E%3C/svg%3E") 10 10, crosshair;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-track { background:var(--void); }
+::-webkit-scrollbar-thumb { background:var(--blood); }
+
+/* ── GRAIN OVERLAY ── */
+body::before {
+  content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity:0.6;
+}
+
+/* ── GOTHIC ORNAMENT SVG PATTERNS ── */
+.ornament {
+  text-align:center; color:var(--blood); font-size:18px;
+  letter-spacing:8px; opacity:0.6; user-select:none;
+}
+.ornament-line {
+  display:flex; align-items:center; gap:16px; margin:16px 0;
+}
+.ornament-line::before, .ornament-line::after {
+  content:''; flex:1; height:1px; background:linear-gradient(90deg, transparent, var(--border-goth), transparent);
+}
+.ornament-line span { color:var(--blood); font-size:14px; opacity:0.7; white-space:nowrap; }
+
+/* ── SCREENS ── */
+.screen { display:none; min-height:100vh; position:relative; }
+.screen.active { display:flex; flex-direction:column; }
+
+/* ════════════════════════════
+   LANDING
+════════════════════════════ */
+#landing {
+  align-items:center; justify-content:center; text-align:center;
+  padding:60px 24px 80px;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 30%, rgba(139,26,26,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(139,26,26,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 30% 50% at 80% 60%, rgba(139,26,26,0.05) 0%, transparent 50%),
+    var(--void);
+}
+
+/* Gothic arch decorative frame */
+#landing::after {
+  content:'';
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:2px; height:60px;
+  background:linear-gradient(to bottom, var(--blood), transparent);
+}
+
+.landing-sigil {
+  position:relative; margin-bottom:40px;
+  animation: descend 1.2s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.sigil-ring {
+  width:120px; height:120px; margin:0 auto 28px;
+  position:relative; display:flex; align-items:center; justify-content:center;
+}
+/* outer ripple ring */
+.sigil-ring::before {
+  content:''; position:absolute; inset:-16px; border-radius:50%;
+  border:1px solid var(--blood);
+  animation: ripple-out 2.2s ease-in-out infinite;
+}
+/* inner glow ring */
+.sigil-ring::after {
+  content:''; position:absolute; inset:0; border-radius:50%;
+  border:2px solid var(--crimson);
+  box-shadow:
+    0 0 0 4px rgba(139,26,26,0.15),
+    0 0 30px var(--blood),
+    0 0 60px rgba(139,26,26,0.5),
+    0 0 100px rgba(139,26,26,0.3),
+    inset 0 0 30px rgba(139,26,26,0.4);
+  animation: heartbeat 1.6s ease-in-out infinite;
+}
+@keyframes ripple-out {
+  0%   { transform:scale(0.85); opacity:0.9; border-color:rgba(192,57,43,0.8); }
+  50%  { transform:scale(1.15); opacity:0.3; border-color:rgba(139,26,26,0.3); }
+  100% { transform:scale(0.85); opacity:0.9; border-color:rgba(192,57,43,0.8); }
+}
+@keyframes heartbeat {
+  0%   {
+    box-shadow: 0 0 0 0 rgba(192,57,43,0.8), 0 0 20px var(--blood), 0 0 40px rgba(139,26,26,0.4), inset 0 0 15px rgba(139,26,26,0.3);
+    transform:scale(1);
+  }
+  14%  {
+    box-shadow: 0 0 0 12px rgba(192,57,43,0.3), 0 0 50px var(--blood), 0 0 90px rgba(139,26,26,0.7), inset 0 0 40px rgba(192,57,43,0.5);
+    transform:scale(1.06);
+  }
+  28%  {
+    box-shadow: 0 0 0 6px rgba(192,57,43,0.15), 0 0 25px var(--blood), 0 0 50px rgba(139,26,26,0.4), inset 0 0 20px rgba(139,26,26,0.3);
+    transform:scale(1);
+  }
+  42%  {
+    box-shadow: 0 0 0 18px rgba(192,57,43,0.4), 0 0 70px var(--crimson), 0 0 120px rgba(139,26,26,0.8), inset 0 0 50px rgba(192,57,43,0.6);
+    transform:scale(1.1);
+  }
+  70%  {
+    box-shadow: 0 0 0 30px rgba(192,57,43,0), 0 0 30px rgba(139,26,26,0.3), 0 0 60px rgba(139,26,26,0.2), inset 0 0 15px rgba(139,26,26,0.2);
+    transform:scale(1);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(192,57,43,0), 0 0 20px var(--blood), 0 0 40px rgba(139,26,26,0.4), inset 0 0 15px rgba(139,26,26,0.3);
+    transform:scale(1);
+  }
+}
+
+.sigil-inner {
+  font-family:'UnifrakturMaguntia', cursive;
+  font-size:48px; color:var(--crimson);
+  text-shadow:
+    0 0 10px #fff,
+    0 0 20px var(--crimson),
+    0 0 40px var(--blood),
+    0 0 80px rgba(139,26,26,0.8);
+  line-height:1; position:relative; z-index:1;
+  animation: glyph-pulse 1.6s ease-in-out infinite;
+}
+@keyframes glyph-pulse {
+  0%,100% { text-shadow: 0 0 10px rgba(255,255,255,0.3), 0 0 20px var(--crimson), 0 0 40px var(--blood); }
+  42%     { text-shadow: 0 0 20px #fff, 0 0 40px var(--crimson), 0 0 80px var(--blood), 0 0 120px rgba(192,57,43,0.6); }
+}
+
+.landing-title {
+  font-family:'UnifrakturMaguntia', cursive;
+  font-size:clamp(48px, 12vw, 80px);
+  color:var(--bone);
+  text-shadow: 0 0 40px rgba(139,26,26,0.5), 2px 2px 0 rgba(0,0,0,0.8);
+  letter-spacing:0.04em; line-height:1;
+  animation: descend 1.2s 0.1s cubic-bezier(0.16,1,0.3,1) both;
+}
+.landing-title em { color:var(--blood); font-style:normal; }
+
+.landing-subtitle {
+  font-family:'IM Fell English', serif; font-style:italic;
+  font-size:13px; color:var(--shadow); letter-spacing:0.2em; text-transform:uppercase;
+  margin-top:8px;
+  animation: descend 1.2s 0.2s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.landing-verse {
+  font-family:'IM Fell English', serif; font-style:italic;
+  font-size:18px; color:var(--parchment); line-height:1.8;
+  margin:32px 0 40px; max-width:380px;
+  animation: descend 1.2s 0.3s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.landing-actions {
+  display:flex; gap:16px; flex-wrap:wrap; justify-content:center;
+  animation: descend 1.2s 0.4s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.btn-gothic {
+  padding:13px 36px;
+  background:linear-gradient(135deg, var(--blood) 0%, rgba(139,26,26,0.7) 100%);
+  color:var(--bone); border:1px solid rgba(192,57,43,0.5);
+  font-family:'Cinzel', serif; font-size:12px; font-weight:600;
+  letter-spacing:0.15em; text-transform:uppercase;
+  cursor:pointer; transition:all 0.4s;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  box-shadow: 0 4px 20px var(--glow-blood);
+  position:relative; overflow:hidden;
+}
+.btn-gothic::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  opacity:0; transition:opacity 0.3s;
+}
+.btn-gothic:hover { box-shadow:0 6px 30px rgba(139,26,26,0.5); transform:translateY(-2px); }
+.btn-gothic:hover::before { opacity:1; }
+
+.btn-ghost-gothic {
+  padding:13px 36px;
+  background:transparent;
+  color:var(--parchment); border:1px solid var(--border-bone);
+  font-family:'Cinzel', serif; font-size:12px; font-weight:400;
+  letter-spacing:0.15em; text-transform:uppercase;
+  cursor:pointer; transition:all 0.4s;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+.btn-ghost-gothic:hover { border-color:var(--border-goth); color:var(--blood); transform:translateY(-2px); }
+
+.preview-triptych {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+  max-width:320px; margin:48px auto 0;
+  animation: descend 1.2s 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+.triptych-panel {
+  aspect-ratio:2/3; background:var(--crypt);
+  border:1px solid var(--border-goth);
+  display:flex; align-items:center; justify-content:center;
+  font-size:28px; position:relative; overflow:hidden;
+  transition:all 0.4s;
+}
+.triptych-panel:nth-child(2) { margin-top:-16px; }
+.triptych-panel::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:40%;
+  background:linear-gradient(to bottom, rgba(139,26,26,0.1), transparent);
+}
+.triptych-panel::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:40%;
+  background:linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+}
+.triptych-panel:hover { border-color:var(--crimson); transform:scale(1.02); }
+
+@keyframes descend {
+  from { opacity:0; transform:translateY(-20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+/* ════════════════════════════
+   APP
+════════════════════════════ */
+#app { background:var(--void); }
+
+.app-header {
+  position:sticky; top:0; z-index:200;
+  background:rgba(6,6,8,0.95); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border-goth);
+  padding:0 20px; height:58px;
+  display:flex; align-items:center; justify-content:space-between;
+  box-shadow: 0 1px 30px rgba(139,26,26,0.15);
+}
+.app-logo {
+  font-family:'UnifrakturMaguntia', cursive;
+  font-size:26px; color:var(--blood);
+  text-shadow: 0 0 15px var(--glow-blood);
+}
+.header-right { display:flex; align-items:center; gap:10px; }
+.hdr-btn {
+  width:36px; height:36px; border-radius:2px;
+  border:1px solid var(--border-bone); background:transparent;
+  color:var(--shadow); font-size:15px; cursor:pointer; transition:all 0.3s;
+  display:flex; align-items:center; justify-content:center;
+}
+.hdr-btn:hover { border-color:var(--blood); color:var(--bone); }
+.user-crest {
+  width:36px; height:36px;
+  background:linear-gradient(135deg, var(--blood), var(--crimson));
+  border:1px solid rgba(192,57,43,0.5);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Cinzel', serif; font-size:13px; font-weight:600;
+  color:var(--bone); cursor:pointer;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* ── GOTHIC NAV TABS ── */
+.nav-tabs {
+  background:var(--abyss); border-bottom:1px solid var(--border-goth);
+  display:flex; gap:0; overflow-x:auto; scrollbar-width:none;
+}
+.nav-tab {
+  flex-shrink:0; padding:14px 22px;
+  background:transparent; border:none; border-bottom:2px solid transparent;
+  color:var(--shadow); font-family:'Cinzel', serif; font-size:11px;
+  letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; transition:all 0.3s;
+}
+.nav-tab:hover { color:var(--shadow); border-bottom-color:rgba(139,26,26,0.3); }
+.nav-tab.active { color:var(--blood); border-bottom-color:var(--blood); }
+
+/* ── CONTENT ── */
+.content-area { flex:1; padding:24px 16px; max-width:680px; margin:0 auto; width:100%; }
+
+/* ── FEED FILTERS ── */
+.feed-filters { display:flex; gap:8px; margin-bottom:24px; overflow-x:auto; scrollbar-width:none; }
+.filter-rune {
+  flex-shrink:0; padding:6px 18px;
+  background:transparent; border:1px solid var(--border-bone);
+  color:var(--shadow); font-family:'Cinzel', serif; font-size:10px;
+  letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; transition:all 0.3s;
+}
+.filter-rune.active { background:rgba(139,26,26,0.15); border-color:var(--blood); color:var(--blood); }
+.filter-rune:hover:not(.active) { border-color:var(--border-goth); color:var(--parchment); }
+
+/* ── POST CARDS ── */
+.post-card {
+  background:var(--abyss); border:1px solid var(--border-goth);
+  margin-bottom:20px; overflow:hidden; transition:border-color 0.4s;
+  position:relative; animation: rise 0.6s ease both;
+}
+.post-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--blood), transparent);
+}
+.post-card:hover { border-color:rgba(192,57,43,0.5); }
+@keyframes rise { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+.post-header { padding:16px 18px 12px; display:flex; align-items:center; gap:12px; }
+.post-crest {
+  width:42px; height:42px;
+  background:linear-gradient(135deg, var(--blood), rgba(139,26,26,0.5));
+  border:1px solid rgba(192,57,43,0.4);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'UnifrakturMaguntia', cursive; font-size:20px; color:var(--bone); flex-shrink:0;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+.post-meta { flex:1; }
+.post-author { font-family:'Cinzel', serif; font-size:13px; font-weight:600; color:var(--bone); letter-spacing:0.06em; }
+.post-time { font-size:12px; color:var(--shadow); font-style:italic; margin-top:2px; }
+.post-badge {
+  padding:4px 12px; font-family:'Cinzel', serif; font-size:9px;
+  letter-spacing:0.12em; text-transform:uppercase; border:1px solid;
+}
+.badge-photo { color:var(--ember); border-color:rgba(201,169,110,0.3); background:rgba(201,169,110,0.08); }
+.badge-video { color:var(--rose); border-color:var(--border-rose); background:var(--glow-rose); }
+.badge-podcast { color:#9b7eb8; border-color:rgba(155,126,184,0.3); background:rgba(155,126,184,0.08); }
+
+.post-media {
+  width:100%; background:var(--crypt);
+  border-top:1px solid var(--border-goth); border-bottom:1px solid var(--border-goth);
+  display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+}
+.post-media.photo { aspect-ratio:4/3; }
+.post-media.video { aspect-ratio:16/9; }
+.post-media.audio-card { aspect-ratio:2/1; padding:24px; }
+
+.media-ghost { display:flex; flex-direction:column; align-items:center; gap:10px; color:var(--shadow); }
+.media-ghost .ghost-icon { font-size:40px; opacity:0.5; }
+.media-ghost span { font-family:'IM Fell English', serif; font-size:13px; font-style:italic; }
+
+.media-veil {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.25);
+}
+.play-chalice {
+  width:60px; height:60px;
+  background:rgba(139,26,26,0.85); border:1px solid rgba(192,57,43,0.6);
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; padding-left:4px; cursor:pointer; transition:all 0.3s;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  box-shadow: 0 0 20px var(--glow-blood);
+}
+.play-chalice:hover { background:rgba(192,57,43,0.9); transform:scale(1.1); box-shadow:0 0 35px rgba(139,26,26,0.6); }
+
+/* ── FILTERS ── */
+.filter-scroll {
+  display:flex; gap:10px; padding:14px 18px; overflow-x:auto; scrollbar-width:none;
+  border-bottom:1px solid var(--border-goth); background:rgba(12,12,16,0.8);
+}
+.filter-vial {
+  flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer;
+}
+.vial-glass {
+  width:54px; height:54px; border:2px solid var(--border-bone);
+  overflow:hidden; display:flex; align-items:center; justify-content:center;
+  font-size:22px; transition:border-color 0.3s; position:relative;
+}
+.filter-vial.active .vial-glass { border-color:var(--blood); box-shadow:0 0 10px var(--glow-blood); }
+.vial-name { font-family:'Cinzel', serif; font-size:9px; color:var(--shadow); letter-spacing:0.08em; text-transform:uppercase; }
+.filter-vial.active .vial-name { color:var(--blood); }
+
+/* ── TOOLS ── */
+.tools-grimoire {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
+  padding:14px 18px; border-bottom:1px solid var(--border-goth);
+  background:rgba(12,12,16,0.8);
+}
+.tool-rune {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  padding:10px 6px; border:1px solid var(--border-bone); cursor:pointer; transition:all 0.3s;
+}
+.tool-rune:hover { border-color:var(--blood); background:var(--glow-blood); }
+.tool-rune .rune-glyph { font-size:18px; }
+.tool-rune .rune-name { font-family:'Cinzel', serif; font-size:9px; color:var(--shadow); text-transform:uppercase; letter-spacing:0.06em; }
+.tool-rune:hover .rune-name { color:var(--blood); }
+
+.slider-scroll { padding:0 18px 14px; }
+.slider-row { display:flex; justify-content:space-between; font-family:'Cinzel', serif; font-size:10px; color:var(--shadow); margin-bottom:8px; letter-spacing:0.08em; text-transform:uppercase; }
+input[type=range] {
+  width:100%; -webkit-appearance:none; height:2px;
+  background:var(--border-bone); outline:none; cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:14px; height:14px;
+  background:var(--blood); border:1px solid var(--crimson); cursor:pointer;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.post-body { padding:14px 18px; }
+.post-caption { font-family:'Crimson Text', serif; font-size:15px; line-height:1.7; color:var(--parchment); margin-bottom:10px; }
+.post-sigils { display:flex; flex-wrap:wrap; gap:8px; }
+.post-sigil { font-family:'Cinzel', serif; font-size:10px; color:var(--blood); letter-spacing:0.08em; cursor:pointer; opacity:0.8; }
+.post-sigil:hover { opacity:1; }
+
+.post-footer {
+  padding:12px 18px; border-top:1px solid var(--border-goth);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.post-rituals { display:flex; gap:18px; }
+.ritual-btn {
+  display:flex; align-items:center; gap:6px; background:none; border:none;
+  font-family:'Cinzel', serif; font-size:10px; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--dust); cursor:pointer; transition:color 0.3s;
+}
+.ritual-btn:hover { color:var(--blood); }
+.ritual-btn.liked { color:var(--crimson); }
+
+/* ════════════════════════════
+   WISHES
+════════════════════════════ */
+.scroll-form {
+  background:var(--abyss); border:1px solid var(--border-goth);
+  padding:24px; margin-bottom:24px; position:relative;
+}
+.scroll-form::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--blood), transparent);
+}
+.scroll-title { font-family:'UnifrakturMaguntia', cursive; font-size:28px; color:var(--blood); margin-bottom:4px; }
+.scroll-sub { font-family:'IM Fell English', serif; font-style:italic; font-size:14px; color:var(--shadow); margin-bottom:20px; }
+
+.wish-types { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:18px; }
+.wish-rune {
+  padding:14px 8px; border:1px solid var(--border-bone);
+  background:var(--crypt); text-align:center; cursor:pointer; transition:all 0.3s;
+}
+.wish-rune.chosen { border-color:var(--blood); background:rgba(139,26,26,0.12); }
+.wish-rune .wr-icon { font-size:22px; margin-bottom:5px; }
+.wish-rune .wr-name { font-family:'Cinzel', serif; font-size:9px; color:var(--shadow); text-transform:uppercase; letter-spacing:0.1em; }
+.wish-rune.chosen .wr-name { color:var(--blood); }
+
+.gothic-textarea {
+  width:100%; padding:14px 16px; background:var(--crypt);
+  border:1px solid var(--border-bone); border-left:2px solid var(--blood);
+  color:var(--parchment); font-family:'Crimson Text', serif; font-size:15px; line-height:1.6;
+  outline:none; resize:vertical; min-height:90px; transition:border-color 0.3s;
+  margin-bottom:16px;
+}
+.gothic-textarea:focus { border-color:var(--border-goth); border-left-color:var(--crimson); }
+.gothic-textarea::placeholder { color:var(--shadow); font-style:italic; }
+
+.invoke-btn {
+  width:100%; padding:14px;
+  background:linear-gradient(135deg, var(--blood), rgba(139,26,26,0.7));
+  color:var(--bone); border:none;
+  font-family:'Cinzel', serif; font-size:11px; font-weight:600;
+  letter-spacing:0.18em; text-transform:uppercase; cursor:pointer; transition:all 0.3s;
+  box-shadow:0 4px 20px var(--glow-blood);
+  clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+}
+.invoke-btn:hover { box-shadow:0 6px 30px rgba(139,26,26,0.5); }
+
+.wish-scroll {
+  background:var(--abyss); border:1px solid var(--border-goth);
+  padding:18px; margin-bottom:12px; position:relative;
+  animation: rise 0.5s ease both;
+}
+.wish-head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.wish-dot { width:34px; height:34px; background:var(--crypt); border:1px solid var(--border-goth); display:flex; align-items:center; justify-content:center; font-size:15px; }
+.wish-who { font-family:'Cinzel', serif; font-size:12px; color:var(--parchment); letter-spacing:0.06em; }
+.wish-when { font-family:'IM Fell English', serif; font-style:italic; font-size:11px; color:var(--shadow); }
+.wish-words { font-family:'Crimson Text', serif; font-size:15px; line-height:1.6; color:var(--shadow); }
+
+/* ════════════════════════════
+   SUPPORT
+════════════════════════════ */
+.altar-card {
+  background:var(--abyss); border:1px solid var(--border-goth);
+  padding:28px; margin-bottom:16px; position:relative;
+}
+.altar-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--blood), transparent);
+}
+.altar-title { font-family:'UnifrakturMaguntia', cursive; font-size:30px; color:var(--blood); margin-bottom:6px; }
+.altar-sub { font-family:'IM Fell English', serif; font-style:italic; font-size:14px; color:var(--shadow); line-height:1.7; margin-bottom:24px; }
+
+.offering-link {
+  display:flex; align-items:center; gap:14px;
+  padding:16px 20px; border:1px solid var(--border-bone);
+  background:var(--crypt); width:100%; text-decoration:none;
+  transition:all 0.3s; margin-bottom:10px; cursor:pointer;
+}
+.offering-link:hover { border-color:var(--blood); background:rgba(139,26,26,0.1); }
+.offering-icon { font-size:24px; }
+.offering-text { flex:1; }
+.offering-title { font-family:'Cinzel', serif; font-size:13px; color:var(--bone); letter-spacing:0.06em; display:block; }
+.offering-sub { font-family:'IM Fell English', serif; font-style:italic; font-size:12px; color:var(--shadow); display:block; margin-top:3px; }
+.offering-arrow { font-size:14px; color:var(--blood); }
+
+/* ════════════════════════════
+   ADMIN
+════════════════════════════ */
+.admin-chapter { margin-bottom:28px; }
+.chapter-title {
+  font-family:'Cinzel', serif; font-size:14px; letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--blood); border-bottom:1px solid var(--border-goth); padding-bottom:10px; margin-bottom:16px;
+}
+.reliquary-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:24px; }
+.relic-box { background:var(--abyss); border:1px solid var(--border-goth); padding:20px; text-align:center; }
+.relic-num { font-family:'UnifrakturMaguntia', cursive; font-size:40px; color:var(--blood); text-shadow:0 0 15px var(--glow-blood); }
+.relic-label { font-family:'Cinzel', serif; font-size:9px; color:var(--shadow); text-transform:uppercase; letter-spacing:0.12em; margin-top:4px; }
+
+.supplicant-card {
+  background:var(--abyss); border:1px solid var(--border-goth);
+  padding:16px; margin-bottom:10px; display:flex; align-items:flex-start; gap:12px;
+}
+.sup-crest {
+  width:38px; height:38px; flex-shrink:0;
+  background:var(--crypt); border:1px solid var(--border-goth);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Cinzel', serif; font-size:14px; color:var(--shadow);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+.sup-info { flex:1; }
+.sup-name { font-family:'Cinzel', serif; font-size:13px; color:var(--bone); letter-spacing:0.06em; }
+.sup-email { font-size:12px; color:var(--shadow); font-style:italic; margin-top:2px; }
+.sup-msg { font-family:'IM Fell English', serif; font-style:italic; font-size:13px; color:var(--shadow); margin-top:6px; }
+.sup-actions { display:flex; flex-direction:column; gap:6px; }
+.bless-btn { padding:7px 14px; background:rgba(78,203,141,0.15); border:1px solid rgba(78,203,141,0.3); color:#4ecb8d; font-family:'Cinzel', serif; font-size:9px; letter-spacing:0.1em; cursor:pointer; transition:all 0.3s; }
+.bless-btn:hover { background:rgba(78,203,141,0.25); }
+.curse-btn { padding:7px 14px; background:transparent; border:1px solid var(--border-goth); color:var(--blood); font-family:'Cinzel', serif; font-size:9px; letter-spacing:0.1em; cursor:pointer; transition:all 0.3s; }
+.curse-btn:hover { background:var(--glow-blood); }
+
+.sanctuary-drop {
+  border:1px dashed var(--border-goth); padding:36px; text-align:center;
+  cursor:pointer; transition:all 0.3s;
+}
+.sanctuary-drop:hover { border-color:var(--blood); background:var(--glow-blood); }
+.sanctuary-drop .drop-icon { font-size:36px; margin-bottom:10px; opacity:0.5; }
+.sanctuary-drop p { font-family:'IM Fell English', serif; font-style:italic; color:var(--shadow); font-size:14px; line-height:1.6; }
+.sanctuary-drop span { color:var(--blood); }
+
+/* ── BOTTOM NAV ── */
+.bottom-nave {
+  position:sticky; bottom:0; z-index:200;
+  background:rgba(6,6,8,0.97); backdrop-filter:blur(16px);
+  border-top:1px solid var(--border-goth);
+  display:flex;
+  box-shadow: 0 -1px 20px rgba(139,26,26,0.15);
+}
+.nave-btn {
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+  background:none; border:none; color:var(--shadow); cursor:pointer; padding:10px 6px;
+  font-family:'Cinzel', serif; transition:color 0.3s;
+}
+.nave-btn.active { color:var(--blood); }
+.nave-btn .nave-icon { font-size:18px; }
+.nave-btn .nave-label { font-size:9px; letter-spacing:0.1em; text-transform:uppercase; }
+
+/* ── MODALS ── */
+.modal-shroud {
+  display:none; position:fixed; inset:0; z-index:1000;
+  background:rgba(0,0,0,0.85); backdrop-filter:blur(10px);
+  align-items:center; justify-content:center; padding:20px;
+}
+.modal-shroud.open { display:flex; }
+.modal-grimoire {
+  background:var(--abyss); border:1px solid var(--border-goth);
+  padding:40px 36px; width:100%; max-width:400px; position:relative;
+  animation: descend 0.4s cubic-bezier(0.16,1,0.3,1) both;
+  box-shadow:0 24px 60px rgba(0,0,0,0.8), 0 0 60px var(--glow-blood);
+}
+.modal-grimoire::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--blood), transparent);
+}
+.modal-grimoire::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--blood), transparent);
+}
+.modal-logo-goth { text-align:center; margin-bottom:24px; }
+.modal-logo-goth span { font-family:'UnifrakturMaguntia', cursive; font-size:34px; color:var(--blood); text-shadow:0 0 15px var(--glow-blood); }
+.modal-h { font-family:'Cinzel', serif; font-size:20px; font-weight:600; text-align:center; color:var(--bone); letter-spacing:0.08em; margin-bottom:6px; }
+.modal-p { font-family:'IM Fell English', serif; font-style:italic; font-size:14px; color:var(--shadow); text-align:center; margin-bottom:28px; line-height:1.5; }
+.modal-close { position:absolute; top:14px; right:16px; background:none; border:none; color:var(--shadow); cursor:pointer; font-size:18px; transition:color 0.3s; }
+.modal-close:hover { color:var(--blood); }
+
+.field-group { margin-bottom:14px; }
+.field-label { font-family:'Cinzel', serif; font-size:9px; color:var(--shadow); letter-spacing:0.12em; text-transform:uppercase; display:block; margin-bottom:7px; }
+.gothic-input {
+  width:100%; padding:12px 16px; background:var(--crypt);
+  border:1px solid var(--border-bone); border-left:2px solid var(--blood);
+  color:var(--parchment); font-family:'Crimson Text', serif; font-size:15px;
+  outline:none; transition:all 0.3s;
+}
+.gothic-input:focus { border-color:var(--border-goth); }
+.gothic-input::placeholder { color:var(--shadow); font-style:italic; }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+.modal-btn {
+  width:100%; padding:14px; margin-top:8px;
+  background:linear-gradient(135deg, var(--blood), rgba(139,26,26,0.8));
+  color:var(--bone); border:none;
+  font-family:'Cinzel', serif; font-size:11px; font-weight:600;
+  letter-spacing:0.18em; text-transform:uppercase; cursor:pointer; transition:all 0.3s;
+  box-shadow:0 4px 20px var(--glow-blood);
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+}
+.modal-btn:hover { box-shadow:0 6px 30px rgba(139,26,26,0.5); }
+.modal-switch { text-align:center; margin-top:18px; font-family:'IM Fell English', serif; font-style:italic; font-size:13px; color:var(--shadow); }
+.modal-switch a { color:var(--blood); cursor:pointer; text-decoration:none; }
+.modal-switch a:hover { color:var(--crimson); }
+
+.vigil-msg {
+  text-align:center; padding:20px; border:1px solid var(--border-goth);
+  margin-top:20px; background:rgba(139,26,26,0.08);
+}
+.vigil-msg p { font-family:'IM Fell English', serif; font-style:italic; font-size:14px; color:var(--shadow); line-height:1.7; }
+
+/* ── TOASTS ── */
+.toast-keep { position:fixed; top:70px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
+.toast-seal {
+  padding:12px 20px; border:1px solid; font-family:'Cinzel', serif;
+  font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+  animation: slideIn 0.3s ease; max-width:280px; box-shadow:0 8px 30px rgba(0,0,0,0.5);
+}
+.toast-seal.s { background:rgba(78,203,141,0.15); border-color:rgba(78,203,141,0.4); color:#4ecb8d; }
+.toast-seal.e { background:rgba(139,26,26,0.2); border-color:var(--border-goth); color:var(--crimson); }
+.toast-seal.i { background:rgba(201,169,110,0.12); border-color:rgba(201,169,110,0.3); color:var(--ember); }
+@keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+
+.dn { display:none; }
+.online-rune { width:8px; height:8px; background:#4ecb8d; display:inline-block; animation:blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+.lang-corner { position:absolute; top:20px; right:20px; z-index:5; display:flex; gap:4px; }
+.lang-glyph { padding:5px 12px; border:1px solid var(--border-bone); background:transparent; color:var(--shadow); font-family:'Cinzel', serif; font-size:10px; letter-spacing:0.1em; cursor:pointer; transition:all 0.3s; }
+.lang-glyph.active { background:rgba(139,26,26,0.2); border-color:var(--blood); color:var(--blood); }
+
+  /* ── CONTENT PROTECTION ── */
+  img, video, audio { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
+  img { -webkit-user-select: none; user-select: none; }
+  .post-media img, .post-media video { pointer-events: auto; }
+  ::selection { background: transparent; }
+  ::-moz-selection { background: transparent; }
+</style>
+</head>
+<body>
+
+<!-- ═══ COPYRIGHT BAR ═══ -->
+<div id="copyright-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
+  background:rgba(6,6,8,0.97);border-top:1px solid rgba(139,26,26,0.4);
+  padding:8px 16px;text-align:center;font-family:'Cinzel',serif;font-size:10px;
+  color:rgba(201,169,110,0.7);letter-spacing:0.1em;">
+  © OurWorld 2024–2026 · Артур &amp; Виктория · Все права защищены · Закон об авторском праве Израиля (5768-2007)
+  &nbsp;·&nbsp; <a onclick="openModal('legal')" style="color:rgba(201,169,110,0.9);cursor:pointer;text-decoration:underline">Правовое уведомление</a>
+</div>
+
+<!-- ═══ CONTENT PROTECTION JS ═══ -->
+<script>
+// Block right-click
+document.addEventListener('contextmenu', function(e){
+  e.preventDefault();
+  if(typeof toast==='function') toast('Скачивание контента запрещено 🔒','e');
+  return false;
+});
+
+// Block Ctrl+S, Ctrl+P, Ctrl+U, F12
+document.addEventListener('keydown', function(e){
+  const ctrl = e.ctrlKey || e.metaKey;
+  const k = e.key.toLowerCase();
+  if(ctrl && ['s','p','u'].includes(k)){ e.preventDefault(); if(typeof toast==='function') toast('Сохранение запрещено 🔒','e'); return false; }
+  if(e.key==='F12'){ e.preventDefault(); return false; }
+});
+
+// Block image/video drag
+document.addEventListener('dragstart', function(e){
+  if(['IMG','VIDEO'].includes(e.target.tagName)){ e.preventDefault(); return false; }
+});
+
+// Add watermark to media
+function addWatermark(el){
+  if(!el || el.dataset.wm) return;
+  el.dataset.wm = '1';
+  const wrap = el.parentElement;
+  if(!wrap) return;
+  if(getComputedStyle(wrap).position==='static') wrap.style.position='relative';
+  const wm = document.createElement('div');
+  wm.style.cssText='position:absolute;bottom:8px;right:8px;pointer-events:none;z-index:10;font-family:Cinzel,serif;font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:0.08em;text-shadow:0 1px 3px rgba(0,0,0,0.9)';
+  wm.textContent='© OurWorld';
+  wrap.appendChild(wm);
+}
+setInterval(()=>{
+  document.querySelectorAll('.post-media img, .post-media video').forEach(addWatermark);
+}, 800);
+
+function showCopyrightBar(){ document.getElementById('copyright-bar').style.display='block'; }
+function showKofiFloat(){
+  const el=document.getElementById('kofi-float');
+  if(el) el.style.display='block';
+}
+</script>
+
+<!-- ══════════════ LANDING ══════════════ -->
+<section class="screen active" id="landing">
+  <div class="lang-corner">
+    <button class="lang-glyph active" onclick="setLang('ru')">RU</button>
+    <button class="lang-glyph" onclick="setLang('en')">EN</button>
+  </div>
+
+  <div class="landing-sigil">
+    <div class="sigil-ring">
+      <div class="sigil-inner">ℌ</div>
+    </div>
+    <div class="landing-title">Our<em>World</em></div>
+    <div class="landing-subtitle" data-i18n="tagline_sub">Закрытый мир двоих</div>
+  </div>
+
+  <div class="ornament-line"><span>✦ &nbsp; ✦ &nbsp; ✦</span></div>
+
+  <p class="landing-verse" data-i18n="tagline">
+    «Наша жизнь — наши правила.<br>Добро пожаловать в наш мир.»
+  </p>
+
+  <div class="landing-actions">
+    <button class="btn-gothic" onclick="openModal('register')" data-i18n="join">Присоединиться</button>
+    <button class="btn-ghost-gothic" onclick="openModal('login')" data-i18n="login">Войти</button>
+  </div>
+
+  <div class="preview-triptych">
+    <div class="triptych-panel">📸</div>
+    <div class="triptych-panel">🎬</div>
+    <div class="triptych-panel">🎙️</div>
+  </div>
+
+  <p style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:10px;color:var(--dust);letter-spacing:0.1em;white-space:nowrap">
+  </p>
+</section>
+
+<!-- ══════════════ APP ══════════════ -->
+<section class="screen" id="app">
+  <header class="app-header">
+    <div class="app-logo">OurWorld</div>
+    <div class="header-right">
+      <span class="online-rune"></span>
+      <span style="font-family:'Cinzel',serif;font-size:9px;color:var(--dust);letter-spacing:0.08em" data-i18n="online">ONLINE</span>
+      <button class="hdr-btn" onclick="toggleLang()">🌐</button>
+      <div class="user-crest" id="userCrest">U</div>
+    </div>
+  </header>
+
+  <nav class="nav-tabs" id="navTabs">
+    <button class="nav-tab active" onclick="showTab('feed')" data-i18n="tab_feed">Лента</button>
+    <button class="nav-tab" onclick="showTab('wishes')" data-i18n="tab_wishes">Пожелания</button>
+    <button class="nav-tab" onclick="showTab('support')" data-i18n="tab_support">Поддержка</button>
+    <button class="nav-tab admin-only dn" onclick="showTab('admin')" data-i18n="tab_admin">Алтарь</button>
+  </nav>
+
+  <!-- FEED -->
+  <div class="content-area dn" id="tab-feed">
+    <div class="feed-filters">
+      <button class="filter-rune active" onclick="filterFeed('all',this)" data-i18n="f_all">Всё</button>
+      <button class="filter-rune" onclick="filterFeed('photo',this)" data-i18n="f_photo">📸 Фото</button>
+      <button class="filter-rune" onclick="filterFeed('video',this)" data-i18n="f_video">🎬 Видео</button>
+      <button class="filter-rune" onclick="filterFeed('podcast',this)" data-i18n="f_pod">🎙️ Подкасты</button>
+    </div>
+
+    <!-- Firebase posts appear here (newest first) -->
+    <div id="firebase-feed"></div>
+
+    <!-- DEMO POSTS (shown until Firebase has real content) -->
+    <!-- CARD 1: Photo -->
+    <article class="post-card" data-type="photo">
+      <div class="post-header">
+        <div class="post-crest">A</div>
+        <div class="post-meta">
+          <div class="post-author">Артур &amp; Виктория</div>
+          <div class="post-time" data-i18n="p1_time">2 часа назад</div>
+        </div>
+        <span class="post-badge badge-photo">📸 Фото</span>
+      </div>
+      <div class="post-media photo" id="pm1">
+        <div class="media-ghost">
+          <div class="ghost-icon">🛒</div>
+          <span data-i18n="p1_label">Поход в магазин</span>
+        </div>
+      </div>
+      <div class="filter-scroll">
+        <div class="filter-vial active" onclick="applyFilt('pm1','',this)">
+          <div class="vial-glass">🌿</div>
+          <div class="vial-name">Origin</div>
+        </div>
+        <div class="filter-vial" onclick="applyFilt('pm1','sepia(0.4) saturate(1.3) hue-rotate(-10deg)',this)">
+          <div class="vial-glass" style="background:linear-gradient(135deg,#f9a03f55,#f7c56755)">🕯️</div>
+          <div class="vial-name">Warm</div>
+        </div>
+        <div class="filter-vial" onclick="applyFilt('pm1','grayscale(1) contrast(1.15)',this)">
+          <div class="vial-glass" style="background:linear-gradient(135deg,#55555555,#11111155)">💀</div>
+          <div class="vial-name">Mono</div>
+        </div>
+        <div class="filter-vial" onclick="applyFilt('pm1','sepia(0.7) contrast(0.85) brightness(0.9)',this)">
+          <div class="vial-glass" style="background:linear-gradient(135deg,#c9a96e55,#8b5e3c55)">📜</div>
+          <div class="vial-name">Vintage</div>
+        </div>
+        <div class="filter-vial" onclick="applyFilt('pm1','hue-rotate(180deg) saturate(0.7) brightness(1.1)',this)">
+          <div class="vial-glass" style="background:linear-gradient(135deg,#1a1a6655,#4444aa55)">🌑</div>
+          <div class="vial-name">Night</div>
+        </div>
+        <div class="filter-vial" onclick="applyFilt('pm1','saturate(2) contrast(1.2) brightness(1.05)',this)">
+          <div class="vial-glass" style="background:linear-gradient(135deg,#ff006655,#7700ff55)">⚡</div>
+          <div class="vial-name">Vivid</div>
+        </div>
+      </div>
+      <div class="tools-grimoire">
+        <button class="tool-rune" onclick="toggleSlider('s1-bright')"><span class="rune-glyph">☀️</span><span class="rune-name" data-i18n="t_bright">Яркость</span></button>
+        <button class="tool-rune" onclick="toggleSlider('s1-con')"><span class="rune-glyph">◑</span><span class="rune-name" data-i18n="t_con">Контраст</span></button>
+        <button class="tool-rune" onclick="toggleSlider('s1-sat')"><span class="rune-glyph">🎨</span><span class="rune-name" data-i18n="t_sat">Насыщ.</span></button>
+        <button class="tool-rune" onclick="toggleSlider('s1-blur')"><span class="rune-glyph">💫</span><span class="rune-name" data-i18n="t_blur">Размытие</span></button>
+      </div>
+      <div id="s1-bright" class="slider-scroll dn"><div class="slider-row"><span data-i18n="t_bright">Яркость</span><span id="v1-bright">100%</span></div><input type="range" min="0" max="200" value="100" oninput="adjFilt(this,'brightness','pm1','v1-bright','%')"></div>
+      <div id="s1-con" class="slider-scroll dn"><div class="slider-row"><span data-i18n="t_con">Контраст</span><span id="v1-con">100%</span></div><input type="range" min="0" max="200" value="100" oninput="adjFilt(this,'contrast','pm1','v1-con','%')"></div>
+      <div id="s1-sat" class="slider-scroll dn"><div class="slider-row"><span data-i18n="t_sat">Насыщенность</span><span id="v1-sat">100%</span></div><input type="range" min="0" max="300" value="100" oninput="adjFilt(this,'saturate','pm1','v1-sat','%')"></div>
+      <div id="s1-blur" class="slider-scroll dn"><div class="slider-row"><span data-i18n="t_blur">Размытие</span><span id="v1-blur">0px</span></div><input type="range" min="0" max="10" value="0" oninput="adjFilt(this,'blur','pm1','v1-blur','px',true)"></div>
+      <div class="post-body">
+        <p class="post-caption" data-i18n="p1_cap">Сегодня гуляли по рынку 🌿 Купили всё для ужина — будет что-то особенное!</p>
+        <div class="post-sigils"><span class="post-sigil">#нашжизнь</span><span class="post-sigil">#вместе</span><span class="post-sigil">#покупки</span></div>
+      </div>
+      <div class="post-footer">
+        <div class="post-rituals">
+          <button class="ritual-btn" onclick="toggleLike(this)">♥ <span>47</span></button>
+          <button class="ritual-btn" onclick="showTab('wishes')">✉ <span data-i18n="wish_btn">Пожелание</span></button>
+        </div>
+        <button class="ritual-btn">⬆ <span data-i18n="share">Поделиться</span></button>
+      </div>
+    </article>
+
+    <!-- CARD 2: Video -->
+    <article class="post-card" data-type="video">
+      <div class="post-header">
+        <div class="post-crest">A</div>
+        <div class="post-meta">
+          <div class="post-author">Артур &amp; Виктория</div>
+          <div class="post-time" data-i18n="p2_time">1 день назад</div>
+        </div>
+        <span class="post-badge badge-video">🎬 Видео</span>
+      </div>
+      <div class="post-media video">
+        <div class="media-ghost"><div class="ghost-icon">🏠</div><span data-i18n="p2_label">Вечер дома</span></div>
+        <div class="media-veil">
+          <div class="play-chalice" onclick="toast('Видео скоро будет доступно','i')">▶</div>
+        </div>
+      </div>
+      <div class="post-body">
+        <p class="post-caption" data-i18n="p2_cap">Наш уютный вечер 🏠 Готовили вместе, смотрели фильм — вот так выглядит счастье.</p>
+        <div class="post-sigils"><span class="post-sigil">#домашнийвечер</span><span class="post-sigil">#уют</span></div>
+      </div>
+      <div class="post-footer">
+        <div class="post-rituals">
+          <button class="ritual-btn" onclick="toggleLike(this)">♥ <span>83</span></button>
+        </div>
+      </div>
+    </article>
+
+    <!-- CARD 3: Podcast -->
+    <article class="post-card" data-type="podcast">
+      <div class="post-header">
+        <div class="post-crest">A</div>
+        <div class="post-meta">
+          <div class="post-author">Артур &amp; Виктория</div>
+          <div class="post-time" data-i18n="p3_time">3 дня назад</div>
+        </div>
+        <span class="post-badge badge-podcast">🎙️ Подкаст</span>
+      </div>
+      <div class="post-media audio-card">
+        <div style="background:linear-gradient(135deg,rgba(155,126,184,0.12),rgba(139,26,26,0.08));border:1px solid rgba(155,126,184,0.2);width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;">
+          <div style="font-size:40px;opacity:0.7">🎙️</div>
+          <div style="font-family:'Cinzel',serif;font-size:11px;color:var(--shadow);letter-spacing:0.1em;text-transform:uppercase" data-i18n="p3_ep">Эпизод I — По вашим просьбам</div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <button onclick="toast('Подкаст скоро!','i')" style="padding:10px 24px;background:rgba(155,126,184,0.15);border:1px solid rgba(155,126,184,0.3);color:#9b7eb8;font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.1em;cursor:pointer">▶ СЛУШАТЬ</button>
+            <span style="font-family:'Cinzel',serif;font-size:10px;color:var(--dust)">24:18</span>
+          </div>
+        </div>
+      </div>
+      <div class="post-body">
+        <p class="post-caption" data-i18n="p3_cap">Ответили на ваши вопросы о нашей жизни в Израиле 🇮🇱 Рассказали как всё начиналось.</p>
+      </div>
+      <div class="post-footer">
+        <div class="post-rituals"><button class="ritual-btn" onclick="toggleLike(this)">♥ <span>124</span></button></div>
+        <span style="font-family:'Cinzel',serif;font-size:10px;color:var(--dust)">🎧 312 <span data-i18n="listens">прослушиваний</span></span>
+      </div>
+    </article>
+  </div>
+
+  <!-- WISHES -->
+  <div class="content-area dn" id="tab-wishes">
+    <div class="scroll-form">
+      <div class="scroll-title">✉ <span data-i18n="w_title">Напиши нам</span></div>
+      <div class="scroll-sub" data-i18n="w_sub">Что ты хочешь увидеть или услышать?</div>
+      <div class="wish-types">
+        <div class="wish-rune chosen" onclick="pickType(this)"><div class="wr-icon">📸</div><div class="wr-name" data-i18n="wt_ph">Фото</div></div>
+        <div class="wish-rune" onclick="pickType(this)"><div class="wr-icon">🎬</div><div class="wr-name" data-i18n="wt_vi">Видео</div></div>
+        <div class="wish-rune" onclick="pickType(this)"><div class="wr-icon">🎙️</div><div class="wr-name" data-i18n="wt_po">Подкаст</div></div>
+      </div>
+      <textarea class="gothic-textarea" id="wishTxt" placeholder="Опиши своё пожелание…"></textarea>
+      <button class="invoke-btn" onclick="sendWish()" data-i18n="w_send">Отправить пожелание ✦</button>
+    </div>
+    <div id="wishList">
+      <div class="wish-scroll">
+        <div class="wish-head">
+          <div class="wish-dot">👤</div>
+          <div><div class="wish-who">Анна К.</div><div class="wish-when">вчера</div></div>
+          <span class="post-badge badge-video" style="margin-left:auto">🎬</span>
+        </div>
+        <div class="wish-words" data-i18n="w1">Хотела бы увидеть как вы готовите вместе! Что-нибудь традиционное 🍳</div>
+      </div>
+      <div class="wish-scroll">
+        <div class="wish-head">
+          <div class="wish-dot">👤</div>
+          <div><div class="wish-who">Михаил Р.</div><div class="wish-when">2 дня назад</div></div>
+          <span class="post-badge badge-podcast" style="margin-left:auto">🎙️</span>
+        </div>
+        <div class="wish-words" data-i18n="w2">Расскажите про жизнь в Израиле — как вы проводите выходные?</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUPPORT -->
+  <div class="content-area dn" id="tab-support">
+    <div class="altar-card">
+      <div class="altar-title">☕ <span data-i18n="s_title">Поддержи нас</span></div>
+      <p class="altar-sub" data-i18n="s_sub">Нам важна ваша поддержка! Каждая помощь создаёт больше контента.</p>
+
+      <!-- Ko-fi big banner -->
+      <div style="border:1px solid rgba(139,26,26,0.4);background:linear-gradient(135deg,rgba(139,26,26,0.12),rgba(201,169,110,0.05));padding:24px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blood),transparent)"></div>
+        <div style="font-size:36px;margin-bottom:8px">☕</div>
+        <div style="font-family:'UnifrakturMaguntia',cursive;font-size:22px;color:var(--blood);margin-bottom:4px">Ko-fi</div>
+        <div style="font-family:'IM Fell English',serif;font-style:italic;font-size:13px;color:var(--shadow);margin-bottom:16px">ko-fi.com/varthur</div>
+        <a href="https://ko-fi.com/varthur" target="_blank"
+           style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;
+                  background:linear-gradient(135deg,#8b1a1a,rgba(139,26,26,0.75));
+                  border:1px solid rgba(192,57,43,0.5);color:var(--bone);text-decoration:none;
+                  font-family:'Cinzel',serif;font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;
+                  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+                  box-shadow:0 4px 20px rgba(139,26,26,0.35)">
+          <span data-i18n="kofi_btn">Поддержать ✦</span>
+        </a>
+      </div>
+
+      <a href="https://ko-fi.com/varthur" target="_blank" class="offering-link">
+        <span class="offering-icon">☕</span>
+        <span class="offering-text">
+          <span class="offering-title">Ko-fi</span>
+          <span class="offering-sub">ko-fi.com/varthur</span>
+        </span>
+        <span class="offering-arrow">→</span>
+      </a>
+      <a href="https://wa.me/972533213698" target="_blank" class="offering-link">
+        <span class="offering-icon">💬</span>
+        <span class="offering-text">
+          <span class="offering-title">WhatsApp</span>
+          <span class="offering-sub" data-i18n="wa_sub">+972 053-321-3698 · Написать напрямую</span>
+        </span>
+        <span class="offering-arrow">→</span>
+      </a>
+    </div>
+    <div class="altar-card">
+      <div class="altar-title">🎥 <span data-i18n="live_title">Live 1 на 1</span></div>
+      <p class="altar-sub" data-i18n="live_sub">Хочешь пообщаться с нами лично? Оставь пожелание — свяжемся и договоримся!</p>
+      <button class="invoke-btn" onclick="showTab('wishes')" data-i18n="live_btn">Запросить сессию ✦</button>
+    </div>
+  </div>
+
+  <!-- ADMIN / ALTAR -->
+  <div class="content-area dn" id="tab-admin">
+    <div class="admin-chapter">
+      <div class="chapter-title" data-i18n="a_stats">📊 Хроники</div>
+      <div class="reliquary-grid">
+        <div class="relic-box"><div class="relic-num" id="stUsers">3</div><div class="relic-label" data-i18n="a_members">Участников</div></div>
+        <div class="relic-box"><div class="relic-num" id="stPend">2</div><div class="relic-label" data-i18n="a_pend">Ожидают</div></div>
+        <div class="relic-box"><div class="relic-num">3</div><div class="relic-label" data-i18n="a_posts">Свитков</div></div>
+        <div class="relic-box"><div class="relic-num">5</div><div class="relic-label" data-i18n="a_wishes">Пожеланий</div></div>
+      </div>
+    </div>
+    <div class="admin-chapter">
+      <div class="chapter-title" data-i18n="a_req">⏳ Просители</div>
+      <div id="pendList">
+        <div class="supplicant-card">
+          <div class="sup-crest">S</div>
+          <div class="sup-info">
+            <div class="sup-name">Светлана М.</div>
+            <div class="sup-email">svetlana@mail.ru</div>
+            <div class="sup-msg">"Давно слежу, хочу видеть больше!"</div>
+          </div>
+          <div class="sup-actions">
+            <button class="bless-btn" onclick="bless(this)">✓ Впустить</button>
+            <button class="curse-btn" onclick="curse(this)">✗ Изгнать</button>
+          </div>
+        </div>
+        <div class="supplicant-card">
+          <div class="sup-crest">D</div>
+          <div class="sup-info">
+            <div class="sup-name">Дмитрий К.</div>
+            <div class="sup-email">dmitry@gmail.com</div>
+            <div class="sup-msg">"Интересно посмотреть на вашу жизнь!"</div>
+          </div>
+          <div class="sup-actions">
+            <button class="bless-btn" onclick="bless(this)">✓ Впустить</button>
+            <button class="curse-btn" onclick="curse(this)">✗ Изгнать</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="admin-chapter">
+      <div class="chapter-title" data-i18n="a_upload">📤 Добавить свиток</div>
+
+      <!-- Firebase Upload Form -->
+      <div style="background:var(--abyss);border:1px solid var(--border-goth);padding:22px;position:relative">
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blood),transparent)"></div>
+
+        <!-- Type selector -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px" id="uploadTypeGrid">
+          <div class="wish-rune chosen" onclick="selectUploadType('photo',this)"><div class="wr-icon">📸</div><div class="wr-name">Фото</div></div>
+          <div class="wish-rune" onclick="selectUploadType('video',this)"><div class="wr-icon">🎬</div><div class="wr-name">Видео</div></div>
+          <div class="wish-rune" onclick="selectUploadType('podcast',this)"><div class="wr-icon">🎙️</div><div class="wr-name">Подкаст</div></div>
+        </div>
+
+        <!-- Caption -->
+        <div class="field-group">
+          <label class="field-label">Описание поста</label>
+          <textarea class="gothic-textarea" id="uploadCaption" rows="2" placeholder="Что происходит на этом фото/видео?"></textarea>
+        </div>
+
+        <!-- Tags -->
+        <div class="field-group">
+          <label class="field-label">Теги (через пробел)</label>
+          <input class="gothic-input" id="uploadTags" type="text" placeholder="#нашжизнь #вместе">
+        </div>
+
+        <!-- File drop zone -->
+        <div id="dropZone" style="border:2px dashed var(--border-goth);padding:28px;text-align:center;cursor:pointer;transition:all 0.3s;margin-bottom:16px;position:relative"
+          onclick="document.getElementById('fileInput').click()"
+          ondragover="event.preventDefault();this.style.borderColor='var(--blood)';this.style.background='rgba(139,26,26,0.1)'"
+          ondragleave="this.style.borderColor='';this.style.background=''"
+          ondrop="handleDrop(event)">
+          <div style="font-size:32px;margin-bottom:8px;opacity:0.6">📁</div>
+          <p style="font-family:'IM Fell English',serif;font-style:italic;color:var(--shadow);font-size:14px;line-height:1.6">
+            Нажми или перетащи файл<br><span style="color:var(--blood)">Фото, видео, подкасты</span>
+          </p>
+          <div id="fileNameDisplay" style="margin-top:10px;font-family:'Cinzel',serif;font-size:11px;color:var(--blood);display:none"></div>
+          <input type="file" id="fileInput" accept="image/*,video/*,audio/*" style="display:none" onchange="onFileSelected(this)">
+        </div>
+
+        <!-- Progress bar -->
+        <div id="uploadProgress" style="display:none;margin-bottom:16px">
+          <div style="font-family:'Cinzel',serif;font-size:10px;color:var(--shadow);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">
+            Загрузка... <span id="progressPct">0%</span>
+          </div>
+          <div style="height:3px;background:var(--border-bone);border-radius:2px;overflow:hidden">
+            <div id="progressBar" style="height:100%;background:linear-gradient(90deg,var(--blood),var(--crimson));width:0%;transition:width 0.3s"></div>
+          </div>
+        </div>
+
+        <button class="invoke-btn" onclick="uploadPost()" id="uploadBtn">Опубликовать свиток ✦</button>
+      </div>
+
+      <!-- Setup hint -->
+      <div style="margin-top:14px;border:1px solid rgba(201,169,110,0.2);background:rgba(201,169,110,0.05);padding:16px">
+        <div style="font-family:'Cinzel',serif;font-size:10px;color:var(--ember);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">⚙️ Настройка Firebase</div>
+        <p style="font-family:'IM Fell English',serif;font-style:italic;font-size:13px;color:var(--shadow);line-height:1.6">
+          Чтобы загрузка работала — вставь свои Firebase ключи в код.<br>
+          <a href="https://console.firebase.google.com" target="_blank" style="color:var(--ember)">console.firebase.google.com</a> → создай проект → Firestore + Storage → скопируй config.
+        </p>
+        <div style="margin-top:10px;background:var(--void);border:1px solid var(--border-goth);padding:12px;font-family:monospace;font-size:11px;color:var(--shadow);line-height:1.8;overflow-x:auto">
+          firebaseConfig = {<br>
+          &nbsp;&nbsp;apiKey: "<span style="color:var(--blood)">ВАШ_КЛЮЧ</span>",<br>
+          &nbsp;&nbsp;projectId: "<span style="color:var(--blood)">ВАШ_ПРОЕКТ</span>",<br>
+          &nbsp;&nbsp;storageBucket: "<span style="color:var(--blood)">ВАШ_BUCKET</span>"<br>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nave">
+    <button class="nave-btn active" onclick="showTab('feed')">
+      <span class="nave-icon">🏠</span><span class="nave-label" data-i18n="tab_feed">Лента</span>
+    </button>
+    <button class="nave-btn" onclick="showTab('wishes')">
+      <span class="nave-icon">✉️</span><span class="nave-label" data-i18n="tab_wishes">Желания</span>
+    </button>
+    <button class="nave-btn" onclick="showTab('support')">
+      <span class="nave-icon">☕</span><span class="nave-label" data-i18n="tab_support">Поддержка</span>
+    </button>
+    <button class="nave-btn admin-only dn" onclick="showTab('admin')">
+      <span class="nave-icon">⚙️</span><span class="nave-label" data-i18n="tab_admin">Алтарь</span>
+    </button>
+  </nav>
+</section>
+
+<!-- ══════ MODALS ══════ -->
+<!-- LOGIN -->
+<div class="modal-shroud" id="modal-login">
+  <div class="modal-grimoire">
+    <button class="modal-close" onclick="closeM('login')">✕</button>
+    <div class="modal-logo-goth"><span>OurWorld</span></div>
+    <div class="modal-h" data-i18n="m_login">Войти</div>
+    <div class="modal-p" data-i18n="m_login_sub">Введи свои данные для входа</div>
+    <div class="field-group"><label class="field-label">Email</label><input class="gothic-input" id="liEmail" type="email" placeholder="you@example.com"></div>
+    <div class="field-group"><label class="field-label" data-i18n="m_pass">Пароль</label><input class="gothic-input" id="liPass" type="password" placeholder="••••••••"></div>
+    <button class="modal-btn" onclick="doLogin()" data-i18n="m_login_btn">Войти</button>
+    <div class="modal-switch"><span data-i18n="m_no_acc">Нет аккаунта?</span> <a onclick="switchM('login','register')" data-i18n="m_reg_link">Зарегистрироваться</a></div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div class="modal-shroud" id="modal-register">
+  <div class="modal-grimoire">
+    <button class="modal-close" onclick="closeM('register')">✕</button>
+    <div class="modal-logo-goth"><span>OurWorld</span></div>
+    <div class="modal-h" data-i18n="m_reg">Регистрация</div>
+    <div class="modal-p" data-i18n="m_reg_sub">Заполни форму — мы рассмотрим заявку и дадим доступ</div>
+    <div class="field-row">
+      <div class="field-group"><label class="field-label" data-i18n="m_name">Имя</label><input class="gothic-input" id="rName" type="text" placeholder="Иван"></div>
+      <div class="field-group"><label class="field-label" data-i18n="m_last">Фамилия</label><input class="gothic-input" id="rLast" type="text" placeholder="Иванов"></div>
+    </div>
+    <div class="field-group"><label class="field-label">Email</label><input class="gothic-input" id="rEmail" type="email" placeholder="you@example.com"></div>
+    <div class="field-group"><label class="field-label" data-i18n="m_pass">Пароль</label><input class="gothic-input" id="rPass" type="password" placeholder="Мин. 8 символов"></div>
+    <div class="field-group"><label class="field-label" data-i18n="m_about">О себе</label><textarea class="gothic-input" id="rAbout" rows="2" placeholder="Как ты нас нашёл?"></textarea></div>
+    <button class="modal-btn" onclick="doRegister()" data-i18n="m_reg_btn">Отправить заявку ✦</button>
+    <div class="modal-switch"><span data-i18n="m_have_acc">Уже есть аккаунт?</span> <a onclick="switchM('register','login')" data-i18n="m_login_link">Войти</a></div>
+  </div>
+</div>
+
+<!-- PENDING -->
+<div class="modal-shroud" id="modal-pending">
+  <div class="modal-grimoire" style="text-align:center">
+    <div style="font-size:48px;margin-bottom:16px">⏳</div>
+    <div class="modal-h" data-i18n="pend_title">Заявка отправлена!</div>
+    <div class="vigil-msg">
+      <p data-i18n="pend_msg">Мы получили твою заявку и скоро рассмотрим.<br>Как только одобрим — ты получишь уведомление! ✉️</p>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <a href="https://ko-fi.com/varthur" target="_blank" class="offering-link" style="width:auto">
+        <span class="offering-icon">☕</span><span style="font-family:'Cinzel',serif;font-size:12px;color:var(--bone)">Ko-fi</span>
+      </a>
+      <a href="https://wa.me/972533213698" target="_blank" class="offering-link" style="width:auto">
+        <span class="offering-icon">💬</span><span style="font-family:'Cinzel',serif;font-size:12px;color:var(--bone)">WhatsApp</span>
+      </a>
+    </div>
+    <button class="modal-btn" style="margin-top:20px" onclick="closeM('pending')" data-i18n="pend_ok">Закрыть</button>
+  </div>
+</div>
+
+<div class="toast-keep" id="toasts"></div>
+
+<script>
+// ── i18n ──
+const T = {
+ru:{
+  tagline_sub:'Закрытый мир двоих',tagline:'«Наша жизнь — наши правила.<br>Добро пожаловать в наш мир.»',
+  join:'Присоединиться',login:'Войти',online:'ОНЛАЙН',
+  tab_feed:'Лента',tab_wishes:'Пожелания',tab_support:'Поддержка',tab_admin:'Алтарь',
+  f_all:'Всё',f_photo:'📸 Фото',f_video:'🎬 Видео',f_pod:'🎙️ Подкасты',
+  p1_time:'2 часа назад',p1_label:'Поход в магазин',p1_cap:'Сегодня гуляли по рынку 🌿 Купили всё для ужина — будет что-то особенное!',
+  p2_time:'1 день назад',p2_label:'Вечер дома',p2_cap:'Наш уютный вечер 🏠 Готовили вместе, смотрели фильм — вот так выглядит счастье.',
+  p3_time:'3 дня назад',p3_ep:'Эпизод I — По вашим просьбам',p3_cap:'Ответили на ваши вопросы о жизни в Израиле 🇮🇱',
+  t_bright:'Яркость',t_con:'Контраст',t_sat:'Насыщ.',t_blur:'Размытие',
+  wish_btn:'Пожелание',share:'Поделиться',listens:'прослушиваний',
+  w_title:'Напиши нам',w_sub:'Что ты хочешь увидеть или услышать?',
+  wt_ph:'Фото',wt_vi:'Видео',wt_po:'Подкаст',w_send:'Отправить пожелание ✦',
+  w1:'Хотела бы увидеть как вы готовите вместе! 🍳',w2:'Расскажите про жизнь в Израиле!',
+  s_title:'Поддержи нас',s_sub:'Нам важна ваша поддержка! Каждая помощь создаёт больше контента.',
+  kofi_btn:'Поддержать ✦',
+  wa_sub:'+972 053-321-3698 · Написать напрямую',
+  live_title:'Live 1 на 1',live_sub:'Хочешь пообщаться лично? Оставь пожелание!',live_btn:'Запросить сессию ✦',
+  a_stats:'📊 Хроники',a_members:'Участников',a_pend:'Ожидают',a_posts:'Свитков',a_wishes:'Пожеланий',
+  a_req:'⏳ Просители',a_upload:'📤 Добавить свиток',a_drop:'Нажми или перетащи файл<br><span>Фото, видео, подкасты</span>',
+  m_login:'Войти',m_login_sub:'Введи свои данные',m_pass:'Пароль',m_login_btn:'Войти',
+  m_no_acc:'Нет аккаунта?',m_reg_link:'Зарегистрироваться',
+  m_reg:'Регистрация',m_reg_sub:'Заполни форму — рассмотрим и дадим доступ',
+  m_name:'Имя',m_last:'Фамилия',m_about:'О себе',m_reg_btn:'Отправить заявку ✦',
+  m_have_acc:'Уже есть аккаунт?',m_login_link:'Войти',
+  pend_title:'Заявка отправлена!',pend_msg:'Мы получили твою заявку и скоро рассмотрим.<br>Как только одобрим — ты получишь уведомление! ✉️',pend_ok:'Закрыть',
+},
+en:{
+  tagline_sub:'A private world for two',tagline:'«Our life — our rules.<br>Welcome to our world.»',
+  join:'Join Us',login:'Sign In',online:'ONLINE',
+  tab_feed:'Feed',tab_wishes:'Wishes',tab_support:'Support',tab_admin:'Altar',
+  f_all:'All',f_photo:'📸 Photos',f_video:'🎬 Videos',f_pod:'🎙️ Podcasts',
+  p1_time:'2 hours ago',p1_label:'Market trip',p1_cap:'Strolling the market today 🌿 Picked up everything for a special dinner!',
+  p2_time:'1 day ago',p2_label:'Evening at home',p2_cap:'Our cozy evening 🏠 Cooked together, watched a film — this is happiness.',
+  p3_time:'3 days ago',p3_ep:'Episode I — By your request',p3_cap:'Answered your questions about our life in Israel 🇮🇱',
+  t_bright:'Brightness',t_con:'Contrast',t_sat:'Saturation',t_blur:'Blur',
+  wish_btn:'Wish',share:'Share',listens:'listens',
+  w_title:'Write to Us',w_sub:'What do you want to see or hear?',
+  wt_ph:'Photo',wt_vi:'Video',wt_po:'Podcast',w_send:'Send Wish ✦',
+  w1:'Would love to see you cooking together! 🍳',w2:'Tell us about life in Israel!',
+  s_title:'Support Us',s_sub:'Your support matters! Every contribution helps create more content.',
+  kofi_btn:'Support ✦',
+  wa_sub:'+972 053-321-3698 · Message directly',
+  live_title:'Live 1 on 1',live_sub:'Want to talk personally? Leave a wish!',live_btn:'Request Session ✦',
+  a_stats:'📊 Chronicles',a_members:'Members',a_pend:'Pending',a_posts:'Scrolls',a_wishes:'Wishes',
+  a_req:'⏳ Supplicants',a_upload:'📤 Add Scroll',a_drop:'Click or drag a file here<br><span>Photos, videos, podcasts</span>',
+  m_login:'Sign In',m_login_sub:'Enter your credentials',m_pass:'Password',m_login_btn:'Sign In',
+  m_no_acc:"Don't have an account?",m_reg_link:'Register',
+  m_reg:'Register',m_reg_sub:"Fill the form — we'll review and grant access",
+  m_name:'First Name',m_last:'Last Name',m_about:'About yourself',m_reg_btn:'Send Request ✦',
+  m_have_acc:'Already have an account?',m_login_link:'Sign In',
+  pend_title:'Request Sent!',pend_msg:"We received your request and will review it soon.<br>Once approved — you'll get an email notification! ✉️",pend_ok:'Close',
+}};
+
+let lang='ru';
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(T[lang][k]!==undefined) el.innerHTML=T[lang][k];
+  });
+}
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-glyph').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.lang-glyph[onclick="setLang('${l}')"]`)?.classList.add('active');
+  applyLang();
+}
+function toggleLang(){ setLang(lang==='ru'?'en':'ru'); }
+
+// ── MODALS ──
+function openModal(n){ document.getElementById('modal-'+n).classList.add('open'); }
+function closeM(n){ document.getElementById('modal-'+n).classList.remove('open'); }
+function switchM(a,b){ closeM(a); openModal(b); }
+
+// ── AUTH ──
+// Только владелец знает эти данные
+const OWNER_EMAIL = "artur32.1985@gmail.com";
+const OWNER_PASS  = "VArt.Love.32";
+
+function doLogin(){
+  const em=document.getElementById('liEmail').value.trim();
+  const ps=document.getElementById('liPass').value;
+  if(!em||!ps){toast('Заполни все поля','e');return;}
+  const isOwner = (em===OWNER_EMAIL && ps===OWNER_PASS);
+  const isUser  = (em!==OWNER_EMAIL && em.includes('@') && ps.length>=6);
+  if(!isOwner && !isUser){toast('Неверный email или пароль','e');return;}
+  closeM('login');
+  enterApp(em[0].toUpperCase(), isOwner);
+}
+function doRegister(){
+  const n=document.getElementById('rName').value.trim();
+  const em=document.getElementById('rEmail').value.trim();
+  const ps=document.getElementById('rPass').value;
+  if(!n||!em||!ps){toast('Заполни все поля','e');return;}
+  closeM('register'); openModal('pending');
+}
+function enterApp(av,admin){
+  document.getElementById('userCrest').textContent=av;
+  if(admin) document.querySelectorAll('.admin-only').forEach(el=>el.classList.remove('dn'));
+  showScreen('app'); showTab('feed'); showCopyrightBar(); showKofiFloat();
+  toast(lang==='ru'?'Добро пожаловать! 👋':'Welcome! 👋','s');
+}
+
+// ── SCREENS ──
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── TABS ──
+function showTab(name){
+  document.querySelectorAll('[id^="tab-"]').forEach(t=>t.classList.add('dn'));
+  document.getElementById('tab-'+name)?.classList.remove('dn');
+  document.querySelectorAll('.nav-tab,.nave-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll(`[onclick*="'${name}'"]`).forEach(b=>b.classList.add('active'));
+}
+
+// ── FEED FILTER ──
+function filterFeed(type,btn){
+  document.querySelectorAll('.filter-rune').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.post-card').forEach(c=>{
+    c.style.display=(type==='all'||c.dataset.type===type)?'block':'none';
+  });
+}
+
+// ── PHOTO FILTERS / TOOLS ──
+const filtState={};
+function applyFilt(id,css,btn){
+  if(!filtState[id])filtState[id]={};
+  filtState[id].base=css;
+  rebuildFilt(id);
+  btn.closest('.filter-scroll').querySelectorAll('.filter-vial').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function adjFilt(inp,prop,id,valId,unit,wrap){
+  if(!filtState[id])filtState[id]={};
+  const v=inp.value;
+  filtState[id][prop]=wrap?`${prop}(${v}${unit})`:`${prop}(${v}${unit})`;
+  document.getElementById(valId).textContent=v+unit;
+  rebuildFilt(id);
+}
+function rebuildFilt(id){
+  const s=filtState[id]||{};
+  const parts=[s.base||'',s.brightness||'',s.contrast||'',s.saturate||'',s.blur||''].filter(Boolean).join(' ');
+  document.getElementById(id).style.filter=parts;
+}
+function toggleSlider(id){
+  document.getElementById(id)?.classList.toggle('dn');
+}
+
+// ── WISHES ──
+function pickType(card){
+  card.closest('.wish-types').querySelectorAll('.wish-rune').forEach(c=>c.classList.remove('chosen'));
+  card.classList.add('chosen');
+}
+function sendWish(){
+  const txt=document.getElementById('wishTxt').value.trim();
+  if(!txt){toast(lang==='ru'?'Напиши пожелание!':'Write your wish!','e');return;}
+  const icon=document.querySelector('.wish-rune.chosen .wr-icon')?.textContent||'📸';
+  const card=document.createElement('div'); card.className='wish-scroll';
+  card.innerHTML=`
+    <div class="wish-head">
+      <div class="wish-dot">👤</div>
+      <div><div class="wish-who">Ты</div><div class="wish-when">${lang==='ru'?'только что':'just now'}</div></div>
+      <span class="post-badge badge-photo" style="margin-left:auto">${icon}</span>
+    </div>
+    <div class="wish-words">${txt}</div>`;
+  document.getElementById('wishList').prepend(card);
+  document.getElementById('wishTxt').value='';
+  toast(lang==='ru'?'Пожелание отправлено! ✦':'Wish sent! ✦','s');
+}
+
+// ── LIKES ──
+function toggleLike(btn){
+  btn.classList.toggle('liked');
+  const sp=btn.querySelector('span');
+  const n=parseInt(sp.textContent);
+  sp.textContent=btn.classList.contains('liked')?n+1:n-1;
+}
+
+// ── ADMIN ──
+function bless(btn){
+  const card=btn.closest('.supplicant-card');
+  const name=card.querySelector('.sup-name').textContent;
+  card.style.cssText='opacity:0;transition:opacity 0.4s';
+  setTimeout(()=>{card.remove();updSt();},400);
+  toast(name+(lang==='ru'?' впущен ✓':' blessed ✓'),'s');
+}
+function curse(btn){
+  const card=btn.closest('.supplicant-card');
+  const name=card.querySelector('.sup-name').textContent;
+  card.style.cssText='opacity:0;transition:opacity 0.4s';
+  setTimeout(()=>{card.remove();updSt();},400);
+  toast(name+(lang==='ru'?' изгнан':' banished'),'e');
+}
+function updSt(){
+  document.getElementById('stPend').textContent=document.querySelectorAll('.supplicant-card').length;
+}
+
+// ── TOAST ──
+function toast(msg,type='i'){
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className=`toast-seal ${type}`;
+  t.textContent=msg;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.cssText='opacity:0;transition:opacity 0.3s';setTimeout(()=>t.remove(),300);},3000);
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded',()=>{ showTab('feed'); });
+</script>
+<!-- ══ FIREBASE SDK ══ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyBabwcgVB-VRNM73OuMFdEAEqIeJxOyPUw",
+  authDomain:        "ourworld-ay.firebaseapp.com",
+  projectId:         "ourworld-ay",
+  storageBucket:     "ourworld-ay.firebasestorage.app",
+  messagingSenderId: "936564595534",
+  appId:             "1:936564595534:web:f23272ae3c8e197dae9c1f"
+};
+
+const CLOUDINARY_CLOUD  = "dtfficnog";
+const CLOUDINARY_PRESET = "ourworld_upload";
+
+let app, db, firebaseReady = false;
+
+try {
+  app = initializeApp(firebaseConfig);
+  db  = getFirestore(app);
+  firebaseReady = true;
+  console.log("✅ Firebase + Cloudinary готовы");
+  loadFeedFromFirebase();
+} catch(e) {
+  console.warn("⚠️ Firebase ошибка:", e);
+}
+
+window._fbUpload = async function(file, caption, tags, type) {
+  if (!firebaseReady) { toast("Firebase не подключён", "e"); return; }
+  const btn  = document.getElementById('uploadBtn');
+  const prog = document.getElementById('uploadProgress');
+  const bar  = document.getElementById('progressBar');
+  const pct  = document.getElementById('progressPct');
+  btn.disabled = true;
+  prog.style.display = 'block';
+
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_PRESET);
+    formData.append('folder', 'ourworld_posts');
+    const resourceType = file.type.startsWith('video/') ? 'video'
+                       : file.type.startsWith('audio/') ? 'video' : 'image';
+
+    const url = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/${resourceType}/upload`);
+      xhr.upload.onprogress = e => {
+        if (e.lengthComputable) {
+          const p = Math.round(e.loaded / e.total * 100);
+          bar.style.width = p + '%';
+          pct.textContent = p + '%';
+        }
+      };
+      xhr.onload = () => {
+        const res = JSON.parse(xhr.responseText);
+        if (res.secure_url) resolve(res.secure_url);
+        else reject(new Error(res.error?.message || 'Cloudinary error'));
+      };
+      xhr.onerror = () => reject(new Error('Network error'));
+      xhr.send(formData);
+    });
+
+    await addDoc(collection(db, "posts"), {
+      type, caption,
+      tags: tags.split(' ').filter(Boolean),
+      url, createdAt: serverTimestamp(), likes: 0
+    });
+
+    toast("Свиток опубликован! 🖤", "s");
+    prog.style.display = 'none';
+    bar.style.width = '0%';
+    document.getElementById('uploadCaption').value = '';
+    document.getElementById('uploadTags').value = '';
+    document.getElementById('fileNameDisplay').style.display = 'none';
+    document.getElementById('dropZone').style.borderColor = '';
+    window._selectedFile = null;
+
+  } catch(err) {
+    toast("Ошибка: " + err.message, "e");
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+// ── Load posts from Firestore ──
+function loadFeedFromFirebase() {
+  if (!firebaseReady) return;
+  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+  onSnapshot(q, snapshot => {
+    // Clear dynamic posts area, keep demo posts if empty
+    const feed = document.getElementById('firebase-feed');
+    if (!feed) return;
+    feed.innerHTML = '';
+    if (snapshot.empty) return;
+    snapshot.forEach(doc => {
+      const d = doc.data();
+      const card = buildPostCard(doc.id, d);
+      feed.appendChild(card);
+    });
+  });
+}
+
+function buildPostCard(id, d) {
+  const card = document.createElement('article');
+  card.className = 'post-card';
+  card.dataset.type = d.type;
+  const timeStr = d.createdAt?.toDate?.()?.toLocaleDateString('ru-RU') || 'только что';
+  const badgeClass = {photo:'badge-photo',video:'badge-video',podcast:'badge-podcast'}[d.type] || 'badge-photo';
+  const badgeLabel = {photo:'📸 Фото',video:'🎬 Видео',podcast:'🎙️ Подкаст'}[d.type] || '📸';
+  const tagsHtml = (d.tags||[]).map(t=>`<span class="post-sigil">${t}</span>`).join('');
+
+  let mediaHtml = '';
+  if (d.type === 'photo') {
+    mediaHtml = `<div class="post-media photo" style="background:var(--crypt)">
+      <img src="${d.url}" style="width:100%;height:100%;object-fit:cover" loading="lazy">
+    </div>`;
+  } else if (d.type === 'video') {
+    mediaHtml = `<div class="post-media video" style="background:var(--crypt)">
+      <video src="${d.url}" controls style="width:100%;height:100%;object-fit:cover"></video>
+    </div>`;
+  } else {
+    mediaHtml = `<div class="post-media" style="aspect-ratio:2/1;padding:20px;background:var(--crypt);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
+      <div style="font-size:36px">🎙️</div>
+      <audio src="${d.url}" controls style="width:100%;filter:invert(0.8) sepia(1) hue-rotate(300deg)"></audio>
+    </div>`;
+  }
+
+  card.innerHTML = `
+    <div class="post-header">
+      <div class="post-crest">A</div>
+      <div class="post-meta">
+        <div class="post-author">Артур & Виктория</div>
+        <div class="post-time">${timeStr}</div>
+      </div>
+      <span class="post-badge ${badgeClass}">${badgeLabel}</span>
+    </div>
+    ${mediaHtml}
+    <div class="post-body">
+      <p class="post-caption">${d.caption || ''}</p>
+      <div class="post-sigils">${tagsHtml}</div>
+    </div>
+    <div class="post-footer">
+      <div class="post-rituals">
+        <button class="ritual-btn" onclick="toggleLike(this)">♥ <span>${d.likes||0}</span></button>
+        <button class="ritual-btn" onclick="showTab('wishes')">✉ <span>Пожелание</span></button>
+      </div>
+      <button class="ritual-btn">⬆ <span>Поделиться</span></button>
+    </div>`;
+  return card;
+}
+</script>
+
+<script>
+// ── Upload helpers (global) ──
+let _selectedFile = null;
+let _uploadType   = 'photo';
+
+function selectUploadType(type, el) {
+  _uploadType = type;
+  el.closest('#uploadTypeGrid').querySelectorAll('.wish-rune').forEach(r => r.classList.remove('chosen'));
+  el.classList.add('chosen');
+}
+
+function onFileSelected(inp) {
+  const file = inp.files[0];
+  if (!file) return;
+  _selectedFile = file;
+  const disp = document.getElementById('fileNameDisplay');
+  disp.textContent = '📎 ' + file.name;
+  disp.style.display = 'block';
+  document.getElementById('dropZone').style.borderColor = 'var(--blood)';
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  _selectedFile = file;
+  const disp = document.getElementById('fileNameDisplay');
+  disp.textContent = '📎 ' + file.name;
+  disp.style.display = 'block';
+  e.currentTarget.style.borderColor = 'var(--blood)';
+  e.currentTarget.style.background  = '';
+}
+
+function uploadPost() {
+  const caption = document.getElementById('uploadCaption').value.trim();
+  const tags    = document.getElementById('uploadTags').value.trim();
+  if (!caption) { toast('Добавь описание поста!', 'e'); return; }
+  if (!_selectedFile) { toast('Выбери файл!', 'e'); return; }
+  window._fbUpload(_selectedFile, caption, tags, _uploadType);
+}
+</script>
+
+<!-- ═══ KO-FI FLOATING WIDGET ═══ -->
+<div id="kofi-float" style="display:none;position:fixed;bottom:70px;right:16px;z-index:500">
+  <a href="https://ko-fi.com/varthur" target="_blank"
+     style="display:flex;align-items:center;gap:8px;padding:10px 16px;
+            background:linear-gradient(135deg,#8b1a1a,rgba(139,26,26,0.85));
+            border:1px solid rgba(192,57,43,0.6);color:#e8e0d4;text-decoration:none;
+            font-family:'Cinzel',serif;font-size:10px;font-weight:600;letter-spacing:0.12em;
+            text-transform:uppercase;box-shadow:0 4px 20px rgba(139,26,26,0.4);
+            clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)">
+    ☕ Ko-fi
+  </a>
+</div>
+
+<!-- ═══ LEGAL NOTICE MODAL ═══ -->
+<div class="modal-shroud" id="modal-legal">
+  <div class="modal-grimoire" style="max-width:500px;max-height:85vh;overflow-y:auto;position:relative">
+    <button class="modal-close" onclick="closeM('legal')">✕</button>
+    <div style="font-family:'UnifrakturMaguntia',cursive;font-size:24px;color:var(--blood);text-align:center;margin-bottom:16px">
+      Правовое уведомление
+    </div>
+    <div style="font-family:'Cinzel',serif;font-size:10px;color:var(--blood);letter-spacing:0.12em;text-transform:uppercase;border-bottom:1px solid var(--border-goth);padding-bottom:8px;margin-bottom:14px">
+      © OurWorld 2024–2026 · Артур & Виктория
+    </div>
+    <div style="font-family:'Crimson Text',serif;font-size:14px;color:var(--shadow);line-height:1.8">
+      <p style="margin-bottom:12px">
+        Весь контент на данной платформе — фотографии, видеозаписи, аудиозаписи, подкасты и тексты — является исключительной интеллектуальной собственностью авторов и защищён в соответствии с:
+      </p>
+      <ul style="margin:0 0 12px 16px;display:flex;flex-direction:column;gap:6px">
+        <li><strong style="color:var(--parchment)">Законом об авторском праве Израиля (5768-2007)</strong> — Chok Zchuyot Yotzrim</li>
+        <li><strong style="color:var(--parchment)">Бернской конвенцией</strong> об охране литературных и художественных произведений</li>
+        <li><strong style="color:var(--parchment)">Директивой ЕС об авторском праве</strong> (2019/790)</li>
+      </ul>
+      <div style="background:rgba(139,26,26,0.1);border:1px solid var(--border-goth);padding:12px;margin-bottom:12px">
+        <div style="font-family:'Cinzel',serif;font-size:10px;color:var(--blood);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Запрещено без письменного разрешения:</div>
+        <ul style="margin:0 0 0 16px;display:flex;flex-direction:column;gap:4px;font-size:13px">
+          <li>Копирование, скачивание и сохранение материалов</li>
+          <li>Распространение, публикация, передача третьим лицам</li>
+          <li>Коммерческое использование любого контента</li>
+          <li>Создание производных работ на основе контента</li>
+          <li>Скриншоты и запись экрана в целях распространения</li>
+        </ul>
+      </div>
+      <p style="margin-bottom:12px;font-size:13px">
+        Нарушение авторских прав преследуется по статье 35 Закона об авторском праве Израиля и влечёт гражданскую и уголовную ответственность, включая возмещение ущерба до <strong style="color:var(--parchment)">100,000 NIS</strong> за каждое нарушение без доказательства реального ущерба.
+      </p>
+      <p style="font-size:12px;color:var(--dust)">
+        По вопросам лицензирования: свяжитесь через WhatsApp +972-053-321-3698
+      </p>
+    </div>
+    <button class="modal-btn" style="margin-top:16px" onclick="closeM('legal')">Понятно ✦</button>
+  </div>
+</div>
+
+<script>
+// Show Ko-fi float button when in app
+function showKofiFloat(){ document.getElementById('kofi-float').style.display='block'; }
+
+// Add legal link to bottom nav area
+document.addEventListener('DOMContentLoaded', function(){
+  const bar = document.getElementById('copyright-bar');
+  if(bar){
+    const link = document.createElement('span');
+    link.innerHTML = ' · <a id="legal-link" style="color:rgba(201,169,110,0.8);cursor:pointer;text-decoration:underline">Правовое уведомление</a>';
+    bar.appendChild(link);
+  }
+});
+
+// Delegated click for legal link (added dynamically)
+document.addEventListener('click', function(e){
+  if(e.target && e.target.id==='legal-link'){
+    e.preventDefault();
+    openModal('legal');
+  }
+});
+</script>
+</body>
+</html>
