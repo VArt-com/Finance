@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Статьи и руководства VArt Tools: трудовое право Израиля, расчёт зарплаты, права работников / Articles about Israeli labor law, salary calculation, worker rights">
+<title>Статьи — VArt Tools</title>
+<link rel="icon" href="https://org-va.com/favicon.ico">
+<style>
+  :root {
+    --accent: #6C63FF;
+    --accent2: #a78bfa;
+    --bg: #0d0d1a;
+    --bg2: #13132a;
+    --card: #1a1a35;
+    --border: #2a2a50;
+    --text: #e0e0f0;
+    --muted: #8888aa;
+    --green: #34d399;
+    --orange: #fb923c;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 15px; line-height: 1.7; min-height: 100vh; }
+  header {
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 99;
+  }
+  header a.logo { font-weight: 700; font-size: 1.1rem; color: var(--accent); text-decoration: none; }
+  header nav a { color: var(--muted); text-decoration: none; margin-left: 16px; font-size: 0.85rem; transition: color 0.2s; }
+  header nav a:hover { color: var(--accent2); }
+  .lang-btns { display: flex; gap: 6px; }
+  .lang-btn { background: var(--card); border: 1px solid var(--border); color: var(--muted); padding: 3px 10px; border-radius: 20px; font-size: 0.78rem; cursor: pointer; transition: all 0.2s; }
+  .lang-btn.active, .lang-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  main { max-width: 820px; margin: 0 auto; padding: 40px 20px 60px; }
+
+  .page-hero {
+    background: linear-gradient(135deg, #1a0d35 0%, var(--card) 100%);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 36px 32px; margin-bottom: 32px; position: relative; overflow: hidden;
+  }
+  .page-hero::before { content: '📚'; position: absolute; right: 28px; top: 50%; transform: translateY(-50%); font-size: 4rem; opacity: 0.15; }
+  .badge { display: inline-block; background: var(--accent); color: #fff; font-size: 0.72rem; font-weight: 600; padding: 2px 10px; border-radius: 20px; margin-bottom: 14px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .page-hero h1 { font-size: 1.8rem; font-weight: 700; color: var(--accent2); margin-bottom: 8px; }
+  .page-hero p { color: var(--muted); font-size: 0.9rem; }
+
+  /* Article card */
+  .article-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 28px; margin-bottom: 20px;
+    cursor: pointer; transition: border-color 0.2s;
+  }
+  .article-card:hover { border-color: var(--accent); }
+  .article-card .meta { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .tag { background: rgba(108,99,255,0.15); color: var(--accent2); font-size: 0.75rem; padding: 2px 10px; border-radius: 20px; }
+  .date { color: var(--muted); font-size: 0.78rem; }
+  .article-card h2 { font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+  .article-card p { color: var(--muted); font-size: 0.9rem; }
+  .read-more { display: inline-flex; align-items: center; gap: 6px; color: var(--accent2); font-size: 0.85rem; font-weight: 600; margin-top: 14px; text-decoration: none; }
+  .read-more:hover { text-decoration: underline; }
+
+  /* Full article */
+  .article-full { display: none; }
+  .article-full.open { display: block; }
+  .article-header { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; margin-bottom: 20px; }
+  .article-header h1 { font-size: 1.6rem; font-weight: 800; color: #fff; margin-bottom: 12px; }
+  .article-header .meta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 0; }
+  .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.85rem; cursor: pointer; margin-bottom: 20px; padding: 6px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; transition: color 0.2s; }
+  .back-btn:hover { color: var(--accent2); }
+  .prose { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; }
+  .prose h2 { font-size: 1.1rem; font-weight: 700; color: var(--accent2); margin: 24px 0 10px; }
+  .prose h2:first-child { margin-top: 0; }
+  .prose p { color: var(--text); font-size: 0.93rem; margin-bottom: 14px; }
+  .prose ul, .prose ol { padding-left: 22px; margin-bottom: 14px; }
+  .prose li { color: var(--text); font-size: 0.93rem; margin-bottom: 6px; }
+  .prose strong { color: var(--accent2); }
+  .prose .info-box { background: rgba(108,99,255,0.1); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; }
+  .prose .info-box p { margin-bottom: 0; color: var(--accent2); font-size: 0.9rem; }
+  .prose table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  .prose th { background: rgba(108,99,255,0.2); color: var(--accent2); padding: 10px 14px; text-align: left; font-size: 0.88rem; }
+  .prose td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 0.88rem; color: var(--text); }
+  .prose tr:last-child td { border-bottom: none; }
+
+  .cta-box { background: linear-gradient(135deg, rgba(108,99,255,0.15) 0%, rgba(167,139,250,0.1) 100%); border: 1px solid rgba(108,99,255,0.3); border-radius: var(--radius); padding: 24px; margin-top: 24px; text-align: center; }
+  .cta-box h3 { color: var(--accent2); margin-bottom: 10px; }
+  .cta-box p { color: var(--muted); font-size: 0.9rem; margin-bottom: 16px; }
+  .cta-btn { display: inline-block; background: var(--accent); color: #fff; text-decoration: none; padding: 10px 24px; border-radius: 30px; font-weight: 600; font-size: 0.9rem; transition: opacity 0.2s; }
+  .cta-btn:hover { opacity: 0.85; }
+
+  footer { text-align: center; padding: 28px 20px; color: var(--muted); font-size: 0.82rem; border-top: 1px solid var(--border); }
+  footer a { color: var(--accent2); text-decoration: none; }
+  footer .links { margin-top: 10px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .lang-section { display: none; }
+  .lang-section.active { display: block; }
+  @media (max-width: 600px) {
+    .page-hero { padding: 24px 18px; }
+    .page-hero h1 { font-size: 1.4rem; }
+    .prose { padding: 18px 16px; }
+    header { flex-wrap: wrap; gap: 10px; }
+    .prose table { font-size: 0.78rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="https://org-va.com/">🛠 VArt Tools</a>
+  <div class="lang-btns">
+    <button class="lang-btn active" onclick="setLang('ru')">РУС</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('he')">עב</button>
+  </div>
+  <nav>
+    <a href="about.html">About</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ===== RUSSIAN ===== -->
+  <div class="lang-section active" id="lang-ru">
+    <div id="ru-list">
+      <div class="page-hero">
+        <div class="badge">Статьи и руководства</div>
+        <h1>Полезные статьи</h1>
+        <p>Всё что нужно знать о трудовом законодательстве Израиля, расчёте зарплаты и правах работников</p>
+      </div>
+
+      <div class="article-card" onclick="showArticle('ru-art1')">
+        <div class="meta">
+          <span class="tag">⚖️ Трудовое право</span>
+          <span class="tag">🇮🇱 Израиль</span>
+          <span class="date">Апрель 2026</span>
+        </div>
+        <h2>Сверхурочные в Израиле: полное руководство 2026</h2>
+        <p>Как правильно считать сверхурочные по израильскому закону, ставки оплаты для пятницы и шаббата, максимальная рабочая неделя и куда жаловаться при нарушениях.</p>
+        <span class="read-more">Читать статью →</span>
+      </div>
+
+      <div class="article-card" onclick="showArticle('ru-art2')">
+        <div class="meta">
+          <span class="tag">💰 Зарплата</span>
+          <span class="tag">🇮🇱 Израиль</span>
+          <span class="date">Апрель 2026</span>
+        </div>
+        <h2>Минимальная зарплата в Израиле 2026: всё что нужно знать</h2>
+        <p>Актуальные ставки минимальной зарплаты по отраслям, отраслевые соглашения, права работников и как проверить правильность своей зарплаты.</p>
+        <span class="read-more">Читать статью →</span>
+      </div>
+    </div>
+
+    <!-- Article 1 RU -->
+    <div id="ru-art1" class="article-full">
+      <div class="back-btn" onclick="hideArticle('ru-list','ru-art1')">← Назад к статьям</div>
+      <div class="article-header">
+        <div class="meta">
+          <span class="tag">⚖️ Трудовое право</span>
+          <span class="tag">🇮🇱 Израиль</span>
+          <span class="date">Апрель 2026</span>
+        </div>
+        <h1>Сверхурочные в Израиле: полное руководство 2026</h1>
+      </div>
+      <div class="prose">
+        <h2>Что такое сверхурочные</h2>
+        <p>В Израиле сверхурочными считается любая работа сверх установленной нормы рабочего времени. Норма зависит от сектора и дня недели.</p>
+        <div class="info-box"><p>📋 Закон: Закон о рабочих часах и отдыхе (חוק שעות עבודה ומנוחה), обновлён 01.04.2026</p></div>
+
+        <h2>Нормы рабочего времени</h2>
+        <table>
+          <tr><th>Тип</th><th>День</th><th>Норма (часов)</th></tr>
+          <tr><td>Частный сектор</td><td>Обычный день</td><td>8.6 ч</td></tr>
+          <tr><td>Частный сектор</td><td>Пятница / канун праздника</td><td>7.6 ч</td></tr>
+          <tr><td>Госсектор</td><td>Обычный день</td><td>8.0 ч</td></tr>
+          <tr><td>Частный сектор</td><td>Неделя (лимит)</td><td>42 ч</td></tr>
+          <tr><td>Госсектор</td><td>Неделя (лимит)</td><td>40 ч</td></tr>
+        </table>
+
+        <h2>Ставки оплаты сверхурочных</h2>
+        <table>
+          <tr><th>Период</th><th>Ставка</th></tr>
+          <tr><td>Первые 2 сверхурочных часа в день</td><td><strong>125%</strong> от обычной ставки</td></tr>
+          <tr><td>Каждый следующий час</td><td><strong>150%</strong> от обычной ставки</td></tr>
+          <tr><td>Работа в шаббат и праздники</td><td>минимум <strong>150%</strong></td></tr>
+        </table>
+
+        <h2>Ночные смены</h2>
+        <p>Рабочий день при ночной смене не превышает <strong>7 часов</strong>. Рабочая неделя при ночных сменах — не более <strong>58 часов суммарно</strong>.</p>
+
+        <h2>Обязательные перерывы</h2>
+        <p>При рабочей смене от <strong>6 часов</strong> обязателен перерыв не менее 45 минут, включая непрерывный перерыв не менее 30 минут.</p>
+
+        <h2>Куда жаловаться при нарушениях</h2>
+        <ul>
+          <li><strong>Министерство труда Израиля</strong> (משרד העבודה) — инспекция труда</li>
+          <li><strong>Трудовой суд</strong> (בית הדין לעבודה) — иски о нарушении прав</li>
+          <li>Нарушение минимальной зарплаты является <strong>уголовным преступлением</strong></li>
+        </ul>
+        <div class="info-box"><p>⚠️ Отказ работника от сверхурочной доплаты юридически недействителен — даже если он сам на это согласился.</p></div>
+
+        <div class="cta-box">
+          <h3>⏱️ Посчитай свои часы автоматически</h3>
+          <p>Используй наш бесплатный трекер рабочих часов — он автоматически считает сверхурочные, шаббат и пятницу по закону Израиля.</p>
+          <a class="cta-btn" href="work-tracker.html">Открыть трекер часов →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Article 2 RU -->
+    <div id="ru-art2" class="article-full">
+      <div class="back-btn" onclick="hideArticle('ru-list','ru-art2')">← Назад к статьям</div>
+      <div class="article-header">
+        <div class="meta">
+          <span class="tag">💰 Зарплата</span>
+          <span class="tag">🇮🇱 Израиль</span>
+          <span class="date">Апрель 2026</span>
+        </div>
+        <h1>Минимальная зарплата в Израиле 2026</h1>
+      </div>
+      <div class="prose">
+        <h2>Базовый минимум (апрель 2026)</h2>
+        <table>
+          <tr><th>Показатель</th><th>Сумма</th></tr>
+          <tr><td>Минимальная ставка в час</td><td><strong>₪35.40</strong></td></tr>
+          <tr><td>Минимальная зарплата в месяц</td><td><strong>₪6,443.85</strong></td></tr>
+        </table>
+
+        <h2>Минимум по отраслям</h2>
+        <table>
+          <tr><th>Отрасль</th><th>Минимум</th></tr>
+          <tr><td>🔒 Охрана и безопасность</td><td>от ₪37.75/час (от ₪6,872/мес)</td></tr>
+          <tr><td>🧹 Уборка</td><td>₪35.40 + надбавка ₪675</td></tr>
+          <tr><td>🍽 Общественное питание</td><td>базовый + 13%</td></tr>
+        </table>
+
+        <h2>Важные правила</h2>
+        <ul>
+          <li>Отказ от минимальной зарплаты юридически <strong>недействителен</strong> — даже при подписанном соглашении</li>
+          <li>Работодатель обязан вести учёт рабочих часов и хранить его <strong>7 лет</strong></li>
+          <li>Нарушение минимальной зарплаты — <strong>уголовное преступление</strong></li>
+          <li>При частичной занятости — пропорциональный расчёт от минимума</li>
+        </ul>
+
+        <h2>Как проверить правильность своей зарплаты</h2>
+        <p>Используй трекер рабочих часов VArt Tools — введи свои данные и он автоматически рассчитает:</p>
+        <ul>
+          <li>Базовую зарплату за обычные часы</li>
+          <li>Доплату за сверхурочные (125% и 150%)</li>
+          <li>Доплату за работу в шаббат и пятницу</li>
+          <li>Сравнение с минимальной зарплатой</li>
+        </ul>
+
+        <div class="cta-box">
+          <h3>💰 Проверь свою зарплату прямо сейчас</h3>
+          <p>Бесплатный трекер рабочих часов с актуальными данными на апрель 2026</p>
+          <a class="cta-btn" href="work-tracker.html">Открыть трекер →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ENGLISH ===== -->
+  <div class="lang-section" id="lang-en">
+    <div id="en-list">
+      <div class="page-hero">
+        <div class="badge">Articles & Guides</div>
+        <h1>Helpful Articles</h1>
+        <p>Everything you need to know about Israeli labor law, salary calculation, and worker rights</p>
+      </div>
+
+      <div class="article-card" onclick="showArticle('en-art1')">
+        <div class="meta">
+          <span class="tag">⚖️ Labor Law</span>
+          <span class="tag">🇮🇱 Israel</span>
+          <span class="date">April 2026</span>
+        </div>
+        <h2>Overtime in Israel: Complete Guide 2026</h2>
+        <p>How to correctly calculate overtime under Israeli law, pay rates for Fridays and Shabbat, maximum working week, and where to file complaints about violations.</p>
+        <span class="read-more">Read article →</span>
+      </div>
+
+      <div class="article-card" onclick="showArticle('en-art2')">
+        <div class="meta">
+          <span class="tag">💰 Salary</span>
+          <span class="tag">🇮🇱 Israel</span>
+          <span class="date">April 2026</span>
+        </div>
+        <h2>Minimum Wage in Israel 2026: Everything You Need to Know</h2>
+        <p>Current minimum wage rates by industry, collective agreements, worker rights, and how to verify your salary is correct.</p>
+        <span class="read-more">Read article →</span>
+      </div>
+    </div>
+
+    <div id="en-art1" class="article-full">
+      <div class="back-btn" onclick="hideArticle('en-list','en-art1')">← Back to articles</div>
+      <div class="article-header">
+        <div class="meta"><span class="tag">⚖️ Labor Law</span><span class="tag">🇮🇱 Israel</span><span class="date">April 2026</span></div>
+        <h1>Overtime in Israel: Complete Guide 2026</h1>
+      </div>
+      <div class="prose">
+        <h2>What is Overtime</h2>
+        <p>In Israel, overtime is any work beyond the established working time norm. The norm depends on the sector and day of the week.</p>
+        <div class="info-box"><p>📋 Law: Hours of Work and Rest Law (חוק שעות עבודה ומנוחה), updated 01.04.2026</p></div>
+        <h2>Working Time Norms</h2>
+        <table>
+          <tr><th>Type</th><th>Day</th><th>Norm (hours)</th></tr>
+          <tr><td>Private sector</td><td>Regular day</td><td>8.6 h</td></tr>
+          <tr><td>Private sector</td><td>Friday / eve of holiday</td><td>7.6 h</td></tr>
+          <tr><td>Public sector</td><td>Regular day</td><td>8.0 h</td></tr>
+          <tr><td>Private sector</td><td>Weekly limit</td><td>42 h</td></tr>
+          <tr><td>Public sector</td><td>Weekly limit</td><td>40 h</td></tr>
+        </table>
+        <h2>Overtime Pay Rates</h2>
+        <table>
+          <tr><th>Period</th><th>Rate</th></tr>
+          <tr><td>First 2 overtime hours per day</td><td><strong>125%</strong> of regular rate</td></tr>
+          <tr><td>Every subsequent hour</td><td><strong>150%</strong> of regular rate</td></tr>
+          <tr><td>Work on Shabbat and holidays</td><td>minimum <strong>150%</strong></td></tr>
+        </table>
+        <h2>Where to File Complaints</h2>
+        <ul>
+          <li><strong>Ministry of Labor</strong> (משרד העבודה) — labor inspection</li>
+          <li><strong>Labor Court</strong> (בית הדין לעבודה) — rights violation claims</li>
+        </ul>
+        <div class="info-box"><p>⚠️ A worker's waiver of overtime pay is legally invalid — even if they agreed to it themselves.</p></div>
+        <div class="cta-box">
+          <h3>⏱️ Calculate Your Hours Automatically</h3>
+          <p>Use our free work hours tracker — it automatically calculates overtime, Shabbat, and Friday hours per Israeli law.</p>
+          <a class="cta-btn" href="work-tracker.html">Open Work Tracker →</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="en-art2" class="article-full">
+      <div class="back-btn" onclick="hideArticle('en-list','en-art2')">← Back to articles</div>
+      <div class="article-header">
+        <div class="meta"><span class="tag">💰 Salary</span><span class="tag">🇮🇱 Israel</span><span class="date">April 2026</span></div>
+        <h1>Minimum Wage in Israel 2026</h1>
+      </div>
+      <div class="prose">
+        <h2>Base Minimum (April 2026)</h2>
+        <table>
+          <tr><th>Item</th><th>Amount</th></tr>
+          <tr><td>Minimum hourly rate</td><td><strong>₪35.40</strong></td></tr>
+          <tr><td>Minimum monthly wage</td><td><strong>₪6,443.85</strong></td></tr>
+        </table>
+        <h2>Industry Minimums</h2>
+        <table>
+          <tr><th>Industry</th><th>Minimum</th></tr>
+          <tr><td>🔒 Security</td><td>from ₪37.75/h (from ₪6,872/mo)</td></tr>
+          <tr><td>🧹 Cleaning</td><td>₪35.40 + ₪675 allowance</td></tr>
+          <tr><td>🍽 Food service</td><td>base + 13%</td></tr>
+        </table>
+        <div class="cta-box">
+          <h3>💰 Check Your Salary Now</h3>
+          <p>Free work hours tracker with current April 2026 data</p>
+          <a class="cta-btn" href="work-tracker.html">Open Tracker →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HEBREW ===== -->
+  <div class="lang-section" id="lang-he" dir="rtl">
+    <div id="he-list">
+      <div class="page-hero">
+        <div class="badge">מאמרים ומדריכים</div>
+        <h1>מאמרים שימושיים</h1>
+        <p>כל מה שצריך לדעת על דיני עבודה בישראל, חישוב שכר וזכויות עובדים</p>
+      </div>
+
+      <div class="article-card" onclick="showArticle('he-art1')">
+        <div class="meta">
+          <span class="tag">⚖️ דיני עבודה</span>
+          <span class="tag">🇮🇱 ישראל</span>
+          <span class="date">אפריל 2026</span>
+        </div>
+        <h2>שעות נוספות בישראל: מדריך מלא 2026</h2>
+        <p>כיצד לחשב נכון שעות נוספות לפי חוק העבודה הישראלי, שיעורי תשלום לימי שישי ושבת, שבוע עבודה מקסימלי והיכן להגיש תלונות על הפרות.</p>
+        <span class="read-more">קרא מאמר ←</span>
+      </div>
+
+      <div class="article-card" onclick="showArticle('he-art2')">
+        <div class="meta">
+          <span class="tag">💰 שכר</span>
+          <span class="tag">🇮🇱 ישראל</span>
+          <span class="date">אפריל 2026</span>
+        </div>
+        <h2>שכר מינימום בישראל 2026: כל מה שצריך לדעת</h2>
+        <p>שיעורי שכר מינימום עדכניים לפי ענף, הסכמים קיבוציים, זכויות עובדים וכיצד לבדוק שהשכר שלך נכון.</p>
+        <span class="read-more">קרא מאמר ←</span>
+      </div>
+    </div>
+
+    <div id="he-art1" class="article-full">
+      <div class="back-btn" onclick="hideArticle('he-list','he-art1')">← חזרה למאמרים</div>
+      <div class="article-header">
+        <div class="meta"><span class="tag">⚖️ דיני עבודה</span><span class="tag">🇮🇱 ישראל</span><span class="date">אפריל 2026</span></div>
+        <h1>שעות נוספות בישראל: מדריך מלא 2026</h1>
+      </div>
+      <div class="prose">
+        <h2>מה הן שעות נוספות</h2>
+        <p>בישראל, שעות נוספות הן כל עבודה מעבר לנורמת שעות העבודה הקבועה. הנורמה תלויה במגזר וביום השבוע.</p>
+        <div class="info-box"><p>📋 חוק: חוק שעות עבודה ומנוחה, עודכן 01.04.2026</p></div>
+        <h2>שיעורי תשלום שעות נוספות</h2>
+        <table>
+          <tr><th>תקופה</th><th>שיעור</th></tr>
+          <tr><td>2 שעות נוספות ראשונות ביום</td><td><strong>125%</strong> מהשכר הרגיל</td></tr>
+          <tr><td>כל שעה נוספת לאחר מכן</td><td><strong>150%</strong> מהשכר הרגיל</td></tr>
+          <tr><td>עבודה בשבת ובחגים</td><td>לפחות <strong>150%</strong></td></tr>
+        </table>
+        <div class="info-box"><p>⚠️ ויתור של עובד על גמול שעות נוספות אינו תקף מבחינה משפטית — גם אם הסכים לכך בעצמו.</p></div>
+        <div class="cta-box">
+          <h3>⏱️ חשב את השעות שלך אוטומטית</h3>
+          <p>השתמש במעקב שעות העבודה החינמי שלנו — הוא מחשב אוטומטית שעות נוספות, שבת ושישי לפי חוק ישראלי.</p>
+          <a class="cta-btn" href="work-tracker.html">פתח מעקב שעות ←</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="he-art2" class="article-full">
+      <div class="back-btn" onclick="hideArticle('he-list','he-art2')">← חזרה למאמרים</div>
+      <div class="article-header">
+        <div class="meta"><span class="tag">💰 שכר</span><span class="tag">🇮🇱 ישראל</span><span class="date">אפריל 2026</span></div>
+        <h1>שכר מינימום בישראל 2026</h1>
+      </div>
+      <div class="prose">
+        <h2>מינימום בסיסי (אפריל 2026)</h2>
+        <table>
+          <tr><th>פריט</th><th>סכום</th></tr>
+          <tr><td>שיעור שעתי מינימלי</td><td><strong>₪35.40</strong></td></tr>
+          <tr><td>שכר מינימום חודשי</td><td><strong>₪6,443.85</strong></td></tr>
+        </table>
+        <h2>מינימום לפי ענף</h2>
+        <table>
+          <tr><th>ענף</th><th>מינימום</th></tr>
+          <tr><td>🔒 שמירה ואבטחה</td><td>מ-₪37.75/שעה (מ-₪6,872/חודש)</td></tr>
+          <tr><td>🧹 ניקיון</td><td>₪35.40 + תוספת ₪675</td></tr>
+          <tr><td>🍽 הסעדה</td><td>בסיס + 13%</td></tr>
+        </table>
+        <div class="cta-box">
+          <h3>💰 בדוק את השכר שלך עכשיו</h3>
+          <p>מעקב שעות עבודה חינמי עם נתונים עדכניים לאפריל 2026</p>
+          <a class="cta-btn" href="work-tracker.html">פתח מעקב ←</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div>© 2025 VArt Tools · org-va.com</div>
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="about.html">About</a>
+    <a href="blog.html">Articles</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://ko-fi.com/varthur">☕ Ko-fi</a>
+  </div>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.querySelectorAll('.lang-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.lang-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('lang-' + lang).classList.add('active');
+  event.target.classList.add('active');
+  document.documentElement.lang = lang === 'he' ? 'he' : lang === 'en' ? 'en' : 'ru';
+}
+function showArticle(id) {
+  const art = document.getElementById(id);
+  if (art) { art.classList.add('open'); art.scrollIntoView({behavior:'smooth', block:'start'}); }
+}
+function hideArticle(listId, artId) {
+  document.getElementById(artId).classList.remove('open');
+  document.getElementById(listId).scrollIntoView({behavior:'smooth', block:'start'});
+}
+</script>
+</body>
+</html>

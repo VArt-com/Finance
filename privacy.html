@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Privacy Policy / Политика конфиденциальности / מדיניות פרטיות — VArt Tools">
+<title>Privacy Policy — VArt Tools</title>
+<link rel="icon" href="https://org-va.com/favicon.ico">
+<style>
+  :root {
+    --accent: #6C63FF;
+    --accent2: #a78bfa;
+    --bg: #0d0d1a;
+    --bg2: #13132a;
+    --card: #1a1a35;
+    --border: #2a2a50;
+    --text: #e0e0f0;
+    --muted: #8888aa;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 99;
+  }
+  header a.logo {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.5px;
+  }
+  header nav a {
+    color: var(--muted);
+    text-decoration: none;
+    margin-left: 16px;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  header nav a:hover { color: var(--accent2); }
+
+  .lang-btns {
+    display: flex; gap: 6px;
+  }
+  .lang-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn.active, .lang-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+  }
+  .page-hero {
+    background: linear-gradient(135deg, var(--card) 0%, #1a1040 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    margin-bottom: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-hero::before {
+    content: '🔐';
+    position: absolute;
+    right: 28px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 4rem;
+    opacity: 0.15;
+  }
+  .page-hero h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 8px;
+  }
+  .page-hero p {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  section.block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 16px;
+  }
+  section.block h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  section.block p, section.block li {
+    color: var(--text);
+    font-size: 0.93rem;
+    line-height: 1.75;
+  }
+  section.block ul {
+    padding-left: 20px;
+    margin-top: 8px;
+  }
+  section.block ul li { margin-bottom: 4px; }
+
+  .highlight {
+    background: rgba(108,99,255,0.1);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: var(--accent2);
+  }
+
+  footer {
+    text-align: center;
+    padding: 28px 20px;
+    color: var(--muted);
+    font-size: 0.82rem;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent2); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  footer .links { margin-top: 10px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+  .lang-section { display: none; }
+  .lang-section.active { display: block; }
+
+  @media (max-width: 600px) {
+    .page-hero { padding: 24px 18px; }
+    .page-hero h1 { font-size: 1.4rem; }
+    section.block { padding: 18px 16px; }
+    header { flex-wrap: wrap; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="https://org-va.com/">🛠 VArt Tools</a>
+  <div class="lang-btns">
+    <button class="lang-btn active" onclick="setLang('ru')">РУС</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('he')">עב</button>
+  </div>
+  <nav>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ===== RUSSIAN ===== -->
+  <div class="lang-section active" id="lang-ru">
+    <div class="page-hero">
+      <div class="badge">Политика конфиденциальности</div>
+      <h1>Политика конфиденциальности</h1>
+      <p>Обновлено: май 2025 · org-va.com</p>
+    </div>
+
+    <section class="block">
+      <h2>📋 Общая информация</h2>
+      <p>Сайт <strong>VArt Tools</strong> (org-va.com) предоставляет бесплатные веб-инструменты для личного и профессионального использования. Мы серьёзно относимся к конфиденциальности наших пользователей.</p>
+      <div class="highlight">Мы не продаём и не передаём ваши личные данные третьим лицам.</div>
+    </section>
+
+    <section class="block">
+      <h2>📊 Какие данные мы собираем</h2>
+      <p>Наш сайт может собирать следующие технические данные:</p>
+      <ul>
+        <li>IP-адрес и данные браузера (через Google Analytics, если включён)</li>
+        <li>Страницы, которые вы посещаете, и время посещения</li>
+        <li>Тип устройства и операционная система</li>
+        <li>Источник перехода (откуда вы пришли на сайт)</li>
+      </ul>
+      <p style="margin-top:12px"><strong>Личные данные</strong> (имя, email, телефон) — мы <em>не</em> запрашиваем и не храним.</p>
+    </section>
+
+    <section class="block">
+      <h2>💾 Локальное хранилище (localStorage)</h2>
+      <p>Некоторые инструменты сайта сохраняют данные <strong>только у вас на устройстве</strong> через localStorage браузера — например, история рабочих смен в трекере часов. Эти данные не передаются нам и не покидают ваше устройство.</p>
+    </section>
+
+    <section class="block">
+      <h2>🍪 Cookies</h2>
+      <p>Мы используем технические куки для корректной работы сайта. Аналитические куки (Google Analytics) могут использоваться для понимания посещаемости. Вы можете отключить куки в настройках вашего браузера.</p>
+    </section>
+
+    <section class="block">
+      <h2>🔗 Сторонние сервисы</h2>
+      <p>Сайт может использовать следующие сторонние сервисы со своей политикой конфиденциальности:</p>
+      <ul>
+        <li><strong>Google Analytics</strong> — аналитика посещаемости</li>
+        <li><strong>Google AdSense</strong> — реклама</li>
+        <li><strong>Ko-fi</strong> — добровольные пожертвования</li>
+        <li><strong>GitHub Pages</strong> — хостинг</li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>🛡 Ваши права</h2>
+      <p>Вы имеете право:</p>
+      <ul>
+        <li>Запросить информацию о данных, которые мы о вас храним</li>
+        <li>Потребовать удаления ваших данных</li>
+        <li>Отказаться от сбора аналитических данных</li>
+      </ul>
+      <div class="highlight">Для любых вопросов по конфиденциальности обращайтесь через страницу <a href="contact.html" style="color:var(--accent)">Контакты</a>.</div>
+    </section>
+
+    <section class="block">
+      <h2>📝 Изменения в политике</h2>
+      <p>Мы можем обновлять эту политику конфиденциальности. О существенных изменениях мы уведомим, обновив дату вверху страницы. Продолжение использования сайта означает согласие с актуальной политикой.</p>
+    </section>
+  </div>
+
+  <!-- ===== ENGLISH ===== -->
+  <div class="lang-section" id="lang-en">
+    <div class="page-hero">
+      <div class="badge">Privacy Policy</div>
+      <h1>Privacy Policy</h1>
+      <p>Last updated: May 2025 · org-va.com</p>
+    </div>
+
+    <section class="block">
+      <h2>📋 Overview</h2>
+      <p><strong>VArt Tools</strong> (org-va.com) provides free web tools for personal and professional use. We take user privacy seriously.</p>
+      <div class="highlight">We do not sell or share your personal data with third parties.</div>
+    </section>
+
+    <section class="block">
+      <h2>📊 Data We Collect</h2>
+      <p>Our website may collect the following technical data:</p>
+      <ul>
+        <li>IP address and browser information (via Google Analytics, if enabled)</li>
+        <li>Pages you visit and visit duration</li>
+        <li>Device type and operating system</li>
+        <li>Referral source (how you found our website)</li>
+      </ul>
+      <p style="margin-top:12px"><strong>Personal data</strong> (name, email, phone) — we do <em>not</em> request or store.</p>
+    </section>
+
+    <section class="block">
+      <h2>💾 Local Storage</h2>
+      <p>Some tools on our website save data <strong>only on your device</strong> using browser localStorage — for example, work shift history in the work hours tracker. This data is never transmitted to us and never leaves your device.</p>
+    </section>
+
+    <section class="block">
+      <h2>🍪 Cookies</h2>
+      <p>We use technical cookies for the website to function correctly. Analytics cookies (Google Analytics) may be used to understand site traffic. You can disable cookies in your browser settings.</p>
+    </section>
+
+    <section class="block">
+      <h2>🔗 Third-Party Services</h2>
+      <p>The site may use the following third-party services with their own privacy policies:</p>
+      <ul>
+        <li><strong>Google Analytics</strong> — traffic analytics</li>
+        <li><strong>Google AdSense</strong> — advertising</li>
+        <li><strong>Ko-fi</strong> — voluntary donations</li>
+        <li><strong>GitHub Pages</strong> — hosting</li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>🛡 Your Rights</h2>
+      <p>You have the right to:</p>
+      <ul>
+        <li>Request information about data we hold about you</li>
+        <li>Request deletion of your data</li>
+        <li>Opt out of analytics data collection</li>
+      </ul>
+      <div class="highlight">For any privacy questions, contact us via the <a href="contact.html" style="color:var(--accent)">Contact</a> page.</div>
+    </section>
+
+    <section class="block">
+      <h2>📝 Policy Updates</h2>
+      <p>We may update this privacy policy. For significant changes, we will notify you by updating the date at the top of this page. Continued use of the site means you accept the current policy.</p>
+    </section>
+  </div>
+
+  <!-- ===== HEBREW ===== -->
+  <div class="lang-section" id="lang-he" dir="rtl">
+    <div class="page-hero">
+      <div class="badge">מדיניות פרטיות</div>
+      <h1>מדיניות פרטיות</h1>
+      <p>עודכן: מאי 2025 · org-va.com</p>
+    </div>
+
+    <section class="block">
+      <h2>📋 מידע כללי</h2>
+      <p><strong>VArt Tools</strong> (org-va.com) מספקת כלי אינטרנט חינמיים לשימוש אישי ומקצועי. אנו מתייחסים ברצינות לפרטיות המשתמשים שלנו.</p>
+      <div class="highlight">אנו לא מוכרים ולא מעבירים את הנתונים האישיים שלך לצדדים שלישיים.</div>
+    </section>
+
+    <section class="block">
+      <h2>📊 נתונים שאנו אוספים</h2>
+      <p>האתר עשוי לאסוף את הנתונים הטכניים הבאים:</p>
+      <ul>
+        <li>כתובת IP ומידע על הדפדפן (דרך Google Analytics, אם מופעל)</li>
+        <li>דפים שביקרת בהם ומשך הביקור</li>
+        <li>סוג המכשיר ומערכת ההפעלה</li>
+        <li>מקור ההפניה (כיצד הגעת לאתר)</li>
+      </ul>
+      <p style="margin-top:12px"><strong>נתונים אישיים</strong> (שם, אימייל, טלפון) — אנו <em>לא</em> מבקשים ולא שומרים.</p>
+    </section>
+
+    <section class="block">
+      <h2>💾 אחסון מקומי (localStorage)</h2>
+      <p>חלק מהכלים באתר שומרים נתונים <strong>רק במכשיר שלך</strong> באמצעות localStorage של הדפדפן — לדוגמה, היסטוריית משמרות בעוקב שעות העבודה. נתונים אלה אינם מועברים אלינו ואינם עוזבים את המכשיר שלך.</p>
+    </section>
+
+    <section class="block">
+      <h2>🍪 עוגיות (Cookies)</h2>
+      <p>אנו משתמשים בעוגיות טכניות לתפקוד תקין של האתר. עוגיות אנליטיות (Google Analytics) עשויות לשמש להבנת תנועת האתר. תוכל להשבית עוגיות בהגדרות הדפדפן שלך.</p>
+    </section>
+
+    <section class="block">
+      <h2>🔗 שירותי צד שלישי</h2>
+      <p>האתר עשוי להשתמש בשירותי צד שלישי הבאים עם מדיניות הפרטיות שלהם:</p>
+      <ul>
+        <li><strong>Google Analytics</strong> — ניתוח תנועה</li>
+        <li><strong>Google AdSense</strong> — פרסום</li>
+        <li><strong>Ko-fi</strong> — תרומות מרצון</li>
+        <li><strong>GitHub Pages</strong> — אחסון</li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>🛡 הזכויות שלך</h2>
+      <p>יש לך זכות:</p>
+      <ul>
+        <li>לבקש מידע על הנתונים שאנו שומרים עליך</li>
+        <li>לבקש מחיקת הנתונים שלך</li>
+        <li>לבטל את איסוף נתוני האנליטיקה</li>
+      </ul>
+      <div class="highlight">לכל שאלה בנושא פרטיות, צור קשר דרך עמוד <a href="contact.html" style="color:var(--accent)">יצירת קשר</a>.</div>
+    </section>
+
+    <section class="block">
+      <h2>📝 עדכוני מדיניות</h2>
+      <p>אנו עשויים לעדכן מדיניות פרטיות זו. לשינויים משמעותיים, נודיע על כך על ידי עדכון התאריך בראש הדף. המשך השימוש באתר משמעו הסכמתך למדיניות הנוכחית.</p>
+    </section>
+  </div>
+
+</main>
+
+<footer>
+  <div>© 2025 VArt Tools · org-va.com</div>
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="about.html">About</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://ko-fi.com/varthur">☕ Ko-fi</a>
+  </div>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.querySelectorAll('.lang-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.lang-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('lang-' + lang).classList.add('active');
+  event.target.classList.add('active');
+  document.documentElement.lang = lang === 'he' ? 'he' : lang === 'en' ? 'en' : 'ru';
+}
+</script>
+</body>
+</html>
