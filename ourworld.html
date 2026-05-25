@@ -1951,242 +1951,592 @@ function uploadPost() {
 </div>
 
 <!-- LIGHTBOX MODAL (fullscreen photo with nav) -->
-<div id="lightbox" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.97);backdrop-filter:blur(10px);align-items:center;justify-content:center;flex-direction:column">
-  <button onclick="closeLightbox()" style="position:absolute;top:14px;right:14px;background:rgba(139,26,26,0.7);border:1px solid var(--crimson);color:var(--bone);width:38px;height:38px;font-size:18px;cursor:pointer;z-index:10">✕</button>
-  <button onclick="lbNav(-1)" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:rgba(139,26,26,0.5);border:1px solid var(--border-goth);color:var(--bone);width:44px;height:44px;font-size:22px;cursor:pointer;z-index:10">‹</button>
-  <button onclick="lbNav(1)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:rgba(139,26,26,0.5);border:1px solid var(--border-goth);color:var(--bone);width:44px;height:44px;font-size:22px;cursor:pointer;z-index:10">›</button>
-  <img id="lightbox-img" src="" style="max-width:92vw;max-height:82vh;object-fit:contain;border:1px solid var(--border-goth);box-shadow:0 0 60px rgba(139,26,26,0.3);transition:filter 0.3s" id="lightbox-img">
-  <!-- photo effects in lightbox -->
-  <div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;justify-content:center;max-width:95vw" id="lb-filters">
-    <button onclick="lbFilt('')" style="padding:5px 12px;background:rgba(139,26,26,0.2);border:1px solid var(--border-goth);color:var(--bone);font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">🌿 Origin</button>
-    <button onclick="lbFilt('sepia(0.4) saturate(1.3)')" style="padding:5px 12px;background:rgba(249,160,63,0.15);border:1px solid rgba(249,160,63,0.3);color:#f9a03f;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">🕯️ Warm</button>
-    <button onclick="lbFilt('grayscale(1) contrast(1.15)')" style="padding:5px 12px;background:rgba(80,80,80,0.2);border:1px solid rgba(80,80,80,0.4);color:#aaa;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">💀 Mono</button>
-    <button onclick="lbFilt('sepia(0.7) contrast(0.85) brightness(0.9)')" style="padding:5px 12px;background:rgba(201,169,110,0.15);border:1px solid rgba(201,169,110,0.3);color:var(--ember);font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">📜 Vintage</button>
-    <button onclick="lbFilt('hue-rotate(180deg) saturate(0.7)')" style="padding:5px 12px;background:rgba(26,26,102,0.3);border:1px solid rgba(68,68,170,0.4);color:#8888ff;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">🌑 Night</button>
-    <button onclick="lbFilt('saturate(2) contrast(1.2)')" style="padding:5px 12px;background:rgba(255,0,102,0.15);border:1px solid rgba(119,0,255,0.3);color:#ff66cc;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">⚡ Vivid</button>
-    <button onclick="lbFilt('invert(1) hue-rotate(180deg)')" style="padding:5px 12px;background:rgba(0,200,200,0.1);border:1px solid rgba(0,200,200,0.3);color:#00cccc;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">🔮 Invert</button>
-    <button onclick="lbFilt('contrast(1.4) saturate(0.3) brightness(0.85)')" style="padding:5px 12px;background:rgba(139,26,26,0.2);border:1px solid rgba(139,26,26,0.4);color:var(--rose);font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">🩸 Gothic</button>
-  </div>
-  <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap;justify-content:center">
-    <span style="font-family:'Cinzel',serif;font-size:9px;color:var(--shadow);letter-spacing:0.1em">☀️</span>
-    <input type="range" min="0" max="200" value="100" id="lb-bright" oninput="lbAdj()" style="width:90px">
-    <span style="font-family:'Cinzel',serif;font-size:9px;color:var(--shadow);letter-spacing:0.1em">◑</span>
-    <input type="range" min="0" max="200" value="100" id="lb-con" oninput="lbAdj()" style="width:90px">
-    <span style="font-family:'Cinzel',serif;font-size:9px;color:var(--shadow);letter-spacing:0.1em">🎨</span>
-    <input type="range" min="0" max="300" value="100" id="lb-sat" oninput="lbAdj()" style="width:90px">
-  </div>
-  <div style="font-family:'Cinzel',serif;font-size:9px;color:var(--dust);margin-top:6px;letter-spacing:0.08em" id="lb-counter"></div>
-</div>
+<!-- ══════════════════════════════════════
+     PROFESSIONAL PHOTO EDITOR MODAL
+══════════════════════════════════════ -->
+<div id="photoEditor" style="display:none;position:fixed;inset:0;z-index:2000;background:#0a0a0f;flex-direction:column;overflow:hidden">
 
-<!-- VIDEO PLAYER MODAL with effects -->
-<div id="videoPlayerModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.97);backdrop-filter:blur(10px);align-items:center;justify-content:center;flex-direction:column">
-  <button onclick="closeVideoPlayer()" style="position:absolute;top:14px;right:14px;background:rgba(139,26,26,0.7);border:1px solid var(--crimson);color:var(--bone);width:38px;height:38px;font-size:18px;cursor:pointer;z-index:10">✕</button>
-  <button onclick="vpNav(-1)" style="position:absolute;left:10px;top:40%;transform:translateY(-50%);background:rgba(139,26,26,0.5);border:1px solid var(--border-goth);color:var(--bone);width:44px;height:44px;font-size:22px;cursor:pointer;z-index:10">‹</button>
-  <button onclick="vpNav(1)" style="position:absolute;right:10px;top:40%;transform:translateY(-50%);background:rgba(139,26,26,0.5);border:1px solid var(--border-goth);color:var(--bone);width:44px;height:44px;font-size:22px;cursor:pointer;z-index:10">›</button>
-  <div style="position:relative;width:95vw;max-width:860px">
-    <video id="videoPlayerEl" controls autoplay style="width:100%;max-height:65vh;background:#000;border:1px solid var(--border-goth);box-shadow:0 0 60px rgba(139,26,26,0.3);transition:filter 0.3s"></video>
+  <!-- TOP BAR -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#111118;border-bottom:1px solid rgba(139,26,26,0.3);flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button onclick="closePhotoEditor()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;line-height:1;padding:2px 6px">✕</button>
+      <span style="font-family:'Cinzel',serif;font-size:12px;color:#c9bfa8;letter-spacing:0.1em">РЕДАКТОР</span>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="peReset()" style="padding:6px 14px;background:none;border:1px solid rgba(139,26,26,0.4);color:#8a8070;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#8b1a1a';this.style.color='#e8e0d4'" onmouseout="this.style.borderColor='rgba(139,26,26,0.4)';this.style.color='#8a8070'">↺ СБРОС</button>
+      <button onclick="peDownload()" style="padding:6px 14px;background:rgba(139,26,26,0.25);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(139,26,26,0.45)'" onmouseout="this.style.background='rgba(139,26,26,0.25)'">⬇ СОХРАНИТЬ</button>
+    </div>
   </div>
-  <!-- video effects -->
-  <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;justify-content:center;max-width:95vw">
-    <button onclick="vpFilt('')" style="padding:5px 12px;background:rgba(139,26,26,0.2);border:1px solid var(--border-goth);color:var(--bone);font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">🎬 Оригинал</button>
-    <button onclick="vpFilt('grayscale(1) contrast(1.1)')" style="padding:5px 12px;background:rgba(60,60,60,0.2);border:1px solid rgba(80,80,80,0.4);color:#aaa;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">🖤 Ч/Б</button>
-    <button onclick="vpFilt('sepia(0.6) contrast(0.9) brightness(0.95)')" style="padding:5px 12px;background:rgba(201,169,110,0.15);border:1px solid rgba(201,169,110,0.3);color:var(--ember);font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">📜 Vintage</button>
-    <button onclick="vpFilt('saturate(1.8) contrast(1.15)')" style="padding:5px 12px;background:rgba(255,0,102,0.15);border:1px solid rgba(119,0,255,0.3);color:#ff66cc;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">⚡ Vivid</button>
-    <button onclick="vpFilt('hue-rotate(180deg) saturate(0.6) brightness(1.1)')" style="padding:5px 12px;background:rgba(26,26,102,0.3);border:1px solid rgba(68,68,170,0.4);color:#8888ff;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">🌑 Night</button>
-    <button onclick="vpFilt('contrast(1.5) saturate(0.2) brightness(0.8) hue-rotate(300deg)')" style="padding:5px 12px;background:rgba(139,26,26,0.2);border:1px solid rgba(139,26,26,0.4);color:var(--rose);font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">🩸 Gothic</button>
-    <button onclick="vpFilt('blur(1px) brightness(1.1) contrast(1.2)')" style="padding:5px 12px;background:rgba(100,200,255,0.1);border:1px solid rgba(100,200,255,0.3);color:#88ddff;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">🌫️ Dream</button>
-    <button onclick="vpFilt('invert(0.85) hue-rotate(180deg)')" style="padding:5px 12px;background:rgba(0,200,200,0.1);border:1px solid rgba(0,200,200,0.3);color:#00cccc;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">🔮 Invert</button>
-  </div>
-  <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap;justify-content:center">
-    <span style="font-family:'Cinzel',serif;font-size:9px;color:var(--shadow);letter-spacing:0.1em">☀️</span>
-    <input type="range" min="0" max="200" value="100" id="vp-bright" oninput="vpAdj()" style="width:90px">
-    <span style="font-family:'Cinzel',serif;font-size:9px;color:var(--shadow);letter-spacing:0.1em">◑</span>
-    <input type="range" min="0" max="200" value="100" id="vp-con" oninput="vpAdj()" style="width:90px">
-    <span style="font-family:'Cinzel',serif;font-size:9px;color:var(--shadow);letter-spacing:0.1em">🎨</span>
-    <input type="range" min="0" max="300" value="100" id="vp-sat" oninput="vpAdj()" style="width:90px">
-  </div>
-  <div style="font-family:'Cinzel',serif;font-size:9px;color:var(--dust);margin-top:6px;letter-spacing:0.08em" id="vp-counter"></div>
-</div>
 
+  <!-- MAIN AREA -->
+  <div style="display:flex;flex:1;overflow:hidden;min-height:0">
+
+    <!-- IMAGE CANVAS AREA -->
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#0a0a0f;position:relative;overflow:hidden;min-width:0" id="peCanvasArea">
+      <img id="peImg" src="" style="max-width:100%;max-height:100%;object-fit:contain;transition:filter 0.15s;display:block" crossorigin="anonymous">
+      <!-- Nav arrows -->
+      <button onclick="peLbNav(-1)" id="peNavL" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.6);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;width:40px;height:40px;font-size:20px;cursor:pointer;display:none">‹</button>
+      <button onclick="peLbNav(1)" id="peNavR" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.6);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;width:40px;height:40px;font-size:20px;cursor:pointer;display:none">›</button>
+      <div id="peCounter" style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:9px;color:rgba(200,180,160,0.6);letter-spacing:0.1em"></div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div style="width:260px;flex-shrink:0;background:#111118;border-left:1px solid rgba(139,26,26,0.25);display:flex;flex-direction:column;overflow:hidden" id="peRightPanel">
+
+      <!-- TABS -->
+      <div style="display:flex;border-bottom:1px solid rgba(139,26,26,0.25);flex-shrink:0">
+        <button class="pe-tab active" id="peTab-filters" onclick="peShowTab('filters')" style="flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid #8b1a1a;color:#c0392b;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s">ФИЛЬТРЫ</button>
+        <button class="pe-tab" id="peTab-adjust" onclick="peShowTab('adjust')" style="flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s">СВЕТ</button>
+        <button class="pe-tab" id="peTab-color" onclick="peShowTab('color')" style="flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s">ЦВЕТ</button>
+        <button class="pe-tab" id="peTab-effects" onclick="peShowTab('effects')" style="flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s">FX</button>
+      </div>
+
+      <!-- SCROLLABLE PANEL CONTENT -->
+      <div style="flex:1;overflow-y:auto;padding:14px 12px" id="pePanelContent">
+
+        <!-- FILTERS TAB -->
+        <div id="pePanel-filters">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="pe-filter-card active" id="pef-0" onclick="peApplyFilter(0,this)" style="cursor:pointer;border:2px solid #8b1a1a;border-radius:3px;overflow:hidden;position:relative">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#1a1a24,#060608);display:flex;align-items:center;justify-content:center;font-size:20px">🌿</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#c9bfa8;letter-spacing:0.06em;background:#111118">Оригинал</div>
+            </div>
+            <div class="pe-filter-card" id="pef-1" onclick="peApplyFilter(1,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#3d2010,#7a4020);display:flex;align-items:center;justify-content:center;font-size:20px">🕯️</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Тепло</div>
+            </div>
+            <div class="pe-filter-card" id="pef-2" onclick="peApplyFilter(2,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#1a1a1a,#3a3a3a);display:flex;align-items:center;justify-content:center;font-size:20px">💀</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Ч/Б</div>
+            </div>
+            <div class="pe-filter-card" id="pef-3" onclick="peApplyFilter(3,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#3d2e10,#7a5a20);display:flex;align-items:center;justify-content:center;font-size:20px">📜</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Vintage</div>
+            </div>
+            <div class="pe-filter-card" id="pef-4" onclick="peApplyFilter(4,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#060622,#1a1a66);display:flex;align-items:center;justify-content:center;font-size:20px">🌑</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Ночь</div>
+            </div>
+            <div class="pe-filter-card" id="pef-5" onclick="peApplyFilter(5,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#330033,#660066);display:flex;align-items:center;justify-content:center;font-size:20px">⚡</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Vivid</div>
+            </div>
+            <div class="pe-filter-card" id="pef-6" onclick="peApplyFilter(6,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#200010,#600030);display:flex;align-items:center;justify-content:center;font-size:20px">🩸</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Gothic</div>
+            </div>
+            <div class="pe-filter-card" id="pef-7" onclick="peApplyFilter(7,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#001a2a,#003355);display:flex;align-items:center;justify-content:center;font-size:20px">🌊</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Cool</div>
+            </div>
+            <div class="pe-filter-card" id="pef-8" onclick="peApplyFilter(8,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#1a0a00,#4a2a00);display:flex;align-items:center;justify-content:center;font-size:20px">🍂</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Autumn</div>
+            </div>
+            <div class="pe-filter-card" id="pef-9" onclick="peApplyFilter(9,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#1a1a2e,#16213e);display:flex;align-items:center;justify-content:center;font-size:20px">🔮</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Invert</div>
+            </div>
+            <div class="pe-filter-card" id="pef-10" onclick="peApplyFilter(10,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#e8e0d4,#c9bfa8);display:flex;align-items:center;justify-content:center;font-size:20px">🌸</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Fade</div>
+            </div>
+            <div class="pe-filter-card" id="pef-11" onclick="peApplyFilter(11,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#002200,#004400);display:flex;align-items:center;justify-content:center;font-size:20px">🌿</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Forest</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADJUST TAB (LIGHT) -->
+        <div id="pePanel-adjust" style="display:none">
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">☀️ ЯРКОСТЬ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-bright">0</span>
+            </div>
+            <input type="range" min="-100" max="100" value="0" id="pe-bright" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">◑ КОНТРАСТ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-con">0</span>
+            </div>
+            <input type="range" min="-100" max="100" value="0" id="pe-con" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">🌅 ТЕНИ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-shadow">0</span>
+            </div>
+            <input type="range" min="-100" max="100" value="0" id="pe-shadow" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">✨ СВЕТА</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-highl">0</span>
+            </div>
+            <input type="range" min="-100" max="100" value="0" id="pe-highl" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">🔍 ЧЁТКОСТЬ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-sharp">0</span>
+            </div>
+            <input type="range" min="-50" max="50" value="0" id="pe-sharp" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">💫 РАЗМЫТИЕ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-blur">0</span>
+            </div>
+            <input type="range" min="0" max="20" value="0" id="pe-blur" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+        </div>
+
+        <!-- COLOR TAB -->
+        <div id="pePanel-color" style="display:none">
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">🎨 НАСЫЩЕННОСТЬ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-sat">0</span>
+            </div>
+            <input type="range" min="-100" max="100" value="0" id="pe-sat" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">🌡️ ТЕМПЕРАТУРА</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-temp">0</span>
+            </div>
+            <input type="range" min="-100" max="100" value="0" id="pe-temp" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">🌈 ТОН (HUE)</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-hue">0°</span>
+            </div>
+            <input type="range" min="-180" max="180" value="0" id="pe-hue" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">🔆 ЯРКОСТЬ ЦВЕТА</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-vib">0</span>
+            </div>
+            <input type="range" min="-100" max="100" value="0" id="pe-vib" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+        </div>
+
+        <!-- EFFECTS TAB -->
+        <div id="pePanel-effects" style="display:none">
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">⭕ ВИНЬЕТКА</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-vign">0</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" id="pe-vign" oninput="peUpdateFx()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">📺 ЗЕРНИСТОСТЬ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-grain">0</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" id="pe-grain" oninput="peUpdateFx()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">🌟 СВЕЧЕНИЕ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-glow">0</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" id="pe-glow" oninput="peUpdateFx()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <!-- Flip/Rotate tools -->
+          <div style="margin-top:16px;border-top:1px solid rgba(139,26,26,0.2);padding-top:14px">
+            <div style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em;margin-bottom:10px">↩ ПОВОРОТ / ОТРАЖЕНИЕ</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <button onclick="peRotate(-90)" style="padding:8px;background:rgba(139,26,26,0.1);border:1px solid rgba(139,26,26,0.3);color:#c9bfa8;font-size:16px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(139,26,26,0.25)'" onmouseout="this.style.background='rgba(139,26,26,0.1)'">↺</button>
+              <button onclick="peRotate(90)" style="padding:8px;background:rgba(139,26,26,0.1);border:1px solid rgba(139,26,26,0.3);color:#c9bfa8;font-size:16px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(139,26,26,0.25)'" onmouseout="this.style.background='rgba(139,26,26,0.1)'">↻</button>
+              <button onclick="peFlip('h')" style="padding:8px;background:rgba(139,26,26,0.1);border:1px solid rgba(139,26,26,0.3);color:#c9bfa8;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(139,26,26,0.25)'" onmouseout="this.style.background='rgba(139,26,26,0.1)'">↔ ОТРАЗИТЬ</button>
+              <button onclick="peFlip('v')" style="padding:8px;background:rgba(139,26,26,0.1);border:1px solid rgba(139,26,26,0.3);color:#c9bfa8;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(139,26,26,0.25)'" onmouseout="this.style.background='rgba(139,26,26,0.1)'">↕ ПЕРЕВЕРНУТЬ</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end scrollable -->
+    </div><!-- end right panel -->
+  </div><!-- end main area -->
+
+  <!-- VIGNETTE OVERLAY -->
+  <div id="peVignOverlay" style="position:absolute;inset:0;pointer-events:none;z-index:1;opacity:0;transition:opacity 0.2s;background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.95) 100%)"></div>
+
+</div><!-- end photoEditor -->
+
+<style>
+.pe-slider-block { margin-bottom:18px; }
+.pe-filter-card:hover { opacity:0.85; }
+.pe-filter-card.active { border-color:#8b1a1a !important; }
+#pePanelContent::-webkit-scrollbar { width:3px; }
+#pePanelContent::-webkit-scrollbar-track { background:#111118; }
+#pePanelContent::-webkit-scrollbar-thumb { background:#8b1a1a; }
+@media (max-width:600px) {
+  #peRightPanel { width:100%; max-height:45vh; }
+  #photoEditor > div:nth-child(2) { flex-direction:column; }
+  #peCanvasArea { min-height:200px; }
+}
+</style>
+
+<!-- ══════════════════════════════════════
+     PROFESSIONAL VIDEO PLAYER MODAL
+══════════════════════════════════════ -->
+<div id="videoPlayerModal" style="display:none;position:fixed;inset:0;z-index:2000;background:#050508;flex-direction:column;overflow:hidden">
+
+  <!-- TOP BAR -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0d0d14;border-bottom:1px solid rgba(139,26,26,0.3);flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button onclick="closeVideoPlayer()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;line-height:1;padding:2px 6px">✕</button>
+      <span style="font-family:'Cinzel',serif;font-size:12px;color:#c9bfa8;letter-spacing:0.1em">ВИДЕОПЛЕЕР</span>
+    </div>
+    <div id="vp-counter" style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.1em"></div>
+  </div>
+
+  <!-- VIDEO -->
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#050508;position:relative;overflow:hidden;min-height:0">
+    <video id="videoPlayerEl" controls autoplay style="max-width:100%;max-height:100%;background:#000;transition:filter 0.2s"></video>
+    <button onclick="vpNav(-1)" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;width:40px;height:40px;font-size:20px;cursor:pointer;z-index:5">‹</button>
+    <button onclick="vpNav(1)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;width:40px;height:40px;font-size:20px;cursor:pointer;z-index:5">›</button>
+  </div>
+
+  <!-- BOTTOM CONTROLS -->
+  <div style="background:#0d0d14;border-top:1px solid rgba(139,26,26,0.25);padding:12px 16px;flex-shrink:0">
+
+    <!-- Filters row -->
+    <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid rgba(139,26,26,0.15)">
+      <button onclick="vpFilt(0,this)" style="flex-shrink:0;padding:5px 12px;background:rgba(139,26,26,0.25);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.08em;cursor:pointer;white-space:nowrap">🎬 Оригинал</button>
+      <button onclick="vpFilt(1,this)" style="flex-shrink:0;padding:5px 12px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.08em;cursor:pointer;white-space:nowrap">🖤 Ч/Б</button>
+      <button onclick="vpFilt(2,this)" style="flex-shrink:0;padding:5px 12px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.08em;cursor:pointer;white-space:nowrap">📜 Vintage</button>
+      <button onclick="vpFilt(3,this)" style="flex-shrink:0;padding:5px 12px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.08em;cursor:pointer;white-space:nowrap">⚡ Vivid</button>
+      <button onclick="vpFilt(4,this)" style="flex-shrink:0;padding:5px 12px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.08em;cursor:pointer;white-space:nowrap">🌑 Ночь</button>
+      <button onclick="vpFilt(5,this)" style="flex-shrink:0;padding:5px 12px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.08em;cursor:pointer;white-space:nowrap">🩸 Gothic</button>
+      <button onclick="vpFilt(6,this)" style="flex-shrink:0;padding:5px 12px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.08em;cursor:pointer;white-space:nowrap">🌫️ Dream</button>
+      <button onclick="vpFilt(7,this)" style="flex-shrink:0;padding:5px 12px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.08em;cursor:pointer;white-space:nowrap">🍂 Autumn</button>
+      <button onclick="vpFilt(8,this)" style="flex-shrink:0;padding:5px 12px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.08em;cursor:pointer;white-space:nowrap">🌊 Cool</button>
+    </div>
+
+    <!-- Sliders row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">☀️ ЯРКОСТЬ</span>
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-bright">0</span>
+        </div>
+        <input type="range" min="-100" max="100" value="0" id="vp-bright" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">◑ КОНТРАСТ</span>
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-con">0</span>
+        </div>
+        <input type="range" min="-100" max="100" value="0" id="vp-con" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">🎨 НАСЫЩ.</span>
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-sat">0</span>
+        </div>
+        <input type="range" min="-100" max="100" value="0" id="vp-sat" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
+      </div>
+    </div>
+
+  </div>
+</div>
 <script>
-// ── Lightbox state ──
-let _lbUrls = [];
-let _lbIdx  = 0;
-let _lbBaseFilt = '';
+// ── Photo Editor state ──
+let _peUrls = [];
+let _peIdx = 0;
+let _peRotation = 0;
+let _peFlipH = false;
+let _peFlipV = false;
+let _peActiveFilter = 0;
+let _peFilterFn = '';
 
-function openLightbox(url){
-  // collect all photo URLs currently visible
-  _lbUrls = Array.from(document.querySelectorAll('#firebase-feed .post-card[data-type="photo"] img'))
-    .map(i=>i.src).filter(Boolean);
-  if(!_lbUrls.length) _lbUrls = [url];
-  _lbIdx = _lbUrls.indexOf(url);
-  if(_lbIdx<0) _lbIdx=0;
-  _lbBaseFilt='';
-  document.getElementById('lb-bright').value=100;
-  document.getElementById('lb-con').value=100;
-  document.getElementById('lb-sat').value=100;
-  _showLb();
-  document.getElementById('lightbox').style.display='flex';
-  document.body.style.overflow='hidden';
-}
-function _showLb(){
-  const img=document.getElementById('lightbox-img');
-  img.src=_lbUrls[_lbIdx];
-  lbAdj();
-  const c=document.getElementById('lb-counter');
-  if(c) c.textContent=(_lbUrls.length>1)?(_lbIdx+1)+' / '+_lbUrls.length:'';
-}
-function lbNav(dir){
-  _lbIdx=(_lbIdx+dir+_lbUrls.length)%_lbUrls.length;
-  _showLb();
-}
-function lbFilt(f){ _lbBaseFilt=f; lbAdj(); }
-function lbAdj(){
-  const img=document.getElementById('lightbox-img');
-  const b=document.getElementById('lb-bright').value;
-  const c=document.getElementById('lb-con').value;
-  const s=document.getElementById('lb-sat').value;
-  img.style.filter=(_lbBaseFilt?_lbBaseFilt+' ':'')+`brightness(${b}%) contrast(${c}%) saturate(${s}%)`;
-}
-function closeLightbox(){
-  document.getElementById('lightbox').style.display='none';
-  document.body.style.overflow='';
-}
-document.getElementById('lightbox').addEventListener('click',function(e){
-  if(e.target===this||e.target===document.getElementById('lightbox-img')) closeLightbox();
-});
+const PE_FILTERS = [
+  '',  // 0 Origin
+  'sepia(0.3) saturate(1.6) hue-rotate(-15deg) brightness(1.05)',  // 1 Warm
+  'grayscale(1) contrast(1.2) brightness(0.95)',                    // 2 Mono
+  'sepia(0.65) contrast(0.88) brightness(0.92) saturate(1.1)',     // 3 Vintage
+  'hue-rotate(210deg) saturate(0.65) brightness(1.05)',            // 4 Night
+  'saturate(2.2) contrast(1.25) brightness(1.05)',                  // 5 Vivid
+  'contrast(1.5) saturate(0.25) brightness(0.82) hue-rotate(300deg)', // 6 Gothic
+  'hue-rotate(195deg) saturate(1.3) brightness(0.95) contrast(1.1)',  // 7 Cool
+  'sepia(0.45) hue-rotate(-20deg) saturate(1.4) contrast(1.05)',   // 8 Autumn
+  'invert(0.9) hue-rotate(180deg) saturate(0.8)',                  // 9 Invert
+  'brightness(1.15) contrast(0.82) saturate(0.6)',                  // 10 Fade
+  'hue-rotate(100deg) saturate(1.5) brightness(0.9) contrast(1.1)', // 11 Forest
+];
 
-// ── Video Player state ──
+const VP_FILTERS = [
+  '',
+  'grayscale(1) contrast(1.15)',
+  'sepia(0.6) contrast(0.9) brightness(0.95)',
+  'saturate(2) contrast(1.2) brightness(1.05)',
+  'hue-rotate(210deg) saturate(0.65) brightness(1.05)',
+  'contrast(1.5) saturate(0.2) brightness(0.8) hue-rotate(300deg)',
+  'blur(1.2px) brightness(1.12) contrast(1.18) saturate(0.85)',
+  'sepia(0.4) hue-rotate(-20deg) saturate(1.3)',
+  'hue-rotate(195deg) saturate(1.2) brightness(0.95)',
+];
+
+function openLightbox(url) {
+  _peUrls = Array.from(document.querySelectorAll('#firebase-feed .post-card[data-type="photo"] img'))
+    .map(i => i.src).filter(Boolean);
+  if (!_peUrls.length) _peUrls = [url];
+  _peIdx = _peUrls.indexOf(url);
+  if (_peIdx < 0) _peIdx = 0;
+  peReset();
+  peLoadImage(_peUrls[_peIdx]);
+  document.getElementById('photoEditor').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  // Show nav if multiple images
+  const navL = document.getElementById('peNavL');
+  const navR = document.getElementById('peNavR');
+  if (_peUrls.length > 1) { if(navL) navL.style.display='block'; if(navR) navR.style.display='block'; }
+  const counter = document.getElementById('peCounter');
+  if (counter) counter.textContent = _peUrls.length > 1 ? (_peIdx+1) + ' / ' + _peUrls.length : '';
+}
+
+function closePhotoEditor() {
+  document.getElementById('photoEditor').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function peLoadImage(url) {
+  const img = document.getElementById('peImg');
+  if (img) { img.src = url; img.style.transform = ''; }
+  _peRotation = 0; _peFlipH = false; _peFlipV = false;
+}
+
+function peLbNav(dir) {
+  _peIdx = (_peIdx + dir + _peUrls.length) % _peUrls.length;
+  peReset();
+  peLoadImage(_peUrls[_peIdx]);
+  const counter = document.getElementById('peCounter');
+  if (counter) counter.textContent = (_peIdx+1) + ' / ' + _peUrls.length;
+}
+
+function peShowTab(tab) {
+  ['filters','adjust','color','effects'].forEach(t => {
+    const panel = document.getElementById('pePanel-' + t);
+    const tabEl = document.getElementById('peTab-' + t);
+    if (panel) panel.style.display = t === tab ? 'block' : 'none';
+    if (tabEl) {
+      tabEl.style.borderBottomColor = t === tab ? '#8b1a1a' : 'transparent';
+      tabEl.style.color = t === tab ? '#c0392b' : '#8a8070';
+    }
+  });
+}
+
+function peApplyFilter(idx, el) {
+  _peActiveFilter = idx;
+  _peFilterFn = PE_FILTERS[idx] || '';
+  document.querySelectorAll('.pe-filter-card').forEach(c => {
+    c.style.borderColor = 'transparent';
+  });
+  if (el) el.style.borderColor = '#8b1a1a';
+  peApplyAll();
+}
+
+function peUpdateAdj() {
+  const vBright = document.getElementById('pe-bright');
+  const vCon    = document.getElementById('pe-con');
+  const vSat    = document.getElementById('pe-sat');
+  const vBlur   = document.getElementById('pe-blur');
+  const vHue    = document.getElementById('pe-hue');
+  const vSharp  = document.getElementById('pe-sharp');
+  const vTemp   = document.getElementById('pe-temp');
+  const vVib    = document.getElementById('pe-vib');
+  const vShadow = document.getElementById('pe-shadow');
+  const vHighl  = document.getElementById('pe-highl');
+
+  // Update displayed values
+  if(vBright) document.getElementById('pe-v-bright').textContent = vBright.value > 0 ? '+'+vBright.value : vBright.value;
+  if(vCon)    document.getElementById('pe-v-con').textContent    = vCon.value > 0 ? '+'+vCon.value : vCon.value;
+  if(vSat)    document.getElementById('pe-v-sat').textContent    = vSat.value > 0 ? '+'+vSat.value : vSat.value;
+  if(vBlur)   document.getElementById('pe-v-blur').textContent   = vBlur.value;
+  if(vHue)    document.getElementById('pe-v-hue').textContent    = vHue.value + '°';
+  if(vSharp)  document.getElementById('pe-v-sharp').textContent  = vSharp.value > 0 ? '+'+vSharp.value : vSharp.value;
+  if(vTemp)   document.getElementById('pe-v-temp').textContent   = vTemp.value > 0 ? '+'+vTemp.value : vTemp.value;
+  if(vVib)    document.getElementById('pe-v-vib').textContent    = vVib.value > 0 ? '+'+vVib.value : vVib.value;
+  if(vShadow) document.getElementById('pe-v-shadow').textContent = vShadow.value > 0 ? '+'+vShadow.value : vShadow.value;
+  if(vHighl)  document.getElementById('pe-v-highl').textContent  = vHighl.value > 0 ? '+'+vHighl.value : vHighl.value;
+
+  peApplyAll();
+}
+
+function peUpdateFx() {
+  const vVign  = document.getElementById('pe-vign');
+  const vGrain = document.getElementById('pe-grain');
+  const vGlow  = document.getElementById('pe-glow');
+  if(vVign)  document.getElementById('pe-v-vign').textContent  = vVign.value;
+  if(vGrain) document.getElementById('pe-v-grain').textContent = vGrain.value;
+  if(vGlow)  document.getElementById('pe-v-glow').textContent  = vGlow.value;
+  // Vignette overlay
+  const overlay = document.getElementById('peVignOverlay');
+  if (overlay && vVign) overlay.style.opacity = vVign.value / 100;
+  peApplyAll();
+}
+
+function peApplyAll() {
+  const img = document.getElementById('peImg');
+  if (!img) return;
+
+  const bright = parseInt(document.getElementById('pe-bright')?.value || 0);
+  const con    = parseInt(document.getElementById('pe-con')?.value || 0);
+  const sat    = parseInt(document.getElementById('pe-sat')?.value || 0);
+  const blur   = parseInt(document.getElementById('pe-blur')?.value || 0);
+  const hue    = parseInt(document.getElementById('pe-hue')?.value || 0);
+  const sharp  = parseInt(document.getElementById('pe-sharp')?.value || 0);
+  const temp   = parseInt(document.getElementById('pe-temp')?.value || 0);
+  const vib    = parseInt(document.getElementById('pe-vib')?.value || 0);
+  const shadow = parseInt(document.getElementById('pe-shadow')?.value || 0);
+  const highl  = parseInt(document.getElementById('pe-highl')?.value || 0);
+  const glow   = parseInt(document.getElementById('pe-glow')?.value || 0);
+
+  // Build CSS filter
+  const b = 1 + (bright + highl * 0.5 - shadow * 0.3) / 100;
+  const c = 1 + (con + sharp * 0.5) / 100;
+  const s = 1 + (sat + vib * 0.5) / 100;
+  const blurV = blur * 0.3;
+  const hueV = hue + (temp > 0 ? -temp * 0.2 : -temp * 0.15);
+  const glowBlur = glow > 0 ? 'drop-shadow(0 0 ' + (glow*0.15) + 'px rgba(255,220,180,' + (glow/150) + '))' : '';
+
+  const adjFilter = [
+    'brightness(' + Math.max(0.1, b) + ')',
+    'contrast(' + Math.max(0.1, c) + ')',
+    'saturate(' + Math.max(0, s) + ')',
+    blurV > 0 ? 'blur(' + blurV + 'px)' : '',
+    hueV !== 0 ? 'hue-rotate(' + hueV + 'deg)' : '',
+    glowBlur
+  ].filter(Boolean).join(' ');
+
+  const combined = [_peFilterFn, adjFilter].filter(Boolean).join(' ');
+
+  // Apply transform (rotation + flip)
+  const scaleX = _peFlipH ? -1 : 1;
+  const scaleY = _peFlipV ? -1 : 1;
+  img.style.filter = combined;
+  img.style.transform = 'rotate(' + _peRotation + 'deg) scale(' + scaleX + ',' + scaleY + ')';
+}
+
+function peRotate(deg) {
+  _peRotation = (_peRotation + deg) % 360;
+  peApplyAll();
+}
+
+function peFlip(dir) {
+  if (dir === 'h') _peFlipH = !_peFlipH;
+  else _peFlipV = !_peFlipV;
+  peApplyAll();
+}
+
+function peReset() {
+  const sliders = ['pe-bright','pe-con','pe-sat','pe-blur','pe-hue','pe-sharp','pe-temp','pe-vib','pe-shadow','pe-highl','pe-vign','pe-grain','pe-glow'];
+  sliders.forEach(id => { const el = document.getElementById(id); if(el) el.value = (id==='pe-blur'||id==='pe-vign'||id==='pe-grain'||id==='pe-glow') ? 0 : 0; });
+  const labels = ['pe-v-bright','pe-v-con','pe-v-sat','pe-v-blur','pe-v-hue','pe-v-sharp','pe-v-temp','pe-v-vib','pe-v-shadow','pe-v-highl','pe-v-vign','pe-v-grain','pe-v-glow'];
+  labels.forEach(id => { const el = document.getElementById(id); if(el) el.textContent = id==='pe-v-hue'?'0°':'0'; });
+  _peActiveFilter = 0; _peFilterFn = ''; _peRotation = 0; _peFlipH = false; _peFlipV = false;
+  document.querySelectorAll('.pe-filter-card').forEach((c,i) => { c.style.borderColor = i===0 ? '#8b1a1a' : 'transparent'; });
+  const overlay = document.getElementById('peVignOverlay');
+  if (overlay) overlay.style.opacity = 0;
+  peApplyAll();
+}
+
+function peDownload() {
+  const img = document.getElementById('peImg');
+  if (!img) return;
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.filter = img.style.filter || 'none';
+  ctx.drawImage(img, 0, 0);
+  const a = document.createElement('a');
+  a.download = 'ourworld-' + Date.now() + '.jpg';
+  a.href = canvas.toDataURL('image/jpeg', 0.92);
+  a.click();
+  toast('Фото сохранено!', 's');
+}
+
+// ── Video Player ──
 let _vpUrls = [];
 let _vpIdx  = 0;
 let _vpBaseFilt = '';
 
-function openVideoPlayer(url){
-  _vpUrls = Array.from(document.querySelectorAll('#firebase-feed .post-card[data-type="video"] video, #firebase-feed .post-card[data-type="podcast"] video'))
-    .map(v=>v.src).filter(Boolean);
-  if(!_vpUrls.length) _vpUrls=[url];
-  _vpIdx=_vpUrls.indexOf(url);
-  if(_vpIdx<0){ _vpUrls=[url]; _vpIdx=0; }
-  _vpBaseFilt='';
-  document.getElementById('vp-bright').value=100;
-  document.getElementById('vp-con').value=100;
-  document.getElementById('vp-sat').value=100;
-  _showVp();
-  document.getElementById('videoPlayerModal').style.display='flex';
-  document.body.style.overflow='hidden';
-}
-function _showVp(){
-  const v=document.getElementById('videoPlayerEl');
-  v.src=_vpUrls[_vpIdx]; v.load(); v.play().catch(()=>{});
-  vpAdj();
-  const c=document.getElementById('vp-counter');
-  if(c) c.textContent=(_vpUrls.length>1)?(_vpIdx+1)+' / '+_vpUrls.length:'';
-}
-function vpNav(dir){
-  const v=document.getElementById('videoPlayerEl');
-  v.pause();
-  _vpIdx=(_vpIdx+dir+_vpUrls.length)%_vpUrls.length;
-  _showVp();
-}
-function vpFilt(f){ _vpBaseFilt=f; vpAdj(); }
-function vpAdj(){
-  const v=document.getElementById('videoPlayerEl');
-  const b=document.getElementById('vp-bright').value;
-  const c=document.getElementById('vp-con').value;
-  const s=document.getElementById('vp-sat').value;
-  v.style.filter=(_vpBaseFilt?_vpBaseFilt+' ':'')+`brightness(${b}%) contrast(${c}%) saturate(${s}%)`;
-}
-function closeVideoPlayer(){
-  const v=document.getElementById('videoPlayerEl');
-  v.pause(); v.src='';
-  document.getElementById('videoPlayerModal').style.display='none';
-  document.body.style.overflow='';
-}
-document.getElementById('videoPlayerModal').addEventListener('click',function(e){
-  if(e.target===this) closeVideoPlayer();
-});
-
-// ── Firebase filter helpers ──
-const _fbFilters = {};
-function applyFiltFb(id, filt, el){
-  _fbFilters[id] = _fbFilters[id] || {base:'', bright:100, con:100, sat:100, blur:0};
-  _fbFilters[id].base = filt;
-  _rebuildFb(id);
-  const fs = document.getElementById('fs-'+id);
-  if(fs) fs.querySelectorAll('.filter-vial').forEach(v=>v.classList.remove('active'));
-  if(el) el.classList.add('active');
-}
-function adjFiltFb(inp, prop, id, valId, unit, wrap){
-  _fbFilters[id] = _fbFilters[id] || {base:'',bright:100,con:100,sat:100,blur:0};
-  const map={brightness:'bright',contrast:'con',saturate:'sat',blur:'blur'};
-  _fbFilters[id][map[prop]] = parseFloat(inp.value);
-  document.getElementById(valId).textContent = inp.value + unit;
-  _rebuildFb(id);
-}
-function _rebuildFb(id){
-  const img = document.getElementById('img-fb-'+id);
-  if(!img) return;
-  const f = _fbFilters[id]||{};
-  const base = f.base||'';
-  const adj = `brightness(${f.bright||100}%) contrast(${f.con||100}%) saturate(${f.sat||100}%) blur(${f.blur||0}px)`;
-  img.style.filter = base ? base+' '+adj : adj;
-}
-
-// ── Carousel ──
-let _feedAllPosts = [];
-let _activeFilter = 'all';
-
-function filterFeed(type, el){
-  _activeFilter = type;
-  document.querySelectorAll('.filter-rune').forEach(r=>r.classList.remove('active'));
-  if(el) el.classList.add('active');
-  renderCarousel();
-}
-
-function renderCarousel(){
-  const feed = document.getElementById('firebase-feed');
-  if(!feed) return;
-  const demo = document.getElementById('demo-feed');
-  const posts = _activeFilter==='all' ? _feedAllPosts : _feedAllPosts.filter(p=>p.type===_activeFilter);
-  feed.innerHTML='';
-  if(!_feedAllPosts.length){
-    if(demo) demo.style.display='';
-    return;
-  }
-  if(demo) demo.style.display='none';
-  if(!posts.length){
-    feed.innerHTML=`<div style="text-align:center;padding:40px 20px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.1em;color:var(--shadow)">Свитков пока нет...</div>`;
-    return;
-  }
-  posts.forEach(p=>{
-    const card = window.buildPostCard(p.id, p);
-    feed.appendChild(card);
+function openVideoPlayer(url) {
+  _vpUrls = Array.from(document.querySelectorAll('#firebase-feed .post-card[data-type="video"] video'))
+    .map(v => v.src).filter(Boolean);
+  if (!_vpUrls.length) _vpUrls = [url];
+  _vpIdx = _vpUrls.indexOf(url);
+  if (_vpIdx < 0) _vpIdx = 0;
+  const v = document.getElementById('videoPlayerEl');
+  if (v) { v.src = _vpUrls[_vpIdx]; v.style.filter = ''; }
+  document.querySelectorAll('#videoPlayerModal button[onclick^="vpFilt"]').forEach((b,i) => {
+    b.style.background = i===0 ? 'rgba(139,26,26,0.25)' : 'none';
+    b.style.borderColor = i===0 ? '#8b1a1a' : 'rgba(139,26,26,0.3)';
+    b.style.color = i===0 ? '#e8e0d4' : '#8a8070';
   });
-  const sp = document.getElementById('stPosts');
-  if(sp) sp.textContent = _feedAllPosts.length;
+  ['vp-bright','vp-con','vp-sat'].forEach(id => { const el = document.getElementById(id); if(el) el.value = 0; });
+  ['vp-v-bright','vp-v-con','vp-v-sat'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '0'; });
+  const counter = document.getElementById('vp-counter');
+  if (counter) counter.textContent = _vpUrls.length > 1 ? (_vpIdx+1) + ' / ' + _vpUrls.length : '';
+  document.getElementById('videoPlayerModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
 }
 
-// Show Ko-fi float button when in app
-function showKofiFloat(){ document.getElementById('kofi-float').style.display='block'; }
+function closeVideoPlayer() {
+  const v = document.getElementById('videoPlayerEl');
+  if (v) { v.pause(); v.src = ''; }
+  document.getElementById('videoPlayerModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
 
-// Add legal link to bottom nav area
-document.addEventListener('DOMContentLoaded', function(){
-  const bar = document.getElementById('copyright-bar');
-  if(bar){
-    const link = document.createElement('span');
-    link.innerHTML = ' · <a id="legal-link" style="color:rgba(201,169,110,0.8);cursor:pointer;text-decoration:underline">Правовое уведомление</a>';
-    bar.appendChild(link);
+function vpNav(dir) {
+  _vpIdx = (_vpIdx + dir + _vpUrls.length) % _vpUrls.length;
+  const v = document.getElementById('videoPlayerEl');
+  if (v) v.src = _vpUrls[_vpIdx];
+  const counter = document.getElementById('vp-counter');
+  if (counter) counter.textContent = (_vpIdx+1) + ' / ' + _vpUrls.length;
+}
+
+function vpFilt(idx, btn) {
+  _vpBaseFilt = VP_FILTERS[idx] || '';
+  document.querySelectorAll('#videoPlayerModal button[onclick^="vpFilt"]').forEach(b => {
+    b.style.background = 'none';
+    b.style.borderColor = 'rgba(139,26,26,0.3)';
+    b.style.color = '#8a8070';
+  });
+  if (btn) { btn.style.background='rgba(139,26,26,0.25)'; btn.style.borderColor='#8b1a1a'; btn.style.color='#e8e0d4'; }
+  vpAdj();
+}
+
+function vpAdj() {
+  const bright = parseInt(document.getElementById('vp-bright')?.value || 0);
+  const con    = parseInt(document.getElementById('vp-con')?.value || 0);
+  const sat    = parseInt(document.getElementById('vp-sat')?.value || 0);
+  document.getElementById('vp-v-bright').textContent = bright > 0 ? '+'+bright : bright;
+  document.getElementById('vp-v-con').textContent    = con > 0 ? '+'+con : con;
+  document.getElementById('vp-v-sat').textContent    = sat > 0 ? '+'+sat : sat;
+  const adjFilt = 'brightness(' + (1+bright/100) + ') contrast(' + (1+con/100) + ') saturate(' + (1+sat/100) + ')';
+  const combined = [_vpBaseFilt, adjFilt].filter(Boolean).join(' ');
+  const v = document.getElementById('videoPlayerEl');
+  if (v) v.style.filter = combined;
+}
+
+// Close editors on Escape
+document.addEventListener('keydown', function(e) {
+  if ((e.key || '') === 'Escape') {
+    closePhotoEditor();
+    closeVideoPlayer();
   }
 });
-
-// Delegated click for legal link (added dynamically)
-document.addEventListener('click', function(e){
-  if(e.target && e.target.id==='legal-link'){
-    e.preventDefault();
-    openModal('legal');
-  }
-});
-
 
 // ── THEME TOGGLE ──
 function toggleTheme() {
