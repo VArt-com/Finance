@@ -892,7 +892,7 @@ document.addEventListener('contextmenu', function(e){
 // Block Ctrl+S, Ctrl+P, Ctrl+U, F12
 document.addEventListener('keydown', function(e){
   const ctrl = e.ctrlKey || e.metaKey;
-  const k = e.key.toLowerCase();
+  const k = (e.key || '').toLowerCase();
   if(ctrl && ['s','p','u'].includes(k)){ e.preventDefault(); if(typeof toast==='function') toast('Сохранение запрещено 🔒','e'); return false; }
   if(e.key==='F12'){ e.preventDefault(); return false; }
 });
@@ -1852,6 +1852,7 @@ function buildPostCard(id, d) {
     </div>`;
   return card;
 }
+window.buildPostCard = buildPostCard;
 </script>
 
 <script>
@@ -2158,7 +2159,7 @@ function renderCarousel(){
     return;
   }
   posts.forEach(p=>{
-    const card = buildPostCard(p.id, p);
+    const card = window.buildPostCard(p.id, p);
     feed.appendChild(card);
   });
   const sp = document.getElementById('stPosts');
