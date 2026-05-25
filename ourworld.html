@@ -2230,214 +2230,110 @@ function switchLivePanel(p) {
 }
 
 // ═══════════════════════════
-//  VIDEO CALL (WebRTC)
+//  VIDEO CALL (Daily.co)
 // ═══════════════════════════
-let _pc = null;           // RTCPeerConnection
-let _localStream = null;
-let _micOn = true;
-let _camOn = true;
-let _callCode = null;
-let _callInterval = null;
+const DAILY_API_KEY = "9271c105c002ff168cf09e26a3bd656479cb7d792a9e5dccef69fe8f52a9c5d0";
+let _dailyRoomUrl = null;
 
-const ICE_SERVERS = { iceServers: [
-  { urls: 'stun:stun.l.google.com:19302' },
-  { urls: 'stun:stun1.l.google.com:19302' }
-]};
+async function createDailyRoom() {
+  const btn = document.getElementById('btnCreateRoom');
+  if (btn) btn.textContent = '⏳ Создаём...';
+  setCallStatus('Создаём комнату...');
 
-function genCode() {
-  return Math.random().toString(36).substring(2,8).toUpperCase();
-}
-
-async function getLocalStream() {
-  if (_localStream) return _localStream;
   try {
-    _localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    const lv = document.getElementById('localVideo');
-    const lp = document.getElementById('localPlaceholder');
-    if (lv) { lv.srcObject = _localStream; lv.style.display = 'block'; }
-    if (lp) lp.style.display = 'none';
-    return _localStream;
+    // Create room via Daily.co REST API
+    const resp = await fetch('https://api.daily.co/v1/rooms', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + DAILY_API_KEY
+      },
+      body: JSON.stringify({
+        properties: {
+          enable_chat: true,
+          enable_knocking: false,
+          exp: Math.floor(Date.now()/1000) + 3600 // 1 hour
+        }
+      })
+    });
+
+    if (!resp.ok) throw new Error('API error: ' + resp.status);
+    const room = await resp.json();
+    _dailyRoomUrl = room.url;
+
+    // Show room link
+    const codeArea = document.getElementById('callCodeArea');
+    const codeDisp = document.getElementById('callCodeDisplay');
+    if (codeArea) codeArea.style.display = 'block';
+    if (codeDisp) codeDisp.textContent = _dailyRoomUrl;
+    if (btn) btn.textContent = '🔑 Создать комнату';
+    setCallStatus('✅ Комната готова! Скопируй ссылку и отправь собеседнику');
+
+    // Open call in iframe
+    openDailyIframe(_dailyRoomUrl);
+    toast('Комната создана!', 's');
+
   } catch(e) {
-    toast('Нет доступа к камере/микрофону: ' + e.message, 'e');
-    return null;
+    if (btn) btn.textContent = '🔑 Создать комнату';
+    setCallStatus('❌ Ошибка: ' + e.message);
+    toast('Ошибка создания комнаты: ' + e.message, 'e');
   }
 }
 
-async function createRoom() {
-  const stream = await getLocalStream();
-  if (!stream) return;
-
-  _callCode = genCode();
-  const codeArea = document.getElementById('callCodeArea');
-  const codeDisp = document.getElementById('callCodeDisplay');
-  if (codeArea) codeArea.style.display = 'block';
-  if (codeDisp) codeDisp.textContent = _callCode;
-  setCallStatus('🔑 Комната создана. Отправь код собеседнику: ' + _callCode);
-
-  _pc = new RTCPeerConnection(ICE_SERVERS);
-  stream.getTracks().forEach(t => _pc.addTrack(t, stream));
-
-  _pc.ontrack = e => {
-    const rv = document.getElementById('remoteVideo');
-    const rp = document.getElementById('remotePlaceholder');
-    if (rv) { rv.srcObject = e.streams[0]; rv.style.display = 'block'; }
-    if (rp) rp.style.display = 'none';
-    setCallStatus('✅ Соединение установлено!');
-  };
-
-  _pc.onicecandidate = e => {
-    if (e.candidate && typeof window._fbUpload !== 'undefined') {
-      // Store ICE candidate in Firestore for signaling
-      saveSignal(_callCode, 'caller-ice', JSON.stringify(e.candidate));
-    }
-  };
-
-  const offer = await _pc.createOffer();
-  await _pc.setLocalDescription(offer);
-  saveSignal(_callCode, 'offer', JSON.stringify(offer));
-
-  // Show end button
-  const btnEnd = document.getElementById('btnEndCall');
-  if (btnEnd) btnEnd.style.display = 'inline-flex';
-
-  // Poll for answer
-  _callInterval = setInterval(() => pollSignal(_callCode, 'answer', handleAnswer), 2000);
-  toast('Комната создана! Код: ' + _callCode, 's');
-}
-
-async function joinCall() {
+function joinByLink() {
   const inp = document.getElementById('joinCodeInput');
-  const code = inp?.value.trim().toUpperCase();
-  if (!code || code.length < 4) { toast('Введи код комнаты', 'e'); return; }
-
-  const stream = await getLocalStream();
-  if (!stream) return;
-
-  _callCode = code;
-  setCallStatus('⏳ Подключаемся к комнате ' + code + '...');
-
-  _pc = new RTCPeerConnection(ICE_SERVERS);
-  stream.getTracks().forEach(t => _pc.addTrack(t, stream));
-
-  _pc.ontrack = e => {
-    const rv = document.getElementById('remoteVideo');
-    const rp = document.getElementById('remotePlaceholder');
-    if (rv) { rv.srcObject = e.streams[0]; rv.style.display = 'block'; }
-    if (rp) rp.style.display = 'none';
-    setCallStatus('✅ Соединение установлено!');
-  };
-
-  _pc.onicecandidate = e => {
-    if (e.candidate) saveSignal(code, 'callee-ice', JSON.stringify(e.candidate));
-  };
-
-  // Poll for offer
-  pollSignal(code, 'offer', async (offerStr) => {
-    const offer = JSON.parse(offerStr);
-    await _pc.setRemoteDescription(offer);
-    const answer = await _pc.createAnswer();
-    await _pc.setLocalDescription(answer);
-    saveSignal(code, 'answer', JSON.stringify(answer));
-    // Poll for ICE
-    _callInterval = setInterval(() => pollSignal(code, 'caller-ice', async (iceStr) => {
-      try { await _pc.addIceCandidate(JSON.parse(iceStr)); } catch(e){}
-    }), 2000);
-    setCallStatus('✅ Подключено! Ожидание видео...');
-    const btnEnd = document.getElementById('btnEndCall');
-    if (btnEnd) btnEnd.style.display = 'inline-flex';
-  });
-
-  toast('Подключаемся...', 'i');
+  const url = inp?.value.trim();
+  if (!url || !url.includes('daily.co')) {
+    toast('Вставь ссылку от собеседника (daily.co/...)', 'e');
+    return;
+  }
+  _dailyRoomUrl = url;
+  openDailyIframe(url);
 }
 
-async function handleAnswer(answerStr) {
-  if (!_pc || _pc.signalingState === 'stable') return;
-  try {
-    const answer = JSON.parse(answerStr);
-    await _pc.setRemoteDescription(answer);
-  } catch(e) { console.warn(e); }
+function openDailyIframe(url) {
+  const container = document.getElementById('dailyCallContainer');
+  const frame = document.getElementById('dailyFrame');
+  const preCall = document.getElementById('dailyPreCall');
+  const inCall = document.getElementById('dailyInCall');
+
+  if (frame) frame.src = url;
+  if (container) container.style.display = 'block';
+  if (preCall) preCall.style.display = 'none';
+  if (inCall) inCall.style.display = 'block';
+  setCallStatus('📹 Звонок активен');
 }
+
+function endDailyCall() {
+  const container = document.getElementById('dailyCallContainer');
+  const frame = document.getElementById('dailyFrame');
+  const preCall = document.getElementById('dailyPreCall');
+  const inCall = document.getElementById('dailyInCall');
+  const codeArea = document.getElementById('callCodeArea');
+
+  if (frame) frame.src = '';
+  if (container) container.style.display = 'none';
+  if (preCall) preCall.style.display = 'block';
+  if (inCall) inCall.style.display = 'none';
+  if (codeArea) codeArea.style.display = 'none';
+  setCallStatus('Звонок завершён');
+  _dailyRoomUrl = null;
+  toast('Звонок завершён', 'i');
+}
+
+// endCall alias for modal close
+function endCall() { endDailyCall(); }
 
 function setCallStatus(msg) {
   const el = document.getElementById('callStatus');
   if (el) el.innerHTML = msg;
 }
 
-function endCall() {
-  if (_callInterval) { clearInterval(_callInterval); _callInterval = null; }
-  if (_pc) { _pc.close(); _pc = null; }
-  if (_localStream) {
-    _localStream.getTracks().forEach(t => t.stop());
-    _localStream = null;
-  }
-  const lv = document.getElementById('localVideo');
-  const rv = document.getElementById('remoteVideo');
-  const lp = document.getElementById('localPlaceholder');
-  const rp = document.getElementById('remotePlaceholder');
-  if (lv) { lv.srcObject = null; lv.style.display = 'none'; }
-  if (rv) { rv.srcObject = null; rv.style.display = 'none'; }
-  if (lp) lp.style.display = 'flex';
-  if (rp) rp.style.display = 'flex';
-  const btnEnd = document.getElementById('btnEndCall');
-  if (btnEnd) btnEnd.style.display = 'none';
-  const codeArea = document.getElementById('callCodeArea');
-  if (codeArea) codeArea.style.display = 'none';
-  setCallStatus('Звонок завершён');
-  _callCode = null;
-}
-
-function toggleMic() {
-  if (!_localStream) return;
-  _micOn = !_micOn;
-  _localStream.getAudioTracks().forEach(t => t.enabled = _micOn);
-  const btn = document.getElementById('btnMicToggle');
-  if (btn) {
-    btn.textContent = _micOn ? '🎤 Микр. вкл' : '🔇 Микр. выкл';
-    btn.className = _micOn ? 'ctrl-btn active-ctrl' : 'ctrl-btn';
-  }
-}
-
-function toggleCam() {
-  if (!_localStream) return;
-  _camOn = !_camOn;
-  _localStream.getVideoTracks().forEach(t => t.enabled = _camOn);
-  const btn = document.getElementById('btnCamToggle');
-  if (btn) {
-    btn.textContent = _camOn ? '📹 Камера вкл' : '📷 Камера выкл';
-    btn.className = _camOn ? 'ctrl-btn active-ctrl' : 'ctrl-btn';
-  }
-}
-
 function copyCallCode() {
-  if (!_callCode) return;
-  navigator.clipboard.writeText(_callCode).then(() => toast('Код скопирован: ' + _callCode, 's')).catch(() => {
-    toast('Код: ' + _callCode, 'i');
-  });
-}
-
-// Minimal Firestore signaling (uses existing Firebase instance)
-const _signals = {};
-async function saveSignal(code, type, data) {
-  try {
-    if (window._firestoreDB) {
-      const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-      await setDoc(doc(window._firestoreDB, 'signals', code + '_' + type), { data, ts: Date.now() });
-    }
-  } catch(e) { console.warn('Signal save:', e); }
-}
-let _pollCache = {};
-async function pollSignal(code, type, cb) {
-  try {
-    if (window._firestoreDB) {
-      const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-      const snap = await getDoc(doc(window._firestoreDB, 'signals', code + '_' + type));
-      if (snap.exists()) {
-        const key = code + '_' + type;
-        const d = snap.data().data;
-        if (_pollCache[key] !== d) { _pollCache[key] = d; cb(d); }
-      }
-    }
-  } catch(e) {}
+  if (!_dailyRoomUrl) return;
+  navigator.clipboard.writeText(_dailyRoomUrl)
+    .then(() => toast('Ссылка скопирована!', 's'))
+    .catch(() => toast('Ссылка: ' + _dailyRoomUrl, 'i'));
 }
 
 // ═══════════════════════════
@@ -2697,50 +2593,48 @@ function publishPodcast(url, btn) {
       <button class="live-tab" id="ltab-podcast" onclick="switchLivePanel('podcast')">🎙️ Подкаст</button>
     </div>
 
-    <!-- ── VIDEO CALL PANEL ── -->
+    <!-- ── VIDEO CALL PANEL (Daily.co) ── -->
     <div class="live-panel active" id="lpanel-call">
-      <div class="video-grid">
-        <div class="video-box">
-          <video id="localVideo" autoplay muted playsinline></video>
-          <div class="video-label">Вы</div>
-          <div class="video-placeholder" id="localPlaceholder">
-            <div class="vp-icon">📹</div>
-            <span>Ваша камера</span>
-          </div>
+
+      <!-- Daily.co iframe container -->
+      <div id="dailyCallContainer" style="display:none;position:relative;width:100%;aspect-ratio:16/9;background:var(--crypt);border:1px solid var(--border-goth);margin-bottom:14px;overflow:hidden">
+        <iframe id="dailyFrame"
+          allow="camera; microphone; fullscreen; display-capture"
+          style="width:100%;height:100%;border:none">
+        </iframe>
+      </div>
+
+      <!-- Pre-call UI -->
+      <div id="dailyPreCall">
+        <div class="live-status" id="callStatus" style="margin-bottom:14px">
+          Создай комнату или введи ссылку от собеседника
         </div>
-        <div class="video-box">
-          <video id="remoteVideo" autoplay playsinline></video>
-          <div class="video-label">Собеседник</div>
-          <div class="video-placeholder" id="remotePlaceholder">
-            <div class="vp-icon">👤</div>
-            <span>Ожидание...</span>
-          </div>
+
+        <!-- Room link display after creation -->
+        <div class="call-code-area" id="callCodeArea" style="display:none">
+          <div id="callCodeDisplay" style="font-family:'Cinzel',serif;font-size:11px;color:var(--ember);word-break:break-all;letter-spacing:0.05em;margin-bottom:8px"></div>
+          <div class="code-hint">Отправь эту ссылку собеседнику в WhatsApp/Telegram</div>
+          <button class="ctrl-btn" style="margin-top:8px" onclick="copyCallCode()">📋 Копировать ссылку</button>
+        </div>
+
+        <!-- Join by link -->
+        <div class="code-input-row" style="margin-bottom:14px">
+          <input class="gothic-input-sm" id="joinCodeInput" placeholder="Вставь ссылку от собеседника..." style="font-size:11px;text-transform:none">
+          <button class="ctrl-btn" onclick="joinByLink()">Войти</button>
+        </div>
+
+        <div class="live-controls">
+          <button class="ctrl-btn" id="btnCreateRoom" onclick="createDailyRoom()">🔑 Создать комнату</button>
         </div>
       </div>
 
-      <div class="live-status" id="callStatus">
-        <span>Нажмите «Создать комнату» или введите код</span>
+      <!-- In-call controls -->
+      <div id="dailyInCall" style="display:none">
+        <div class="live-controls">
+          <button class="ctrl-btn danger" onclick="endDailyCall()">📵 Завершить звонок</button>
+        </div>
       </div>
 
-      <!-- Room code display -->
-      <div class="call-code-area" id="callCodeArea" style="display:none">
-        <div class="code-display" id="callCodeDisplay">------</div>
-        <div class="code-hint">Отправь этот код собеседнику</div>
-        <button class="ctrl-btn" style="margin-top:8px" onclick="copyCallCode()">📋 Копировать код</button>
-      </div>
-
-      <!-- Join with code -->
-      <div class="code-input-row">
-        <input class="gothic-input-sm" id="joinCodeInput" placeholder="Введи код комнаты..." maxlength="6">
-        <button class="ctrl-btn" onclick="joinCall()">Войти</button>
-      </div>
-
-      <div class="live-controls">
-        <button class="ctrl-btn" id="btnCreateRoom" onclick="createRoom()">🔑 Создать комнату</button>
-        <button class="ctrl-btn active-ctrl" id="btnMicToggle" onclick="toggleMic()">🎤 Микр. вкл</button>
-        <button class="ctrl-btn active-ctrl" id="btnCamToggle" onclick="toggleCam()">📹 Камера вкл</button>
-        <button class="ctrl-btn danger" id="btnEndCall" onclick="endCall()" style="display:none">📵 Завершить</button>
-      </div>
     </div>
 
     <!-- ── STREAM PANEL ── -->
