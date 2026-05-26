@@ -1012,24 +1012,12 @@ function showKofiFloat(){
             <span>Наш день</span>
           </div>
         </div>
-        <div class="filter-scroll">
-          <div class="filter-vial active" onclick="applyFilt('pm1','',this)"><div class="vial-glass">🌿</div><div class="vial-name">Origin</div></div>
-          <div class="filter-vial" onclick="applyFilt('pm1','sepia(0.4) saturate(1.3) hue-rotate(-10deg)',this)"><div class="vial-glass" style="background:linear-gradient(135deg,#f9a03f55,#f7c56755)">🕯️</div><div class="vial-name">Warm</div></div>
-          <div class="filter-vial" onclick="applyFilt('pm1','grayscale(1) contrast(1.15)',this)"><div class="vial-glass" style="background:linear-gradient(135deg,#55555555,#11111155)">💀</div><div class="vial-name">Mono</div></div>
-          <div class="filter-vial" onclick="applyFilt('pm1','sepia(0.7) contrast(0.85) brightness(0.9)',this)"><div class="vial-glass" style="background:linear-gradient(135deg,#c9a96e55,#8b5e3c55)">📜</div><div class="vial-name">Vintage</div></div>
-          <div class="filter-vial" onclick="applyFilt('pm1','hue-rotate(180deg) saturate(0.7) brightness(1.1)',this)"><div class="vial-glass" style="background:linear-gradient(135deg,#1a1a6655,#4444aa55)">🌑</div><div class="vial-name">Night</div></div>
-          <div class="filter-vial" onclick="applyFilt('pm1','saturate(2) contrast(1.2) brightness(1.05)',this)"><div class="vial-glass" style="background:linear-gradient(135deg,#ff006655,#7700ff55)">⚡</div><div class="vial-name">Vivid</div></div>
-        </div>
-        <div class="tools-grimoire">
-          <button class="tool-rune" onclick="toggleSlider('s1-bright')"><span class="rune-glyph">☀️</span><span class="rune-name" data-i18n="t_bright">Яркость</span></button>
-          <button class="tool-rune" onclick="toggleSlider('s1-con')"><span class="rune-glyph">◑</span><span class="rune-name" data-i18n="t_con">Контраст</span></button>
-          <button class="tool-rune" onclick="toggleSlider('s1-sat')"><span class="rune-glyph">🎨</span><span class="rune-name" data-i18n="t_sat">Насыщ.</span></button>
-          <button class="tool-rune" onclick="toggleSlider('s1-blur')"><span class="rune-glyph">💫</span><span class="rune-name" data-i18n="t_blur">Размытие</span></button>
-        </div>
-        <div id="s1-bright" class="slider-scroll dn"><div class="slider-row"><span data-i18n="t_bright">Яркость</span><span id="v1-bright">100%</span></div><input type="range" min="0" max="200" value="100" oninput="adjFilt(this,'brightness','pm1','v1-bright','%')"></div>
-        <div id="s1-con" class="slider-scroll dn"><div class="slider-row"><span data-i18n="t_con">Контраст</span><span id="v1-con">100%</span></div><input type="range" min="0" max="200" value="100" oninput="adjFilt(this,'contrast','pm1','v1-con','%')"></div>
-        <div id="s1-sat" class="slider-scroll dn"><div class="slider-row"><span data-i18n="t_sat">Насыщенность</span><span id="v1-sat">100%</span></div><input type="range" min="0" max="300" value="100" oninput="adjFilt(this,'saturate','pm1','v1-sat','%')"></div>
-        <div id="s1-blur" class="slider-scroll dn"><div class="slider-row"><span data-i18n="t_blur">Размытие</span><span id="v1-blur">0px</span></div><input type="range" min="0" max="10" value="0" oninput="adjFilt(this,'blur','pm1','v1-blur','px',true)"></div>
+        
+        
+        
+        
+        
+        
         <div class="post-body">
           <p class="post-caption">Сегодня гуляли 🌿 Купили всё для ужина — будет что-то особенное!</p>
           <div class="post-sigils"><span class="post-sigil">#нашжизнь</span><span class="post-sigil">#вместе</span></div>
@@ -1825,26 +1813,7 @@ function buildPostCard(id, d) {
     </div>`;
   }
 
-  const filterScrollHtml = (d.type==='photo') ? `
-    <div class="filter-scroll" id="fs-${id}">
-      <div class="filter-vial active" onclick="applyFiltFb('${id}','',this)"><div class="vial-glass">🌿</div><div class="vial-name">Origin</div></div>
-      <div class="filter-vial" onclick="applyFiltFb('${id}','sepia(0.4) saturate(1.3) hue-rotate(-10deg)',this)"><div class="vial-glass" style="background:linear-gradient(135deg,#f9a03f55,#f7c56755)">🕯️</div><div class="vial-name">Warm</div></div>
-      <div class="filter-vial" onclick="applyFiltFb('${id}','grayscale(1) contrast(1.15)',this)"><div class="vial-glass" style="background:linear-gradient(135deg,#55555555,#11111155)">💀</div><div class="vial-name">Mono</div></div>
-      <div class="filter-vial" onclick="applyFiltFb('${id}','sepia(0.7) contrast(0.85) brightness(0.9)',this)"><div class="vial-glass" style="background:linear-gradient(135deg,#c9a96e55,#8b5e3c55)">📜</div><div class="vial-name">Vintage</div></div>
-      <div class="filter-vial" onclick="applyFiltFb('${id}','hue-rotate(180deg) saturate(0.7) brightness(1.1)',this)"><div class="vial-glass" style="background:linear-gradient(135deg,#1a1a6655,#4444aa55)">🌑</div><div class="vial-name">Night</div></div>
-      <div class="filter-vial" onclick="applyFiltFb('${id}','saturate(2) contrast(1.2) brightness(1.05)',this)"><div class="vial-glass" style="background:linear-gradient(135deg,#ff006655,#7700ff55)">⚡</div><div class="vial-name">Vivid</div></div>
-    </div>
-    <div class="tools-grimoire">
-      <button class="tool-rune" onclick="toggleSlider('fb-${id}-bright')"><span class="rune-glyph">☀️</span><span class="rune-name">Яркость</span></button>
-      <button class="tool-rune" onclick="toggleSlider('fb-${id}-con')"><span class="rune-glyph">◑</span><span class="rune-name">Контраст</span></button>
-      <button class="tool-rune" onclick="toggleSlider('fb-${id}-sat')"><span class="rune-glyph">🎨</span><span class="rune-name">Насыщ.</span></button>
-      <button class="tool-rune" onclick="toggleSlider('fb-${id}-blur')"><span class="rune-glyph">💫</span><span class="rune-name">Размытие</span></button>
-    </div>
-    <div id="fb-${id}-bright" class="slider-scroll dn"><div class="slider-row"><span>Яркость</span><span id="fv-${id}-bright">100%</span></div><input type="range" min="0" max="200" value="100" oninput="adjFiltFb(this,'brightness','${id}','fv-${id}-bright','%')"></div>
-    <div id="fb-${id}-con" class="slider-scroll dn"><div class="slider-row"><span>Контраст</span><span id="fv-${id}-con">100%</span></div><input type="range" min="0" max="200" value="100" oninput="adjFiltFb(this,'contrast','${id}','fv-${id}-con','%')"></div>
-    <div id="fb-${id}-sat" class="slider-scroll dn"><div class="slider-row"><span>Насыщенность</span><span id="fv-${id}-sat">100%</span></div><input type="range" min="0" max="300" value="100" oninput="adjFiltFb(this,'saturate','${id}','fv-${id}-sat','%')"></div>
-    <div id="fb-${id}-blur" class="slider-scroll dn"><div class="slider-row"><span>Размытие</span><span id="fv-${id}-blur">0px</span></div><input type="range" min="0" max="10" value="0" oninput="adjFiltFb(this,'blur','${id}','fv-${id}-blur','px',true)"></div>
-  ` : '';
+  // Filters removed from cards - editing available in full editor
 
   card.innerHTML = `
     <div class="post-header">
@@ -1855,7 +1824,6 @@ function buildPostCard(id, d) {
       <span class="post-badge ${badgeClass}">${badgeLabel}</span>
     </div>
     ${mediaHtml}
-    ${filterScrollHtml}
     <div class="post-body">
       <p class="post-caption">${d.caption || ''}</p>
       <div class="post-sigils">${tagsHtml}</div>
