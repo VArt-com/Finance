@@ -2325,7 +2325,7 @@ function uploadPost() {
 
     <!-- FILTERS TAB -->
     <div id="vpPanel-filters">
-      <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">
+      <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;padding-top:2px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#8b1a1a #0d0d14">
         <button onclick="vpFilt(0,this)" style="flex-shrink:0;padding:5px 10px;background:rgba(139,26,26,0.25);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;white-space:nowrap">🎬 Оригинал</button>
         <button onclick="vpFilt(1,this)" style="flex-shrink:0;padding:5px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;white-space:nowrap">🖤 Ч/Б</button>
         <button onclick="vpFilt(2,this)" style="flex-shrink:0;padding:5px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;white-space:nowrap">📜 Vintage</button>
@@ -2340,49 +2340,39 @@ function uploadPost() {
 
     <!-- ADJUST TAB -->
     <div id="vpPanel-adjust" style="display:none">
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-        <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">☀️ ЯРКОСТЬ</span>
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-bright">0</span>
-          </div>
-          <input type="range" min="-100" max="100" value="0" id="vp-bright" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;white-space:nowrap;width:90px">☀️ ЯРКОСТЬ</span>
+          <input type="range" min="-100" max="100" value="0" id="vp-bright" oninput="vpAdj()" style="flex:1;accent-color:#8b1a1a">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e;width:28px;text-align:right" id="vp-v-bright">0</span>
         </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">◑ КОНТРАСТ</span>
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-con">0</span>
-          </div>
-          <input type="range" min="-100" max="100" value="0" id="vp-con" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;white-space:nowrap;width:90px">◑ КОНТРАСТ</span>
+          <input type="range" min="-100" max="100" value="0" id="vp-con" oninput="vpAdj()" style="flex:1;accent-color:#8b1a1a">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e;width:28px;text-align:right" id="vp-v-con">0</span>
         </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">🎨 НАСЫЩ.</span>
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-sat">0</span>
-          </div>
-          <input type="range" min="-100" max="100" value="0" id="vp-sat" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;white-space:nowrap;width:90px">🎨 НАСЫЩ.</span>
+          <input type="range" min="-100" max="100" value="0" id="vp-sat" oninput="vpAdj()" style="flex:1;accent-color:#8b1a1a">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e;width:28px;text-align:right" id="vp-v-sat">0</span>
         </div>
       </div>
     </div>
 
     <!-- TOOLS TAB -->
     <div id="vpPanel-tools" style="display:none">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:10px">
         <!-- Volume -->
-        <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">🔊 ГРОМКОСТЬ</span>
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-vol">100%</span>
-          </div>
-          <input type="range" min="0" max="100" value="100" id="vp-vol" oninput="vpSetVolume()" style="width:100%;accent-color:#8b1a1a">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;white-space:nowrap;width:90px">🔊 ГРОМКОСТЬ</span>
+          <input type="range" min="0" max="100" value="100" id="vp-vol" oninput="vpSetVolume()" style="flex:1;accent-color:#8b1a1a">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e;width:36px;text-align:right" id="vp-v-vol">100%</span>
         </div>
-        <!-- Speed -->
-        <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">⚡ СКОРОСТЬ</span>
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-speed">1x</span>
-          </div>
-          <input type="range" min="25" max="300" value="100" step="25" id="vp-speed" oninput="vpSetSpeed()" style="width:100%;accent-color:#8b1a1a">
+        <!-- Speed slider -->
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;white-space:nowrap;width:90px">⚡ СКОРОСТЬ</span>
+          <input type="range" min="25" max="300" value="100" step="25" id="vp-speed" oninput="vpSetSpeed()" style="flex:1;accent-color:#8b1a1a">
+          <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e;width:36px;text-align:right" id="vp-v-speed">1x</span>
         </div>
       </div>
       <!-- Speed presets -->
