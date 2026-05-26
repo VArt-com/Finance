@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="VArt Tools — бесплатные веб-инструменты для жизни в Израиле: трекер рабочих часов, онлайн-радио, поиск работы, скидки и многое другое. Free web tools for Israel.">
+<meta name="keywords" content="трекер часов Израиль, сверхурочные Израиль, минимальная зарплата Израиль, работа Израиль, бесплатные инструменты">
+<title>VArt Tools — Бесплатные инструменты для Израиля</title>
+<link rel="icon" href="favicon.ico">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6C63FF">
+<meta property="og:title" content="VArt Tools — Бесплатные инструменты для Израиля">
+<meta property="og:description" content="Трекер рабочих часов, онлайн-радио, поиск работы и другие бесплатные инструменты для жизни в Израиле">
+<meta property="og:url" content="https://org-va.com/">
+<style>
+  :root {
+    --accent: #6C63FF;
+    --accent2: #a78bfa;
+    --bg: #0d0d1a;
+    --bg2: #13132a;
+    --card: #1a1a35;
+    --border: #2a2a50;
+    --text: #e0e0f0;
+    --muted: #8888aa;
+    --green: #34d399;
+    --orange: #fb923c;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 15px; line-height: 1.7; min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 99; gap: 10px; flex-wrap: wrap;
+  }
+  header a.logo { font-weight: 800; font-size: 1.15rem; color: var(--accent); text-decoration: none; letter-spacing: 0.3px; }
+  .header-nav { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .header-nav a { color: var(--muted); text-decoration: none; font-size: 0.82rem; padding: 4px 10px; border-radius: 20px; transition: all 0.2s; }
+  .header-nav a:hover { color: var(--accent2); background: rgba(108,99,255,0.1); }
+  .lang-btns { display: flex; gap: 5px; }
+  .lang-btn { background: var(--card); border: 1px solid var(--border); color: var(--muted); padding: 3px 9px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+  .lang-btn.active, .lang-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0d0d1a 0%, #1a1040 50%, #0d1a2a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 56px 20px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(108,99,255,0.18) 0%, transparent 70%);
+  }
+  .hero-content { position: relative; max-width: 680px; margin: 0 auto; }
+  .hero-badge { display: inline-block; background: rgba(108,99,255,0.2); border: 1px solid rgba(108,99,255,0.4); color: var(--accent2); font-size: 0.78rem; padding: 4px 14px; border-radius: 20px; margin-bottom: 20px; }
+  .hero h1 { font-size: 2.4rem; font-weight: 900; color: #fff; margin-bottom: 16px; line-height: 1.2; }
+  .hero h1 span { color: var(--accent2); }
+  .hero p { color: var(--muted); font-size: 1.05rem; margin-bottom: 28px; max-width: 520px; margin-left: auto; margin-right: auto; }
+  .hero-stats { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+  .hero-stat { text-align: center; }
+  .hero-stat .val { display: block; font-size: 1.6rem; font-weight: 800; color: var(--accent2); }
+  .hero-stat .lbl { display: block; font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+  main { max-width: 900px; margin: 0 auto; padding: 40px 16px 60px; }
+
+  /* TOOLS SECTION */
+  .section-title { font-size: 1.1rem; font-weight: 700; color: var(--accent2); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .tool-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 22px 20px; text-decoration: none; display: flex; flex-direction: column;
+    gap: 10px; transition: border-color 0.2s, transform 0.15s; position: relative;
+  }
+  .tool-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+  .tool-card .tc-top { display: flex; align-items: flex-start; gap: 14px; }
+  .tool-card .tc-icon { font-size: 2rem; flex-shrink: 0; }
+  .tool-card .tc-name { font-weight: 700; color: #fff; font-size: 0.97rem; }
+  .tool-card .tc-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
+  .tool-card .tc-tag { background: rgba(108,99,255,0.12); color: var(--muted); font-size: 0.68rem; padding: 1px 7px; border-radius: 10px; }
+  .tool-card .tc-desc { color: var(--muted); font-size: 0.85rem; line-height: 1.55; }
+  .tool-card .tc-badge { position: absolute; top: 12px; right: 12px; background: var(--orange); color: #fff; font-size: 0.65rem; font-weight: 700; padding: 1px 7px; border-radius: 10px; letter-spacing: 0.3px; }
+  .tool-card .tc-arrow { color: var(--accent); font-size: 0.82rem; font-weight: 600; margin-top: auto; }
+
+  /* INFO BLOCKS */
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .info-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 20px; }
+  .info-card h3 { font-size: 0.97rem; font-weight: 700; color: var(--accent2); margin-bottom: 10px; }
+  .info-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+  .info-card .highlight-val { font-size: 1.5rem; font-weight: 800; color: var(--green); display: block; margin-bottom: 4px; }
+
+  /* ARTICLE PREVIEW */
+  .articles-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 40px; }
+  .article-preview { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; text-decoration: none; display: flex; align-items: center; gap: 18px; transition: border-color 0.2s; }
+  .article-preview:hover { border-color: var(--accent); }
+  .article-preview .ap-icon { font-size: 2rem; flex-shrink: 0; }
+  .article-preview .ap-title { font-weight: 700; color: #fff; font-size: 0.95rem; margin-bottom: 4px; }
+  .article-preview .ap-desc { color: var(--muted); font-size: 0.83rem; }
+  .article-preview .ap-arrow { margin-left: auto; color: var(--accent2); font-size: 1.1rem; flex-shrink: 0; }
+
+  /* ABOUT SNIPPET */
+  .about-snippet { background: linear-gradient(135deg, var(--card) 0%, #1a1040 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 40px; display: flex; gap: 20px; align-items: flex-start; }
+  .about-snippet .as-avatar { font-size: 3rem; flex-shrink: 0; }
+  .about-snippet h3 { font-size: 1rem; font-weight: 700; color: var(--accent2); margin-bottom: 8px; }
+  .about-snippet p { color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+  .about-snippet a { color: var(--accent2); text-decoration: none; }
+  .about-snippet a:hover { text-decoration: underline; }
+
+  footer { text-align: center; padding: 28px 16px; color: var(--muted); font-size: 0.82rem; border-top: 1px solid var(--border); }
+  footer a { color: var(--accent2); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  footer .links { margin-top: 10px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  footer .copy { margin-top: 10px; }
+
+  .lang-section { display: none; }
+  .lang-section.active { display: block; }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.7rem; }
+    .hero { padding: 36px 16px 32px; }
+    .hero-stats { gap: 20px; }
+    .about-snippet { flex-direction: column; gap: 12px; }
+    .article-preview .ap-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="/">🛠 VArt Tools</a>
+  <div class="lang-btns">
+    <button class="lang-btn active" onclick="setLang('ru')">РУС</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('he')">עב</button>
+  </div>
+  <nav class="header-nav">
+    <a href="blog.html">📚 Статьи</a>
+    <a href="about.html">О нас</a>
+    <a href="contact.html">Контакты</a>
+    <a href="https://ko-fi.com/varthur" target="_blank">☕</a>
+  </nav>
+</header>
+
+<!-- ===== RUSSIAN ===== -->
+<div class="lang-section active" id="lang-ru">
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">🇮🇱 Инструменты для Израиля</div>
+      <h1>Бесплатные инструменты<br>для <span>жизни в Израиле</span></h1>
+      <p>Трекер рабочих часов, онлайн-радио, поиск работы и многое другое — всё бесплатно, без регистрации, на трёх языках</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="val">6+</span><span class="lbl">инструментов</span></div>
+        <div class="hero-stat"><span class="val">3</span><span class="lbl">языка</span></div>
+        <div class="hero-stat"><span class="val">100%</span><span class="lbl">бесплатно</span></div>
+        <div class="hero-stat"><span class="val">0</span><span class="lbl">регистраций</span></div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="section-title">🛠 Все инструменты</div>
+    <div class="tools-grid">
+
+      <a class="tool-card" href="work-tracker.html">
+        <div class="tc-top">
+          <span class="tc-icon">⏱️</span>
+          <div>
+            <div class="tc-name">Трекер рабочих часов</div>
+            <div class="tc-tags">
+              <span class="tc-tag">🇮🇱 Израиль</span>
+              <span class="tc-tag">Зарплата</span>
+              <span class="tc-tag">Закон</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-desc">Точный учёт рабочего времени по израильскому законодательству. Автоматический расчёт сверхурочных (125%/150%), работы в шаббат и пятницу. Актуальные данные на апрель 2026: минимум ₪35.40/час.</div>
+        <span class="tc-arrow">Открыть →</span>
+      </a>
+
+      <a class="tool-card" href="radio.html">
+        <div class="tc-top">
+          <span class="tc-icon">📻</span>
+          <div>
+            <div class="tc-name">Онлайн Радио</div>
+            <div class="tc-tags">
+              <span class="tc-tag">🇺🇦 Украина</span>
+              <span class="tc-tag">🇷🇺 Россия</span>
+              <span class="tc-tag">🇮🇱 Израиль</span>
+              <span class="tc-tag">🇺🇸 США</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-desc">Слушайте любимые радиостанции онлайн: украинские, русские, израильские и американские. Работает прямо в браузере без установки приложений. Живой звук 24/7.</div>
+        <span class="tc-arrow">Слушать →</span>
+      </a>
+
+      <a class="tool-card" href="jobsil.html">
+        <div class="tc-badge">NEW</div>
+        <div class="tc-top">
+          <span class="tc-icon">💼</span>
+          <div>
+            <div class="tc-name">Работа в Израиле</div>
+            <div class="tc-tags">
+              <span class="tc-tag">🇮🇱 Вакансии</span>
+              <span class="tc-tag">ישראל</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-desc">Поиск работы на израильском рынке труда. Актуальные вакансии для русскоязычных специалистов в Израиле. Удобный поиск и фильтрация по городам и специальностям.</div>
+        <span class="tc-arrow">Искать работу →</span>
+      </a>
+
+      <a class="tool-card" href="dealzone.html">
+        <div class="tc-badge">NEW</div>
+        <div class="tc-top">
+          <span class="tc-icon">🔥</span>
+          <div>
+            <div class="tc-name">DealZone — Скидки</div>
+            <div class="tc-tags">
+              <span class="tc-tag">🇮🇱 Израиль</span>
+              <span class="tc-tag">Акции</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-desc">Горячие скидки, акции и специальные предложения в Израиле. Экономьте на покупках с актуальными промо-предложениями от лучших магазинов и сервисов страны.</div>
+        <span class="tc-arrow">Смотреть скидки →</span>
+      </a>
+
+      <a class="tool-card" href="chance.html">
+        <div class="tc-badge">NEW</div>
+        <div class="tc-top">
+          <span class="tc-icon">🎴</span>
+          <div>
+            <div class="tc-name">Лотерея Шанс</div>
+            <div class="tc-tags">
+              <span class="tc-tag">מפעל הפיס</span>
+              <span class="tc-tag">Анализ</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-desc">Анализатор лотереи מפעל הפיס (Мифаль ха-Пайс). Статистика, частота чисел, горячие и холодные номера. Умный помощник для игроков израильской государственной лотереи.</div>
+        <span class="tc-arrow">Открыть →</span>
+      </a>
+
+      <a class="tool-card" href="ourworld.html">
+        <div class="tc-top">
+          <span class="tc-icon">🌹</span>
+          <div>
+            <div class="tc-name">OurWorld</div>
+            <div class="tc-tags">
+              <span class="tc-tag">🔐 Приватный</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-desc">Персональный закрытый проект. Доступ по приглашению.</div>
+        <span class="tc-arrow">Открыть →</span>
+      </a>
+
+    </div>
+
+    <!-- INFO CARDS -->
+    <div class="section-title">⚖️ Трудовое право Израиля 2026</div>
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>💰 Минимальная зарплата</h3>
+        <span class="highlight-val">₪35.40/час</span>
+        <p>Минимальная зарплата с апреля 2026. Ежемесячный минимум: ₪6,443.85. Работодатель обязан платить не меньше по закону.</p>
+      </div>
+      <div class="info-card">
+        <h3>⏰ Сверхурочные</h3>
+        <span class="highlight-val">125% / 150%</span>
+        <p>Первые 2 сверхурочных часа — 125% от ставки. Каждый следующий час — 150%. Шаббат и праздники — минимум 150%.</p>
+      </div>
+      <div class="info-card">
+        <h3>📅 Норма рабочей недели</h3>
+        <span class="highlight-val">42 часа</span>
+        <p>Максимальная рабочая неделя для частного сектора. День: 8.6 часов (пятница: 7.6 часов). Госсектор: 40 часов/неделю.</p>
+      </div>
+    </div>
+
+    <!-- ARTICLES PREVIEW -->
+    <div class="section-title">📚 Полезные статьи</div>
+    <div class="articles-list">
+      <a class="article-preview" href="blog.html">
+        <span class="ap-icon">⚖️</span>
+        <div>
+          <div class="ap-title">Сверхурочные в Израиле: полное руководство 2026</div>
+          <div class="ap-desc">Как правильно считать сверхурочные, ставки оплаты, куда жаловаться при нарушениях</div>
+        </div>
+        <span class="ap-arrow">→</span>
+      </a>
+      <a class="article-preview" href="blog.html">
+        <span class="ap-icon">💰</span>
+        <div>
+          <div class="ap-title">Минимальная зарплата в Израиле 2026: всё что нужно знать</div>
+          <div class="ap-desc">Актуальные ставки по отраслям, отраслевые соглашения, права работников</div>
+        </div>
+        <span class="ap-arrow">→</span>
+      </a>
+    </div>
+
+    <!-- ABOUT SNIPPET -->
+    <div class="about-snippet">
+      <div class="as-avatar">👨‍💻</div>
+      <div>
+        <h3>О проекте VArt Tools</h3>
+        <p>Я Артур — разработчик из Израиля. Создал эти инструменты чтобы помочь жителям страны разобраться в местных законах, найти работу и сделать жизнь немного проще. Сайт доступен на русском, иврите и английском. Всё бесплатно, без регистрации.</p>
+        <p style="margin-top:8px"><a href="about.html">Подробнее о проекте</a> · <a href="https://ko-fi.com/varthur" target="_blank">☕ Поддержать на Ko-fi</a></p>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<!-- ===== ENGLISH ===== -->
+<div class="lang-section" id="lang-en">
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">🇮🇱 Tools for Israel</div>
+      <h1>Free Web Tools<br>for <span>Life in Israel</span></h1>
+      <p>Work hours tracker, online radio, job search, and more — all free, no registration, in three languages</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="val">6+</span><span class="lbl">tools</span></div>
+        <div class="hero-stat"><span class="val">3</span><span class="lbl">languages</span></div>
+        <div class="hero-stat"><span class="val">100%</span><span class="lbl">free</span></div>
+        <div class="hero-stat"><span class="val">0</span><span class="lbl">sign-ups</span></div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="section-title">🛠 All Tools</div>
+    <div class="tools-grid">
+      <a class="tool-card" href="work-tracker.html">
+        <div class="tc-top"><span class="tc-icon">⏱️</span><div><div class="tc-name">Work Hours Tracker</div><div class="tc-tags"><span class="tc-tag">🇮🇱 Israel</span><span class="tc-tag">Salary</span><span class="tc-tag">Law</span></div></div></div>
+        <div class="tc-desc">Accurate work time tracking under Israeli labor law. Automatic calculation of overtime (125%/150%), Shabbat and Friday work. Updated for April 2026: minimum ₪35.40/hour.</div>
+        <span class="tc-arrow">Open →</span>
+      </a>
+      <a class="tool-card" href="radio.html">
+        <div class="tc-top"><span class="tc-icon">📻</span><div><div class="tc-name">Online Radio</div><div class="tc-tags"><span class="tc-tag">🇺🇦</span><span class="tc-tag">🇷🇺</span><span class="tc-tag">🇮🇱</span><span class="tc-tag">🇺🇸</span></div></div></div>
+        <div class="tc-desc">Listen to your favorite radio stations online: Ukrainian, Russian, Israeli and American. Works right in your browser without installing apps. Live sound 24/7.</div>
+        <span class="tc-arrow">Listen →</span>
+      </a>
+      <a class="tool-card" href="jobsil.html">
+        <div class="tc-badge">NEW</div>
+        <div class="tc-top"><span class="tc-icon">💼</span><div><div class="tc-name">Jobs in Israel</div><div class="tc-tags"><span class="tc-tag">🇮🇱 Jobs</span><span class="tc-tag">ישראל</span></div></div></div>
+        <div class="tc-desc">Job search in the Israeli labor market. Current vacancies for Russian-speaking professionals in Israel. Easy search and filtering by city and specialty.</div>
+        <span class="tc-arrow">Find jobs →</span>
+      </a>
+      <a class="tool-card" href="dealzone.html">
+        <div class="tc-badge">NEW</div>
+        <div class="tc-top"><span class="tc-icon">🔥</span><div><div class="tc-name">DealZone</div><div class="tc-tags"><span class="tc-tag">🇮🇱 Israel</span><span class="tc-tag">Deals</span></div></div></div>
+        <div class="tc-desc">Hot deals, promotions, and special offers in Israel. Save on purchases with current promo offers from the best stores and services in the country.</div>
+        <span class="tc-arrow">See deals →</span>
+      </a>
+      <a class="tool-card" href="chance.html">
+        <div class="tc-badge">NEW</div>
+        <div class="tc-top"><span class="tc-icon">🎴</span><div><div class="tc-name">Chance Lottery</div><div class="tc-tags"><span class="tc-tag">מפעל הפיס</span><span class="tc-tag">Analysis</span></div></div></div>
+        <div class="tc-desc">מפעל הפיס lottery analyzer. Statistics, number frequency, hot and cold numbers. Smart assistant for Israeli state lottery players.</div>
+        <span class="tc-arrow">Open →</span>
+      </a>
+      <a class="tool-card" href="ourworld.html">
+        <div class="tc-top"><span class="tc-icon">🌹</span><div><div class="tc-name">OurWorld</div><div class="tc-tags"><span class="tc-tag">🔐 Private</span></div></div></div>
+        <div class="tc-desc">Personal private project. Access by invitation only.</div>
+        <span class="tc-arrow">Open →</span>
+      </a>
+    </div>
+
+    <div class="section-title">⚖️ Israeli Labor Law 2026</div>
+    <div class="info-grid">
+      <div class="info-card"><h3>💰 Minimum Wage</h3><span class="highlight-val">₪35.40/h</span><p>Minimum wage from April 2026. Monthly minimum: ₪6,443.85. Employer must pay no less by law.</p></div>
+      <div class="info-card"><h3>⏰ Overtime Rates</h3><span class="highlight-val">125% / 150%</span><p>First 2 overtime hours: 125% of rate. Every subsequent hour: 150%. Shabbat and holidays: minimum 150%.</p></div>
+      <div class="info-card"><h3>📅 Working Week Limit</h3><span class="highlight-val">42 hours</span><p>Maximum working week for private sector. Day: 8.6 hours (Friday: 7.6 hours). Public sector: 40 hours/week.</p></div>
+    </div>
+
+    <div class="section-title">📚 Articles</div>
+    <div class="articles-list">
+      <a class="article-preview" href="blog.html"><span class="ap-icon">⚖️</span><div><div class="ap-title">Overtime in Israel: Complete Guide 2026</div><div class="ap-desc">How to correctly calculate overtime, pay rates, where to file complaints</div></div><span class="ap-arrow">→</span></a>
+      <a class="article-preview" href="blog.html"><span class="ap-icon">💰</span><div><div class="ap-title">Minimum Wage in Israel 2026: Everything You Need to Know</div><div class="ap-desc">Current rates by industry, collective agreements, worker rights</div></div><span class="ap-arrow">→</span></a>
+    </div>
+
+    <div class="about-snippet">
+      <div class="as-avatar">👨‍💻</div>
+      <div>
+        <h3>About VArt Tools</h3>
+        <p>I'm Arthur — a developer from Israel. I built these tools to help everyone living in Israel navigate local laws, find work, and make life a little easier. The site is available in Russian, Hebrew and English. Everything is free, no registration needed.</p>
+        <p style="margin-top:8px"><a href="about.html">More about the project</a> · <a href="https://ko-fi.com/varthur" target="_blank">☕ Support on Ko-fi</a></p>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<!-- ===== HEBREW ===== -->
+<div class="lang-section" id="lang-he" dir="rtl">
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">🇮🇱 כלים לישראל</div>
+      <h1>כלי אינטרנט חינמיים<br>ל<span>חיים בישראל</span></h1>
+      <p>עוקב שעות עבודה, רדיו אונליין, חיפוש עבודה ועוד — הכל חינם, ללא הרשמה, בשלוש שפות</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="val">6+</span><span class="lbl">כלים</span></div>
+        <div class="hero-stat"><span class="val">3</span><span class="lbl">שפות</span></div>
+        <div class="hero-stat"><span class="val">100%</span><span class="lbl">חינם</span></div>
+        <div class="hero-stat"><span class="val">0</span><span class="lbl">הרשמות</span></div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="section-title">🛠 כל הכלים</div>
+    <div class="tools-grid">
+      <a class="tool-card" href="work-tracker.html">
+        <div class="tc-top"><span class="tc-icon">⏱️</span><div><div class="tc-name">מעקב שעות עבודה</div><div class="tc-tags"><span class="tc-tag">🇮🇱 ישראל</span><span class="tc-tag">שכר</span><span class="tc-tag">חוק</span></div></div></div>
+        <div class="tc-desc">מעקב מדויק של שעות עבודה לפי חוק העבודה הישראלי. חישוב אוטומטי של שעות נוספות (125%/150%), עבודת שבת ושישי. עדכני לאפריל 2026: מינימום ₪35.40/שעה.</div>
+        <span class="tc-arrow">פתח ←</span>
+      </a>
+      <a class="tool-card" href="radio.html">
+        <div class="tc-top"><span class="tc-icon">📻</span><div><div class="tc-name">רדיו אונליין</div><div class="tc-tags"><span class="tc-tag">🇺🇦</span><span class="tc-tag">🇷🇺</span><span class="tc-tag">🇮🇱</span><span class="tc-tag">🇺🇸</span></div></div></div>
+        <div class="tc-desc">האזן לתחנות הרדיו האהובות עליך אונליין: אוקראיניות, רוסיות, ישראליות ואמריקאיות. עובד ישירות בדפדפן ללא התקנת אפליקציות. שידור חי 24/7.</div>
+        <span class="tc-arrow">האזן ←</span>
+      </a>
+      <a class="tool-card" href="jobsil.html">
+        <div class="tc-badge">חדש</div>
+        <div class="tc-top"><span class="tc-icon">💼</span><div><div class="tc-name">עבודה בישראל</div><div class="tc-tags"><span class="tc-tag">🇮🇱 משרות</span></div></div></div>
+        <div class="tc-desc">חיפוש עבודה בשוק העבודה הישראלי. משרות עדכניות למומחים דוברי רוסית בישראל. חיפוש וסינון נוח לפי עיר ומקצוע.</div>
+        <span class="tc-arrow">חפש עבודה ←</span>
+      </a>
+      <a class="tool-card" href="dealzone.html">
+        <div class="tc-badge">חדש</div>
+        <div class="tc-top"><span class="tc-icon">🔥</span><div><div class="tc-name">DealZone — מבצעים</div><div class="tc-tags"><span class="tc-tag">🇮🇱 ישראל</span><span class="tc-tag">הנחות</span></div></div></div>
+        <div class="tc-desc">מבצעים חמים, קידומי מכירות והצעות מיוחדות בישראל. חסכו על קניות עם מבצעי פרומו עדכניים מהחנויות והשירותים הטובים ביותר בארץ.</div>
+        <span class="tc-arrow">ראה מבצעים ←</span>
+      </a>
+      <a class="tool-card" href="chance.html">
+        <div class="tc-badge">חדש</div>
+        <div class="tc-top"><span class="tc-icon">🎴</span><div><div class="tc-name">צ'אנס - לוטו</div><div class="tc-tags"><span class="tc-tag">מפעל הפיס</span></div></div></div>
+        <div class="tc-desc">מנתח הגרלות מפעל הפיס. סטטיסטיקה, תדירות מספרים, מספרים חמים וקרים. עוזר חכם לשחקני הלוטו הישראלי הממלכתי.</div>
+        <span class="tc-arrow">פתח ←</span>
+      </a>
+      <a class="tool-card" href="ourworld.html">
+        <div class="tc-top"><span class="tc-icon">🌹</span><div><div class="tc-name">OurWorld</div><div class="tc-tags"><span class="tc-tag">🔐 פרטי</span></div></div></div>
+        <div class="tc-desc">פרויקט אישי סגור. גישה בהזמנה בלבד.</div>
+        <span class="tc-arrow">פתח ←</span>
+      </a>
+    </div>
+
+    <div class="section-title">⚖️ דיני עבודה ישראל 2026</div>
+    <div class="info-grid">
+      <div class="info-card"><h3>💰 שכר מינימום</h3><span class="highlight-val">₪35.40/שעה</span><p>שכר מינימום מאפריל 2026. מינימום חודשי: ₪6,443.85. המעסיק חייב לשלם לפחות לפי חוק.</p></div>
+      <div class="info-card"><h3>⏰ שעות נוספות</h3><span class="highlight-val">125% / 150%</span><p>2 שעות נוספות ראשונות: 125% מהשכר. כל שעה נוספת לאחר מכן: 150%. שבת וחגים: מינימום 150%.</p></div>
+      <div class="info-card"><h3>📅 גבול שבוע עבודה</h3><span class="highlight-val">42 שעות</span><p>שבוע עבודה מקסימלי במגזר הפרטי. יום: 8.6 שעות (שישי: 7.6 שעות). מגזר ציבורי: 40 שעות/שבוע.</p></div>
+    </div>
+
+    <div class="section-title">📚 מאמרים</div>
+    <div class="articles-list">
+      <a class="article-preview" href="blog.html"><span class="ap-icon">⚖️</span><div><div class="ap-title">שעות נוספות בישראל: מדריך מלא 2026</div><div class="ap-desc">כיצד לחשב שעות נוספות, שיעורי תשלום, היכן להגיש תלונות</div></div><span class="ap-arrow">←</span></a>
+      <a class="article-preview" href="blog.html"><span class="ap-icon">💰</span><div><div class="ap-title">שכר מינימום בישראל 2026: כל מה שצריך לדעת</div><div class="ap-desc">שיעורים עדכניים לפי ענף, הסכמים קיבוציים, זכויות עובדים</div></div><span class="ap-arrow">←</span></a>
+    </div>
+
+    <div class="about-snippet">
+      <div class="as-avatar">👨‍💻</div>
+      <div>
+        <h3>אודות VArt Tools</h3>
+        <p>אני ארתור — מפתח מישראל. יצרתי כלים אלה כדי לעזור לכל תושבי ישראל להתמצא בחוקים המקומיים, למצוא עבודה ולהפוך את החיים לקצת יותר קלים. האתר זמין ברוסית, עברית ואנגלית. הכל חינם, ללא צורך בהרשמה.</p>
+        <p style="margin-top:8px"><a href="about.html">עוד על הפרויקט</a> · <a href="https://ko-fi.com/varthur" target="_blank">☕ תמיכה ב-Ko-fi</a></p>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<footer>
+  <div class="links">
+    <a href="/">Главная / Home</a>
+    <a href="about.html">О нас / About / אודות</a>
+    <a href="blog.html">Статьи / Articles / מאמרים</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="contact.html">Контакты / Contact</a>
+    <a href="https://ko-fi.com/varthur" target="_blank">☕ Ko-fi</a>
+    <a href="https://wa.me/972533213698" target="_blank">💬 WhatsApp</a>
+  </div>
+  <div class="copy">© 2025 VArt Tools · org-va.com · <a href="https://github.com/VArt-com" target="_blank">GitHub</a></div>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.querySelectorAll('.lang-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.lang-btn').forEach(el => el.classList.remove('active'));
+  const section = document.getElementById('lang-' + lang);
+  if (section) section.classList.add('active');
+  const btn = document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`);
+  if (btn) btn.classList.add('active');
+  document.documentElement.lang = lang === 'he' ? 'he' : lang === 'en' ? 'en' : 'ru';
+  document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+  localStorage.setItem('vart-lang', lang);
+}
+// Restore saved language on page load
+(function() {
+  const saved = localStorage.getItem('vart-lang');
+  const langToUse = (saved && ['ru','en','he'].includes(saved)) ? saved : 'ru';
+  setLang(langToUse);
+})();
+</script>
+
+<!-- WhatsApp floating button -->
+<a href="https://wa.me/972533213698" target="_blank"
+   style="position:fixed;bottom:24px;right:24px;z-index:9999;
+          width:56px;height:56px;border-radius:50%;
+          background:#25D366;display:flex;align-items:center;
+          justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,0.4);
+          text-decoration:none;transition:transform 0.2s,box-shadow 0.2s"
+   onmouseover="this.style.transform='scale(1.1)';this.style.boxShadow='0 6px 24px rgba(37,211,102,0.6)'"
+   onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 16px rgba(37,211,102,0.4)'"
+   title="Написать в WhatsApp">
+  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="#fff">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.855L0 24l6.334-1.508A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.817 9.817 0 01-5.003-1.367l-.36-.213-3.757.895.949-3.656-.235-.374A9.786 9.786 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
+  </svg>
+</a>
+</body>
+</html>
