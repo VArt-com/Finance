@@ -2295,10 +2295,25 @@ function uploadPost() {
 <div id="videoPlayerModal" style="display:none;position:fixed;inset:0;z-index:2000;background:#050508;flex-direction:column;overflow:hidden">
 
   <!-- TOP BAR -->
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0d0d14;border-bottom:1px solid rgba(139,26,26,0.3);flex-shrink:0">
-    <div style="display:flex;align-items:center;gap:12px">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#0d0d14;border-bottom:1px solid rgba(139,26,26,0.3);flex-shrink:0;flex-wrap:wrap;gap:8px">
+    <div style="display:flex;align-items:center;gap:10px">
       <button onclick="closeVideoPlayer()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;line-height:1;padding:2px 6px">✕</button>
-      <span style="font-family:'Cinzel',serif;font-size:12px;color:#c9bfa8;letter-spacing:0.1em">ВИДЕОПЛЕЕР</span>
+      <span style="font-family:'Cinzel',serif;font-size:11px;color:#c9bfa8;letter-spacing:0.1em">ВИДЕОПЛЕЕР</span>
+    </div>
+    <!-- QUICK CONTROLS IN TOP BAR -->
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <!-- Loop toggle -->
+      <button id="vpLoopBtn" onclick="vpToggleLoop()" title="Повтор" style="padding:4px 10px;background:rgba(139,26,26,0.15);border:1px solid rgba(139,26,26,0.35);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;transition:all 0.2s">🔁 ПОВТОР</button>
+      <!-- Speed quick buttons -->
+      <button onclick="vpSetSpeedPreset(0.5)" style="padding:4px 8px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer;transition:all 0.2s">0.5x</button>
+      <button onclick="vpSetSpeedPreset(1)" id="vpSpeedNormal" style="padding:4px 8px;background:rgba(139,26,26,0.2);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">1x</button>
+      <button onclick="vpSetSpeedPreset(1.5)" style="padding:4px 8px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer;transition:all 0.2s">1.5x</button>
+      <button onclick="vpSetSpeedPreset(2)" style="padding:4px 8px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer;transition:all 0.2s">2x</button>
+      <!-- Volume quick -->
+      <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">🔊</span>
+      <input type="range" min="0" max="100" value="100" id="vp-vol-top" oninput="vpSetVolumeTop()" style="width:70px;accent-color:#8b1a1a;vertical-align:middle">
+      <!-- Snapshot -->
+      <button onclick="vpSnapshot()" title="Снимок кадра" style="padding:4px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer;transition:all 0.2s">📸</button>
     </div>
     <div id="vp-counter" style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.1em"></div>
   </div>
@@ -2306,6 +2321,15 @@ function uploadPost() {
   <!-- VIDEO -->
   <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#050508;position:relative;overflow:hidden;min-height:0">
     <video id="videoPlayerEl" controls autoplay style="max-width:100%;max-height:100%;background:#000;transition:filter 0.2s"></video>
+    <!-- Replay overlay when ended -->
+    <div id="vpReplayOverlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:4">
+      <button onclick="vpReplay()" style="width:72px;height:72px;border-radius:50%;background:rgba(139,26,26,0.85);border:2px solid #c0392b;color:#fff;font-size:28px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(192,57,43,0.9)'" onmouseout="this.style.background='rgba(139,26,26,0.85)'">↻</button>
+      <span style="font-family:'Cinzel',serif;font-size:10px;color:#c9bfa8;letter-spacing:0.15em">СМОТРЕТЬ СНОВА</span>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button onclick="vpNav(-1)" style="padding:6px 16px;background:rgba(0,0,0,0.6);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;font-family:'Cinzel',serif;font-size:9px;cursor:pointer">‹ ПРЕД.</button>
+        <button onclick="vpNav(1)" style="padding:6px 16px;background:rgba(0,0,0,0.6);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;font-family:'Cinzel',serif;font-size:9px;cursor:pointer">СЛЕД. ›</button>
+      </div>
+    </div>
     <button onclick="vpNav(-1)" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;width:40px;height:40px;font-size:20px;cursor:pointer;z-index:5">‹</button>
     <button onclick="vpNav(1)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;width:40px;height:40px;font-size:20px;cursor:pointer;z-index:5">›</button>
   </div>
@@ -2675,6 +2699,12 @@ function openVideoPlayer(url) {
   if (counter) counter.textContent = _vpUrls.length > 1 ? (_vpIdx+1) + ' / ' + _vpUrls.length : '';
   document.getElementById('videoPlayerModal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
+  // Attach ended handler
+  const _ve = document.getElementById('videoPlayerEl');
+  if (_ve) _ve.onended = vpOnEnded;
+  // Hide replay overlay
+  const _ro = document.getElementById('vpReplayOverlay');
+  if (_ro) _ro.style.display = 'none';
 }
 
 function closeVideoPlayer() {
@@ -2687,9 +2717,11 @@ function closeVideoPlayer() {
 function vpNav(dir) {
   _vpIdx = (_vpIdx + dir + _vpUrls.length) % _vpUrls.length;
   const v = document.getElementById('videoPlayerEl');
-  if (v) v.src = _vpUrls[_vpIdx];
+  if (v) { v.src = _vpUrls[_vpIdx]; v.onended = vpOnEnded; }
   const counter = document.getElementById('vp-counter');
   if (counter) counter.textContent = (_vpIdx+1) + ' / ' + _vpUrls.length;
+  const overlay = document.getElementById('vpReplayOverlay');
+  if (overlay) overlay.style.display = 'none';
 }
 
 function vpFilt(idx, btn) {
@@ -2714,6 +2746,47 @@ function vpAdj() {
   const combined = [_vpBaseFilt, adjFilt].filter(Boolean).join(' ');
   const v = document.getElementById('videoPlayerEl');
   if (v) v.style.filter = combined;
+}
+
+// ── LOOP TOGGLE ──
+let _vpLoop = false;
+function vpToggleLoop() {
+  _vpLoop = !_vpLoop;
+  const v = document.getElementById('videoPlayerEl');
+  const btn = document.getElementById('vpLoopBtn');
+  if (v) v.loop = _vpLoop;
+  if (btn) {
+    btn.style.background = _vpLoop ? 'rgba(139,26,26,0.4)' : 'rgba(139,26,26,0.15)';
+    btn.style.color = _vpLoop ? '#e8e0d4' : '#8a8070';
+    btn.style.borderColor = _vpLoop ? '#8b1a1a' : 'rgba(139,26,26,0.35)';
+  }
+  toast(_vpLoop ? '🔁 Повтор включён' : 'Повтор выключен', 'i');
+}
+
+// ── VOLUME TOP BAR ──
+function vpSetVolumeTop() {
+  const v = document.getElementById('videoPlayerEl');
+  const slider = document.getElementById('vp-vol-top');
+  const sliderBottom = document.getElementById('vp-vol');
+  if (v && slider) v.volume = slider.value / 100;
+  if (sliderBottom && slider) sliderBottom.value = slider.value;
+  const label = document.getElementById('vp-v-vol');
+  if (label && slider) label.textContent = slider.value + '%';
+}
+
+// ── REPLAY ──
+function vpReplay() {
+  const v = document.getElementById('videoPlayerEl');
+  const overlay = document.getElementById('vpReplayOverlay');
+  if (v) { v.currentTime = 0; v.play(); }
+  if (overlay) overlay.style.display = 'none';
+}
+
+// ── ENDED HANDLER ──
+function vpOnEnded() {
+  if (_vpLoop) return; // loop handles itself
+  const overlay = document.getElementById('vpReplayOverlay');
+  if (overlay) overlay.style.display = 'flex';
 }
 
 // ── CROP TOOL ──
