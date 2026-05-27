@@ -1778,6 +1778,9 @@ function loadFeedFromFirebase() {
       _feedAllPosts.push({id: doc.id, ...doc.data()});
     });
     renderCarousel();
+    // Обновить счётчик свитков в хрониках
+    const sp = document.getElementById('stPosts');
+    if (sp) sp.textContent = _feedAllPosts.length;
   });
   // Count wishes for admin stats
   const wq = query(collection(db, "wishes"), orderBy("createdAt", "desc"));
