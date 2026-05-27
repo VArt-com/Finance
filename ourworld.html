@@ -1,0 +1,3751 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#060608">
+<title>OurWorld</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #060608;
+  --abyss: #0c0c10;
+  --crypt: #121218;
+  --tomb: #1a1a24;
+  --ash: #242432;
+  --bone: #e8e0d4;
+  --parchment: #c9bfa8;
+  --shadow: #b8aa98;
+  --dust: #8a8070;
+  --blood: #8b1a1a;
+  --crimson: #c0392b;
+  --rose: #d4516a;
+  --ember: #c9a96e;
+  --silver: #9ca3af;
+  --border-goth: rgba(139,26,26,0.3);
+  --border-bone: rgba(232,224,212,0.08);
+  --border-rose: rgba(212,81,106,0.25);
+  --glow-blood: rgba(139,26,26,0.2);
+  --glow-rose: rgba(212,81,106,0.15);
+  --radius: 2px;
+}
+/* ── LIGHT THEME ── */
+body.light-theme {
+  --void: #f5f0eb;
+  --abyss: #ede7df;
+  --crypt: #e2d9ce;
+  --tomb: #d5c9bb;
+  --ash: #c5b8a8;
+  --bone: #2a1f1a;
+  --parchment: #3d2e26;
+  --shadow: #5a4a3e;
+  --dust: #7a6a5e;
+  --border-bone: rgba(42,31,26,0.15);
+  --glow-blood: rgba(139,26,26,0.12);
+}
+body.light-theme #landing {
+  background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(139,26,26,0.07) 0%, transparent 70%), var(--void);
+}
+body.light-theme .app-header { background: rgba(237,231,223,0.97) !important; }
+body.light-theme .post-card { background: var(--abyss); }
+body.light-theme .modal-grimoire { background: var(--abyss); }
+body.light-theme .gothic-input, body.light-theme .gothic-textarea { background: var(--crypt); color: var(--bone); }
+body.light-theme .scroll-form { background: var(--abyss); }
+body.light-theme .wish-scroll { background: var(--abyss); }
+body.light-theme body::before { opacity: 0.15; }
+
+/* ── LIVE MODAL ── */
+.live-modal-wrap {
+  display:none; position:fixed; inset:0; z-index:1000;
+  background:rgba(0,0,0,0.92); backdrop-filter:blur(8px);
+  align-items:center; justify-content:center; flex-direction:column;
+}
+.live-modal-wrap.open { display:flex; }
+.live-modal-inner {
+  width:100%; max-width:680px; max-height:95vh; overflow-y:auto;
+  background:var(--abyss); border:1px solid var(--border-goth);
+  padding:24px; position:relative;
+}
+.live-modal-inner::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--blood), transparent);
+}
+.live-close-btn {
+  position:absolute; top:12px; right:14px;
+  background:none; border:none; color:var(--shadow);
+  font-size:20px; cursor:pointer; transition:color 0.2s;
+}
+.live-close-btn:hover { color:var(--bone); }
+.live-title {
+  font-family:'UnifrakturMaguntia',cursive;
+  font-size:26px; color:var(--blood); margin-bottom:4px;
+}
+.live-sub {
+  font-family:'IM Fell English',serif; font-style:italic;
+  font-size:13px; color:var(--shadow); margin-bottom:18px;
+}
+.live-tabs {
+  display:flex; gap:0; border-bottom:1px solid var(--border-goth); margin-bottom:18px;
+}
+.live-tab {
+  padding:10px 18px; background:none; border:none;
+  font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--shadow); cursor:pointer;
+  border-bottom:2px solid transparent; transition:all 0.3s;
+}
+.live-tab.active { color:var(--blood); border-bottom-color:var(--blood); }
+.live-panel { display:none; }
+.live-panel.active { display:block; }
+
+/* Video area */
+.video-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;
+}
+.video-box {
+  background:var(--crypt); border:1px solid var(--border-goth);
+  aspect-ratio:4/3; position:relative; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+.video-box video { width:100%; height:100%; object-fit:cover; }
+.video-box .video-label {
+  position:absolute; bottom:6px; left:8px;
+  font-family:'Cinzel',serif; font-size:9px; color:rgba(255,255,255,0.7);
+  letter-spacing:0.08em;
+}
+.video-box .video-placeholder {
+  display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--shadow);
+}
+.video-box .video-placeholder .vp-icon { font-size:32px; opacity:0.5; }
+.video-box .video-placeholder span { font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.08em; }
+
+.live-controls {
+  display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:14px;
+}
+.ctrl-btn {
+  padding:8px 16px; font-family:'Cinzel',serif; font-size:10px;
+  letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; transition:all 0.3s;
+  border:1px solid var(--border-bone); background:transparent; color:var(--shadow);
+}
+.ctrl-btn:hover { border-color:var(--blood); color:var(--bone); }
+.ctrl-btn.active-ctrl { background:rgba(139,26,26,0.2); border-color:var(--blood); color:var(--blood); }
+.ctrl-btn.danger { border-color:rgba(192,57,43,0.5); color:var(--crimson); }
+.ctrl-btn.danger:hover { background:rgba(192,57,43,0.15); }
+
+.live-status {
+  font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.1em;
+  color:var(--shadow); text-align:center; margin-bottom:12px;
+}
+.live-status .dot-live {
+  display:inline-block; width:7px; height:7px; border-radius:50%;
+  background:#e74c3c; margin-right:6px; animation:blink 1s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* Call code input */
+.call-code-area {
+  background:var(--crypt); border:1px solid var(--border-goth);
+  padding:16px; margin-bottom:14px; text-align:center;
+}
+.call-code-area .code-display {
+  font-family:'Cinzel',serif; font-size:22px; letter-spacing:0.3em;
+  color:var(--ember); margin-bottom:8px; user-select:all;
+}
+.call-code-area .code-hint {
+  font-family:'IM Fell English',serif; font-style:italic;
+  font-size:12px; color:var(--shadow);
+}
+.code-input-row {
+  display:flex; gap:8px; margin-bottom:14px;
+}
+.gothic-input-sm {
+  flex:1; padding:10px 14px; background:var(--crypt);
+  border:1px solid var(--border-bone); border-left:2px solid var(--blood);
+  color:var(--parchment); font-family:'Cinzel',serif; font-size:12px;
+  letter-spacing:0.1em; outline:none; text-transform:uppercase;
+}
+.gothic-input-sm::placeholder { color:var(--shadow); text-transform:none; }
+
+/* Podcast recorder */
+.podcast-visualizer {
+  background:var(--crypt); border:1px solid var(--border-goth);
+  height:80px; display:flex; align-items:center; justify-content:center;
+  gap:3px; margin-bottom:14px; overflow:hidden; padding:0 16px;
+}
+.viz-bar {
+  width:3px; background:var(--blood); border-radius:2px;
+  height:10%; transition:height 0.1s ease; flex-shrink:0;
+}
+.podcast-timer {
+  font-family:'Cinzel',serif; font-size:28px; letter-spacing:0.15em;
+  color:var(--ember); text-align:center; margin-bottom:14px;
+}
+
+/* Stream preview */
+.stream-preview {
+  background:var(--crypt); border:1px solid var(--border-goth);
+  aspect-ratio:16/9; position:relative; overflow:hidden;
+  display:flex; align-items:center; justify-content:center; margin-bottom:14px;
+}
+.stream-preview video { width:100%; height:100%; object-fit:cover; }
+.stream-badge {
+  position:absolute; top:10px; left:10px;
+  background:rgba(231,76,60,0.9); color:#fff;
+  font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.1em;
+  padding:3px 10px; display:none; align-items:center; gap:6px;
+}
+.stream-badge.show { display:flex; }
+.stream-viewers {
+  position:absolute; top:10px; right:10px;
+  background:rgba(0,0,0,0.7); color:#fff;
+  font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.08em;
+  padding:3px 10px;
+}
+
+/* Theme toggle */
+.theme-toggle-btn {
+  background:transparent; border:1px solid var(--border-bone);
+  color:var(--shadow); width:36px; height:36px; border-radius:2px;
+  font-size:15px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:all 0.3s;
+}
+.theme-toggle-btn:hover { border-color:var(--blood); color:var(--bone); }
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background:var(--void);
+  color:var(--bone);
+  font-family:'Crimson Text', serif;
+  font-size:16px;
+  min-height:100vh;
+  overflow-x:hidden;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='4' fill='%238b1a1a' opacity='0.8'/%3E%3Ccircle cx='10' cy='10' r='1.5' fill='%23c0392b'/%3E%3C/svg%3E") 10 10, crosshair;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-track { background:var(--void); }
+::-webkit-scrollbar-thumb { background:var(--blood); }
+
+/* ── GRAIN OVERLAY ── */
+body::before {
+  content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity:0.6;
+}
+
+/* ── GOTHIC ORNAMENT SVG PATTERNS ── */
+.ornament {
+  text-align:center; color:var(--blood); font-size:18px;
+  letter-spacing:8px; opacity:0.6; user-select:none;
+}
+.ornament-line {
+  display:flex; align-items:center; gap:16px; margin:16px 0;
+}
+.ornament-line::before, .ornament-line::after {
+  content:''; flex:1; height:1px; background:linear-gradient(90deg, transparent, var(--border-goth), transparent);
+}
+.ornament-line span { color:var(--blood); font-size:14px; opacity:0.7; white-space:nowrap; }
+
+/* ── SCREENS ── */
+.screen { display:none; min-height:100vh; position:relative; }
+.screen.active { display:flex; flex-direction:column; }
+
+/* ════════════════════════════
+   LANDING
+════════════════════════════ */
+#landing {
+  align-items:center; justify-content:center; text-align:center;
+  padding:60px 24px 80px;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 30%, rgba(139,26,26,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(139,26,26,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 30% 50% at 80% 60%, rgba(139,26,26,0.05) 0%, transparent 50%),
+    var(--void);
+}
+
+/* Gothic arch decorative frame */
+#landing::after {
+  content:'';
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:2px; height:60px;
+  background:linear-gradient(to bottom, var(--blood), transparent);
+}
+
+.landing-sigil {
+  position:relative; margin-bottom:40px;
+  animation: descend 1.2s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.sigil-ring {
+  width:120px; height:120px; margin:0 auto 28px;
+  position:relative; display:flex; align-items:center; justify-content:center;
+}
+/* outer ripple ring */
+.sigil-ring::before {
+  content:''; position:absolute; inset:-16px; border-radius:50%;
+  border:1px solid var(--blood);
+  animation: ripple-out 2.2s ease-in-out infinite;
+}
+/* inner glow ring */
+.sigil-ring::after {
+  content:''; position:absolute; inset:0; border-radius:50%;
+  border:2px solid var(--crimson);
+  box-shadow:
+    0 0 0 4px rgba(139,26,26,0.15),
+    0 0 30px var(--blood),
+    0 0 60px rgba(139,26,26,0.5),
+    0 0 100px rgba(139,26,26,0.3),
+    inset 0 0 30px rgba(139,26,26,0.4);
+  animation: heartbeat 1.6s ease-in-out infinite;
+}
+@keyframes ripple-out {
+  0%   { transform:scale(0.85); opacity:0.9; border-color:rgba(192,57,43,0.8); }
+  50%  { transform:scale(1.15); opacity:0.3; border-color:rgba(139,26,26,0.3); }
+  100% { transform:scale(0.85); opacity:0.9; border-color:rgba(192,57,43,0.8); }
+}
+@keyframes heartbeat {
+  0%   {
+    box-shadow: 0 0 0 0 rgba(192,57,43,0.8), 0 0 20px var(--blood), 0 0 40px rgba(139,26,26,0.4), inset 0 0 15px rgba(139,26,26,0.3);
+    transform:scale(1);
+  }
+  14%  {
+    box-shadow: 0 0 0 12px rgba(192,57,43,0.3), 0 0 50px var(--blood), 0 0 90px rgba(139,26,26,0.7), inset 0 0 40px rgba(192,57,43,0.5);
+    transform:scale(1.06);
+  }
+  28%  {
+    box-shadow: 0 0 0 6px rgba(192,57,43,0.15), 0 0 25px var(--blood), 0 0 50px rgba(139,26,26,0.4), inset 0 0 20px rgba(139,26,26,0.3);
+    transform:scale(1);
+  }
+  42%  {
+    box-shadow: 0 0 0 18px rgba(192,57,43,0.4), 0 0 70px var(--crimson), 0 0 120px rgba(139,26,26,0.8), inset 0 0 50px rgba(192,57,43,0.6);
+    transform:scale(1.1);
+  }
+  70%  {
+    box-shadow: 0 0 0 30px rgba(192,57,43,0), 0 0 30px rgba(139,26,26,0.3), 0 0 60px rgba(139,26,26,0.2), inset 0 0 15px rgba(139,26,26,0.2);
+    transform:scale(1);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(192,57,43,0), 0 0 20px var(--blood), 0 0 40px rgba(139,26,26,0.4), inset 0 0 15px rgba(139,26,26,0.3);
+    transform:scale(1);
+  }
+}
+
+.sigil-inner {
+  font-family:'UnifrakturMaguntia', cursive;
+  font-size:48px; color:var(--crimson);
+  text-shadow:
+    0 0 10px #fff,
+    0 0 20px var(--crimson),
+    0 0 40px var(--blood),
+    0 0 80px rgba(139,26,26,0.8);
+  line-height:1; position:relative; z-index:1;
+  animation: glyph-pulse 1.6s ease-in-out infinite;
+}
+@keyframes glyph-pulse {
+  0%,100% { text-shadow: 0 0 10px rgba(255,255,255,0.3), 0 0 20px var(--crimson), 0 0 40px var(--blood); }
+  42%     { text-shadow: 0 0 20px #fff, 0 0 40px var(--crimson), 0 0 80px var(--blood), 0 0 120px rgba(192,57,43,0.6); }
+}
+
+.landing-title {
+  font-family:'UnifrakturMaguntia', cursive;
+  font-size:clamp(48px, 12vw, 80px);
+  color:var(--bone);
+  text-shadow: 0 0 40px rgba(139,26,26,0.5), 2px 2px 0 rgba(0,0,0,0.8);
+  letter-spacing:0.04em; line-height:1;
+  animation: descend 1.2s 0.1s cubic-bezier(0.16,1,0.3,1) both;
+}
+.landing-title em { color:var(--blood); font-style:normal; }
+
+.landing-subtitle {
+  font-family:'IM Fell English', serif; font-style:italic;
+  font-size:13px; color:var(--shadow); letter-spacing:0.2em; text-transform:uppercase;
+  margin-top:8px;
+  animation: descend 1.2s 0.2s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.landing-verse {
+  font-family:'IM Fell English', serif; font-style:italic;
+  font-size:18px; color:var(--parchment); line-height:1.8;
+  margin:32px 0 40px; max-width:380px;
+  animation: descend 1.2s 0.3s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.landing-actions {
+  display:flex; gap:16px; flex-wrap:wrap; justify-content:center;
+  animation: descend 1.2s 0.4s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.btn-gothic {
+  padding:13px 36px;
+  background:linear-gradient(135deg, var(--blood) 0%, rgba(139,26,26,0.7) 100%);
+  color:var(--bone); border:1px solid rgba(192,57,43,0.5);
+  font-family:'Cinzel', serif; font-size:12px; font-weight:600;
+  letter-spacing:0.15em; text-transform:uppercase;
+  cursor:pointer; transition:all 0.4s;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  box-shadow: 0 4px 20px var(--glow-blood);
+  position:relative; overflow:hidden;
+}
+.btn-gothic::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  opacity:0; transition:opacity 0.3s;
+}
+.btn-gothic:hover { box-shadow:0 6px 30px rgba(139,26,26,0.5); transform:translateY(-2px); }
+.btn-gothic:hover::before { opacity:1; }
+
+.btn-ghost-gothic {
+  padding:13px 36px;
+  background:transparent;
+  color:var(--parchment); border:1px solid var(--border-bone);
+  font-family:'Cinzel', serif; font-size:12px; font-weight:400;
+  letter-spacing:0.15em; text-transform:uppercase;
+  cursor:pointer; transition:all 0.4s;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+.btn-ghost-gothic:hover { border-color:var(--border-goth); color:var(--blood); transform:translateY(-2px); }
+
+.preview-triptych {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+  max-width:320px; margin:48px auto 0;
+  animation: descend 1.2s 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+.triptych-panel {
+  aspect-ratio:2/3; background:var(--crypt);
+  border:1px solid var(--border-goth);
+  display:flex; align-items:center; justify-content:center;
+  font-size:28px; position:relative; overflow:hidden;
+  transition:all 0.4s;
+}
+.triptych-panel:nth-child(2) { margin-top:-16px; }
+.triptych-panel::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:40%;
+  background:linear-gradient(to bottom, rgba(139,26,26,0.1), transparent);
+}
+.triptych-panel::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:40%;
+  background:linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+}
+.triptych-panel:hover { border-color:var(--crimson); transform:scale(1.02); }
+
+@keyframes descend {
+  from { opacity:0; transform:translateY(-20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+/* ════════════════════════════
+   APP
+════════════════════════════ */
+#app { background:var(--void); }
+
+.app-header {
+  position:sticky; top:0; z-index:200;
+  background:rgba(6,6,8,0.95); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border-goth);
+  padding:0 20px; height:58px;
+  display:flex; align-items:center; justify-content:space-between;
+  box-shadow: 0 1px 30px rgba(139,26,26,0.15);
+}
+.app-logo {
+  font-family:'UnifrakturMaguntia', cursive;
+  font-size:26px; color:var(--blood);
+  text-shadow: 0 0 15px var(--glow-blood);
+}
+.header-right { display:flex; align-items:center; gap:10px; }
+.hdr-btn {
+  width:36px; height:36px; border-radius:2px;
+  border:1px solid var(--border-bone); background:transparent;
+  color:var(--shadow); font-size:15px; cursor:pointer; transition:all 0.3s;
+  display:flex; align-items:center; justify-content:center;
+}
+.hdr-btn:hover { border-color:var(--blood); color:var(--bone); }
+.user-crest {
+  width:36px; height:36px;
+  background:linear-gradient(135deg, var(--blood), var(--crimson));
+  border:1px solid rgba(192,57,43,0.5);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Cinzel', serif; font-size:13px; font-weight:600;
+  color:var(--bone); cursor:pointer;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* ── GOTHIC NAV TABS ── */
+.nav-tabs {
+  background:var(--abyss); border-bottom:1px solid var(--border-goth);
+  display:flex; gap:0; overflow-x:auto; scrollbar-width:none;
+}
+.nav-tab {
+  flex-shrink:0; padding:14px 22px;
+  background:transparent; border:none; border-bottom:2px solid transparent;
+  color:var(--shadow); font-family:'Cinzel', serif; font-size:11px;
+  letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; transition:all 0.3s;
+}
+.nav-tab:hover { color:var(--shadow); border-bottom-color:rgba(139,26,26,0.3); }
+.nav-tab.active { color:var(--blood); border-bottom-color:var(--blood); }
+
+/* ── CONTENT ── */
+.content-area { flex:1; padding:24px 16px; max-width:680px; margin:0 auto; width:100%; }
+
+/* ── FEED FILTERS ── */
+.feed-filters { display:flex; gap:8px; margin-bottom:24px; overflow-x:auto; scrollbar-width:none; }
+.firebase-feed-wrap { display:flex; flex-direction:column; gap:0; }
+.filter-rune {
+  flex-shrink:0; padding:6px 18px;
+  background:transparent; border:1px solid var(--border-bone);
+  color:var(--shadow); font-family:'Cinzel', serif; font-size:10px;
+  letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; transition:all 0.3s;
+}
+.filter-rune.active { background:rgba(139,26,26,0.15); border-color:var(--blood); color:var(--blood); }
+.filter-rune:hover:not(.active) { border-color:var(--border-goth); color:var(--parchment); }
+
+/* ── POST CARDS ── */
+.post-card {
+  background:var(--abyss); border:1px solid var(--border-goth);
+  margin-bottom:20px; overflow:hidden; transition:border-color 0.4s;
+  position:relative; animation: rise 0.6s ease both;
+}
+.post-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--blood), transparent);
+}
+.post-card:hover { border-color:rgba(192,57,43,0.5); }
+@keyframes rise { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+.post-header { padding:16px 18px 12px; display:flex; align-items:center; gap:12px; }
+.post-crest {
+  width:42px; height:42px;
+  background:linear-gradient(135deg, var(--blood), rgba(139,26,26,0.5));
+  border:1px solid rgba(192,57,43,0.4);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'UnifrakturMaguntia', cursive; font-size:20px; color:var(--bone); flex-shrink:0;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+.post-meta { flex:1; }
+.post-author { font-family:'Cinzel', serif; font-size:13px; font-weight:600; color:var(--bone); letter-spacing:0.06em; }
+.post-time { font-size:12px; color:var(--shadow); font-style:italic; margin-top:2px; }
+.post-badge {
+  padding:4px 12px; font-family:'Cinzel', serif; font-size:9px;
+  letter-spacing:0.12em; text-transform:uppercase; border:1px solid;
+}
+.badge-photo { color:var(--ember); border-color:rgba(201,169,110,0.3); background:rgba(201,169,110,0.08); }
+.badge-video { color:var(--rose); border-color:var(--border-rose); background:var(--glow-rose); }
+.badge-podcast { color:#9b7eb8; border-color:rgba(155,126,184,0.3); background:rgba(155,126,184,0.08); }
+
+.post-media {
+  width:100%; background:var(--crypt);
+  border-top:1px solid var(--border-goth); border-bottom:1px solid var(--border-goth);
+  display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+}
+.post-media.photo { aspect-ratio:4/3; }
+.post-media.video { aspect-ratio:16/9; }
+.post-media.audio-card { aspect-ratio:2/1; padding:24px; }
+
+.media-ghost { display:flex; flex-direction:column; align-items:center; gap:10px; color:var(--shadow); }
+.media-ghost .ghost-icon { font-size:40px; opacity:0.5; }
+.media-ghost span { font-family:'IM Fell English', serif; font-size:13px; font-style:italic; }
+
+.media-veil {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.25);
+}
+.play-chalice {
+  width:60px; height:60px;
+  background:rgba(139,26,26,0.85); border:1px solid rgba(192,57,43,0.6);
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; padding-left:4px; cursor:pointer; transition:all 0.3s;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  box-shadow: 0 0 20px var(--glow-blood);
+}
+.play-chalice:hover { background:rgba(192,57,43,0.9); transform:scale(1.1); box-shadow:0 0 35px rgba(139,26,26,0.6); }
+
+/* ── FILTERS ── */
+.filter-scroll {
+  display:flex; gap:10px; padding:14px 18px; overflow-x:auto; scrollbar-width:none;
+  border-bottom:1px solid var(--border-goth); background:rgba(12,12,16,0.8);
+}
+.filter-vial {
+  flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer;
+}
+.vial-glass {
+  width:54px; height:54px; border:2px solid var(--border-bone);
+  overflow:hidden; display:flex; align-items:center; justify-content:center;
+  font-size:22px; transition:border-color 0.3s; position:relative;
+}
+.filter-vial.active .vial-glass { border-color:var(--blood); box-shadow:0 0 10px var(--glow-blood); }
+.vial-name { font-family:'Cinzel', serif; font-size:9px; color:var(--shadow); letter-spacing:0.08em; text-transform:uppercase; }
+.filter-vial.active .vial-name { color:var(--blood); }
+
+/* ── TOOLS ── */
+.tools-grimoire {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
+  padding:14px 18px; border-bottom:1px solid var(--border-goth);
+  background:rgba(12,12,16,0.8);
+}
+.tool-rune {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  padding:10px 6px; border:1px solid var(--border-bone); cursor:pointer; transition:all 0.3s;
+}
+.tool-rune:hover { border-color:var(--blood); background:var(--glow-blood); }
+.tool-rune .rune-glyph { font-size:18px; }
+.tool-rune .rune-name { font-family:'Cinzel', serif; font-size:9px; color:var(--shadow); text-transform:uppercase; letter-spacing:0.06em; }
+.tool-rune:hover .rune-name { color:var(--blood); }
+
+.slider-scroll { padding:0 18px 14px; }
+.slider-row { display:flex; justify-content:space-between; font-family:'Cinzel', serif; font-size:10px; color:var(--shadow); margin-bottom:8px; letter-spacing:0.08em; text-transform:uppercase; }
+input[type=range] {
+  width:100%; -webkit-appearance:none; height:2px;
+  background:var(--border-bone); outline:none; cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:14px; height:14px;
+  background:var(--blood); border:1px solid var(--crimson); cursor:pointer;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.post-body { padding:14px 18px; }
+.post-caption { font-family:'Crimson Text', serif; font-size:15px; line-height:1.7; color:var(--parchment); margin-bottom:10px; }
+.post-sigils { display:flex; flex-wrap:wrap; gap:8px; }
+.post-sigil { font-family:'Cinzel', serif; font-size:10px; color:var(--blood); letter-spacing:0.08em; cursor:pointer; opacity:0.8; }
+.post-sigil:hover { opacity:1; }
+
+.post-footer {
+  padding:12px 18px; border-top:1px solid var(--border-goth);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.post-rituals { display:flex; gap:18px; }
+.ritual-btn {
+  display:flex; align-items:center; gap:6px; background:none; border:none;
+  font-family:'Cinzel', serif; font-size:10px; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--dust); cursor:pointer; transition:color 0.3s;
+}
+.ritual-btn:hover { color:var(--blood); }
+.ritual-btn.liked { color:var(--crimson); }
+
+/* ════════════════════════════
+   WISHES
+════════════════════════════ */
+.scroll-form {
+  background:var(--abyss); border:1px solid var(--border-goth);
+  padding:24px; margin-bottom:24px; position:relative;
+}
+.scroll-form::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--blood), transparent);
+}
+.scroll-title { font-family:'UnifrakturMaguntia', cursive; font-size:28px; color:var(--blood); margin-bottom:4px; }
+.scroll-sub { font-family:'IM Fell English', serif; font-style:italic; font-size:14px; color:var(--shadow); margin-bottom:20px; }
+
+.wish-types { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:18px; }
+.wish-rune {
+  padding:14px 8px; border:1px solid var(--border-bone);
+  background:var(--crypt); text-align:center; cursor:pointer; transition:all 0.3s;
+}
+.wish-rune.chosen { border-color:var(--blood); background:rgba(139,26,26,0.12); }
+.wish-rune .wr-icon { font-size:22px; margin-bottom:5px; }
+.wish-rune .wr-name { font-family:'Cinzel', serif; font-size:9px; color:var(--shadow); text-transform:uppercase; letter-spacing:0.1em; }
+.wish-rune.chosen .wr-name { color:var(--blood); }
+
+.gothic-textarea {
+  width:100%; padding:14px 16px; background:var(--crypt);
+  border:1px solid var(--border-bone); border-left:2px solid var(--blood);
+  color:var(--parchment); font-family:'Crimson Text', serif; font-size:15px; line-height:1.6;
+  outline:none; resize:vertical; min-height:90px; transition:border-color 0.3s;
+  margin-bottom:16px;
+}
+.gothic-textarea:focus { border-color:var(--border-goth); border-left-color:var(--crimson); }
+.gothic-textarea::placeholder { color:var(--shadow); font-style:italic; }
+
+.invoke-btn {
+  width:100%; padding:14px;
+  background:linear-gradient(135deg, var(--blood), rgba(139,26,26,0.7));
+  color:var(--bone); border:none;
+  font-family:'Cinzel', serif; font-size:11px; font-weight:600;
+  letter-spacing:0.18em; text-transform:uppercase; cursor:pointer; transition:all 0.3s;
+  box-shadow:0 4px 20px var(--glow-blood);
+  clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+}
+.invoke-btn:hover { box-shadow:0 6px 30px rgba(139,26,26,0.5); }
+
+.wish-scroll {
+  background:var(--abyss); border:1px solid var(--border-goth);
+  padding:18px; margin-bottom:12px; position:relative;
+  animation: rise 0.5s ease both;
+}
+.wish-head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.wish-dot { width:34px; height:34px; background:var(--crypt); border:1px solid var(--border-goth); display:flex; align-items:center; justify-content:center; font-size:15px; }
+.wish-who { font-family:'Cinzel', serif; font-size:12px; color:var(--parchment); letter-spacing:0.06em; }
+.wish-when { font-family:'IM Fell English', serif; font-style:italic; font-size:11px; color:var(--shadow); }
+.wish-words { font-family:'Crimson Text', serif; font-size:15px; line-height:1.6; color:var(--shadow); }
+
+/* ════════════════════════════
+   SUPPORT
+════════════════════════════ */
+.altar-card {
+  background:var(--abyss); border:1px solid var(--border-goth);
+  padding:28px; margin-bottom:16px; position:relative;
+}
+.altar-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--blood), transparent);
+}
+.altar-title { font-family:'UnifrakturMaguntia', cursive; font-size:30px; color:var(--blood); margin-bottom:6px; }
+.altar-sub { font-family:'IM Fell English', serif; font-style:italic; font-size:14px; color:var(--shadow); line-height:1.7; margin-bottom:24px; }
+
+.offering-link {
+  display:flex; align-items:center; gap:14px;
+  padding:16px 20px; border:1px solid var(--border-bone);
+  background:var(--crypt); width:100%; text-decoration:none;
+  transition:all 0.3s; margin-bottom:10px; cursor:pointer;
+}
+.offering-link:hover { border-color:var(--blood); background:rgba(139,26,26,0.1); }
+.offering-icon { font-size:24px; }
+.offering-text { flex:1; }
+.offering-title { font-family:'Cinzel', serif; font-size:13px; color:var(--bone); letter-spacing:0.06em; display:block; }
+.offering-sub { font-family:'IM Fell English', serif; font-style:italic; font-size:12px; color:var(--shadow); display:block; margin-top:3px; }
+.offering-arrow { font-size:14px; color:var(--blood); }
+
+/* ════════════════════════════
+   ADMIN
+════════════════════════════ */
+.admin-chapter { margin-bottom:28px; }
+.chapter-title {
+  font-family:'Cinzel', serif; font-size:14px; letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--blood); border-bottom:1px solid var(--border-goth); padding-bottom:10px; margin-bottom:16px;
+}
+.reliquary-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:24px; }
+.relic-box { background:var(--abyss); border:1px solid var(--border-goth); padding:20px; text-align:center; }
+.relic-num { font-family:'UnifrakturMaguntia', cursive; font-size:40px; color:var(--blood); text-shadow:0 0 15px var(--glow-blood); }
+.relic-label { font-family:'Cinzel', serif; font-size:9px; color:var(--shadow); text-transform:uppercase; letter-spacing:0.12em; margin-top:4px; }
+
+.supplicant-card {
+  background:var(--abyss); border:1px solid var(--border-goth);
+  padding:16px; margin-bottom:10px; display:flex; align-items:flex-start; gap:12px;
+}
+.sup-crest {
+  width:38px; height:38px; flex-shrink:0;
+  background:var(--crypt); border:1px solid var(--border-goth);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Cinzel', serif; font-size:14px; color:var(--shadow);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+.sup-info { flex:1; }
+.sup-name { font-family:'Cinzel', serif; font-size:13px; color:var(--bone); letter-spacing:0.06em; }
+.sup-email { font-size:12px; color:var(--shadow); font-style:italic; margin-top:2px; }
+.sup-msg { font-family:'IM Fell English', serif; font-style:italic; font-size:13px; color:var(--shadow); margin-top:6px; }
+.sup-actions { display:flex; flex-direction:column; gap:6px; }
+.bless-btn { padding:7px 14px; background:rgba(78,203,141,0.15); border:1px solid rgba(78,203,141,0.3); color:#4ecb8d; font-family:'Cinzel', serif; font-size:9px; letter-spacing:0.1em; cursor:pointer; transition:all 0.3s; }
+.bless-btn:hover { background:rgba(78,203,141,0.25); }
+.curse-btn { padding:7px 14px; background:transparent; border:1px solid var(--border-goth); color:var(--blood); font-family:'Cinzel', serif; font-size:9px; letter-spacing:0.1em; cursor:pointer; transition:all 0.3s; }
+.curse-btn:hover { background:var(--glow-blood); }
+
+.sanctuary-drop {
+  border:1px dashed var(--border-goth); padding:36px; text-align:center;
+  cursor:pointer; transition:all 0.3s;
+}
+.sanctuary-drop:hover { border-color:var(--blood); background:var(--glow-blood); }
+.sanctuary-drop .drop-icon { font-size:36px; margin-bottom:10px; opacity:0.5; }
+.sanctuary-drop p { font-family:'IM Fell English', serif; font-style:italic; color:var(--shadow); font-size:14px; line-height:1.6; }
+.sanctuary-drop span { color:var(--blood); }
+
+/* ── BOTTOM NAV ── */
+.bottom-nave {
+  position:sticky; bottom:0; z-index:200;
+  background:rgba(6,6,8,0.97); backdrop-filter:blur(16px);
+  border-top:1px solid var(--border-goth);
+  display:flex;
+  box-shadow: 0 -1px 20px rgba(139,26,26,0.15);
+}
+.nave-btn {
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+  background:none; border:none; color:var(--shadow); cursor:pointer; padding:10px 6px;
+  font-family:'Cinzel', serif; transition:color 0.3s;
+}
+.nave-btn.active { color:var(--blood); }
+.nave-btn .nave-icon { font-size:18px; }
+.nave-btn .nave-label { font-size:9px; letter-spacing:0.1em; text-transform:uppercase; }
+
+/* ── MODALS ── */
+.modal-shroud {
+  display:none; position:fixed; inset:0; z-index:1000;
+  background:rgba(0,0,0,0.85); backdrop-filter:blur(10px);
+  align-items:center; justify-content:center; padding:20px;
+}
+.modal-shroud.open { display:flex; }
+.modal-grimoire {
+  background:var(--abyss); border:1px solid var(--border-goth);
+  padding:40px 36px; width:100%; max-width:400px; position:relative;
+  animation: descend 0.4s cubic-bezier(0.16,1,0.3,1) both;
+  box-shadow:0 24px 60px rgba(0,0,0,0.8), 0 0 60px var(--glow-blood);
+}
+.modal-grimoire::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--blood), transparent);
+}
+.modal-grimoire::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--blood), transparent);
+}
+.modal-logo-goth { text-align:center; margin-bottom:24px; }
+.modal-logo-goth span { font-family:'UnifrakturMaguntia', cursive; font-size:34px; color:var(--blood); text-shadow:0 0 15px var(--glow-blood); }
+.modal-h { font-family:'Cinzel', serif; font-size:20px; font-weight:600; text-align:center; color:var(--bone); letter-spacing:0.08em; margin-bottom:6px; }
+.modal-p { font-family:'IM Fell English', serif; font-style:italic; font-size:14px; color:var(--shadow); text-align:center; margin-bottom:28px; line-height:1.5; }
+.modal-close { position:absolute; top:14px; right:16px; background:none; border:none; color:var(--shadow); cursor:pointer; font-size:18px; transition:color 0.3s; }
+.modal-close:hover { color:var(--blood); }
+
+.field-group { margin-bottom:14px; }
+.field-label { font-family:'Cinzel', serif; font-size:9px; color:var(--shadow); letter-spacing:0.12em; text-transform:uppercase; display:block; margin-bottom:7px; }
+.gothic-input {
+  width:100%; padding:12px 16px; background:var(--crypt);
+  border:1px solid var(--border-bone); border-left:2px solid var(--blood);
+  color:var(--parchment); font-family:'Crimson Text', serif; font-size:15px;
+  outline:none; transition:all 0.3s;
+}
+.gothic-input:focus { border-color:var(--border-goth); }
+.gothic-input::placeholder { color:var(--shadow); font-style:italic; }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+.modal-btn {
+  width:100%; padding:14px; margin-top:8px;
+  background:linear-gradient(135deg, var(--blood), rgba(139,26,26,0.8));
+  color:var(--bone); border:none;
+  font-family:'Cinzel', serif; font-size:11px; font-weight:600;
+  letter-spacing:0.18em; text-transform:uppercase; cursor:pointer; transition:all 0.3s;
+  box-shadow:0 4px 20px var(--glow-blood);
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+}
+.modal-btn:hover { box-shadow:0 6px 30px rgba(139,26,26,0.5); }
+.modal-switch { text-align:center; margin-top:18px; font-family:'IM Fell English', serif; font-style:italic; font-size:13px; color:var(--shadow); }
+.modal-switch a { color:var(--blood); cursor:pointer; text-decoration:none; }
+.modal-switch a:hover { color:var(--crimson); }
+
+.vigil-msg {
+  text-align:center; padding:20px; border:1px solid var(--border-goth);
+  margin-top:20px; background:rgba(139,26,26,0.08);
+}
+.vigil-msg p { font-family:'IM Fell English', serif; font-style:italic; font-size:14px; color:var(--shadow); line-height:1.7; }
+
+/* ── TOASTS ── */
+.toast-keep { position:fixed; top:70px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
+.toast-seal {
+  padding:12px 20px; border:1px solid; font-family:'Cinzel', serif;
+  font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+  animation: slideIn 0.3s ease; max-width:280px; box-shadow:0 8px 30px rgba(0,0,0,0.5);
+}
+.toast-seal.s { background:rgba(78,203,141,0.15); border-color:rgba(78,203,141,0.4); color:#4ecb8d; }
+.toast-seal.e { background:rgba(139,26,26,0.2); border-color:var(--border-goth); color:var(--crimson); }
+.toast-seal.i { background:rgba(201,169,110,0.12); border-color:rgba(201,169,110,0.3); color:var(--ember); }
+@keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+
+.dn { display:none; }
+.online-rune { width:8px; height:8px; background:#4ecb8d; display:inline-block; animation:blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+.lang-corner { position:absolute; top:20px; right:20px; z-index:5; display:flex; gap:4px; }
+.lang-glyph { padding:5px 12px; border:1px solid var(--border-bone); background:transparent; color:var(--shadow); font-family:'Cinzel', serif; font-size:10px; letter-spacing:0.1em; cursor:pointer; transition:all 0.3s; }
+.lang-glyph.active { background:rgba(139,26,26,0.2); border-color:var(--blood); color:var(--blood); }
+
+  /* ── CONTENT PROTECTION ── */
+  img, video, audio { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
+  img { -webkit-user-select: none; user-select: none; }
+  .post-media img, .post-media video { pointer-events: auto; }
+  ::selection { background: transparent; }
+  ::-moz-selection { background: transparent; }
+</style>
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+  // ══════════════════════════════════════
+  // EmailJS настройка
+  // Зарегистрируйся на emailjs.com и вставь свои ключи:
+  const EMAILJS_SERVICE_ID  = "service_ourworld";
+  const EMAILJS_TEMPLATE_ID = "template_ekowild";
+  const EMAILJS_PUBLIC_KEY  = "ZM4gE1AjW31M2HoI1";
+  // ══════════════════════════════════════
+  if(EMAILJS_PUBLIC_KEY !== "ВСТАВЬ_PUBLIC_KEY") {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+  }
+</script>
+</head>
+<body>
+
+<!-- ═══ COPYRIGHT BAR ═══ -->
+<div id="copyright-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
+  background:rgba(6,6,8,0.97);border-top:1px solid rgba(139,26,26,0.4);
+  padding:8px 16px;text-align:center;font-family:'Cinzel',serif;font-size:10px;
+  color:rgba(201,169,110,0.7);letter-spacing:0.1em;">
+  © OurWorld 2024–2026 · Все права защищены · Закон об авторском праве Израиля (5768-2007)
+  &nbsp;·&nbsp; <a onclick="openModal('legal')" style="color:rgba(201,169,110,0.9);cursor:pointer;text-decoration:underline">Правовое уведомление</a>
+</div>
+
+<!-- ═══ CONTENT PROTECTION JS ═══ -->
+<script>
+// Block right-click
+document.addEventListener('contextmenu', function(e){
+  e.preventDefault();
+  if(typeof toast==='function') toast('Скачивание контента запрещено 🔒','e');
+  return false;
+});
+
+// Block Ctrl+S, Ctrl+P, Ctrl+U, F12
+document.addEventListener('keydown', function(e){
+  const ctrl = e.ctrlKey || e.metaKey;
+  const k = (e.key || '').toLowerCase();
+  if(ctrl && ['s','p','u'].includes(k)){ e.preventDefault(); if(typeof toast==='function') toast('Сохранение запрещено 🔒','e'); return false; }
+  if(e.key==='F12'){ e.preventDefault(); return false; }
+});
+
+// Block image/video drag
+document.addEventListener('dragstart', function(e){
+  if(['IMG','VIDEO'].includes(e.target.tagName)){ e.preventDefault(); return false; }
+});
+
+// Add watermark to media
+function addWatermark(el){
+  if(!el || el.dataset.wm) return;
+  el.dataset.wm = '1';
+  const wrap = el.parentElement;
+  if(!wrap) return;
+  if(getComputedStyle(wrap).position==='static') wrap.style.position='relative';
+  const wm = document.createElement('div');
+  wm.style.cssText='position:absolute;bottom:8px;right:8px;pointer-events:none;z-index:10;font-family:Cinzel,serif;font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:0.08em;text-shadow:0 1px 3px rgba(0,0,0,0.9)';
+  wm.textContent='© OurWorld';
+  wrap.appendChild(wm);
+}
+setInterval(()=>{
+  document.querySelectorAll('.post-media img, .post-media video').forEach(addWatermark);
+}, 800);
+
+function showCopyrightBar(){ document.getElementById('copyright-bar').style.display='block'; }
+function showKofiFloat(){
+  const el=document.getElementById('kofi-float');
+  if(el) el.style.display='block';
+}
+</script>
+
+<!-- ══════════════ LANDING ══════════════ -->
+<section class="screen active" id="landing">
+  <div class="lang-corner">
+    <button class="lang-glyph active" onclick="setLang('ru')">RU</button>
+    <button class="lang-glyph" onclick="setLang('en')">EN</button>
+    <button class="lang-glyph" onclick="setLang('he')">עב</button>
+  </div>
+
+  <div class="landing-sigil">
+    <div class="sigil-ring">
+      <div class="sigil-inner">ℌ</div>
+    </div>
+    <div class="landing-title">Our<em>World</em></div>
+    <div class="landing-subtitle" data-i18n="tagline_sub">Закрытый мир двоих</div>
+  </div>
+
+  <div class="ornament-line"><span>✦ &nbsp; ✦ &nbsp; ✦</span></div>
+
+  <p class="landing-verse" data-i18n="tagline">
+    «Наша жизнь — наши правила.<br>Добро пожаловать в наш мир.»
+  </p>
+
+  <div class="landing-actions">
+    <button class="btn-gothic" onclick="openModal('register')" data-i18n="join">Присоединиться</button>
+    <button class="btn-ghost-gothic" onclick="openModal('login')" data-i18n="login">Войти</button>
+  </div>
+
+  <div class="preview-triptych">
+    <div class="triptych-panel">📸</div>
+    <div class="triptych-panel">🎬</div>
+    <div class="triptych-panel">🎙️</div>
+  </div>
+
+  <p style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:10px;color:var(--dust);letter-spacing:0.1em;white-space:nowrap">
+  </p>
+</section>
+
+<!-- ══════════════ APP ══════════════ -->
+<section class="screen" id="app">
+  <header class="app-header">
+    <div class="app-logo">OurWorld</div>
+    <div class="header-right">
+      <span class="online-rune"></span>
+      <span style="font-family:'Cinzel',serif;font-size:9px;color:var(--dust);letter-spacing:0.08em" data-i18n="online">ONLINE</span>
+      <a href="https://wa.me/972533213698" target="_blank"
+         title="WhatsApp"
+         style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#25D366;text-decoration:none;flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 2px 8px rgba(37,211,102,0.35)"
+         onmouseover="this.style.transform='scale(1.12)';this.style.boxShadow='0 3px 14px rgba(37,211,102,0.55)'"
+         onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 2px 8px rgba(37,211,102,0.35)'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#fff">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.855L0 24l6.334-1.508A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.817 9.817 0 01-5.003-1.367l-.36-.213-3.757.895.949-3.656-.235-.374A9.786 9.786 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
+        </svg>
+      </a>
+      <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Сменить тему">☀️</button>
+      <button class="hdr-btn" onclick="toggleLang()" id="langToggleBtn" title="Сменить язык">🌐</button>
+      <div class="user-crest" id="userCrest">U</div>
+    </div>
+  </header>
+
+  <nav class="nav-tabs" id="navTabs">
+    <button class="nav-tab active" onclick="showTab('feed')" data-i18n="tab_feed">Лента</button>
+    <button class="nav-tab" onclick="showTab('wishes')" data-i18n="tab_wishes">Пожелания</button>
+    <button class="nav-tab" onclick="showTab('support')" data-i18n="tab_support">Поддержка</button>
+    <button class="nav-tab" onclick="showTab('live')" data-i18n="tab_live">🔴 Live</button>
+    <button class="nav-tab admin-only dn" onclick="showTab('admin')" data-i18n="tab_admin">Алтарь</button>
+  </nav>
+
+  <!-- FEED -->
+  <div class="content-area dn" id="tab-feed">
+    <div class="feed-filters">
+      <button class="filter-rune active" onclick="filterFeed('all',this)" data-i18n="f_all">Всё</button>
+      <button class="filter-rune" onclick="filterFeed('photo',this)" data-i18n="f_photo">📸 Фото</button>
+      <button class="filter-rune" onclick="filterFeed('video',this)" data-i18n="f_video">🎬 Видео</button>
+      <button class="filter-rune" onclick="filterFeed('podcast',this)" data-i18n="f_pod">🎙️ Подкасты</button>
+    </div>
+
+    <!-- Firebase posts appear here (newest first) -->
+    <div id="firebase-feed"></div>
+
+    <!-- DEMO CARDS (shown when Firebase is empty) -->
+    <div id="demo-feed">
+
+      <!-- CARD 1: Photo -->
+      <article class="post-card" data-type="photo">
+        <div class="post-header">
+          <div class="post-crest">A</div>
+          <div class="post-meta">
+            <div class="post-time">2 часа назад</div>
+          </div>
+          <span class="post-badge badge-photo">📸 Фото</span>
+        </div>
+        <div class="post-media photo" id="pm1">
+          <div class="media-ghost">
+            <div class="ghost-icon">🌿</div>
+            <span>Наш день</span>
+          </div>
+        </div>
+        
+        
+        
+        
+        
+        
+        <div class="post-body">
+          <p class="post-caption">Сегодня гуляли 🌿 Купили всё для ужина — будет что-то особенное!</p>
+          <div class="post-sigils"><span class="post-sigil">#нашжизнь</span><span class="post-sigil">#вместе</span></div>
+        </div>
+        <div class="post-footer">
+          <div class="post-rituals">
+            <button class="ritual-btn" onclick="toggleLike(this)">♥ <span>47</span></button>
+            <button class="ritual-btn" onclick="showTab('wishes')">✉ <span data-i18n="wish_btn">Пожелание</span></button>
+          </div>
+          <button class="ritual-btn">⬆ <span data-i18n="share">Поделиться</span></button>
+        </div>
+      </article>
+
+      <!-- CARD 2: Video -->
+      <article class="post-card" data-type="video">
+        <div class="post-header">
+          <div class="post-crest">A</div>
+          <div class="post-meta">
+            <div class="post-time">1 день назад</div>
+          </div>
+          <span class="post-badge badge-video">🎬 Видео</span>
+        </div>
+        <div class="post-media video">
+          <div class="media-ghost"><div class="ghost-icon">🏠</div><span>Вечер дома</span></div>
+          <div class="media-veil">
+            <div class="play-chalice" onclick="toast('Видео скоро будет доступно','i')">▶</div>
+          </div>
+        </div>
+        <div class="post-body">
+          <p class="post-caption">Наш уютный вечер 🏠 Готовили вместе, смотрели фильм.</p>
+          <div class="post-sigils"><span class="post-sigil">#домашнийвечер</span><span class="post-sigil">#уют</span></div>
+        </div>
+        <div class="post-footer">
+          <div class="post-rituals">
+            <button class="ritual-btn" onclick="toggleLike(this)">♥ <span>83</span></button>
+            <button class="ritual-btn" onclick="showTab('wishes')">✉ <span data-i18n="wish_btn">Пожелание</span></button>
+          </div>
+          <button class="ritual-btn">⬆ <span data-i18n="share">Поделиться</span></button>
+        </div>
+      </article>
+
+      <!-- CARD 3: Podcast -->
+      <article class="post-card" data-type="podcast">
+        <div class="post-header">
+          <div class="post-crest">A</div>
+          <div class="post-meta">
+            <div class="post-time">3 дня назад</div>
+          </div>
+          <span class="post-badge badge-podcast">🎙️ Подкаст</span>
+        </div>
+        <div class="post-media audio-card">
+          <div style="background:linear-gradient(135deg,rgba(155,126,184,0.12),rgba(139,26,26,0.08));border:1px solid rgba(155,126,184,0.2);width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;">
+            <div style="font-size:40px;opacity:0.7">🎙️</div>
+            <div style="font-family:'Cinzel',serif;font-size:11px;color:var(--shadow);letter-spacing:0.1em;text-transform:uppercase">Эпизод I — По вашим просьбам</div>
+            <div style="display:flex;align-items:center;gap:14px">
+              <button onclick="toast('Подкаст скоро!','i')" style="padding:10px 24px;background:rgba(155,126,184,0.15);border:1px solid rgba(155,126,184,0.3);color:#9b7eb8;font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.1em;cursor:pointer">▶ СЛУШАТЬ</button>
+              <span style="font-family:'Cinzel',serif;font-size:10px;color:var(--dust)">24:18</span>
+            </div>
+          </div>
+        </div>
+        <div class="post-body">
+          <p class="post-caption">Ответили на ваши вопросы о нашей жизни 🇮🇱</p>
+        </div>
+        <div class="post-footer">
+          <div class="post-rituals">
+            <button class="ritual-btn" onclick="toggleLike(this)">♥ <span>61</span></button>
+            <button class="ritual-btn" onclick="showTab('wishes')">✉ <span data-i18n="wish_btn">Пожелание</span></button>
+          </div>
+          <button class="ritual-btn">⬆ <span data-i18n="share">Поделиться</span></button>
+        </div>
+      </article>
+
+    </div><!-- /demo-feed -->
+
+  </div>
+
+  <!-- WISHES -->
+  <div class="content-area dn" id="tab-wishes">
+    <div class="scroll-form">
+      <div class="scroll-title">✉ <span data-i18n="w_title">Напиши нам</span></div>
+      <div class="scroll-sub" data-i18n="w_sub">Что ты хочешь увидеть или услышать?</div>
+      <div class="wish-types">
+        <div class="wish-rune chosen" onclick="pickType(this)"><div class="wr-icon">📸</div><div class="wr-name" data-i18n="wt_ph">Фото</div></div>
+        <div class="wish-rune" onclick="pickType(this)"><div class="wr-icon">🎬</div><div class="wr-name" data-i18n="wt_vi">Видео</div></div>
+        <div class="wish-rune" onclick="pickType(this)"><div class="wr-icon">🎙️</div><div class="wr-name" data-i18n="wt_po">Подкаст</div></div>
+      </div>
+      <textarea class="gothic-textarea" id="wishTxt" placeholder="Опиши своё пожелание…"></textarea>
+      <button class="invoke-btn" onclick="sendWish()" data-i18n="w_send">Отправить пожелание ✦</button>
+    </div>
+    <div id="wishList">
+      </div>
+  </div>
+
+  <!-- SUPPORT -->
+  <div class="content-area dn" id="tab-support">
+    <div class="altar-card">
+      <div class="altar-title">☕ <span data-i18n="s_title">Поддержи нас</span></div>
+      <p class="altar-sub" data-i18n="s_sub">Нам важна ваша поддержка! Каждая помощь создаёт больше контента.</p>
+
+      <!-- Ko-fi big banner -->
+      <div style="border:1px solid rgba(139,26,26,0.4);background:linear-gradient(135deg,rgba(139,26,26,0.12),rgba(201,169,110,0.05));padding:24px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blood),transparent)"></div>
+        <div style="font-size:36px;margin-bottom:8px">☕</div>
+        <div style="font-family:'UnifrakturMaguntia',cursive;font-size:22px;color:var(--blood);margin-bottom:4px">Ko-fi</div>
+        <div style="font-family:'IM Fell English',serif;font-style:italic;font-size:13px;color:var(--shadow);margin-bottom:16px">ko-fi.com/varthur</div>
+        <a href="https://ko-fi.com/varthur" target="_blank"
+           style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;
+                  background:linear-gradient(135deg,#8b1a1a,rgba(139,26,26,0.75));
+                  border:1px solid rgba(192,57,43,0.5);color:var(--bone);text-decoration:none;
+                  font-family:'Cinzel',serif;font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;
+                  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+                  box-shadow:0 4px 20px rgba(139,26,26,0.35)">
+          <span data-i18n="kofi_btn">Поддержать ✦</span>
+        </a>
+      </div>
+
+      <a href="https://ko-fi.com/varthur" target="_blank" class="offering-link">
+        <span class="offering-icon">☕</span>
+        <span class="offering-text">
+          <span class="offering-title">Ko-fi</span>
+          <span class="offering-sub">ko-fi.com/varthur</span>
+        </span>
+        <span class="offering-arrow">→</span>
+      </a>
+      <a href="https://wa.me/972533213698" target="_blank" class="offering-link">
+        <span class="offering-icon">💬</span>
+        <span class="offering-text">
+          <span class="offering-title">WhatsApp</span>
+          <span class="offering-sub" data-i18n="wa_sub">+972 053-321-3698 · Написать напрямую</span>
+        </span>
+        <span class="offering-arrow">→</span>
+      </a>
+    </div>
+    <div class="altar-card">
+      <div class="altar-title">🎥 <span data-i18n="live_title">Live 1 на 1</span></div>
+      <p class="altar-sub" data-i18n="live_sub">Хочешь пообщаться с нами лично? Оставь пожелание — свяжемся и договоримся!</p>
+      <button class="invoke-btn" onclick="showTab('wishes')" data-i18n="live_btn">Запросить сессию ✦</button>
+    </div>
+  </div>
+
+  <!-- ADMIN / ALTAR -->
+  
+  <!-- LIVE TAB -->
+  <div class="content-area dn" id="tab-live">
+
+    <!-- Live Modal Trigger Cards -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
+
+      <!-- Video Call Card -->
+      <div style="background:var(--abyss);border:1px solid var(--border-goth);padding:20px;cursor:pointer;transition:border-color 0.3s;position:relative;overflow:hidden" onclick="openLiveModal('call')">
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blood),transparent)"></div>
+        <div style="font-size:32px;margin-bottom:10px">📹</div>
+        <div style="font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:var(--bone);letter-spacing:0.08em;margin-bottom:6px">Видеозвонок</div>
+        <div style="font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:var(--shadow)">1 на 1 по камере</div>
+      </div>
+
+      <!-- Stream Card -->
+      <div style="background:var(--abyss);border:1px solid var(--border-goth);padding:20px;cursor:pointer;transition:border-color 0.3s;position:relative;overflow:hidden" onclick="openLiveModal('stream')">
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blood),transparent)"></div>
+        <div style="font-size:32px;margin-bottom:10px">📡</div>
+        <div style="font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:var(--bone);letter-spacing:0.08em;margin-bottom:6px">Прямой эфир</div>
+        <div style="font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:var(--shadow)">Стриминг по камере</div>
+      </div>
+
+      <!-- Podcast Card -->
+      <div style="background:var(--abyss);border:1px solid var(--border-goth);padding:20px;cursor:pointer;transition:border-color 0.3s;position:relative;overflow:hidden" onclick="openLiveModal('podcast')">
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blood),transparent)"></div>
+        <div style="font-size:32px;margin-bottom:10px">🎙️</div>
+        <div style="font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:var(--bone);letter-spacing:0.08em;margin-bottom:6px">Подкаст Live</div>
+        <div style="font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:var(--shadow)">Запись с микрофона</div>
+      </div>
+
+      <!-- Schedule Card -->
+      <div style="background:var(--abyss);border:1px solid var(--border-goth);padding:20px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blood),transparent)"></div>
+        <div style="font-size:32px;margin-bottom:10px">📅</div>
+        <div style="font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:var(--bone);letter-spacing:0.08em;margin-bottom:6px">Расписание</div>
+        <div style="font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:var(--shadow)">Скоро...</div>
+      </div>
+    </div>
+
+    <!-- Tips -->
+    <div style="background:rgba(139,26,26,0.08);border:1px solid var(--border-goth);padding:16px;font-family:'IM Fell English',serif;font-style:italic;font-size:13px;color:var(--shadow);line-height:1.7">
+      ✦ Видеозвонок работает через WebRTC — прямое соединение браузер-браузер без серверов.<br>
+      ✦ Для звонка: один создаёт комнату и копирует код, второй вводит код и подключается.<br>
+      ✦ Нужен HTTPS — работает на org-va.com, не работает на localhost.
+    </div>
+  </div>
+
+  <div class="content-area dn" id="tab-admin">
+    <div class="admin-chapter">
+      <div class="chapter-title" data-i18n="a_stats">📊 Хроники</div>
+      <div class="reliquary-grid">
+        <div class="relic-box"><div class="relic-num" id="stUsers">0</div><div class="relic-label" data-i18n="a_members">Участников</div></div>
+        <div class="relic-box"><div class="relic-num" id="stPend">0</div><div class="relic-label" data-i18n="a_pend">Ожидают</div></div>
+        <div class="relic-box"><div class="relic-num" id="stPosts">0</div><div class="relic-label" data-i18n="a_posts">Свитков</div></div>
+        <div class="relic-box"><div class="relic-num" id="stWishes">0</div><div class="relic-label" data-i18n="a_wishes">Пожеланий</div></div>
+      </div>
+    </div>
+    <div class="admin-chapter">
+      <div class="chapter-title" data-i18n="a_req">⏳ Просители</div>
+      <div id="pendList">
+        <div style="font-family:'IM Fell English',serif;font-style:italic;font-size:14px;color:var(--shadow);text-align:center;padding:20px" id="noPending">
+          Заявок пока нет
+        </div>
+      </div>
+    </div>
+    <div class="admin-chapter">
+      <div class="chapter-title" data-i18n="a_upload">📤 Добавить свиток</div>
+
+      <!-- Firebase Upload Form -->
+      <div style="background:var(--abyss);border:1px solid var(--border-goth);padding:22px;position:relative">
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blood),transparent)"></div>
+
+        <!-- Type selector -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px" id="uploadTypeGrid">
+          <div class="wish-rune chosen" onclick="selectUploadType('photo',this)"><div class="wr-icon">📸</div><div class="wr-name">Фото</div></div>
+          <div class="wish-rune" onclick="selectUploadType('video',this)"><div class="wr-icon">🎬</div><div class="wr-name">Видео</div></div>
+          <div class="wish-rune" onclick="selectUploadType('podcast',this)"><div class="wr-icon">🎙️</div><div class="wr-name">Подкаст</div></div>
+        </div>
+
+        <!-- Caption -->
+        <div class="field-group">
+          <label class="field-label">Описание поста</label>
+          <textarea class="gothic-textarea" id="uploadCaption" rows="2" placeholder="Что происходит на этом фото/видео?"></textarea>
+        </div>
+
+        <!-- Tags -->
+        <div class="field-group">
+          <label class="field-label">Теги (через пробел)</label>
+          <input class="gothic-input" id="uploadTags" type="text" placeholder="#нашжизнь #вместе">
+        </div>
+
+        <!-- File drop zone -->
+        <div id="dropZone" style="border:2px dashed var(--border-goth);padding:28px;text-align:center;cursor:pointer;transition:all 0.3s;margin-bottom:16px;position:relative"
+          onclick="document.getElementById('fileInput').click()"
+          ondragover="event.preventDefault();this.style.borderColor='var(--blood)';this.style.background='rgba(139,26,26,0.1)'"
+          ondragleave="this.style.borderColor='';this.style.background=''"
+          ondrop="handleDrop(event)">
+          <div style="font-size:32px;margin-bottom:8px;opacity:0.6">📁</div>
+          <p style="font-family:'IM Fell English',serif;font-style:italic;color:var(--shadow);font-size:14px;line-height:1.6">
+            Нажми или перетащи файл<br><span style="color:var(--blood)">Фото, видео, подкасты</span>
+          </p>
+          <div id="fileNameDisplay" style="margin-top:10px;font-family:'Cinzel',serif;font-size:11px;color:var(--blood);display:none"></div>
+          <input type="file" id="fileInput" accept="image/*,video/*,audio/*" style="display:none" onchange="onFileSelected(this)">
+        </div>
+
+        <!-- Progress bar -->
+        <div id="uploadProgress" style="display:none;margin-bottom:16px">
+          <div style="font-family:'Cinzel',serif;font-size:10px;color:var(--shadow);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">
+            Загрузка... <span id="progressPct">0%</span>
+          </div>
+          <div style="height:3px;background:var(--border-bone);border-radius:2px;overflow:hidden">
+            <div id="progressBar" style="height:100%;background:linear-gradient(90deg,var(--blood),var(--crimson));width:0%;transition:width 0.3s"></div>
+          </div>
+        </div>
+
+        <button class="invoke-btn" onclick="uploadPost()" id="uploadBtn">Опубликовать свиток ✦</button>
+      </div>
+
+      <!-- Setup hint -->
+      <div style="margin-top:14px;border:1px solid rgba(201,169,110,0.2);background:rgba(201,169,110,0.05);padding:16px">
+        <div style="font-family:'Cinzel',serif;font-size:10px;color:var(--ember);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">⚙️ Настройка Firebase</div>
+        <p style="font-family:'IM Fell English',serif;font-style:italic;font-size:13px;color:var(--shadow);line-height:1.6">
+          Чтобы загрузка работала — вставь свои Firebase ключи в код.<br>
+          <a href="https://console.firebase.google.com" target="_blank" style="color:var(--ember)">console.firebase.google.com</a> → создай проект → Firestore + Storage → скопируй config.
+        </p>
+        <div style="margin-top:10px;background:var(--void);border:1px solid var(--border-goth);padding:12px;font-family:monospace;font-size:11px;color:var(--shadow);line-height:1.8;overflow-x:auto">
+          firebaseConfig = {<br>
+          &nbsp;&nbsp;apiKey: "<span style="color:var(--blood)">ВАШ_КЛЮЧ</span>",<br>
+          &nbsp;&nbsp;projectId: "<span style="color:var(--blood)">ВАШ_ПРОЕКТ</span>",<br>
+          &nbsp;&nbsp;storageBucket: "<span style="color:var(--blood)">ВАШ_BUCKET</span>"<br>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nave">
+    <button class="nave-btn active" onclick="showTab('feed')">
+      <span class="nave-icon">🏠</span><span class="nave-label" data-i18n="tab_feed">Лента</span>
+    </button>
+    <button class="nave-btn" onclick="showTab('wishes')">
+      <span class="nave-icon">✉️</span><span class="nave-label" data-i18n="tab_wishes">Желания</span>
+    </button>
+    <button class="nave-btn" onclick="showTab('support')">
+      <span class="nave-icon">☕</span><span class="nave-label" data-i18n="tab_support">Поддержка</span>
+    </button>
+    <button class="nave-btn admin-only dn" onclick="showTab('admin')">
+      <span class="nave-icon">⚙️</span><span class="nave-label" data-i18n="tab_admin">Алтарь</span>
+    </button>
+  </nav>
+</section>
+
+<!-- ══════ MODALS ══════ -->
+<!-- LOGIN -->
+<div class="modal-shroud" id="modal-login">
+  <div class="modal-grimoire">
+    <button class="modal-close" onclick="closeM('login')">✕</button>
+    <div class="modal-logo-goth"><span>OurWorld</span></div>
+    <div class="modal-h" data-i18n="m_login">Войти</div>
+    <div class="modal-p" data-i18n="m_login_sub">Введи свои данные для входа</div>
+    <div class="field-group"><label class="field-label">Email</label><input class="gothic-input" id="liEmail" type="email" placeholder="you@example.com"></div>
+    <div class="field-group"><label class="field-label" data-i18n="m_pass">Пароль</label><input class="gothic-input" id="liPass" type="password" placeholder="••••••••"></div>
+    <button class="modal-btn" onclick="doLogin()" data-i18n="m_login_btn">Войти</button>
+    <div class="modal-switch"><span data-i18n="m_no_acc">Нет аккаунта?</span> <a onclick="switchM('login','register')" data-i18n="m_reg_link">Зарегистрироваться</a></div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div class="modal-shroud" id="modal-register">
+  <div class="modal-grimoire">
+    <button class="modal-close" onclick="closeM('register')">✕</button>
+    <div class="modal-logo-goth"><span>OurWorld</span></div>
+    <div class="modal-h" data-i18n="m_reg">Регистрация</div>
+    <div class="modal-p" data-i18n="m_reg_sub">Заполни форму — мы рассмотрим заявку и дадим доступ</div>
+    <div class="field-row">
+      <div class="field-group"><label class="field-label" data-i18n="m_name">Имя</label><input class="gothic-input" id="rName" type="text" placeholder="Иван"></div>
+      <div class="field-group"><label class="field-label" data-i18n="m_last">Фамилия</label><input class="gothic-input" id="rLast" type="text" placeholder="Иванов"></div>
+    </div>
+    <div class="field-group"><label class="field-label">Email</label><input class="gothic-input" id="rEmail" type="email" placeholder="you@example.com"></div>
+    <div class="field-group"><label class="field-label" data-i18n="m_pass">Пароль</label><input class="gothic-input" id="rPass" type="password" placeholder="Мин. 8 символов"></div>
+    <div class="field-group"><label class="field-label" data-i18n="m_about">О себе</label><textarea class="gothic-input" id="rAbout" rows="2" placeholder="Как ты нас нашёл?"></textarea></div>
+    <button class="modal-btn" onclick="doRegister()" data-i18n="m_reg_btn">Отправить заявку ✦</button>
+    <div class="modal-switch"><span data-i18n="m_have_acc">Уже есть аккаунт?</span> <a onclick="switchM('register','login')" data-i18n="m_login_link">Войти</a></div>
+  </div>
+</div>
+
+<!-- PENDING -->
+<div class="modal-shroud" id="modal-pending">
+  <div class="modal-grimoire" style="text-align:center">
+    <div style="font-size:48px;margin-bottom:16px">⏳</div>
+    <div class="modal-h" data-i18n="pend_title">Заявка отправлена!</div>
+    <div class="vigil-msg">
+      <p data-i18n="pend_msg">Мы получили твою заявку и скоро рассмотрим.<br>Как только одобрим — ты получишь уведомление! ✉️</p>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <a href="https://ko-fi.com/varthur" target="_blank" class="offering-link" style="width:auto">
+        <span class="offering-icon">☕</span><span style="font-family:'Cinzel',serif;font-size:12px;color:var(--bone)">Ko-fi</span>
+      </a>
+      <a href="https://wa.me/972533213698" target="_blank" class="offering-link" style="width:auto">
+        <span class="offering-icon">💬</span><span style="font-family:'Cinzel',serif;font-size:12px;color:var(--bone)">WhatsApp</span>
+      </a>
+    </div>
+    <button class="modal-btn" style="margin-top:20px" onclick="closeM('pending')" data-i18n="pend_ok">Закрыть</button>
+  </div>
+</div>
+
+<div class="toast-keep" id="toasts"></div>
+
+<script>
+// ── i18n ──
+const T = {
+ru:{
+  tagline_sub:'Закрытый мир двоих',tagline:'«Наша жизнь — наши правила.<br>Добро пожаловать в наш мир.»',
+  join:'Присоединиться',login:'Войти',online:'ОНЛАЙН',
+  tab_feed:'Лента',tab_wishes:'Пожелания',tab_support:'Поддержка',tab_live:'🔴 Live',tab_admin:'Алтарь',
+  f_all:'Всё',f_photo:'📸 Фото',f_video:'🎬 Видео',f_pod:'🎙️ Подкасты',
+  p1_time:'2 часа назад',p1_label:'Поход в магазин',p1_cap:'Сегодня гуляли по рынку 🌿 Купили всё для ужина — будет что-то особенное!',
+  p2_time:'1 день назад',p2_label:'Вечер дома',p2_cap:'Наш уютный вечер 🏠 Готовили вместе, смотрели фильм — вот так выглядит счастье.',
+  p3_time:'3 дня назад',p3_ep:'Эпизод I — По вашим просьбам',p3_cap:'Ответили на ваши вопросы о жизни в Израиле 🇮🇱',
+  t_bright:'Яркость',t_con:'Контраст',t_sat:'Насыщ.',t_blur:'Размытие',
+  wish_btn:'Пожелание',share:'Поделиться',listens:'прослушиваний',
+  w_title:'Напиши нам',w_sub:'Что ты хочешь увидеть или услышать?',
+  wt_ph:'Фото',wt_vi:'Видео',wt_po:'Подкаст',w_send:'Отправить пожелание ✦',
+  w1:'Хотела бы увидеть как вы готовите вместе! 🍳',w2:'Расскажите про жизнь в Израиле!',
+  s_title:'Поддержи нас',s_sub:'Нам важна ваша поддержка! Каждая помощь создаёт больше контента.',
+  kofi_btn:'Поддержать ✦',
+  wa_sub:'+972 053-321-3698 · Написать напрямую',
+  live_title:'Live 1 на 1',live_sub:'Хочешь пообщаться лично? Оставь пожелание!',live_btn:'Запросить сессию ✦',
+  a_stats:'📊 Хроники',a_members:'Участников',a_pend:'Ожидают',a_posts:'Свитков',a_wishes:'Пожеланий',
+  a_req:'⏳ Просители',a_upload:'📤 Добавить свиток',a_drop:'Нажми или перетащи файл<br><span>Фото, видео, подкасты</span>',
+  m_login:'Войти',m_login_sub:'Введи свои данные',m_pass:'Пароль',m_login_btn:'Войти',
+  m_no_acc:'Нет аккаунта?',m_reg_link:'Зарегистрироваться',
+  m_reg:'Регистрация',m_reg_sub:'Заполни форму — рассмотрим и дадим доступ',
+  m_name:'Имя',m_last:'Фамилия',m_about:'О себе',m_reg_btn:'Отправить заявку ✦',
+  m_have_acc:'Уже есть аккаунт?',m_login_link:'Войти',
+  pend_title:'Заявка отправлена!',pend_msg:'Мы получили твою заявку и скоро рассмотрим.<br>Как только одобрим — ты получишь уведомление! ✉️',pend_ok:'Закрыть',
+},
+en:{
+  tagline_sub:'A private world for two',tagline:'«Our life — our rules.<br>Welcome to our world.»',
+  join:'Join Us',login:'Sign In',online:'ONLINE',
+  tab_feed:'Feed',tab_wishes:'Wishes',tab_support:'Support',tab_live:'🔴 Live',tab_admin:'Altar',
+  f_all:'All',f_photo:'📸 Photos',f_video:'🎬 Videos',f_pod:'🎙️ Podcasts',
+  p1_time:'2 hours ago',p1_label:'Market trip',p1_cap:'Strolling the market today 🌿 Picked up everything for a special dinner!',
+  p2_time:'1 day ago',p2_label:'Evening at home',p2_cap:'Our cozy evening 🏠 Cooked together, watched a film — this is happiness.',
+  p3_time:'3 days ago',p3_ep:'Episode I — By your request',p3_cap:'Answered your questions about our life in Israel 🇮🇱',
+  t_bright:'Brightness',t_con:'Contrast',t_sat:'Saturation',t_blur:'Blur',
+  wish_btn:'Wish',share:'Share',listens:'listens',
+  w_title:'Write to Us',w_sub:'What do you want to see or hear?',
+  wt_ph:'Photo',wt_vi:'Video',wt_po:'Podcast',w_send:'Send Wish ✦',
+  w1:'Would love to see you cooking together! 🍳',w2:'Tell us about life in Israel!',
+  s_title:'Support Us',s_sub:'Your support matters! Every contribution helps create more content.',
+  kofi_btn:'Support ✦',
+  wa_sub:'+972 053-321-3698 · Message directly',
+  live_title:'Live 1 on 1',live_sub:'Want to talk personally? Leave a wish!',live_btn:'Request Session ✦',
+  a_stats:'📊 Chronicles',a_members:'Members',a_pend:'Pending',a_posts:'Scrolls',a_wishes:'Wishes',
+  a_req:'⏳ Supplicants',a_upload:'📤 Add Scroll',a_drop:'Click or drag a file here<br><span>Photos, videos, podcasts</span>',
+  m_login:'Sign In',m_login_sub:'Enter your credentials',m_pass:'Password',m_login_btn:'Sign In',
+  m_no_acc:"Don't have an account?",m_reg_link:'Register',
+  m_reg:'Register',m_reg_sub:"Fill the form — we'll review and grant access",
+  m_name:'First Name',m_last:'Last Name',m_about:'About yourself',m_reg_btn:'Send Request ✦',
+  m_have_acc:'Already have an account?',m_login_link:'Sign In',
+  pend_title:'Request Sent!',pend_msg:"We received your request and will review it soon.<br>Once approved — you'll get an email notification! ✉️",pend_ok:'Close',
+},
+he:{
+  tagline_sub:'עולם סגור לשניים',tagline:'«החיים שלנו — הכללים שלנו.<br>ברוכים הבאים לעולם שלנו.»',
+  join:'הצטרפות',login:'כניסה',online:'מחובר',
+  tab_feed:'פיד',tab_wishes:'משאלות',tab_support:'תמיכה',tab_live:'🔴 Live',tab_admin:'מזבח',
+  f_all:'הכל',f_photo:'📸 תמונות',f_video:'🎬 סרטונים',f_pod:'🎙️ פודקאסטים',
+  p1_time:'לפני שעתיים',p1_label:'טיול לשוק',p1_cap:'היום טיילנו בשוק 🌿 קנינו הכל לארוחת ערב מיוחדת!',
+  p2_time:'לפני יום',p2_label:'ערב בבית',p2_cap:'הערב המקסים שלנו 🏠 בישלנו יחד, צפינו בסרט — כך נראית האושר.',
+  p3_time:'לפני 3 ימים',p3_ep:'פרק א — לפי בקשותיכם',p3_cap:'ענינו על שאלותיכם על החיים בישראל 🇮🇱',
+  t_bright:'בהירות',t_con:'ניגודיות',t_sat:'רוויה',t_blur:'טשטוש',
+  wish_btn:'משאלה',share:'שיתוף',listens:'האזנות',
+  w_title:'כתוב לנו',w_sub:'מה תרצה לראות או לשמוע?',
+  wt_ph:'תמונה',wt_vi:'סרטון',wt_po:'פודקאסט',w_send:'שלח משאלה ✦',
+  w1:'הייתי רוצה לראות אתכם מבשלים יחד! 🍳',w2:'ספרו לנו על החיים בישראל!',
+  s_title:'תמכו בנו',s_sub:'התמיכה שלכם חשובה לנו! כל תרומה עוזרת ליצור יותר תוכן.',
+  kofi_btn:'תמיכה ✦',
+  wa_sub:'+972 053-321-3698 · כתוב ישירות',
+  live_title:'Live אחד על אחד',live_sub:'רוצה לדבר איתנו אישית? השאר משאלה!',live_btn:'בקש סשן ✦',
+  a_stats:'📊 כרוניקות',a_members:'חברים',a_pend:'ממתינים',a_posts:'גלילות',a_wishes:'משאלות',
+  a_req:'⏳ מבקשים',a_upload:'📤 הוסף גלילה',a_drop:'לחץ או גרור קובץ לכאן<br><span>תמונות, סרטונים, פודקאסטים</span>',
+  m_login:'כניסה',m_login_sub:'הזן את הפרטים שלך',m_pass:'סיסמה',m_login_btn:'כניסה',
+  m_no_acc:'אין לך חשבון?',m_reg_link:'הרשמה',
+  m_reg:'הרשמה',m_reg_sub:'מלא את הטופס — נבדוק ונאשר גישה',
+  m_name:'שם פרטי',m_last:'שם משפחה',m_about:'קצת עליך',m_reg_btn:'שלח בקשה ✦',
+  m_have_acc:'כבר יש לך חשבון?',m_login_link:'כניסה',
+  pend_title:'הבקשה נשלחה!',pend_msg:'קיבלנו את בקשתך ונבדוק אותה בקרוב.<br>כשנאשר — תקבל הודעה! ✉️',pend_ok:'סגור',
+}};
+
+let lang='ru';
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(T[lang][k]!==undefined) el.innerHTML=T[lang][k];
+  });
+}
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-glyph').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.lang-glyph[onclick="setLang('${l}')"]`)?.classList.add('active');
+  // Обновить иконку глобуса — показать текущий язык
+  const gb = document.getElementById('langToggleBtn');
+  if(gb) gb.textContent = l==='ru'?'RU':l==='en'?'EN':'עב';
+  applyLang();
+}
+function toggleLang(){ setLang(lang==='ru'?'en':lang==='en'?'he':'ru'); }
+
+// ── MODALS ──
+function openModal(n){ document.getElementById('modal-'+n).classList.add('open'); }
+function closeM(n){ document.getElementById('modal-'+n).classList.remove('open'); }
+function switchM(a,b){ closeM(a); openModal(b); }
+
+// ── AUTH ──
+// Только владелец знает эти данные
+const OWNER_EMAIL = "artur32.1985@gmail.com";
+const OWNER_PASS  = "VArt.Love.32";
+
+function doLogin(){
+  const em=document.getElementById('liEmail').value.trim();
+  const ps=document.getElementById('liPass').value;
+  if(!em||!ps){toast('Заполни все поля','e');return;}
+  const isOwner = (em===OWNER_EMAIL && ps===OWNER_PASS);
+  const isUser  = (em!==OWNER_EMAIL && em.includes('@') && ps.length>=6);
+  if(!isOwner && !isUser){toast('Неверный email или пароль','e');return;}
+  closeM('login');
+  enterApp(em[0].toUpperCase(), isOwner);
+}
+function doRegister(){
+  const n=document.getElementById('rName').value.trim();
+  const em=document.getElementById('rEmail').value.trim();
+  const ps=document.getElementById('rPass').value;
+  const about=document.getElementById('rAbout')?.value.trim()||'';
+  if(!n||!em||!ps){toast('Заполни все поля','e');return;}
+
+  // Отправить уведомление владельцу через EmailJS
+  if(typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== "ВСТАВЬ_PUBLIC_KEY") {
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      from_name: n,
+      from_email: em,
+      message: about || 'Без сообщения',
+      to_name: 'Артур',
+      reply_to: em,
+      subject: 'Новая заявка на OurWorld от ' + n,
+    }).then(()=>{
+      console.log('✅ Уведомление отправлено');
+    }).catch(err=>{
+      console.warn('EmailJS ошибка:', err);
+    });
+  }
+
+  // Сохранить заявку в Firebase
+  if(window._firestoreDB) {
+    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(({collection, addDoc, serverTimestamp}) => {
+      addDoc(collection(window._firestoreDB, 'requests'), {
+        name: n, email: em, about: about||'', password: ps,
+        status: 'pending', createdAt: serverTimestamp()
+      }).catch(e => console.warn('Request save error:', e));
+    });
+  }
+  closeM('register'); openModal('pending');
+}
+function enterApp(av,admin){
+  document.getElementById('userCrest').textContent=av;
+  if(admin) document.querySelectorAll('.admin-only').forEach(el=>el.classList.remove('dn'));
+  showScreen('app'); showTab('feed'); showCopyrightBar(); showKofiFloat();
+  toast(lang==='ru'?'Добро пожаловать! 👋':'Welcome! 👋','s');
+}
+
+// ── SCREENS ──
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── TABS ──
+function showTab(name){
+  document.querySelectorAll('[id^="tab-"]').forEach(t=>t.classList.add('dn'));
+  document.getElementById('tab-'+name)?.classList.remove('dn');
+  document.querySelectorAll('.nav-tab,.nave-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll(`[onclick*="'${name}'"]`).forEach(b=>b.classList.add('active'));
+}
+
+// ── FEED FILTER ──
+let _feedAllPosts = [];
+let _feedFilter = 'all';
+
+function filterFeed(type, btn){
+  _feedFilter = type;
+  document.querySelectorAll('.filter-rune').forEach(c=>c.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderCarousel();
+}
+
+function renderCarousel() {
+  const feed = document.getElementById('firebase-feed');
+  if (!feed) return;
+  const posts = _feedFilter === 'all'
+    ? _feedAllPosts
+    : _feedAllPosts.filter(p => p.type === _feedFilter);
+  feed.innerHTML = '';
+  if (!posts.length) {
+    feed.innerHTML = '<div style="text-align:center;padding:40px;font-family:Cinzel,serif;font-size:12px;color:var(--shadow);letter-spacing:0.1em">Записей пока нет...</div>';
+    return;
+  }
+  posts.forEach(p => {
+    const card = window.buildPostCard(p.id, p);
+    if (card) feed.appendChild(card);
+  });
+}
+
+// ── PHOTO FILTERS / TOOLS ──
+const filtState={};
+function applyFilt(id,css,btn){
+  if(!filtState[id])filtState[id]={};
+  filtState[id].base=css;
+  rebuildFilt(id);
+  btn.closest('.filter-scroll').querySelectorAll('.filter-vial').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function adjFilt(inp,prop,id,valId,unit,wrap){
+  if(!filtState[id])filtState[id]={};
+  const v=inp.value;
+  filtState[id][prop]=wrap?`${prop}(${v}${unit})`:`${prop}(${v}${unit})`;
+  document.getElementById(valId).textContent=v+unit;
+  rebuildFilt(id);
+}
+function rebuildFilt(id){
+  const s=filtState[id]||{};
+  const parts=[s.base||'',s.brightness||'',s.contrast||'',s.saturate||'',s.blur||''].filter(Boolean).join(' ');
+  document.getElementById(id).style.filter=parts;
+}
+function toggleSlider(id){
+  document.getElementById(id)?.classList.toggle('dn');
+}
+
+// ── WISHES ──
+function pickType(card){
+  card.closest('.wish-types').querySelectorAll('.wish-rune').forEach(c=>c.classList.remove('chosen'));
+  card.classList.add('chosen');
+}
+function sendWish(){
+  const txt=document.getElementById('wishTxt').value.trim();
+  if(!txt){toast(lang==='ru'?'Напиши пожелание!':'Write your wish!','e');return;}
+  const icon=document.querySelector('.wish-rune.chosen .wr-icon')?.textContent||'📸';
+  const card=document.createElement('div'); card.className='wish-scroll';
+  card.innerHTML=`
+    <div class="wish-head">
+      <div class="wish-dot">👤</div>
+      <div><div class="wish-who">Ты</div><div class="wish-when">${lang==='ru'?'только что':'just now'}</div></div>
+      <span class="post-badge badge-photo" style="margin-left:auto">${icon}</span>
+    </div>
+    <div class="wish-words">${txt}</div>`;
+  document.getElementById('wishList').prepend(card);
+  document.getElementById('wishTxt').value='';
+  toast(lang==='ru'?'Пожелание отправлено! ✦':'Wish sent! ✦','s');
+}
+
+// ── LIKES ──
+function toggleLike(btn){
+  btn.classList.toggle('liked');
+  const sp=btn.querySelector('span');
+  const n=parseInt(sp.textContent);
+  sp.textContent=btn.classList.contains('liked')?n+1:n-1;
+}
+
+// ── ADMIN ──
+function bless(btn){
+  const card=btn.closest('.supplicant-card');
+  const name=card.querySelector('.sup-name').textContent;
+  const email=card.querySelector('.sup-email').textContent;
+  const docId=card.dataset.docId;
+  card.style.cssText='opacity:0;transition:opacity 0.4s';
+  setTimeout(()=>{
+    card.remove();updSt();
+    const list=document.getElementById('pendList');
+    if(!document.querySelector('.supplicant-card')){
+      list.innerHTML='<div style="font-family:serif;font-style:italic;font-size:14px;color:var(--shadow);text-align:center;padding:20px">Заявок пока нет</div>';
+    }
+  },400);
+  // Обновить статус в Firebase
+  if(docId && window._firestoreDB){
+    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(({doc, updateDoc})=>{
+      updateDoc(doc(window._firestoreDB,'requests',docId),{status:'approved'});
+    });
+  }
+  toast(name+' впущен ✓','s');
+}
+function curse(btn){
+  const card=btn.closest('.supplicant-card');
+  const name=card.querySelector('.sup-name').textContent;
+  const docId=card.dataset.docId;
+  card.style.cssText='opacity:0;transition:opacity 0.4s';
+  setTimeout(()=>{
+    card.remove();updSt();
+    const list=document.getElementById('pendList');
+    if(!document.querySelector('.supplicant-card')){
+      list.innerHTML='<div style="font-family:serif;font-style:italic;font-size:14px;color:var(--shadow);text-align:center;padding:20px">Заявок пока нет</div>';
+    }
+  },400);
+  // Удалить из Firebase
+  if(docId && window._firestoreDB){
+    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(({doc, deleteDoc})=>{
+      deleteDoc(doc(window._firestoreDB,'requests',docId));
+    });
+  }
+  toast(name+' изгнан','e');
+}
+function updSt(){
+  document.getElementById('stPend').textContent=document.querySelectorAll('.supplicant-card').length;
+}
+
+// ── TOAST ──
+function toast(msg,type='i'){
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className=`toast-seal ${type}`;
+  t.textContent=msg;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.cssText='opacity:0;transition:opacity 0.3s';setTimeout(()=>t.remove(),300);},3000);
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded',()=>{ showTab('feed'); });
+</script>
+<!-- ══ FIREBASE SDK ══ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyBtKgpFH7y2p2Zma-Hw9P1tdi7fz6GQ99w",
+  authDomain:        "ourworld-ay-1a543.firebaseapp.com",
+  projectId:         "ourworld-ay-1a543",
+  storageBucket:     "ourworld-ay-1a543.firebasestorage.app",
+  messagingSenderId: "204582968523",
+  appId:             "1:204582968523:web:09bc505d8e17ef3db18f4e"
+};
+
+const CLOUDINARY_CLOUD  = "dtfficnog";
+const CLOUDINARY_PRESET = "ourworld_upload";
+
+let app, db, firebaseReady = false;
+
+try {
+  app = initializeApp(firebaseConfig);
+  db  = getFirestore(app);
+  firebaseReady = true;
+  window._firestoreDB = db;
+  console.log("✅ Firebase + Cloudinary готовы");
+  loadFeedFromFirebase();
+} catch(e) {
+  console.warn("⚠️ Firebase ошибка:", e);
+}
+
+window._fbUpload = async function(file, caption, tags, type) {
+  if (!firebaseReady) { toast("Firebase не подключён", "e"); return; }
+  const btn  = document.getElementById('uploadBtn');
+  const prog = document.getElementById('uploadProgress');
+  const bar  = document.getElementById('progressBar');
+  const pct  = document.getElementById('progressPct');
+  btn.disabled = true;
+  prog.style.display = 'block';
+
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_PRESET);
+    formData.append('folder', 'ourworld_posts');
+    const resourceType = file.type.startsWith('video/') ? 'video'
+                       : file.type.startsWith('audio/') ? 'video' : 'image';
+
+    const url = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/${resourceType}/upload`);
+      xhr.upload.onprogress = e => {
+        if (e.lengthComputable) {
+          const p = Math.round(e.loaded / e.total * 100);
+          bar.style.width = p + '%';
+          pct.textContent = p + '%';
+        }
+      };
+      xhr.onload = () => {
+        const res = JSON.parse(xhr.responseText);
+        if (res.secure_url) resolve(res.secure_url);
+        else reject(new Error(res.error?.message || 'Cloudinary error'));
+      };
+      xhr.onerror = () => reject(new Error('Network error'));
+      xhr.send(formData);
+    });
+
+    await addDoc(collection(db, "posts"), {
+      type, caption,
+      tags: tags.split(' ').filter(Boolean),
+      url, createdAt: serverTimestamp(), likes: 0
+    });
+
+    toast("Свиток опубликован! 🖤", "s");
+    prog.style.display = 'none';
+    bar.style.width = '0%';
+    document.getElementById('uploadCaption').value = '';
+    document.getElementById('uploadTags').value = '';
+    document.getElementById('fileNameDisplay').style.display = 'none';
+    document.getElementById('dropZone').style.borderColor = '';
+    window._selectedFile = null;
+
+  } catch(err) {
+    toast("Ошибка: " + err.message, "e");
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+// ── Load posts from Firestore ──
+function loadFeedFromFirebase() {
+  if (!firebaseReady) return;
+  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+  onSnapshot(q, snapshot => {
+    const feed = document.getElementById('firebase-feed');
+    if (!feed) return;
+    _feedAllPosts = [];
+    snapshot.forEach(doc => {
+      _feedAllPosts.push({id: doc.id, ...doc.data()});
+    });
+    renderCarousel();
+    const sp = document.getElementById('stPosts');
+    if(sp) sp.textContent = _feedAllPosts.length;
+  });
+  // Count wishes for admin stats
+  const wq = query(collection(db, "wishes"), orderBy("createdAt", "desc"));
+  onSnapshot(wq, snap => {
+    const sw = document.getElementById('stWishes');
+    if(sw) sw.textContent = snap.size;
+  });
+
+  // Загрузить заявки из Firebase в Алтарь
+  const rq = query(collection(db, "requests"), orderBy("createdAt", "desc"));
+  onSnapshot(rq, snap => {
+    const list = document.getElementById('pendList');
+    if(!list) return;
+    const pending = snap.docs.filter(d => d.data().status === 'pending');
+    const sp = document.getElementById('stPend');
+    if(sp) sp.textContent = pending.length;
+    if(!pending.length){
+      list.innerHTML = '<div style="font-family:serif;font-style:italic;font-size:14px;color:var(--shadow);text-align:center;padding:20px">Заявок пока нет</div>';
+      return;
+    }
+    list.innerHTML = '';
+    pending.forEach(docSnap => {
+      const d = docSnap.data();
+      const card = document.createElement('div');
+      card.className = 'supplicant-card';
+      card.dataset.docId = docSnap.id;
+      card.innerHTML =
+        '<div class="sup-crest">'+(d.name?.[0]?.toUpperCase()||'?')+'</div>'+
+        '<div class="sup-info">'+
+          '<div class="sup-name">'+(d.name||'')+'</div>'+
+          '<div class="sup-email">'+(d.email||'')+'</div>'+
+          '<div class="sup-msg">"'+(d.about||'Без сообщения')+'"</div>'+
+        '</div>'+
+        '<div class="sup-actions">'+
+          '<button class="bless-btn" onclick="bless(this)">✓ Впустить</button>'+
+          '<button class="curse-btn" onclick="curse(this)">✗ Изгнать</button>'+
+        '</div>';
+      list.appendChild(card);
+    });
+  });
+}
+
+function buildPostCard(id, d) {
+  const card = document.createElement('article');
+  card.className = 'post-card';
+  card.dataset.postId = id;
+  card.dataset.type = d.type;
+  const timeStr = d.createdAt?.toDate?.()?.toLocaleDateString('ru-RU') || 'только что';
+  const badgeClass = {photo:'badge-photo',video:'badge-video',podcast:'badge-podcast'}[d.type] || 'badge-photo';
+  const badgeLabel = {photo:'📸 Фото',video:'🎬 Видео',podcast:'🎙️ Подкаст'}[d.type] || '📸';
+  const tagsHtml = (d.tags||[]).map(t=>`<span class="post-sigil">${t}</span>`).join('');
+
+  let mediaHtml = '';
+  if (d.type === 'photo') {
+    mediaHtml = `<div class="post-media photo" style="background:var(--crypt);cursor:zoom-in;overflow:hidden" id="pm-fb-${id}" onclick="openLightbox('${d.url}')">
+      <img src="${d.url}" style="width:100%;height:100%;object-fit:cover;display:block" loading="lazy" id="img-fb-${id}" onerror="this.parentElement.style.display='none'">
+    </div>`;
+  } else if (d.type === 'video') {
+    mediaHtml = `<div class="post-media video" style="background:var(--crypt);cursor:pointer;position:relative;overflow:hidden" onclick="openVideoPlayer('${d.url}')">
+      <video src="${d.url}" style="width:100%;height:100%;object-fit:cover;display:block" preload="metadata" id="vid-fb-${id}"></video>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);pointer-events:none">
+        <div style="width:54px;height:54px;border-radius:50%;background:rgba(139,26,26,0.85);border:2px solid var(--crimson);display:flex;align-items:center;justify-content:center;font-size:20px">▶</div>
+      </div>
+    </div>`;
+  } else if (d.videoUrl) {
+    mediaHtml = `<div class="post-media video" style="background:var(--crypt);cursor:pointer" onclick="openVideoPlayer('${d.videoUrl}')">
+      <video src="${d.videoUrl}" style="width:100%;height:100%;object-fit:cover" preload="metadata">
+      </video>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);pointer-events:none">
+        <div style="width:54px;height:54px;border-radius:50%;background:rgba(155,126,184,0.85);border:2px solid #9b7eb8;display:flex;align-items:center;justify-content:center;font-size:20px">▶</div>
+      </div>
+    </div>`;
+  } else {
+    mediaHtml = `<div class="post-media" style="aspect-ratio:2/1;padding:20px;background:var(--crypt);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
+      <div style="font-size:36px">🎙️</div>
+      <audio src="${d.url}" controls style="width:100%;filter:invert(0.8) sepia(1) hue-rotate(300deg)"></audio>
+    </div>`;
+  }
+
+  // Filters removed from cards - editing available in full editor
+
+  card.innerHTML = `
+    <div class="post-header">
+      <div class="post-crest">A</div>
+      <div class="post-meta">
+        <div class="post-time">${timeStr}</div>
+      </div>
+      <span class="post-badge ${badgeClass}">${badgeLabel}</span>
+    </div>
+    ${mediaHtml}
+    <div class="post-body">
+      <p class="post-caption">${d.caption || ''}</p>
+      <div class="post-sigils">${tagsHtml}</div>
+    </div>
+    <div class="post-footer">
+      <div class="post-rituals">
+        <button class="ritual-btn" onclick="toggleLike(this)">♥ <span>${d.likes||0}</span></button>
+        <button class="ritual-btn" onclick="showTab('wishes')">✉ <span>Пожелание</span></button>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="ritual-btn">⬆ <span>Поделиться</span></button>
+        <button class="ritual-btn" onclick="deletePost('${id}','${d.url||''}','${d.type||'photo'}')" style="color:#c0392b;border-color:rgba(192,57,43,0.4)" title="Удалить пост">🗑 <span>Удалить</span></button>
+      </div>
+    </div>`;
+  return card;
+}
+window.buildPostCard = buildPostCard;
+
+// ── Delete post ──
+window.deletePost = async function(docId, mediaUrl, mediaType) {
+  if (!docId) return;
+  const confirmed = confirm('Удалить этот пост? Это действие нельзя отменить.');
+  if (!confirmed) return;
+
+  try {
+    // 1. Удалить документ из Firestore
+    const { deleteDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await deleteDoc(doc(window._firestoreDB, 'posts', docId));
+
+    // 2. Удалить карточку из DOM
+    const card = document.querySelector(`[data-post-id="${docId}"]`);
+    if (card) {
+      card.style.transition = 'opacity 0.3s, transform 0.3s';
+      card.style.opacity = '0';
+      card.style.transform = 'scale(0.95)';
+      setTimeout(() => card.remove(), 320);
+    }
+
+    // 3. Попытка удалить файл с Cloudinary через unsigned delete
+    //    (работает только если в Cloudinary включён unsigned delete)
+    if (mediaUrl && mediaUrl.includes('cloudinary.com')) {
+      try {
+        const parts = mediaUrl.split('/');
+        const uploadIdx = parts.indexOf('upload');
+        if (uploadIdx !== -1) {
+          // Получаем public_id (путь после /upload/vXXX/)
+          const afterUpload = parts.slice(uploadIdx + 2).join('/');
+          const publicId = afterUpload.replace(/\.[^.]+$/, ''); // убираем расширение
+          const cloud = 'dtfficnog';
+          const rType = (mediaType === 'video' || mediaType === 'podcast') ? 'video' : 'image';
+          await fetch(`https://api.cloudinary.com/v1_1/${cloud}/${rType}/destroy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ public_id: publicId, invalidate: true })
+          });
+        }
+      } catch(e) { /* Cloudinary delete requires signed — OK to fail silently */ }
+    }
+
+    toast('Пост удалён 🗑', 's');
+  } catch(err) {
+    console.error('Delete error:', err);
+    toast('Ошибка удаления: ' + err.message, 'e');
+  }
+};
+</script>
+
+<script>
+// ── Upload helpers (global) ──
+let _selectedFile = null;
+let _uploadType   = 'photo';
+
+function selectUploadType(type, el) {
+  _uploadType = type;
+  el.closest('#uploadTypeGrid').querySelectorAll('.wish-rune').forEach(r => r.classList.remove('chosen'));
+  el.classList.add('chosen');
+}
+
+function onFileSelected(inp) {
+  const file = inp.files[0];
+  if (!file) return;
+  _selectedFile = file;
+  const disp = document.getElementById('fileNameDisplay');
+  disp.textContent = '📎 ' + file.name;
+  disp.style.display = 'block';
+  document.getElementById('dropZone').style.borderColor = 'var(--blood)';
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  _selectedFile = file;
+  const disp = document.getElementById('fileNameDisplay');
+  disp.textContent = '📎 ' + file.name;
+  disp.style.display = 'block';
+  e.currentTarget.style.borderColor = 'var(--blood)';
+  e.currentTarget.style.background  = '';
+}
+
+function uploadPost() {
+  const caption = document.getElementById('uploadCaption').value.trim();
+  const tags    = document.getElementById('uploadTags').value.trim();
+  if (!caption) { toast('Добавь описание поста!', 'e'); return; }
+  if (!_selectedFile) { toast('Выбери файл!', 'e'); return; }
+  window._fbUpload(_selectedFile, caption, tags, _uploadType);
+}
+</script>
+
+<!-- ═══ KO-FI FLOATING WIDGET ═══ -->
+<div id="kofi-float" style="display:none;position:fixed;bottom:70px;right:16px;z-index:500">
+  <a href="https://ko-fi.com/varthur" target="_blank"
+     style="display:flex;align-items:center;gap:8px;padding:10px 16px;
+            background:linear-gradient(135deg,#8b1a1a,rgba(139,26,26,0.85));
+            border:1px solid rgba(192,57,43,0.6);color:#e8e0d4;text-decoration:none;
+            font-family:'Cinzel',serif;font-size:10px;font-weight:600;letter-spacing:0.12em;
+            text-transform:uppercase;box-shadow:0 4px 20px rgba(139,26,26,0.4);
+            clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)">
+    ☕ Ko-fi
+  </a>
+</div>
+
+<!-- ═══ LEGAL NOTICE MODAL ═══ -->
+<div class="modal-shroud" id="modal-legal">
+  <div class="modal-grimoire" style="max-width:500px;max-height:85vh;overflow-y:auto;position:relative">
+    <button class="modal-close" onclick="closeM('legal')">✕</button>
+    <div style="font-family:'UnifrakturMaguntia',cursive;font-size:24px;color:var(--blood);text-align:center;margin-bottom:16px">
+      Правовое уведомление
+    </div>
+    <div style="font-family:'Cinzel',serif;font-size:10px;color:var(--blood);letter-spacing:0.12em;text-transform:uppercase;border-bottom:1px solid var(--border-goth);padding-bottom:8px;margin-bottom:14px">
+      © OurWorld 2024–2026
+    </div>
+    <div style="font-family:'Crimson Text',serif;font-size:14px;color:var(--shadow);line-height:1.8">
+      <p style="margin-bottom:12px">
+        Весь контент на данной платформе — фотографии, видеозаписи, аудиозаписи, подкасты и тексты — является исключительной интеллектуальной собственностью авторов и защищён в соответствии с:
+      </p>
+      <ul style="margin:0 0 12px 16px;display:flex;flex-direction:column;gap:6px">
+        <li><strong style="color:var(--parchment)">Законом об авторском праве Израиля (5768-2007)</strong> — Chok Zchuyot Yotzrim</li>
+        <li><strong style="color:var(--parchment)">Бернской конвенцией</strong> об охране литературных и художественных произведений</li>
+        <li><strong style="color:var(--parchment)">Директивой ЕС об авторском праве</strong> (2019/790)</li>
+      </ul>
+      <div style="background:rgba(139,26,26,0.1);border:1px solid var(--border-goth);padding:12px;margin-bottom:12px">
+        <div style="font-family:'Cinzel',serif;font-size:10px;color:var(--blood);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Запрещено без письменного разрешения:</div>
+        <ul style="margin:0 0 0 16px;display:flex;flex-direction:column;gap:4px;font-size:13px">
+          <li>Копирование, скачивание и сохранение материалов</li>
+          <li>Распространение, публикация, передача третьим лицам</li>
+          <li>Коммерческое использование любого контента</li>
+          <li>Создание производных работ на основе контента</li>
+          <li>Скриншоты и запись экрана в целях распространения</li>
+        </ul>
+      </div>
+      <p style="margin-bottom:12px;font-size:13px">
+        Нарушение авторских прав преследуется по статье 35 Закона об авторском праве Израиля и влечёт гражданскую и уголовную ответственность, включая возмещение ущерба до <strong style="color:var(--parchment)">100,000 NIS</strong> за каждое нарушение без доказательства реального ущерба.
+      </p>
+      <p style="font-size:12px;color:var(--dust)">
+        По вопросам лицензирования: свяжитесь через WhatsApp +972-053-321-3698
+      </p>
+    </div>
+    <button class="modal-btn" style="margin-top:16px" onclick="closeM('legal')">Понятно ✦</button>
+  </div>
+</div>
+
+<!-- LIGHTBOX MODAL (fullscreen photo with nav) -->
+<!-- ══════════════════════════════════════
+     PROFESSIONAL PHOTO EDITOR MODAL
+══════════════════════════════════════ -->
+<div id="photoEditor" style="display:none;position:fixed;inset:0;z-index:2000;background:#0a0a0f;flex-direction:column;overflow:hidden">
+
+  <!-- TOP BAR -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#111118;border-bottom:1px solid rgba(139,26,26,0.3);flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button onclick="closePhotoEditor()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;line-height:1;padding:2px 6px">✕</button>
+      <span style="font-family:'Cinzel',serif;font-size:12px;color:#c9bfa8;letter-spacing:0.1em">РЕДАКТОР</span>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="peReset()" style="padding:6px 14px;background:none;border:1px solid rgba(139,26,26,0.4);color:#8a8070;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#8b1a1a';this.style.color='#e8e0d4'" onmouseout="this.style.borderColor='rgba(139,26,26,0.4)';this.style.color='#8a8070'">↺ СБРОС</button>
+      <button onclick="peDownload()" style="padding:6px 14px;background:rgba(139,26,26,0.25);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(139,26,26,0.45)'" onmouseout="this.style.background='rgba(139,26,26,0.25)'">⬇ СОХРАНИТЬ</button>
+    </div>
+  </div>
+
+  <!-- MAIN AREA -->
+  <div style="display:flex;flex:1;overflow:hidden;min-height:0">
+
+    <!-- IMAGE CANVAS AREA -->
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;background:#0a0a0f;position:relative;overflow:hidden;min-width:0" id="peCanvasArea">
+      <img id="peImg" src="" style="max-width:100%;max-height:100%;object-fit:contain;transition:filter 0.15s;display:block;user-select:none" crossorigin="anonymous">
+      <!-- Crop overlay canvas -->
+      <canvas id="peCropCanvas" style="position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;display:none;touch-action:none"></canvas>
+      <div id="peCropBox" style="position:absolute;border:2px solid #fff;box-shadow:0 0 0 9999px rgba(0,0,0,0.55);display:none;pointer-events:none;box-sizing:border-box">
+        <div style="position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid #e8e0d4;border-left:2px solid #e8e0d4"></div>
+        <div style="position:absolute;top:-1px;right:-1px;width:10px;height:10px;border-top:2px solid #e8e0d4;border-right:2px solid #e8e0d4"></div>
+        <div style="position:absolute;bottom:-1px;left:-1px;width:10px;height:10px;border-bottom:2px solid #e8e0d4;border-left:2px solid #e8e0d4"></div>
+        <div style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid #e8e0d4;border-right:2px solid #e8e0d4"></div>
+      </div>
+      <!-- Nav arrows -->
+      <button onclick="peLbNav(-1)" id="peNavL" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.6);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;width:40px;height:40px;font-size:20px;cursor:pointer;display:none">‹</button>
+      <button onclick="peLbNav(1)" id="peNavR" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.6);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;width:40px;height:40px;font-size:20px;cursor:pointer;display:none">›</button>
+      <div id="peCounter" style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:9px;color:rgba(200,180,160,0.6);letter-spacing:0.1em"></div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div style="width:260px;flex-shrink:0;background:#111118;border-left:1px solid rgba(139,26,26,0.25);display:flex;flex-direction:column;overflow:hidden" id="peRightPanel">
+
+      <!-- TABS -->
+      <div style="display:flex;border-bottom:1px solid rgba(139,26,26,0.25);flex-shrink:0">
+        <button class="pe-tab active" id="peTab-filters" onclick="peShowTab('filters')" style="flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid #8b1a1a;color:#c0392b;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s">ФИЛЬТРЫ</button>
+        <button class="pe-tab" id="peTab-adjust" onclick="peShowTab('adjust')" style="flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s">СВЕТ</button>
+        <button class="pe-tab" id="peTab-color" onclick="peShowTab('color')" style="flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s">ЦВЕТ</button>
+        <button class="pe-tab" id="peTab-effects" onclick="peShowTab('effects')" style="flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s">FX</button>
+        <button class="pe-tab" id="peTab-crop" onclick="peShowTab('crop')" style="flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s">✂ КРОП</button>
+      </div>
+
+      <!-- SCROLLABLE PANEL CONTENT -->
+      <div style="flex:1;overflow-y:auto;padding:14px 12px" id="pePanelContent">
+
+        <!-- FILTERS TAB -->
+        <div id="pePanel-filters">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="pe-filter-card active" id="pef-0" onclick="peApplyFilter(0,this)" style="cursor:pointer;border:2px solid #8b1a1a;border-radius:3px;overflow:hidden;position:relative">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#1a1a24,#060608);display:flex;align-items:center;justify-content:center;font-size:20px">🌿</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#c9bfa8;letter-spacing:0.06em;background:#111118">Оригинал</div>
+            </div>
+            <div class="pe-filter-card" id="pef-1" onclick="peApplyFilter(1,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#3d2010,#7a4020);display:flex;align-items:center;justify-content:center;font-size:20px">🕯️</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Тепло</div>
+            </div>
+            <div class="pe-filter-card" id="pef-2" onclick="peApplyFilter(2,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#1a1a1a,#3a3a3a);display:flex;align-items:center;justify-content:center;font-size:20px">💀</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Ч/Б</div>
+            </div>
+            <div class="pe-filter-card" id="pef-3" onclick="peApplyFilter(3,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#3d2e10,#7a5a20);display:flex;align-items:center;justify-content:center;font-size:20px">📜</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Vintage</div>
+            </div>
+            <div class="pe-filter-card" id="pef-4" onclick="peApplyFilter(4,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#060622,#1a1a66);display:flex;align-items:center;justify-content:center;font-size:20px">🌑</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Ночь</div>
+            </div>
+            <div class="pe-filter-card" id="pef-5" onclick="peApplyFilter(5,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#330033,#660066);display:flex;align-items:center;justify-content:center;font-size:20px">⚡</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Vivid</div>
+            </div>
+            <div class="pe-filter-card" id="pef-6" onclick="peApplyFilter(6,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#200010,#600030);display:flex;align-items:center;justify-content:center;font-size:20px">🩸</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Gothic</div>
+            </div>
+            <div class="pe-filter-card" id="pef-7" onclick="peApplyFilter(7,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#001a2a,#003355);display:flex;align-items:center;justify-content:center;font-size:20px">🌊</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Cool</div>
+            </div>
+            <div class="pe-filter-card" id="pef-8" onclick="peApplyFilter(8,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#1a0a00,#4a2a00);display:flex;align-items:center;justify-content:center;font-size:20px">🍂</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Autumn</div>
+            </div>
+            <div class="pe-filter-card" id="pef-9" onclick="peApplyFilter(9,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#1a1a2e,#16213e);display:flex;align-items:center;justify-content:center;font-size:20px">🔮</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Invert</div>
+            </div>
+            <div class="pe-filter-card" id="pef-10" onclick="peApplyFilter(10,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#e8e0d4,#c9bfa8);display:flex;align-items:center;justify-content:center;font-size:20px">🌸</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Fade</div>
+            </div>
+            <div class="pe-filter-card" id="pef-11" onclick="peApplyFilter(11,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#002200,#004400);display:flex;align-items:center;justify-content:center;font-size:20px">🌿</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Forest</div>
+            </div>
+          </div>
+
+          <!-- Instagram-style filters label -->
+          <div style="font-family:'Cinzel',serif;font-size:8px;color:rgba(139,26,26,0.8);letter-spacing:0.12em;text-transform:uppercase;margin:14px 0 10px;padding-top:12px;border-top:1px solid rgba(139,26,26,0.2)">✦ Instagram Style</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+
+            <div class="pe-filter-card" id="pef-12" onclick="peApplyFilter(12,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#1a2a3a,#2a4a6a);display:flex;align-items:center;justify-content:center;font-size:20px">🔷</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Clarendon</div>
+            </div>
+            <div class="pe-filter-card" id="pef-13" onclick="peApplyFilter(13,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#e8e0d4,#f5f0e8);display:flex;align-items:center;justify-content:center;font-size:20px">🕊️</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Lark</div>
+            </div>
+            <div class="pe-filter-card" id="pef-14" onclick="peApplyFilter(14,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#2a3a1a,#4a6a2a);display:flex;align-items:center;justify-content:center;font-size:20px">🌱</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Juno</div>
+            </div>
+            <div class="pe-filter-card" id="pef-15" onclick="peApplyFilter(15,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#3a1a1a,#6a2a2a);display:flex;align-items:center;justify-content:center;font-size:20px">🍷</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Reyes</div>
+            </div>
+            <div class="pe-filter-card" id="pef-16" onclick="peApplyFilter(16,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#3a3a1a,#6a6a2a);display:flex;align-items:center;justify-content:center;font-size:20px">🌻</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Gingham</div>
+            </div>
+            <div class="pe-filter-card" id="pef-17" onclick="peApplyFilter(17,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#e8e8e8,#ffffff);display:flex;align-items:center;justify-content:center;font-size:20px">🌙</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Moon</div>
+            </div>
+            <div class="pe-filter-card" id="pef-18" onclick="peApplyFilter(18,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#200020,#500050);display:flex;align-items:center;justify-content:center;font-size:20px">💜</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Slumber</div>
+            </div>
+            <div class="pe-filter-card" id="pef-19" onclick="peApplyFilter(19,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#2a1a10,#5a3a20);display:flex;align-items:center;justify-content:center;font-size:20px">☕</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Crema</div>
+            </div>
+            <div class="pe-filter-card" id="pef-20" onclick="peApplyFilter(20,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#c8b8a0,#e8d8c0);display:flex;align-items:center;justify-content:center;font-size:20px">🎞️</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Ludwig</div>
+            </div>
+            <div class="pe-filter-card" id="pef-21" onclick="peApplyFilter(21,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#1a2a2a,#2a4a4a);display:flex;align-items:center;justify-content:center;font-size:20px">🌫️</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Aden</div>
+            </div>
+            <div class="pe-filter-card" id="pef-22" onclick="peApplyFilter(22,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#003322,#006644);display:flex;align-items:center;justify-content:center;font-size:20px">🌊</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Perpetua</div>
+            </div>
+            <div class="pe-filter-card" id="pef-23" onclick="peApplyFilter(23,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#3a2010,#6a4020);display:flex;align-items:center;justify-content:center;font-size:20px">🍁</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Mayfair</div>
+            </div>
+            <div class="pe-filter-card" id="pef-24" onclick="peApplyFilter(24,this)" style="cursor:pointer;border:2px solid transparent;border-radius:3px;overflow:hidden">
+              <div style="aspect-ratio:1;background:linear-gradient(135deg,#400010,#800030);display:flex;align-items:center;justify-content:center;font-size:20px">🌹</div>
+              <div style="padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;background:#111118">Rise</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADJUST TAB (LIGHT) -->
+        <div id="pePanel-adjust" style="display:none">
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">☀️ ЯРКОСТЬ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-bright">0</span>
+            </div>
+            <input type="range" min="-100" max="100" value="0" id="pe-bright" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">◑ КОНТРАСТ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-con">0</span>
+            </div>
+            <input type="range" min="-100" max="100" value="0" id="pe-con" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">🌅 ТЕНИ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-shadow">0</span>
+            </div>
+            <input type="range" min="-100" max="100" value="0" id="pe-shadow" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">✨ СВЕТА</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-highl">0</span>
+            </div>
+            <input type="range" min="-100" max="100" value="0" id="pe-highl" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">🔍 ЧЁТКОСТЬ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-sharp">0</span>
+            </div>
+            <input type="range" min="-50" max="50" value="0" id="pe-sharp" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">💫 РАЗМЫТИЕ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-blur">0</span>
+            </div>
+            <input type="range" min="0" max="20" value="0" id="pe-blur" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+        </div>
+
+        <!-- COLOR TAB -->
+        <div id="pePanel-color" style="display:none">
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">🎨 НАСЫЩЕННОСТЬ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-sat">0</span>
+            </div>
+            <input type="range" min="-100" max="100" value="0" id="pe-sat" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">🌡️ ТЕМПЕРАТУРА</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-temp">0</span>
+            </div>
+            <input type="range" min="-100" max="100" value="0" id="pe-temp" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">🌈 ТОН (HUE)</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-hue">0°</span>
+            </div>
+            <input type="range" min="-180" max="180" value="0" id="pe-hue" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">🔆 ЯРКОСТЬ ЦВЕТА</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-vib">0</span>
+            </div>
+            <input type="range" min="-100" max="100" value="0" id="pe-vib" oninput="peUpdateAdj()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+        </div>
+
+        <!-- EFFECTS TAB -->
+        <div id="pePanel-effects" style="display:none">
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">⭕ ВИНЬЕТКА</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-vign">0</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" id="pe-vign" oninput="peUpdateFx()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">📺 ЗЕРНИСТОСТЬ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-grain">0</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" id="pe-grain" oninput="peUpdateFx()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <div class="pe-slider-block">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em">🌟 СВЕЧЕНИЕ</span>
+              <span style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e" id="pe-v-glow">0</span>
+            </div>
+            <input type="range" min="0" max="100" value="0" id="pe-glow" oninput="peUpdateFx()" style="width:100%;accent-color:#8b1a1a">
+          </div>
+          <!-- Flip/Rotate tools -->
+          <div style="margin-top:16px;border-top:1px solid rgba(139,26,26,0.2);padding-top:14px">
+            <div style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em;margin-bottom:10px">↩ ПОВОРОТ / ОТРАЖЕНИЕ</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <button onclick="peRotate(-90)" style="padding:8px;background:rgba(139,26,26,0.1);border:1px solid rgba(139,26,26,0.3);color:#c9bfa8;font-size:16px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(139,26,26,0.25)'" onmouseout="this.style.background='rgba(139,26,26,0.1)'">↺</button>
+              <button onclick="peRotate(90)" style="padding:8px;background:rgba(139,26,26,0.1);border:1px solid rgba(139,26,26,0.3);color:#c9bfa8;font-size:16px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(139,26,26,0.25)'" onmouseout="this.style.background='rgba(139,26,26,0.1)'">↻</button>
+              <button onclick="peFlip('h')" style="padding:8px;background:rgba(139,26,26,0.1);border:1px solid rgba(139,26,26,0.3);color:#c9bfa8;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(139,26,26,0.25)'" onmouseout="this.style.background='rgba(139,26,26,0.1)'">↔ ОТРАЗИТЬ</button>
+              <button onclick="peFlip('v')" style="padding:8px;background:rgba(139,26,26,0.1);border:1px solid rgba(139,26,26,0.3);color:#c9bfa8;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(139,26,26,0.25)'" onmouseout="this.style.background='rgba(139,26,26,0.1)'">↕ ПЕРЕВЕРНУТЬ</button>
+            </div>
+          </div>
+        </div>
+
+          <!-- CROP PANEL -->
+          <div id="pePanel-crop" style="display:none">
+            <div style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.08em;margin-bottom:10px">📐 СООТНОШЕНИЕ СТОРОН</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:16px">
+              <button onclick="peCropRatio('free')" id="peCR-free" style="padding:7px 4px;background:rgba(139,26,26,0.2);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">Свобода</button>
+              <button onclick="peCropRatio('1:1')" id="peCR-1:1" style="padding:7px 4px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">1 : 1</button>
+              <button onclick="peCropRatio('4:3')" id="peCR-4:3" style="padding:7px 4px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">4 : 3</button>
+              <button onclick="peCropRatio('16:9')" id="peCR-16:9" style="padding:7px 4px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">16 : 9</button>
+              <button onclick="peCropRatio('3:4')" id="peCR-3:4" style="padding:7px 4px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">3 : 4</button>
+              <button onclick="peCropRatio('9:16')" id="peCR-9:16" style="padding:7px 4px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">9 : 16</button>
+            </div>
+            <div style="background:rgba(139,26,26,0.08);border:1px solid rgba(139,26,26,0.2);padding:12px;margin-bottom:14px">
+              <div id="peCropInfo" style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.06em;line-height:1.6">Кликни и тяни на фото чтобы выбрать область</div>
+              <div id="peCropSize" style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e;margin-top:4px"></div>
+            </div>
+            <div style="display:flex;gap:8px;flex-direction:column">
+              <button onclick="peApplyCrop()" style="padding:10px;background:rgba(139,26,26,0.25);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer" onmouseover="this.style.background='rgba(139,26,26,0.45)'" onmouseout="this.style.background='rgba(139,26,26,0.25)'">✂ ПРИМЕНИТЬ КРОП</button>
+              <button onclick="peCropCancel()" style="padding:10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer">↺ ОТМЕНИТЬ</button>
+            </div>
+          </div>
+
+      </div><!-- end scrollable -->
+    </div><!-- end right panel -->
+  </div><!-- end main area -->
+
+  <!-- VIGNETTE OVERLAY -->
+  <div id="peVignOverlay" style="position:absolute;inset:0;pointer-events:none;z-index:1;opacity:0;transition:opacity 0.2s;background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.95) 100%)"></div>
+
+</div><!-- end photoEditor -->
+
+<style>
+.pe-slider-block { margin-bottom:18px; }
+.pe-filter-card:hover { opacity:0.85; }
+.pe-filter-card.active { border-color:#8b1a1a !important; }
+#pePanelContent::-webkit-scrollbar { width:3px; }
+#pePanelContent::-webkit-scrollbar-track { background:#111118; }
+#pePanelContent::-webkit-scrollbar-thumb { background:#8b1a1a; }
+@media (max-width:600px) {
+  #peRightPanel { width:100%; max-height:45vh; }
+  #photoEditor > div:nth-child(2) { flex-direction:column; }
+  #peCanvasArea { min-height:200px; }
+}
+</style>
+
+<!-- ══════════════════════════════════════
+     PROFESSIONAL VIDEO PLAYER MODAL
+══════════════════════════════════════ -->
+<style>
+#vpPanelContent::-webkit-scrollbar { width:3px; }
+#vpPanelContent::-webkit-scrollbar-track { background:#111118; }
+#vpPanelContent::-webkit-scrollbar-thumb { background:#8b1a1a; }
+@media (max-width:600px) {
+  #vpMainArea { flex-direction:column !important; }
+  #vpRightPanel { width:100% !important; height:240px !important; border-left:none !important; border-top:1px solid rgba(139,26,26,0.25) !important; }
+}
+</style>
+<div id="videoPlayerModal" style="display:none;position:fixed;inset:0;z-index:2000;background:#050508;flex-direction:column;overflow:hidden">
+
+  <!-- TOP BAR -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#0d0d14;border-bottom:1px solid rgba(139,26,26,0.3);flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="closeVideoPlayer()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;line-height:1;padding:2px 6px">✕</button>
+      <span style="font-family:'Cinzel',serif;font-size:11px;color:#c9bfa8;letter-spacing:0.1em">ВИДЕОПЛЕЕР</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button id="vpLoopBtn" onclick="vpToggleLoop()" style="padding:4px 10px;background:rgba(139,26,26,0.15);border:1px solid rgba(139,26,26,0.35);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🔁 ПОВТОР</button>
+      <button onclick="vpSnapshot()" style="padding:4px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">📸 СНИМОК</button>
+      <div id="vp-counter" style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.1em"></div>
+    </div>
+  </div>
+
+  <!-- MAIN: видео слева + панель справа -->
+  <div id="vpMainArea" style="flex:1;min-height:0;display:flex;flex-direction:row;overflow:hidden">
+
+    <!-- ВИДЕО -->
+    <div style="flex:1;min-width:0;display:flex;align-items:center;justify-content:center;background:#050508;position:relative;overflow:hidden">
+      <video id="videoPlayerEl" controls autoplay style="max-width:100%;max-height:100%;background:#000;transition:filter 0.2s"></video>
+      <div id="vpReplayOverlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:4">
+        <button onclick="vpReplay()" style="width:72px;height:72px;border-radius:50%;background:rgba(139,26,26,0.85);border:2px solid #c0392b;color:#fff;font-size:28px;cursor:pointer">↻</button>
+        <span style="font-family:'Cinzel',serif;font-size:10px;color:#c9bfa8;letter-spacing:0.15em">СМОТРЕТЬ СНОВА</span>
+        <div style="display:flex;gap:10px;margin-top:4px">
+          <button onclick="vpNav(-1)" style="padding:6px 16px;background:rgba(0,0,0,0.6);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;font-family:'Cinzel',serif;font-size:9px;cursor:pointer">‹ ПРЕД.</button>
+          <button onclick="vpNav(1)" style="padding:6px 16px;background:rgba(0,0,0,0.6);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;font-family:'Cinzel',serif;font-size:9px;cursor:pointer">СЛЕД. ›</button>
+        </div>
+      </div>
+      <button onclick="vpNav(-1)" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;width:40px;height:40px;font-size:20px;cursor:pointer;z-index:5">‹</button>
+      <button onclick="vpNav(1)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;width:40px;height:40px;font-size:20px;cursor:pointer;z-index:5">›</button>
+    </div>
+
+    <!-- ПРАВАЯ ПАНЕЛЬ -->
+    <div id="vpRightPanel" style="width:260px;flex-shrink:0;background:#111118;border-left:1px solid rgba(139,26,26,0.25);display:flex;flex-direction:column;overflow:hidden">
+
+      <!-- ВКЛАДКИ -->
+      <div style="display:flex;flex-shrink:0;border-bottom:1px solid rgba(139,26,26,0.25)">
+        <button id="vpTab-filters" onclick="vpShowTab('filters')" style="flex:1;padding:9px 2px;background:rgba(139,26,26,0.15);border:none;border-bottom:2px solid #8b1a1a;color:#c0392b;font-family:'Cinzel',serif;font-size:7px;letter-spacing:0.05em;cursor:pointer">ФИЛЬТРЫ</button>
+        <button id="vpTab-adjust" onclick="vpShowTab('adjust')" style="flex:1;padding:9px 2px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:7px;letter-spacing:0.05em;cursor:pointer">СВЕТ</button>
+        <button id="vpTab-tools" onclick="vpShowTab('tools')" style="flex:1;padding:9px 2px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:7px;letter-spacing:0.05em;cursor:pointer">ИНСТР.</button>
+        <button id="vpTab-trim" onclick="vpShowTab('trim')" style="flex:1;padding:9px 2px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:7px;letter-spacing:0.05em;cursor:pointer">✂ ОБРЕЗКА</button>
+      </div>
+
+      <!-- КОНТЕНТ ПАНЕЛИ (прокрутка) -->
+      <div id="vpPanelContent" style="flex:1;overflow-y:auto;padding:12px 10px">
+
+        <!-- ФИЛЬТРЫ -->
+        <div id="vpPanel-filters">
+          <div style="display:flex;flex-direction:column;gap:5px">
+            <button onclick="vpFilt(0,this)" style="width:100%;padding:7px 10px;text-align:left;background:rgba(139,26,26,0.25);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🎬 Оригинал</button>
+            <button onclick="vpFilt(1,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🖤 Ч/Б</button>
+            <button onclick="vpFilt(2,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">📜 Vintage</button>
+            <button onclick="vpFilt(3,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">⚡ Vivid</button>
+            <button onclick="vpFilt(4,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🌑 Ночь</button>
+            <button onclick="vpFilt(5,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🩸 Gothic</button>
+            <button onclick="vpFilt(6,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🌫️ Dream</button>
+            <button onclick="vpFilt(7,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🍂 Autumn</button>
+            <button onclick="vpFilt(8,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🌊 Cool</button>
+          </div>
+        </div>
+
+        <!-- СВЕТ -->
+        <div id="vpPanel-adjust" style="display:none">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">☀️ ЯРКОСТЬ</span>
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-bright">0</span>
+              </div>
+              <input type="range" min="-100" max="100" value="0" id="vp-bright" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">◑ КОНТРАСТ</span>
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-con">0</span>
+              </div>
+              <input type="range" min="-100" max="100" value="0" id="vp-con" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">🎨 НАСЫЩЕННОСТЬ</span>
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-sat">0</span>
+              </div>
+              <input type="range" min="-100" max="100" value="0" id="vp-sat" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
+            </div>
+          </div>
+        </div>
+
+        <!-- ИНСТРУМЕНТЫ -->
+        <div id="vpPanel-tools" style="display:none">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">🔊 ГРОМКОСТЬ</span>
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-vol">100%</span>
+              </div>
+              <input type="range" min="0" max="100" value="100" id="vp-vol" oninput="vpSetVolume()" style="width:100%;accent-color:#8b1a1a">
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">⚡ СКОРОСТЬ</span>
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-speed">1x</span>
+              </div>
+              <input type="range" min="25" max="300" value="100" step="25" id="vp-speed" oninput="vpSetSpeed()" style="width:100%;accent-color:#8b1a1a">
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px">
+              <button onclick="vpSetSpeedPreset(0.5)" style="flex:1;min-width:38px;padding:5px 2px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">0.5x</button>
+              <button onclick="vpSetSpeedPreset(0.75)" style="flex:1;min-width:38px;padding:5px 2px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">0.75x</button>
+              <button onclick="vpSetSpeedPreset(1)" style="flex:1;min-width:38px;padding:5px 2px;background:rgba(139,26,26,0.2);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">1x</button>
+              <button onclick="vpSetSpeedPreset(1.5)" style="flex:1;min-width:38px;padding:5px 2px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">1.5x</button>
+              <button onclick="vpSetSpeedPreset(2)" style="flex:1;min-width:38px;padding:5px 2px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">2x</button>
+              <button onclick="vpSetSpeedPreset(3)" style="flex:1;min-width:38px;padding:5px 2px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">3x</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ОБРЕЗКА -->
+        <div id="vpPanel-trim" style="display:none">
+          <div style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;margin-bottom:10px">✂ ОБРЕЗКА ПО ВРЕМЕНИ</div>
+          <div style="position:relative;height:36px;background:#0a0a0f;border:1px solid rgba(139,26,26,0.3);margin-bottom:10px;cursor:pointer" id="vpTrimline" onclick="vpTrimClick(event)">
+            <div id="vpTrimProgress" style="position:absolute;top:0;bottom:0;left:0;width:0%;background:rgba(139,26,26,0.15);pointer-events:none"></div>
+            <div id="vpTrimStart" style="position:absolute;top:0;bottom:0;left:0%;width:3px;background:#c9a96e;cursor:ew-resize" onmousedown="vpTrimDrag('start',event)" ontouchstart="vpTrimDrag('start',event)"></div>
+            <div id="vpTrimEnd" style="position:absolute;top:0;bottom:0;right:0%;width:3px;background:#c9a96e;cursor:ew-resize" onmousedown="vpTrimDrag('end',event)" ontouchstart="vpTrimDrag('end',event)"></div>
+            <div id="vpTrimRegion" style="position:absolute;top:0;bottom:0;left:0%;right:0%;background:rgba(201,169,110,0.12);pointer-events:none;border:1px solid rgba(201,169,110,0.3)"></div>
+            <div id="vpPlayHead" style="position:absolute;top:0;bottom:0;left:0%;width:2px;background:#e8e0d4;pointer-events:none"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">Начало</span>
+              <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vpTrimStartTime">0:00</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">Конец</span>
+              <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vpTrimEndTime">0:00</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">Длина</span>
+              <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vpTrimDur">0:00</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button onclick="vpTrimPreview()" style="width:100%;padding:8px;background:rgba(139,26,26,0.15);border:1px solid rgba(139,26,26,0.4);color:#c9bfa8;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">▶ ПРЕВЬЮ</button>
+            <button onclick="vpTrimExport()" style="width:100%;padding:8px;background:rgba(139,26,26,0.25);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">⬇ СКАЧАТЬ ОБРЕЗАННОЕ</button>
+          </div>
+        </div>
+
+      </div><!-- end vpPanelContent -->
+    </div><!-- end vpRightPanel -->
+  </div><!-- end vpMainArea -->
+
+</div>
+<script>
+// ── Photo Editor state ──
+let _peUrls = [];
+let _peIdx = 0;
+let _peRotation = 0;
+let _peFlipH = false;
+let _peFlipV = false;
+let _peActiveFilter = 0;
+let _peFilterFn = '';
+
+const PE_FILTERS = [
+  '',  // 0 Origin
+  'sepia(0.3) saturate(1.6) hue-rotate(-15deg) brightness(1.05)',       // 1 Warm
+  'grayscale(1) contrast(1.2) brightness(0.95)',                         // 2 Mono
+  'sepia(0.65) contrast(0.88) brightness(0.92) saturate(1.1)',          // 3 Vintage
+  'hue-rotate(210deg) saturate(0.65) brightness(1.05)',                  // 4 Night
+  'saturate(2.2) contrast(1.25) brightness(1.05)',                       // 5 Vivid
+  'contrast(1.5) saturate(0.25) brightness(0.82) hue-rotate(300deg)',    // 6 Gothic
+  'hue-rotate(195deg) saturate(1.3) brightness(0.95) contrast(1.1)',     // 7 Cool
+  'sepia(0.45) hue-rotate(-20deg) saturate(1.4) contrast(1.05)',        // 8 Autumn
+  'invert(0.9) hue-rotate(180deg) saturate(0.8)',                        // 9 Invert
+  'brightness(1.15) contrast(0.82) saturate(0.6)',                       // 10 Fade
+  'hue-rotate(100deg) saturate(1.5) brightness(0.9) contrast(1.1)',     // 11 Forest
+  // Instagram-style
+  'contrast(1.1) brightness(1.1) saturate(1.3) sepia(0.1)',             // 12 Clarendon
+  'brightness(1.1) contrast(0.9) saturate(0.85) sepia(0.2)',            // 13 Lark
+  'brightness(1.05) contrast(1.1) saturate(0.8) sepia(0.15) hue-rotate(5deg)', // 14 Juno
+  'contrast(1.2) brightness(0.9) saturate(1.1) hue-rotate(-10deg)',     // 15 Reyes
+  'sepia(0.2) contrast(1.15) brightness(1.05) saturate(1.5)',           // 16 Gingham
+  'brightness(1.2) contrast(0.85) saturate(0.9)',                        // 17 Moon
+  'contrast(1.25) brightness(0.88) saturate(1.2) hue-rotate(350deg)',   // 18 Slumber
+  'brightness(1.08) contrast(1.08) saturate(1.4) hue-rotate(-5deg) sepia(0.05)', // 19 Crema
+  'brightness(1.15) contrast(0.95) saturate(0.7) sepia(0.25)',          // 20 Ludwig
+  'contrast(1.3) brightness(0.85) saturate(0.4) sepia(0.1)',            // 21 Aden
+  'brightness(1.1) saturate(1.6) contrast(1.1) hue-rotate(10deg)',      // 22 Perpetua
+  'sepia(0.5) contrast(0.95) brightness(1.05) saturate(1.2) hue-rotate(-15deg)', // 23 Mayfair
+  'brightness(0.9) contrast(1.3) saturate(1.5) hue-rotate(330deg)',     // 24 Rise
+];
+
+const VP_FILTERS = [
+  '',
+  'grayscale(1) contrast(1.15)',
+  'sepia(0.6) contrast(0.9) brightness(0.95)',
+  'saturate(2) contrast(1.2) brightness(1.05)',
+  'hue-rotate(210deg) saturate(0.65) brightness(1.05)',
+  'contrast(1.5) saturate(0.2) brightness(0.8) hue-rotate(300deg)',
+  'blur(1.2px) brightness(1.12) contrast(1.18) saturate(0.85)',
+  'sepia(0.4) hue-rotate(-20deg) saturate(1.3)',
+  'hue-rotate(195deg) saturate(1.2) brightness(0.95)',
+];
+
+function openLightbox(url) {
+  _peUrls = Array.from(document.querySelectorAll('#firebase-feed .post-card[data-type="photo"] img'))
+    .map(i => i.src).filter(Boolean);
+  if (!_peUrls.length) _peUrls = [url];
+  _peIdx = _peUrls.indexOf(url);
+  if (_peIdx < 0) _peIdx = 0;
+  peReset();
+  peLoadImage(_peUrls[_peIdx]);
+  document.getElementById('photoEditor').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  // Show nav if multiple images
+  const navL = document.getElementById('peNavL');
+  const navR = document.getElementById('peNavR');
+  if (_peUrls.length > 1) { if(navL) navL.style.display='block'; if(navR) navR.style.display='block'; }
+  const counter = document.getElementById('peCounter');
+  if (counter) counter.textContent = _peUrls.length > 1 ? (_peIdx+1) + ' / ' + _peUrls.length : '';
+  setTimeout(peInitCropCanvas, 150);
+}
+
+function closePhotoEditor() {
+  document.getElementById('photoEditor').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function peLoadImage(url) {
+  const img = document.getElementById('peImg');
+  if (img) { img.src = url; img.style.transform = ''; }
+  _peRotation = 0; _peFlipH = false; _peFlipV = false;
+}
+
+function peLbNav(dir) {
+  _peIdx = (_peIdx + dir + _peUrls.length) % _peUrls.length;
+  peReset();
+  peLoadImage(_peUrls[_peIdx]);
+  const counter = document.getElementById('peCounter');
+  if (counter) counter.textContent = (_peIdx+1) + ' / ' + _peUrls.length;
+}
+
+// peShowTab moved below with crop support
+
+function peApplyFilter(idx, el) {
+  _peActiveFilter = idx;
+  _peFilterFn = PE_FILTERS[idx] || '';
+  document.querySelectorAll('.pe-filter-card').forEach(c => {
+    c.style.borderColor = 'transparent';
+  });
+  if (el) el.style.borderColor = '#8b1a1a';
+  peApplyAll();
+}
+
+function peUpdateAdj() {
+  const vBright = document.getElementById('pe-bright');
+  const vCon    = document.getElementById('pe-con');
+  const vSat    = document.getElementById('pe-sat');
+  const vBlur   = document.getElementById('pe-blur');
+  const vHue    = document.getElementById('pe-hue');
+  const vSharp  = document.getElementById('pe-sharp');
+  const vTemp   = document.getElementById('pe-temp');
+  const vVib    = document.getElementById('pe-vib');
+  const vShadow = document.getElementById('pe-shadow');
+  const vHighl  = document.getElementById('pe-highl');
+
+  // Update displayed values
+  if(vBright) document.getElementById('pe-v-bright').textContent = vBright.value > 0 ? '+'+vBright.value : vBright.value;
+  if(vCon)    document.getElementById('pe-v-con').textContent    = vCon.value > 0 ? '+'+vCon.value : vCon.value;
+  if(vSat)    document.getElementById('pe-v-sat').textContent    = vSat.value > 0 ? '+'+vSat.value : vSat.value;
+  if(vBlur)   document.getElementById('pe-v-blur').textContent   = vBlur.value;
+  if(vHue)    document.getElementById('pe-v-hue').textContent    = vHue.value + '°';
+  if(vSharp)  document.getElementById('pe-v-sharp').textContent  = vSharp.value > 0 ? '+'+vSharp.value : vSharp.value;
+  if(vTemp)   document.getElementById('pe-v-temp').textContent   = vTemp.value > 0 ? '+'+vTemp.value : vTemp.value;
+  if(vVib)    document.getElementById('pe-v-vib').textContent    = vVib.value > 0 ? '+'+vVib.value : vVib.value;
+  if(vShadow) document.getElementById('pe-v-shadow').textContent = vShadow.value > 0 ? '+'+vShadow.value : vShadow.value;
+  if(vHighl)  document.getElementById('pe-v-highl').textContent  = vHighl.value > 0 ? '+'+vHighl.value : vHighl.value;
+
+  peApplyAll();
+}
+
+function peUpdateFx() {
+  const vVign  = document.getElementById('pe-vign');
+  const vGrain = document.getElementById('pe-grain');
+  const vGlow  = document.getElementById('pe-glow');
+  if(vVign)  document.getElementById('pe-v-vign').textContent  = vVign.value;
+  if(vGrain) document.getElementById('pe-v-grain').textContent = vGrain.value;
+  if(vGlow)  document.getElementById('pe-v-glow').textContent  = vGlow.value;
+  // Vignette overlay
+  const overlay = document.getElementById('peVignOverlay');
+  if (overlay && vVign) overlay.style.opacity = vVign.value / 100;
+  peApplyAll();
+}
+
+function peApplyAll() {
+  const img = document.getElementById('peImg');
+  if (!img) return;
+
+  const bright = parseInt(document.getElementById('pe-bright')?.value || 0);
+  const con    = parseInt(document.getElementById('pe-con')?.value || 0);
+  const sat    = parseInt(document.getElementById('pe-sat')?.value || 0);
+  const blur   = parseInt(document.getElementById('pe-blur')?.value || 0);
+  const hue    = parseInt(document.getElementById('pe-hue')?.value || 0);
+  const sharp  = parseInt(document.getElementById('pe-sharp')?.value || 0);
+  const temp   = parseInt(document.getElementById('pe-temp')?.value || 0);
+  const vib    = parseInt(document.getElementById('pe-vib')?.value || 0);
+  const shadow = parseInt(document.getElementById('pe-shadow')?.value || 0);
+  const highl  = parseInt(document.getElementById('pe-highl')?.value || 0);
+  const glow   = parseInt(document.getElementById('pe-glow')?.value || 0);
+
+  // Build CSS filter
+  const b = 1 + (bright + highl * 0.5 - shadow * 0.3) / 100;
+  const c = 1 + (con + sharp * 0.5) / 100;
+  const s = 1 + (sat + vib * 0.5) / 100;
+  const blurV = blur * 0.3;
+  const hueV = hue + (temp > 0 ? -temp * 0.2 : -temp * 0.15);
+  const glowBlur = glow > 0 ? 'drop-shadow(0 0 ' + (glow*0.15) + 'px rgba(255,220,180,' + (glow/150) + '))' : '';
+
+  const adjFilter = [
+    'brightness(' + Math.max(0.1, b) + ')',
+    'contrast(' + Math.max(0.1, c) + ')',
+    'saturate(' + Math.max(0, s) + ')',
+    blurV > 0 ? 'blur(' + blurV + 'px)' : '',
+    hueV !== 0 ? 'hue-rotate(' + hueV + 'deg)' : '',
+    glowBlur
+  ].filter(Boolean).join(' ');
+
+  const combined = [_peFilterFn, adjFilter].filter(Boolean).join(' ');
+
+  // Apply transform (rotation + flip)
+  const scaleX = _peFlipH ? -1 : 1;
+  const scaleY = _peFlipV ? -1 : 1;
+  img.style.filter = combined;
+  img.style.transform = 'rotate(' + _peRotation + 'deg) scale(' + scaleX + ',' + scaleY + ')';
+}
+
+function peRotate(deg) {
+  _peRotation = (_peRotation + deg) % 360;
+  peApplyAll();
+}
+
+function peFlip(dir) {
+  if (dir === 'h') _peFlipH = !_peFlipH;
+  else _peFlipV = !_peFlipV;
+  peApplyAll();
+}
+
+function peReset() {
+  const sliders = ['pe-bright','pe-con','pe-sat','pe-blur','pe-hue','pe-sharp','pe-temp','pe-vib','pe-shadow','pe-highl','pe-vign','pe-grain','pe-glow'];
+  sliders.forEach(id => { const el = document.getElementById(id); if(el) el.value = (id==='pe-blur'||id==='pe-vign'||id==='pe-grain'||id==='pe-glow') ? 0 : 0; });
+  const labels = ['pe-v-bright','pe-v-con','pe-v-sat','pe-v-blur','pe-v-hue','pe-v-sharp','pe-v-temp','pe-v-vib','pe-v-shadow','pe-v-highl','pe-v-vign','pe-v-grain','pe-v-glow'];
+  labels.forEach(id => { const el = document.getElementById(id); if(el) el.textContent = id==='pe-v-hue'?'0°':'0'; });
+  _peActiveFilter = 0; _peFilterFn = ''; _peRotation = 0; _peFlipH = false; _peFlipV = false;
+  document.querySelectorAll('.pe-filter-card').forEach((c,i) => { c.style.borderColor = i===0 ? '#8b1a1a' : 'transparent'; });
+  const overlay = document.getElementById('peVignOverlay');
+  if (overlay) overlay.style.opacity = 0;
+  peApplyAll();
+}
+
+function peDownload() {
+  const img = document.getElementById('peImg');
+  if (!img) return;
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.filter = img.style.filter || 'none';
+  ctx.drawImage(img, 0, 0);
+  const a = document.createElement('a');
+  a.download = 'ourworld-' + Date.now() + '.jpg';
+  a.href = canvas.toDataURL('image/jpeg', 0.92);
+  a.click();
+  toast('Фото сохранено!', 's');
+}
+
+// ── Video Player ──
+let _vpUrls = [];
+let _vpIdx  = 0;
+let _vpBaseFilt = '';
+
+function openVideoPlayer(url) {
+  _vpUrls = Array.from(document.querySelectorAll('#firebase-feed .post-card[data-type="video"] video'))
+    .map(v => v.src).filter(Boolean);
+  if (!_vpUrls.length) _vpUrls = [url];
+  _vpIdx = _vpUrls.indexOf(url);
+  if (_vpIdx < 0) _vpIdx = 0;
+  const v = document.getElementById('videoPlayerEl');
+  if (v) { v.src = _vpUrls[_vpIdx]; v.style.filter = ''; }
+  document.querySelectorAll('#videoPlayerModal button[onclick^="vpFilt"]').forEach((b,i) => {
+    b.style.background = i===0 ? 'rgba(139,26,26,0.25)' : 'none';
+    b.style.borderColor = i===0 ? '#8b1a1a' : 'rgba(139,26,26,0.3)';
+    b.style.color = i===0 ? '#e8e0d4' : '#8a8070';
+  });
+  ['vp-bright','vp-con','vp-sat'].forEach(id => { const el = document.getElementById(id); if(el) el.value = 0; });
+  ['vp-v-bright','vp-v-con','vp-v-sat'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '0'; });
+  const counter = document.getElementById('vp-counter');
+  if (counter) counter.textContent = _vpUrls.length > 1 ? (_vpIdx+1) + ' / ' + _vpUrls.length : '';
+  document.getElementById('videoPlayerModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  // Attach ended handler
+  const _ve = document.getElementById('videoPlayerEl');
+  if (_ve) _ve.onended = vpOnEnded;
+  // Hide replay overlay
+  const _ro = document.getElementById('vpReplayOverlay');
+  if (_ro) _ro.style.display = 'none';
+}
+
+function closeVideoPlayer() {
+  const v = document.getElementById('videoPlayerEl');
+  if (v) { v.pause(); v.src = ''; }
+  document.getElementById('videoPlayerModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function vpNav(dir) {
+  _vpIdx = (_vpIdx + dir + _vpUrls.length) % _vpUrls.length;
+  const v = document.getElementById('videoPlayerEl');
+  if (v) { v.src = _vpUrls[_vpIdx]; v.onended = vpOnEnded; }
+  const counter = document.getElementById('vp-counter');
+  if (counter) counter.textContent = (_vpIdx+1) + ' / ' + _vpUrls.length;
+  const overlay = document.getElementById('vpReplayOverlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+function vpFilt(idx, btn) {
+  _vpBaseFilt = VP_FILTERS[idx] || '';
+  document.querySelectorAll('#videoPlayerModal button[onclick^="vpFilt"]').forEach(b => {
+    b.style.background = 'none';
+    b.style.borderColor = 'rgba(139,26,26,0.3)';
+    b.style.color = '#8a8070';
+  });
+  if (btn) { btn.style.background='rgba(139,26,26,0.25)'; btn.style.borderColor='#8b1a1a'; btn.style.color='#e8e0d4'; }
+  vpAdj();
+}
+
+function vpAdj() {
+  const bright = parseInt(document.getElementById('vp-bright')?.value || 0);
+  const con    = parseInt(document.getElementById('vp-con')?.value || 0);
+  const sat    = parseInt(document.getElementById('vp-sat')?.value || 0);
+  document.getElementById('vp-v-bright').textContent = bright > 0 ? '+'+bright : bright;
+  document.getElementById('vp-v-con').textContent    = con > 0 ? '+'+con : con;
+  document.getElementById('vp-v-sat').textContent    = sat > 0 ? '+'+sat : sat;
+  const adjFilt = 'brightness(' + (1+bright/100) + ') contrast(' + (1+con/100) + ') saturate(' + (1+sat/100) + ')';
+  const combined = [_vpBaseFilt, adjFilt].filter(Boolean).join(' ');
+  const v = document.getElementById('videoPlayerEl');
+  if (v) v.style.filter = combined;
+}
+
+// ── LOOP TOGGLE ──
+let _vpLoop = false;
+function vpToggleLoop() {
+  _vpLoop = !_vpLoop;
+  const v = document.getElementById('videoPlayerEl');
+  const btn = document.getElementById('vpLoopBtn');
+  if (v) v.loop = _vpLoop;
+  if (btn) {
+    btn.style.background = _vpLoop ? 'rgba(139,26,26,0.4)' : 'rgba(139,26,26,0.15)';
+    btn.style.color = _vpLoop ? '#e8e0d4' : '#8a8070';
+    btn.style.borderColor = _vpLoop ? '#8b1a1a' : 'rgba(139,26,26,0.35)';
+  }
+  toast(_vpLoop ? '🔁 Повтор включён' : 'Повтор выключен', 'i');
+}
+
+// ── VOLUME TOP BAR ──
+function vpSetVolumeTop() {
+  const v = document.getElementById('videoPlayerEl');
+  const slider = document.getElementById('vp-vol-top');
+  const sliderBottom = document.getElementById('vp-vol');
+  if (v && slider) v.volume = slider.value / 100;
+  if (sliderBottom && slider) sliderBottom.value = slider.value;
+  const label = document.getElementById('vp-v-vol');
+  if (label && slider) label.textContent = slider.value + '%';
+}
+
+// ── REPLAY ──
+function vpReplay() {
+  const v = document.getElementById('videoPlayerEl');
+  const overlay = document.getElementById('vpReplayOverlay');
+  if (v) { v.currentTime = 0; v.play(); }
+  if (overlay) overlay.style.display = 'none';
+}
+
+// ── ENDED HANDLER ──
+function vpOnEnded() {
+  if (_vpLoop) return; // loop handles itself
+  const overlay = document.getElementById('vpReplayOverlay');
+  if (overlay) overlay.style.display = 'flex';
+}
+
+// ── CROP TOOL ──
+let _peCropRatio = 'free';
+let _peCropActive = false;
+let _peCropStart = null;
+let _peCropCurrent = null;
+let _peCropApplied = null; // {x,y,w,h} in natural image pixels
+
+function peShowTab(tab) {
+  ['filters','adjust','color','effects','crop'].forEach(t => {
+    const panel = document.getElementById('pePanel-' + t);
+    const tabEl = document.getElementById('peTab-' + t);
+    if (panel) panel.style.display = t === tab ? 'block' : 'none';
+    if (tabEl) {
+      tabEl.style.borderBottomColor = t === tab ? '#8b1a1a' : 'transparent';
+      tabEl.style.color = t === tab ? '#c0392b' : '#8a8070';
+    }
+  });
+  // Enable crop canvas when crop tab active
+  const canvas = document.getElementById('peCropCanvas');
+  const box = document.getElementById('peCropBox');
+  if (canvas) canvas.style.display = tab === 'crop' ? 'block' : 'none';
+  if (box && tab !== 'crop') box.style.display = 'none';
+}
+
+function peCropRatio(ratio) {
+  _peCropRatio = ratio;
+  document.querySelectorAll('[id^="peCR-"]').forEach(b => {
+    b.style.background = 'none';
+    b.style.borderColor = 'rgba(139,26,26,0.3)';
+    b.style.color = '#8a8070';
+  });
+  const active = document.getElementById('peCR-' + ratio);
+  if (active) { active.style.background = 'rgba(139,26,26,0.2)'; active.style.borderColor = '#8b1a1a'; active.style.color = '#e8e0d4'; }
+}
+
+function peInitCropCanvas() {
+  const canvas = document.getElementById('peCropCanvas');
+  const img = document.getElementById('peImg');
+  if (!canvas || !img) return;
+
+  canvas.addEventListener('mousedown', peCropDown);
+  canvas.addEventListener('mousemove', peCropMove);
+  canvas.addEventListener('mouseup', peCropUp);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); peCropDown(e.touches[0]); }, {passive:false});
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); peCropMove(e.touches[0]); }, {passive:false});
+  canvas.addEventListener('touchend', e => { e.preventDefault(); peCropUp(); }, {passive:false});
+}
+
+function peCropPos(e) {
+  const canvas = document.getElementById('peCropCanvas');
+  const rect = canvas.getBoundingClientRect();
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top, w: rect.width, h: rect.height };
+}
+
+function peCropDown(e) {
+  const p = peCropPos(e);
+  _peCropActive = true;
+  _peCropStart = p;
+  _peCropCurrent = p;
+}
+
+function peCropMove(e) {
+  if (!_peCropActive) return;
+  const p = peCropPos(e);
+  const start = _peCropStart;
+  let x = Math.min(start.x, p.x);
+  let y = Math.min(start.y, p.y);
+  let w = Math.abs(p.x - start.x);
+  let h = Math.abs(p.y - start.y);
+
+  // Apply ratio constraint
+  if (_peCropRatio !== 'free') {
+    const [rw, rh] = _peCropRatio.split(':').map(Number);
+    const ratio = rw / rh;
+    if (w / h > ratio) h = w / ratio;
+    else w = h * ratio;
+  }
+
+  const box = document.getElementById('peCropBox');
+  const area = document.getElementById('peCanvasArea');
+  if (!box || !area) return;
+  const areaRect = area.getBoundingClientRect();
+  const canvas = document.getElementById('peCropCanvas');
+  const canvasRect = canvas.getBoundingClientRect();
+
+  box.style.display = 'block';
+  box.style.left = (canvasRect.left - areaRect.left + x) + 'px';
+  box.style.top = (canvasRect.top - areaRect.top + y) + 'px';
+  box.style.width = w + 'px';
+  box.style.height = h + 'px';
+
+  _peCropCurrent = {x, y, w, h, cw: canvasRect.width, ch: canvasRect.height};
+
+  const info = document.getElementById('peCropInfo');
+  const size = document.getElementById('peCropSize');
+  const img = document.getElementById('peImg');
+  if (info) info.textContent = 'Область выбрана';
+  if (size && img) {
+    const scaleX = img.naturalWidth / canvasRect.width;
+    const scaleY = img.naturalHeight / canvasRect.height;
+    const pw = Math.round(w * scaleX);
+    const ph = Math.round(h * scaleY);
+    size.textContent = pw + ' × ' + ph + ' px';
+  }
+}
+
+function peCropUp() { _peCropActive = false; }
+
+function peApplyCrop() {
+  if (!_peCropCurrent || !_peCropCurrent.w) { toast('Выбери область для кропа', 'e'); return; }
+  const img = document.getElementById('peImg');
+  if (!img) return;
+  const {x, y, w, h, cw, ch} = _peCropCurrent;
+  const scaleX = img.naturalWidth / cw;
+  const scaleY = img.naturalHeight / ch;
+  const px = Math.round(x * scaleX);
+  const py = Math.round(y * scaleY);
+  const pw = Math.round(w * scaleX);
+  const ph = Math.round(h * scaleY);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = pw; canvas.height = ph;
+  const ctx = canvas.getContext('2d');
+  ctx.filter = img.style.filter || 'none';
+  ctx.drawImage(img, px, py, pw, ph, 0, 0, pw, ph);
+
+  const newUrl = canvas.toDataURL('image/jpeg', 0.92);
+  img.src = newUrl;
+  img.style.filter = '';
+  peReset();
+
+  const box = document.getElementById('peCropBox');
+  if (box) box.style.display = 'none';
+  _peCropCurrent = null;
+  const info = document.getElementById('peCropInfo');
+  const size = document.getElementById('peCropSize');
+  if (info) info.textContent = '✅ Кроп применён! (' + pw + '×' + ph + ')';
+  if (size) size.textContent = '';
+  toast('Кроп применён!', 's');
+}
+
+function peCropCancel() {
+  _peCropCurrent = null;
+  _peCropActive = false;
+  const box = document.getElementById('peCropBox');
+  if (box) box.style.display = 'none';
+  const info = document.getElementById('peCropInfo');
+  if (info) info.textContent = 'Кликни и тяни на фото чтобы выбрать область';
+  const size = document.getElementById('peCropSize');
+  if (size) size.textContent = '';
+}
+
+// Init crop canvas on photo editor open
+// openLightbox is defined above with crop init built in
+
+// ── VIDEO PLAYER TABS ──
+function vpShowTab(tab) {
+  ['filters','adjust','tools','trim'].forEach(t => {
+    const panel = document.getElementById('vpPanel-' + t);
+    const tabEl = document.getElementById('vpTab-' + t);
+    if (panel) panel.style.display = t === tab ? 'block' : 'none';
+    if (tabEl) {
+      tabEl.style.borderBottomColor = t === tab ? '#8b1a1a' : 'transparent';
+      tabEl.style.color = t === tab ? '#c0392b' : '#8a8070';
+    }
+  });
+  if (tab === 'trim') vpInitTrim();
+}
+
+// ── VOLUME ──
+function vpSetVolume() {
+  const v = document.getElementById('videoPlayerEl');
+  const slider = document.getElementById('vp-vol');
+  const label = document.getElementById('vp-v-vol');
+  if (v && slider) v.volume = slider.value / 100;
+  if (label && slider) label.textContent = slider.value + '%';
+}
+
+// ── SPEED ──
+function vpSetSpeed() {
+  const v = document.getElementById('videoPlayerEl');
+  const slider = document.getElementById('vp-speed');
+  const label = document.getElementById('vp-v-speed');
+  if (!v || !slider) return;
+  const speed = slider.value / 100;
+  v.playbackRate = speed;
+  if (label) label.textContent = speed + 'x';
+  // Highlight active preset
+  document.querySelectorAll('#vpPanel-tools button[onclick^="vpSetSpeedPreset"]').forEach(b => {
+    const bSpeed = parseFloat(b.getAttribute('onclick').match(/[\d.]+/)[0]);
+    b.style.background = bSpeed === speed ? 'rgba(139,26,26,0.2)' : 'none';
+    b.style.borderColor = bSpeed === speed ? '#8b1a1a' : 'rgba(139,26,26,0.3)';
+    b.style.color = bSpeed === speed ? '#e8e0d4' : '#8a8070';
+  });
+}
+
+function vpSetSpeedPreset(speed) {
+  const v = document.getElementById('videoPlayerEl');
+  const slider = document.getElementById('vp-speed');
+  const label = document.getElementById('vp-v-speed');
+  if (v) v.playbackRate = speed;
+  if (slider) slider.value = speed * 100;
+  if (label) label.textContent = speed + 'x';
+  document.querySelectorAll('#vpPanel-tools button[onclick^="vpSetSpeedPreset"]').forEach(b => {
+    const bSpeed = parseFloat(b.getAttribute('onclick').match(/[\d.]+/)[0]);
+    b.style.background = bSpeed === speed ? 'rgba(139,26,26,0.2)' : 'none';
+    b.style.borderColor = bSpeed === speed ? '#8b1a1a' : 'rgba(139,26,26,0.3)';
+    b.style.color = bSpeed === speed ? '#e8e0d4' : '#8a8070';
+  });
+}
+
+// ── SNAPSHOT ──
+function vpSnapshot() {
+  const v = document.getElementById('videoPlayerEl');
+  if (!v || !v.src) { toast('Нет видео', 'e'); return; }
+  const canvas = document.createElement('canvas');
+  canvas.width = v.videoWidth || 1280;
+  canvas.height = v.videoHeight || 720;
+  const ctx = canvas.getContext('2d');
+  ctx.filter = v.style.filter || 'none';
+  ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
+  const a = document.createElement('a');
+  a.download = 'ourworld-frame-' + Date.now() + '.jpg';
+  a.href = canvas.toDataURL('image/jpeg', 0.92);
+  a.click();
+  toast('📸 Кадр сохранён!', 's');
+}
+
+// ── TRIM ──
+let _vpTrimStart = 0;
+let _vpTrimEnd = 1; // as fractions 0-1
+let _vpTrimDragging = null;
+
+function vpFmtTime(sec) {
+  const m = Math.floor(sec/60);
+  const s = Math.floor(sec%60).toString().padStart(2,'0');
+  return m + ':' + s;
+}
+
+function vpInitTrim() {
+  const v = document.getElementById('videoPlayerEl');
+  if (!v) return;
+  v.ontimeupdate = vpTrimTimeUpdate;
+  _vpTrimStart = 0;
+  _vpTrimEnd = 1;
+  vpTrimUpdateUI();
+}
+
+function vpTrimTimeUpdate() {
+  const v = document.getElementById('videoPlayerEl');
+  if (!v || !v.duration) return;
+  const pct = v.currentTime / v.duration;
+  const ph = document.getElementById('vpPlayHead');
+  if (ph) ph.style.left = (pct * 100) + '%';
+  const prog = document.getElementById('vpTrimProgress');
+  if (prog) prog.style.width = (pct * 100) + '%';
+}
+
+function vpTrimUpdateUI() {
+  const v = document.getElementById('videoPlayerEl');
+  const dur = v?.duration || 0;
+  document.getElementById('vpTrimStart').style.left = (_vpTrimStart * 100) + '%';
+  document.getElementById('vpTrimEnd').style.right = ((1 - _vpTrimEnd) * 100) + '%';
+  document.getElementById('vpTrimRegion').style.left = (_vpTrimStart * 100) + '%';
+  document.getElementById('vpTrimRegion').style.right = ((1 - _vpTrimEnd) * 100) + '%';
+  document.getElementById('vpTrimStartTime').textContent = vpFmtTime(_vpTrimStart * dur);
+  document.getElementById('vpTrimEndTime').textContent = vpFmtTime(_vpTrimEnd * dur);
+  document.getElementById('vpTrimDur').textContent = vpFmtTime((_vpTrimEnd - _vpTrimStart) * dur);
+}
+
+function vpTrimClick(e) {
+  const v = document.getElementById('videoPlayerEl');
+  if (!v || !v.duration) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  v.currentTime = pct * v.duration;
+}
+
+function vpTrimDrag(handle, e) {
+  _vpTrimDragging = handle;
+  e.preventDefault();
+  const onMove = (ev) => {
+    const line = document.getElementById('vpTrimline');
+    if (!line) return;
+    const rect = line.getBoundingClientRect();
+    const clientX = ev.touches ? ev.touches[0].clientX : ev.clientX;
+    let pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    if (_vpTrimDragging === 'start') {
+      _vpTrimStart = Math.min(pct, _vpTrimEnd - 0.02);
+    } else {
+      _vpTrimEnd = Math.max(pct, _vpTrimStart + 0.02);
+    }
+    vpTrimUpdateUI();
+  };
+  const onUp = () => {
+    _vpTrimDragging = null;
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    document.removeEventListener('touchmove', onMove);
+    document.removeEventListener('touchend', onUp);
+  };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+  document.addEventListener('touchmove', onMove, {passive:false});
+  document.addEventListener('touchend', onUp);
+}
+
+function vpTrimPreview() {
+  const v = document.getElementById('videoPlayerEl');
+  if (!v || !v.duration) return;
+  v.currentTime = _vpTrimStart * v.duration;
+  v.play();
+  const checkEnd = setInterval(() => {
+    if (v.currentTime >= _vpTrimEnd * v.duration) {
+      v.pause();
+      clearInterval(checkEnd);
+    }
+  }, 100);
+}
+
+function vpTrimExport() {
+  const v = document.getElementById('videoPlayerEl');
+  if (!v || !v.duration) { toast('Нет видео для обрезки', 'e'); return; }
+  const startSec = _vpTrimStart * v.duration;
+  const endSec = _vpTrimEnd * v.duration;
+
+  toast('Записываю обрезанный фрагмент...', 'i');
+
+  v.currentTime = startSec;
+  v.playbackRate = 1;
+
+  const stream = v.captureStream ? v.captureStream() : v.mozCaptureStream?.();
+  if (!stream) { toast('Браузер не поддерживает экспорт видео', 'e'); return; }
+
+  const chunks = [];
+  let recorder;
+  try {
+    recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+  } catch(e) {
+    recorder = new MediaRecorder(stream);
+  }
+  recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
+  recorder.onstop = () => {
+    const blob = new Blob(chunks, {type: 'video/webm'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'ourworld-trim-' + Date.now() + '.webm';
+    a.click();
+    toast('✅ Видео сохранено!', 's');
+    v.pause();
+  };
+
+  recorder.start();
+  v.play();
+  const stopAt = endSec - startSec;
+  setTimeout(() => { recorder.stop(); }, stopAt * 1000);
+}
+
+// Close editors on Escape
+document.addEventListener('keydown', function(e) {
+  if ((e.key || '') === 'Escape') {
+    closePhotoEditor();
+    closeVideoPlayer();
+  }
+});
+
+// ── THEME TOGGLE ──
+function toggleTheme() {
+  const body = document.body;
+  const btn = document.getElementById('themeToggleBtn');
+  body.classList.toggle('light-theme');
+  const isLight = body.classList.contains('light-theme');
+  if (btn) btn.textContent = isLight ? '🌙' : '☀️';
+  localStorage.setItem('ow-theme', isLight ? 'light' : 'dark');
+}
+// Restore saved theme
+(function(){
+  const saved = localStorage.getItem('ow-theme');
+  if (saved === 'light') {
+    document.body.classList.add('light-theme');
+    const btn = document.getElementById('themeToggleBtn');
+    if (btn) btn.textContent = '🌙';
+  }
+})();
+
+// ── LIVE MODAL ──
+let _livePanel = 'call';
+function openLiveModal(panel) {
+  document.getElementById('liveModal').classList.add('open');
+  switchLivePanel(panel || 'call');
+  document.body.style.overflow = 'hidden';
+}
+function closeLiveModal() {
+  document.getElementById('liveModal').classList.remove('open');
+  document.body.style.overflow = '';
+  endCall();
+  stopStream();
+}
+function switchLivePanel(p) {
+  _livePanel = p;
+  document.querySelectorAll('.live-panel').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.live-tab').forEach(el => el.classList.remove('active'));
+  const panel = document.getElementById('lpanel-' + p);
+  const tab = document.getElementById('ltab-' + p);
+  if (panel) panel.classList.add('active');
+  if (tab) tab.classList.add('active');
+}
+
+// ═══════════════════════════
+//  VIDEO CALL (Daily.co)
+// ═══════════════════════════
+const DAILY_API_KEY = "9271c105c002ff168cf09e26a3bd656479cb7d792a9e5dccef69fe8f52a9c5d0";
+let _dailyRoomUrl = null;
+
+async function createDailyRoom() {
+  const btn = document.getElementById('btnCreateRoom');
+  if (btn) btn.textContent = '⏳ Создаём...';
+  setCallStatus('Создаём комнату...');
+
+  try {
+    // Create room via Daily.co REST API
+    const resp = await fetch('https://api.daily.co/v1/rooms', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + DAILY_API_KEY
+      },
+      body: JSON.stringify({
+        properties: {
+          enable_chat: true,
+          enable_knocking: false,
+          exp: Math.floor(Date.now()/1000) + 3600 // 1 hour
+        }
+      })
+    });
+
+    if (!resp.ok) throw new Error('API error: ' + resp.status);
+    const room = await resp.json();
+    _dailyRoomUrl = room.url;
+
+    // Show room link
+    const codeArea = document.getElementById('callCodeArea');
+    const codeDisp = document.getElementById('callCodeDisplay');
+    if (codeArea) codeArea.style.display = 'block';
+    if (codeDisp) codeDisp.textContent = _dailyRoomUrl;
+    if (btn) btn.textContent = '🔑 Создать комнату';
+    setCallStatus('✅ Комната готова! Скопируй ссылку и отправь собеседнику');
+
+    // Open call in iframe
+    openDailyIframe(_dailyRoomUrl);
+    toast('Комната создана!', 's');
+
+  } catch(e) {
+    if (btn) btn.textContent = '🔑 Создать комнату';
+    setCallStatus('❌ Ошибка: ' + e.message);
+    toast('Ошибка создания комнаты: ' + e.message, 'e');
+  }
+}
+
+function joinByLink() {
+  const inp = document.getElementById('joinCodeInput');
+  const url = inp?.value.trim();
+  if (!url || !url.includes('daily.co')) {
+    toast('Вставь ссылку от собеседника (daily.co/...)', 'e');
+    return;
+  }
+  _dailyRoomUrl = url;
+  openDailyIframe(url);
+}
+
+function openDailyIframe(url) {
+  const container = document.getElementById('dailyCallContainer');
+  const frame = document.getElementById('dailyFrame');
+  const preCall = document.getElementById('dailyPreCall');
+  const inCall = document.getElementById('dailyInCall');
+
+  if (frame) frame.src = url;
+  if (container) container.style.display = 'block';
+  if (preCall) preCall.style.display = 'none';
+  if (inCall) inCall.style.display = 'block';
+  setCallStatus('📹 Звонок активен');
+}
+
+function endDailyCall() {
+  const container = document.getElementById('dailyCallContainer');
+  const frame = document.getElementById('dailyFrame');
+  const preCall = document.getElementById('dailyPreCall');
+  const inCall = document.getElementById('dailyInCall');
+  const codeArea = document.getElementById('callCodeArea');
+
+  if (frame) frame.src = '';
+  if (container) container.style.display = 'none';
+  if (preCall) preCall.style.display = 'block';
+  if (inCall) inCall.style.display = 'none';
+  if (codeArea) codeArea.style.display = 'none';
+  setCallStatus('Звонок завершён');
+  _dailyRoomUrl = null;
+  toast('Звонок завершён', 'i');
+}
+
+// endCall alias for modal close
+function endCall() { endDailyCall(); }
+
+function setCallStatus(msg) {
+  const el = document.getElementById('callStatus');
+  if (el) el.innerHTML = msg;
+}
+
+function copyCallCode() {
+  if (!_dailyRoomUrl) return;
+  navigator.clipboard.writeText(_dailyRoomUrl)
+    .then(() => toast('Ссылка скопирована!', 's'))
+    .catch(() => toast('Ссылка: ' + _dailyRoomUrl, 'i'));
+}
+
+// ═══════════════════════════
+//  STREAM
+// ═══════════════════════════
+let _streamStream = null;
+let _streamMicOn = true;
+let _streamRecorder = null;
+let _streamChunks = [];
+let _viewerCount = 0;
+let _viewerInterval = null;
+
+async function startStreamPreview() {
+  try {
+    _streamStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    const v = document.getElementById('streamPreviewVideo');
+    const p = document.getElementById('streamPlaceholder');
+    if (v) { v.srcObject = _streamStream; v.style.display = 'block'; }
+    if (p) p.style.display = 'none';
+    const btnStart = document.getElementById('btnStreamStart');
+    if (btnStart) btnStart.style.display = 'inline-flex';
+    setStreamStatus('📹 Камера включена. Готов к эфиру.');
+  } catch(e) {
+    toast('Нет доступа к камере: ' + e.message, 'e');
+  }
+}
+
+function startStream() {
+  if (!_streamStream) { toast('Сначала включи камеру', 'e'); return; }
+  _streamChunks = [];
+  try {
+    _streamRecorder = new MediaRecorder(_streamStream, { mimeType: 'video/webm;codecs=vp9,opus' });
+  } catch(e) {
+    _streamRecorder = new MediaRecorder(_streamStream);
+  }
+  _streamRecorder.ondataavailable = e => { if(e.data.size > 0) _streamChunks.push(e.data); };
+  _streamRecorder.onstop = saveStreamRecording;
+  _streamRecorder.start(1000);
+
+  const badge = document.getElementById('streamBadge');
+  if (badge) badge.classList.add('show');
+  document.getElementById('btnStreamStart').style.display = 'none';
+  document.getElementById('btnStreamStop').style.display = 'inline-flex';
+
+  // Simulate viewer count
+  _viewerCount = 1;
+  _viewerInterval = setInterval(() => {
+    _viewerCount = Math.max(1, _viewerCount + Math.floor(Math.random()*3-1));
+    const vc = document.getElementById('streamViewers');
+    if (vc) vc.textContent = '👁 ' + _viewerCount;
+  }, 4000);
+
+  setStreamStatus('<span class="dot-live"></span> LIVE · Эфир идёт...');
+  toast('🔴 Эфир начался!', 's');
+}
+
+function stopStream() {
+  if (_streamRecorder && _streamRecorder.state !== 'inactive') _streamRecorder.stop();
+  if (_viewerInterval) { clearInterval(_viewerInterval); _viewerInterval = null; }
+  if (_streamStream) { _streamStream.getTracks().forEach(t => t.stop()); _streamStream = null; }
+  const v = document.getElementById('streamPreviewVideo');
+  if (v) { v.srcObject = null; v.style.display = 'none'; }
+  const p = document.getElementById('streamPlaceholder');
+  if (p) p.style.display = 'flex';
+  const badge = document.getElementById('streamBadge');
+  if (badge) badge.classList.remove('show');
+  const btnStop = document.getElementById('btnStreamStop');
+  const btnStart = document.getElementById('btnStreamStart');
+  if (btnStop) btnStop.style.display = 'none';
+  if (btnStart) btnStart.style.display = 'none';
+  setStreamStatus('Эфир завершён');
+}
+
+function setStreamStatus(msg) {
+  const el = document.getElementById('streamStatus');
+  if (el) el.innerHTML = msg;
+}
+
+function toggleStreamMic() {
+  if (!_streamStream) return;
+  _streamMicOn = !_streamMicOn;
+  _streamStream.getAudioTracks().forEach(t => t.enabled = _streamMicOn);
+  const btn = document.getElementById('btnStreamMic');
+  if (btn) btn.textContent = _streamMicOn ? '🎤 Микр.' : '🔇 Микр.';
+}
+
+async function saveStreamRecording() {
+  if (!_streamChunks.length) return;
+  const blob = new Blob(_streamChunks, { type: 'video/webm' });
+  const url = URL.createObjectURL(blob);
+  // Offer download
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ourworld-stream-' + Date.now() + '.webm';
+  a.click();
+  toast('Запись эфира сохранена', 's');
+}
+
+// ═══════════════════════════
+//  PODCAST RECORDER
+// ═══════════════════════════
+let _podRecorder = null;
+let _podChunks = [];
+let _podStream = null;
+let _podTimer = null;
+let _podSeconds = 0;
+let _podPaused = false;
+let _audioCtx = null;
+let _analyser = null;
+let _vizInterval = null;
+
+function initVizBars() {
+  const viz = document.getElementById('podcastViz');
+  if (!viz) return;
+  viz.innerHTML = '';
+  for (let i = 0; i < 40; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'viz-bar';
+    viz.appendChild(bar);
+  }
+}
+
+async function startPodcast() {
+  try {
+    _podStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch(e) {
+    toast('Нет доступа к микрофону: ' + e.message, 'e');
+    return;
+  }
+
+  initVizBars();
+
+  // Audio visualizer
+  _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  _analyser = _audioCtx.createAnalyser();
+  _analyser.fftSize = 128;
+  const src = _audioCtx.createMediaStreamSource(_podStream);
+  src.connect(_analyser);
+
+  const bars = document.querySelectorAll('#podcastViz .viz-bar');
+  const dataArr = new Uint8Array(_analyser.frequencyBinCount);
+  _vizInterval = setInterval(() => {
+    _analyser.getByteFrequencyData(dataArr);
+    bars.forEach((bar, i) => {
+      const v = dataArr[i] || 0;
+      bar.style.height = Math.max(4, v / 2.5) + 'px';
+      bar.style.background = v > 180 ? 'var(--crimson)' : v > 100 ? 'var(--rose)' : 'var(--blood)';
+    });
+  }, 80);
+
+  try {
+    _podRecorder = new MediaRecorder(_podStream, { mimeType: 'audio/webm;codecs=opus' });
+  } catch(e) {
+    _podRecorder = new MediaRecorder(_podStream);
+  }
+  _podChunks = [];
+  _podRecorder.ondataavailable = e => { if(e.data.size > 0) _podChunks.push(e.data); };
+  _podRecorder.onstop = savePodcast;
+  _podRecorder.start(500);
+
+  _podSeconds = 0;
+  _podTimer = setInterval(() => {
+    if (!_podPaused) {
+      _podSeconds++;
+      const m = Math.floor(_podSeconds/60).toString().padStart(2,'0');
+      const s = (_podSeconds%60).toString().padStart(2,'0');
+      const el = document.getElementById('podcastTimer');
+      if (el) el.textContent = m + ':' + s;
+    }
+  }, 1000);
+
+  document.getElementById('btnPodStart').style.display = 'none';
+  document.getElementById('btnPodStop').style.display = 'inline-flex';
+  document.getElementById('btnPodPause').style.display = 'inline-flex';
+  setPodStatus('🔴 Запись...');
+  toast('🎙️ Запись началась', 's');
+}
+
+function pausePodcast() {
+  if (!_podRecorder) return;
+  _podPaused = !_podPaused;
+  if (_podPaused) {
+    _podRecorder.pause?.();
+    document.getElementById('btnPodPause').textContent = '▶ Продолжить';
+    setPodStatus('⏸ Пауза');
+  } else {
+    _podRecorder.resume?.();
+    document.getElementById('btnPodPause').textContent = '⏸ Пауза';
+    setPodStatus('🔴 Запись...');
+  }
+}
+
+function stopPodcast() {
+  if (_podTimer) { clearInterval(_podTimer); _podTimer = null; }
+  if (_vizInterval) { clearInterval(_vizInterval); _vizInterval = null; }
+  if (_podRecorder && _podRecorder.state !== 'inactive') _podRecorder.stop();
+  if (_podStream) { _podStream.getTracks().forEach(t => t.stop()); _podStream = null; }
+  if (_audioCtx) { _audioCtx.close(); _audioCtx = null; }
+  document.getElementById('btnPodStart').style.display = 'inline-flex';
+  document.getElementById('btnPodStop').style.display = 'none';
+  document.getElementById('btnPodPause').style.display = 'none';
+  document.getElementById('podcastTimer').textContent = '00:00';
+  const bars = document.querySelectorAll('#podcastViz .viz-bar');
+  bars.forEach(b => { b.style.height = '4px'; });
+  setPodStatus('Готов к записи');
+  _podPaused = false;
+}
+
+function setPodStatus(msg) {
+  const el = document.getElementById('podcastStatus');
+  if (el) el.innerHTML = msg;
+}
+
+function savePodcast() {
+  if (!_podChunks.length) return;
+  const blob = new Blob(_podChunks, { type: 'audio/webm' });
+  const url = URL.createObjectURL(blob);
+  const dur = _podSeconds;
+  const m = Math.floor(dur/60).toString().padStart(2,'0');
+  const s = (dur%60).toString().padStart(2,'0');
+
+  const container = document.getElementById('podcastRecordings');
+  if (!container) return;
+
+  const item = document.createElement('div');
+  item.style.cssText = 'background:var(--crypt);border:1px solid var(--border-goth);padding:14px;margin-bottom:10px';
+  item.innerHTML = `
+    <div style="font-family:'Cinzel',serif;font-size:11px;color:var(--ember);margin-bottom:8px;letter-spacing:0.08em">
+      🎙️ Подкаст · ${m}:${s}
+    </div>
+    <audio src="${url}" controls style="width:100%;margin-bottom:10px"></audio>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a href="${url}" download="ourworld-podcast-${Date.now()}.webm" class="ctrl-btn" style="text-decoration:none;font-size:10px">⬇ Скачать</a>
+      <button class="ctrl-btn" onclick="publishPodcast('${url}', this)" style="font-size:10px">📤 Опубликовать в ленту</button>
+    </div>`;
+  container.prepend(item);
+  toast('🎙️ Подкаст сохранён!', 's');
+}
+
+function publishPodcast(url, btn) {
+  if (btn) btn.textContent = '✓ Опубликовано';
+  toast('Подкаст опубликован в ленту!', 's');
+}
+
+</script>
+
+<!-- ══ LIVE MODAL ══ -->
+<div class="live-modal-wrap" id="liveModal">
+  <div class="live-modal-inner">
+    <button class="live-close-btn" onclick="closeLiveModal()">✕</button>
+    <div class="live-title" id="liveModalTitle">📹 Видеозвонок</div>
+    <div class="live-sub" id="liveModalSub">Соединение 1 на 1</div>
+
+    <div class="live-tabs">
+      <button class="live-tab active" id="ltab-call" onclick="switchLivePanel('call')">📹 Звонок</button>
+      <button class="live-tab" id="ltab-stream" onclick="switchLivePanel('stream')">📡 Эфир</button>
+      <button class="live-tab" id="ltab-podcast" onclick="switchLivePanel('podcast')">🎙️ Подкаст</button>
+    </div>
+
+    <!-- ── VIDEO CALL PANEL (Daily.co) ── -->
+    <div class="live-panel active" id="lpanel-call">
+
+      <!-- Daily.co iframe container -->
+      <div id="dailyCallContainer" style="display:none;position:relative;width:100%;aspect-ratio:16/9;background:var(--crypt);border:1px solid var(--border-goth);margin-bottom:14px;overflow:hidden">
+        <iframe id="dailyFrame"
+          allow="camera; microphone; fullscreen; display-capture"
+          style="width:100%;height:100%;border:none">
+        </iframe>
+      </div>
+
+      <!-- Pre-call UI -->
+      <div id="dailyPreCall">
+        <div class="live-status" id="callStatus" style="margin-bottom:14px">
+          Создай комнату или введи ссылку от собеседника
+        </div>
+
+        <!-- Room link display after creation -->
+        <div class="call-code-area" id="callCodeArea" style="display:none">
+          <div id="callCodeDisplay" style="font-family:'Cinzel',serif;font-size:11px;color:var(--ember);word-break:break-all;letter-spacing:0.05em;margin-bottom:8px"></div>
+          <div class="code-hint">Отправь эту ссылку собеседнику в WhatsApp/Telegram</div>
+          <button class="ctrl-btn" style="margin-top:8px" onclick="copyCallCode()">📋 Копировать ссылку</button>
+        </div>
+
+        <!-- Join by link -->
+        <div class="code-input-row" style="margin-bottom:14px">
+          <input class="gothic-input-sm" id="joinCodeInput" placeholder="Вставь ссылку от собеседника..." style="font-size:11px;text-transform:none">
+          <button class="ctrl-btn" onclick="joinByLink()">Войти</button>
+        </div>
+
+        <div class="live-controls">
+          <button class="ctrl-btn" id="btnCreateRoom" onclick="createDailyRoom()">🔑 Создать комнату</button>
+        </div>
+      </div>
+
+      <!-- In-call controls -->
+      <div id="dailyInCall" style="display:none">
+        <div class="live-controls">
+          <button class="ctrl-btn danger" onclick="endDailyCall()">📵 Завершить звонок</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── STREAM PANEL ── -->
+    <div class="live-panel" id="lpanel-stream">
+      <div class="stream-preview">
+        <video id="streamPreviewVideo" autoplay muted playsinline></video>
+        <div class="stream-badge" id="streamBadge">
+          <span class="dot-live"></span>LIVE
+        </div>
+        <div class="stream-viewers" id="streamViewers">👁 0</div>
+        <div class="video-placeholder" id="streamPlaceholder">
+          <div class="vp-icon">📡</div>
+          <span>Предпросмотр камеры</span>
+        </div>
+      </div>
+
+      <div class="live-status" id="streamStatus">Камера не активна</div>
+
+      <div class="live-controls">
+        <button class="ctrl-btn" onclick="startStreamPreview()">📹 Включить камеру</button>
+        <button class="ctrl-btn active-ctrl" id="btnStreamStart" onclick="startStream()" style="display:none">🔴 Начать эфир</button>
+        <button class="ctrl-btn danger" id="btnStreamStop" onclick="stopStream()" style="display:none">⏹ Стоп</button>
+        <button class="ctrl-btn" id="btnStreamMic" onclick="toggleStreamMic()">🎤 Микр.</button>
+      </div>
+
+      <div style="font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:var(--shadow);text-align:center;line-height:1.6">
+        Прямой эфир виден всем авторизованным участникам.<br>
+        Запись сохраняется автоматически в ленту.
+      </div>
+    </div>
+
+    <!-- ── PODCAST PANEL ── -->
+    <div class="live-panel" id="lpanel-podcast">
+      <div class="podcast-timer" id="podcastTimer">00:00</div>
+
+      <div class="podcast-visualizer" id="podcastViz">
+        <!-- bars added by JS -->
+      </div>
+
+      <div class="live-status" id="podcastStatus">Готов к записи</div>
+
+      <div class="live-controls">
+        <button class="ctrl-btn active-ctrl" id="btnPodStart" onclick="startPodcast()">🎙️ Начать запись</button>
+        <button class="ctrl-btn danger" id="btnPodStop" onclick="stopPodcast()" style="display:none">⏹ Стоп и сохранить</button>
+        <button class="ctrl-btn" id="btnPodPause" onclick="pausePodcast()" style="display:none">⏸ Пауза</button>
+      </div>
+
+      <div id="podcastRecordings" style="margin-top:14px"></div>
+
+      <div style="font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:var(--shadow);text-align:center;margin-top:10px">
+        Записанные подкасты можно опубликовать в ленту одним нажатием.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+</body>
+</html>
