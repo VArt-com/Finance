@@ -853,19 +853,6 @@ input[type=range]::-webkit-slider-thumb {
   .post-media img, .post-media video { pointer-events: auto; }
   ::selection { background: transparent; }
   ::-moz-selection { background: transparent; }
-
-/* RTL support for Hebrew */
-[dir="rtl"] .nav-bar { direction: rtl; }
-[dir="rtl"] .post-header { flex-direction: row-reverse; }
-[dir="rtl"] .post-footer { flex-direction: row-reverse; }
-[dir="rtl"] .post-rituals { flex-direction: row-reverse; }
-[dir="rtl"] .post-sigils { direction: rtl; }
-[dir="rtl"] .landing-title,
-[dir="rtl"] .landing-subtitle,
-[dir="rtl"] .landing-verse { direction: rtl; text-align: center; }
-[dir="rtl"] .modal-grimoire { direction: rtl; text-align: right; }
-[dir="rtl"] input, [dir="rtl"] textarea { direction: rtl; text-align: right; }
-[dir="rtl"] .scroll-title, [dir="rtl"] .scroll-sub { direction: rtl; }
 </style>
 <!-- EmailJS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -943,7 +930,6 @@ function showKofiFloat(){
   <div class="lang-corner">
     <button class="lang-glyph active" onclick="setLang('ru')">RU</button>
     <button class="lang-glyph" onclick="setLang('en')">EN</button>
-    <button class="lang-glyph" onclick="setLang('he')" style="font-family:'David Libre',serif">עב</button>
   </div>
 
   <div class="landing-sigil">
@@ -1446,45 +1432,14 @@ en:{
   m_name:'First Name',m_last:'Last Name',m_about:'About yourself',m_reg_btn:'Send Request ✦',
   m_have_acc:'Already have an account?',m_login_link:'Sign In',
   pend_title:'Request Sent!',pend_msg:"We received your request and will review it soon.<br>Once approved — you'll get an email notification! ✉️",pend_ok:'Close',
-},
-he:{
-  tagline_sub:'עולם סגור לשניים',tagline:'«החיים שלנו — הכללים שלנו.<br>ברוכים הבאים לעולם שלנו.»',
-  join:'הצטרפות',login:'כניסה',online:'מחובר',
-  tab_feed:'פיד',tab_wishes:'משאלות',tab_support:'תמיכה',tab_live:'🔴 Live',tab_admin:'מזבח',
-  f_all:'הכל',f_photo:'📸 תמונות',f_video:'🎬 סרטונים',f_pod:'🎙️ פודקאסטים',
-  p1_time:'לפני שעתיים',p1_label:'טיול לשוק',p1_cap:'היום טיילנו בשוק 🌿 קנינו הכל לארוחת ערב מיוחדת!',
-  p2_time:'לפני יום',p2_label:'ערב בבית',p2_cap:'הערב המקסים שלנו 🏠 בישלנו יחד, צפינו בסרט — כך נראית האושר.',
-  p3_time:'לפני 3 ימים',p3_ep:'פרק א — לפי בקשותיכם',p3_cap:'ענינו על שאלותיכם על החיים בישראל 🇮🇱',
-  t_bright:'בהירות',t_con:'ניגודיות',t_sat:'רוויה',t_blur:'טשטוש',
-  wish_btn:'משאלה',share:'שיתוף',listens:'האזנות',
-  w_title:'כתוב לנו',w_sub:'מה תרצה לראות או לשמוע?',
-  wt_ph:'תמונה',wt_vi:'סרטון',wt_po:'פודקאסט',w_send:'שלח משאלה ✦',
-  w1:'הייתי רוצה לראות אתכם מבשלים יחד! 🍳',w2:'ספרו לנו על החיים בישראל!',
-  s_title:'תמכו בנו',s_sub:'התמיכה שלכם חשובה לנו! כל תרומה עוזרת ליצור יותר תוכן.',
-  kofi_btn:'תמיכה ✦',
-  wa_sub:'+972 053-321-3698 · כתוב ישירות',
-  live_title:'Live אחד על אחד',live_sub:'רוצה לדבר איתנו אישית? השאר משאלה!',live_btn:'בקש סשן ✦',
-  a_stats:'📊 כרוניקות',a_members:'חברים',a_pend:'ממתינים',a_posts:'גלילות',a_wishes:'משאלות',
-  a_req:'⏳ מבקשים',a_upload:'📤 הוסף גלילה',a_drop:'לחץ או גרור קובץ לכאן<br><span>תמונות, סרטונים, פודקאסטים</span>',
-  m_login:'כניסה',m_login_sub:'הזן את הפרטים שלך',m_pass:'סיסמה',m_login_btn:'כניסה',
-  m_no_acc:'אין לך חשבון?',m_reg_link:'הרשמה',
-  m_reg:'הרשמה',m_reg_sub:'מלא את הטופס — נבדוק ונאשר גישה',
-  m_name:'שם פרטי',m_last:'שם משפחה',m_about:'קצת עליך',m_reg_btn:'שלח בקשה ✦',
-  m_have_acc:'כבר יש לך חשבון?',m_login_link:'כניסה',
-  pend_title:'הבקשה נשלחה!',pend_msg:'קיבלנו את בקשתך ונבדוק אותה בקרוב.<br>כשנאשר — תקבל הודעה! ✉️',pend_ok:'סגור',
 }};
 
 let lang='ru';
 function applyLang(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     const k=el.getAttribute('data-i18n');
-    if(T[lang]&&T[lang][k]!==undefined) el.innerHTML=T[lang][k];
+    if(T[lang][k]!==undefined) el.innerHTML=T[lang][k];
   });
-  // RTL для иврита
-  const isRtl = lang==='he';
-  document.documentElement.setAttribute('dir', isRtl?'rtl':'ltr');
-  document.body.style.direction = isRtl?'rtl':'ltr';
-  document.body.style.textAlign = isRtl?'right':'';
 }
 function setLang(l){
   lang=l;
@@ -1492,7 +1447,7 @@ function setLang(l){
   document.querySelector(`.lang-glyph[onclick="setLang('${l}')"]`)?.classList.add('active');
   applyLang();
 }
-function toggleLang(){ setLang(lang==='ru'?'en':lang==='en'?'he':'ru'); }
+function toggleLang(){ setLang(lang==='ru'?'en':'ru'); }
 
 // ── MODALS ──
 function openModal(n){ document.getElementById('modal-'+n).classList.add('open'); }
@@ -1565,7 +1520,7 @@ function enterApp(av,admin){
   document.getElementById('userCrest').textContent=av;
   if(admin) document.querySelectorAll('.admin-only').forEach(el=>el.classList.remove('dn'));
   showScreen('app'); showTab('feed'); showCopyrightBar(); showKofiFloat();
-  toast(lang==='ru'?'Добро пожаловать! 👋':lang==='he'?'ברוך הבא! 👋':'Welcome! 👋','s');
+  toast(lang==='ru'?'Добро пожаловать! 👋':'Welcome! 👋','s');
 }
 
 // ── SCREENS ──
@@ -1642,7 +1597,7 @@ function pickType(card){
 }
 function sendWish(){
   const txt=document.getElementById('wishTxt').value.trim();
-  if(!txt){toast(lang==='ru'?'Напиши пожелание!':lang==='he'?'כתוב משאלה!':'Write your wish!','e');return;}
+  if(!txt){toast(lang==='ru'?'Напиши пожелание!':'Write your wish!','e');return;}
   const icon=document.querySelector('.wish-rune.chosen .wr-icon')?.textContent||'📸';
   const card=document.createElement('div'); card.className='wish-scroll';
   card.innerHTML=`
@@ -2364,169 +2319,179 @@ function uploadPost() {
 }
 </style>
 
+<style>
+/* Video player right panel — mobile: panel below video */
+@media (max-width: 600px) {
+  #videoPlayerModal > div:nth-child(2) {
+    flex-direction: column !important;
+  }
+  #vpRightPanel {
+    width: 100% !important;
+    height: 220px !important;
+    border-left: none !important;
+    border-top: 1px solid rgba(139,26,26,0.25) !important;
+  }
+}
+/* Scrollbar in panel */
+#vpPanelContent::-webkit-scrollbar { width: 3px; }
+#vpPanelContent::-webkit-scrollbar-track { background: #111118; }
+#vpPanelContent::-webkit-scrollbar-thumb { background: #8b1a1a; }
+</style>
 <!-- ══════════════════════════════════════
      PROFESSIONAL VIDEO PLAYER MODAL
 ══════════════════════════════════════ -->
-<div id="videoPlayerModal" style="display:none;position:fixed;inset:0;z-index:2000;background:#050508;flex-direction:column;overflow:hidden" onkeydown="if(event.key==='Escape')closeVideoPlayer()">
+<div id="videoPlayerModal" style="display:none;position:fixed;inset:0;z-index:2000;background:#050508;flex-direction:column;overflow:hidden">
 
   <!-- TOP BAR -->
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#0d0d14;border-bottom:1px solid rgba(139,26,26,0.3);flex-shrink:0;flex-wrap:wrap;gap:8px">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#0d0d14;border-bottom:1px solid rgba(139,26,26,0.3);flex-shrink:0">
     <div style="display:flex;align-items:center;gap:10px">
       <button onclick="closeVideoPlayer()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;line-height:1;padding:2px 6px">✕</button>
       <span style="font-family:'Cinzel',serif;font-size:11px;color:#c9bfa8;letter-spacing:0.1em">ВИДЕОПЛЕЕР</span>
     </div>
-    <!-- QUICK CONTROLS IN TOP BAR -->
-    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-      <!-- Loop toggle -->
-      <button id="vpLoopBtn" onclick="vpToggleLoop()" title="Повтор" style="padding:4px 10px;background:rgba(139,26,26,0.15);border:1px solid rgba(139,26,26,0.35);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;transition:all 0.2s">🔁 ПОВТОР</button>
-      <!-- Speed quick buttons -->
-      <button onclick="vpSetSpeedPreset(0.5)" style="padding:4px 8px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer;transition:all 0.2s">0.5x</button>
-      <button onclick="vpSetSpeedPreset(1)" id="vpSpeedNormal" style="padding:4px 8px;background:rgba(139,26,26,0.2);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">1x</button>
-      <button onclick="vpSetSpeedPreset(1.5)" style="padding:4px 8px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer;transition:all 0.2s">1.5x</button>
-      <button onclick="vpSetSpeedPreset(2)" style="padding:4px 8px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer;transition:all 0.2s">2x</button>
-      <!-- Volume quick -->
-      <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">🔊</span>
-      <input type="range" min="0" max="100" value="100" id="vp-vol-top" oninput="vpSetVolumeTop()" style="width:70px;accent-color:#8b1a1a;vertical-align:middle">
-      <!-- Snapshot -->
-      <button onclick="vpSnapshot()" title="Снимок кадра" style="padding:4px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer;transition:all 0.2s">📸</button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button id="vpLoopBtn" onclick="vpToggleLoop()" style="padding:4px 10px;background:rgba(139,26,26,0.15);border:1px solid rgba(139,26,26,0.35);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🔁 ПОВТОР</button>
+      <button onclick="vpSnapshot()" style="padding:4px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">📸 СНИМОК</button>
+      <div id="vp-counter" style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.1em"></div>
     </div>
-    <div id="vp-counter" style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070;letter-spacing:0.1em"></div>
   </div>
 
-  <!-- VIDEO -->
-  <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#050508;position:relative;overflow:hidden">
-    <video id="videoPlayerEl" controls autoplay style="max-width:100%;max-height:100%;background:#000;transition:filter 0.2s"></video>
-    <!-- Replay overlay when ended -->
-    <div id="vpReplayOverlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:4">
-      <button onclick="vpReplay()" style="width:72px;height:72px;border-radius:50%;background:rgba(139,26,26,0.85);border:2px solid #c0392b;color:#fff;font-size:28px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(192,57,43,0.9)'" onmouseout="this.style.background='rgba(139,26,26,0.85)'">↻</button>
-      <span style="font-family:'Cinzel',serif;font-size:10px;color:#c9bfa8;letter-spacing:0.15em">СМОТРЕТЬ СНОВА</span>
-      <div style="display:flex;gap:10px;margin-top:4px">
-        <button onclick="vpNav(-1)" style="padding:6px 16px;background:rgba(0,0,0,0.6);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;font-family:'Cinzel',serif;font-size:9px;cursor:pointer">‹ ПРЕД.</button>
-        <button onclick="vpNav(1)" style="padding:6px 16px;background:rgba(0,0,0,0.6);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;font-family:'Cinzel',serif;font-size:9px;cursor:pointer">СЛЕД. ›</button>
+  <!-- MAIN AREA: video LEFT + panel RIGHT -->
+  <div style="flex:1;min-height:0;display:flex;flex-direction:row;overflow:hidden">
+
+    <!-- VIDEO AREA -->
+    <div style="flex:1;min-width:0;display:flex;align-items:center;justify-content:center;background:#050508;position:relative;overflow:hidden">
+      <video id="videoPlayerEl" controls autoplay style="max-width:100%;max-height:100%;background:#000;transition:filter 0.2s"></video>
+      <!-- Replay overlay -->
+      <div id="vpReplayOverlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:4">
+        <button onclick="vpReplay()" style="width:72px;height:72px;border-radius:50%;background:rgba(139,26,26,0.85);border:2px solid #c0392b;color:#fff;font-size:28px;cursor:pointer">↻</button>
+        <span style="font-family:'Cinzel',serif;font-size:10px;color:#c9bfa8;letter-spacing:0.15em">СМОТРЕТЬ СНОВА</span>
+        <div style="display:flex;gap:10px;margin-top:4px">
+          <button onclick="vpNav(-1)" style="padding:6px 16px;background:rgba(0,0,0,0.6);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;font-family:'Cinzel',serif;font-size:9px;cursor:pointer">‹ ПРЕД.</button>
+          <button onclick="vpNav(1)" style="padding:6px 16px;background:rgba(0,0,0,0.6);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;font-family:'Cinzel',serif;font-size:9px;cursor:pointer">СЛЕД. ›</button>
+        </div>
       </div>
-    </div>
-    <button onclick="vpNav(-1)" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;width:40px;height:40px;font-size:20px;cursor:pointer;z-index:5">‹</button>
-    <button onclick="vpNav(1)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;width:40px;height:40px;font-size:20px;cursor:pointer;z-index:5">›</button>
-  </div>
-
-  <!-- BOTTOM CONTROLS -->
-  <div style="background:#0d0d14;border-top:1px solid rgba(139,26,26,0.25);padding:10px 14px 14px;flex-shrink:0;overflow:visible">
-
-    <!-- VP TABS -->
-    <div style="display:flex;gap:0;border-bottom:1px solid rgba(139,26,26,0.2);margin-bottom:10px">
-      <button class="vp-ctrl-tab active" id="vpTab-filters" onclick="vpShowTab('filters')" style="padding:7px 12px;background:none;border:none;border-bottom:2px solid #8b1a1a;color:#c0392b;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.08em;cursor:pointer">ФИЛЬТРЫ</button>
-      <button class="vp-ctrl-tab" id="vpTab-adjust" onclick="vpShowTab('adjust')" style="padding:7px 12px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.08em;cursor:pointer">СВЕТ</button>
-      <button class="vp-ctrl-tab" id="vpTab-tools" onclick="vpShowTab('tools')" style="padding:7px 12px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.08em;cursor:pointer">ИНСТРУМЕНТЫ</button>
-      <button class="vp-ctrl-tab" id="vpTab-trim" onclick="vpShowTab('trim')" style="padding:7px 12px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.08em;cursor:pointer">✂ ОБРЕЗКА</button>
+      <button onclick="vpNav(-1)" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;width:40px;height:40px;font-size:20px;cursor:pointer;z-index:5">‹</button>
+      <button onclick="vpNav(1)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid rgba(139,26,26,0.4);color:#e8e0d4;width:40px;height:40px;font-size:20px;cursor:pointer;z-index:5">›</button>
     </div>
 
-    <!-- FILTERS TAB -->
-    <div id="vpPanel-filters">
-      <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">
-        <button onclick="vpFilt(0,this)" style="flex-shrink:0;padding:5px 10px;background:rgba(139,26,26,0.25);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;white-space:nowrap">🎬 Оригинал</button>
-        <button onclick="vpFilt(1,this)" style="flex-shrink:0;padding:5px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;white-space:nowrap">🖤 Ч/Б</button>
-        <button onclick="vpFilt(2,this)" style="flex-shrink:0;padding:5px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;white-space:nowrap">📜 Vintage</button>
-        <button onclick="vpFilt(3,this)" style="flex-shrink:0;padding:5px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;white-space:nowrap">⚡ Vivid</button>
-        <button onclick="vpFilt(4,this)" style="flex-shrink:0;padding:5px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;white-space:nowrap">🌑 Ночь</button>
-        <button onclick="vpFilt(5,this)" style="flex-shrink:0;padding:5px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;white-space:nowrap">🩸 Gothic</button>
-        <button onclick="vpFilt(6,this)" style="flex-shrink:0;padding:5px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;white-space:nowrap">🌫️ Dream</button>
-        <button onclick="vpFilt(7,this)" style="flex-shrink:0;padding:5px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;white-space:nowrap">🍂 Autumn</button>
-        <button onclick="vpFilt(8,this)" style="flex-shrink:0;padding:5px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer;white-space:nowrap">🌊 Cool</button>
+    <!-- RIGHT PANEL (как у фоторедактора) -->
+    <div id="vpRightPanel" style="width:260px;flex-shrink:0;background:#111118;border-left:1px solid rgba(139,26,26,0.25);display:flex;flex-direction:column;overflow:hidden">
+
+      <!-- TABS -->
+      <div style="display:flex;border-bottom:1px solid rgba(139,26,26,0.25);flex-shrink:0">
+        <button id="vpTab-filters" onclick="vpShowTab('filters')" style="flex:1;padding:8px 4px;background:rgba(139,26,26,0.15);border:none;border-bottom:2px solid #8b1a1a;color:#c0392b;font-family:'Cinzel',serif;font-size:7px;letter-spacing:0.06em;cursor:pointer">ФИЛЬТРЫ</button>
+        <button id="vpTab-adjust" onclick="vpShowTab('adjust')" style="flex:1;padding:8px 4px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:7px;letter-spacing:0.06em;cursor:pointer">СВЕТ</button>
+        <button id="vpTab-tools" onclick="vpShowTab('tools')" style="flex:1;padding:8px 4px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:7px;letter-spacing:0.06em;cursor:pointer">ИНСТР.</button>
+        <button id="vpTab-trim" onclick="vpShowTab('trim')" style="flex:1;padding:8px 4px;background:none;border:none;border-bottom:2px solid transparent;color:#8a8070;font-family:'Cinzel',serif;font-size:7px;letter-spacing:0.06em;cursor:pointer">✂ ОБРЕЗКА</button>
       </div>
-    </div>
 
-    <!-- ADJUST TAB -->
-    <div id="vpPanel-adjust" style="display:none">
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-        <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">☀️ ЯРКОСТЬ</span>
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-bright">0</span>
+      <!-- SCROLLABLE CONTENT -->
+      <div style="flex:1;overflow-y:auto;padding:12px 10px" id="vpPanelContent">
+
+        <!-- FILTERS PANEL -->
+        <div id="vpPanel-filters">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button onclick="vpFilt(0,this)" style="width:100%;padding:7px 10px;text-align:left;background:rgba(139,26,26,0.25);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🎬 Оригинал</button>
+            <button onclick="vpFilt(1,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🖤 Ч/Б</button>
+            <button onclick="vpFilt(2,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">📜 Vintage</button>
+            <button onclick="vpFilt(3,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">⚡ Vivid</button>
+            <button onclick="vpFilt(4,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🌑 Ночь</button>
+            <button onclick="vpFilt(5,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🩸 Gothic</button>
+            <button onclick="vpFilt(6,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🌫️ Dream</button>
+            <button onclick="vpFilt(7,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🍂 Autumn</button>
+            <button onclick="vpFilt(8,this)" style="width:100%;padding:7px 10px;text-align:left;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">🌊 Cool</button>
           </div>
-          <input type="range" min="-100" max="100" value="0" id="vp-bright" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
         </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">◑ КОНТРАСТ</span>
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-con">0</span>
-          </div>
-          <input type="range" min="-100" max="100" value="0" id="vp-con" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">🎨 НАСЫЩ.</span>
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-sat">0</span>
-          </div>
-          <input type="range" min="-100" max="100" value="0" id="vp-sat" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
-        </div>
-      </div>
-    </div>
 
-    <!-- TOOLS TAB -->
-    <div id="vpPanel-tools" style="display:none">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <!-- Volume -->
-        <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">🔊 ГРОМКОСТЬ</span>
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-vol">100%</span>
+        <!-- ADJUST PANEL -->
+        <div id="vpPanel-adjust" style="display:none">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">☀️ ЯРКОСТЬ</span>
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-bright">0</span>
+              </div>
+              <input type="range" min="-100" max="100" value="0" id="vp-bright" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">◑ КОНТРАСТ</span>
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-con">0</span>
+              </div>
+              <input type="range" min="-100" max="100" value="0" id="vp-con" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">🎨 НАСЫЩЕННОСТЬ</span>
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-sat">0</span>
+              </div>
+              <input type="range" min="-100" max="100" value="0" id="vp-sat" oninput="vpAdj()" style="width:100%;accent-color:#8b1a1a">
+            </div>
           </div>
-          <input type="range" min="0" max="100" value="100" id="vp-vol" oninput="vpSetVolume()" style="width:100%;accent-color:#8b1a1a">
         </div>
-        <!-- Speed -->
-        <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em">⚡ СКОРОСТЬ</span>
-            <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-speed">1x</span>
+
+        <!-- TOOLS PANEL -->
+        <div id="vpPanel-tools" style="display:none">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">🔊 ГРОМКОСТЬ</span>
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-vol">100%</span>
+              </div>
+              <input type="range" min="0" max="100" value="100" id="vp-vol" oninput="vpSetVolume()" style="width:100%;accent-color:#8b1a1a">
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">⚡ СКОРОСТЬ</span>
+                <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vp-v-speed">1x</span>
+              </div>
+              <input type="range" min="25" max="300" value="100" step="25" id="vp-speed" oninput="vpSetSpeed()" style="width:100%;accent-color:#8b1a1a">
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px">
+              <button onclick="vpSetSpeedPreset(0.5)" style="flex:1;min-width:40px;padding:5px 4px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">0.5x</button>
+              <button onclick="vpSetSpeedPreset(0.75)" style="flex:1;min-width:40px;padding:5px 4px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">0.75x</button>
+              <button onclick="vpSetSpeedPreset(1)" style="flex:1;min-width:40px;padding:5px 4px;background:rgba(139,26,26,0.2);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">1x</button>
+              <button onclick="vpSetSpeedPreset(1.5)" style="flex:1;min-width:40px;padding:5px 4px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">1.5x</button>
+              <button onclick="vpSetSpeedPreset(2)" style="flex:1;min-width:40px;padding:5px 4px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">2x</button>
+              <button onclick="vpSetSpeedPreset(3)" style="flex:1;min-width:40px;padding:5px 4px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">3x</button>
+            </div>
           </div>
-          <input type="range" min="25" max="300" value="100" step="25" id="vp-speed" oninput="vpSetSpeed()" style="width:100%;accent-color:#8b1a1a">
         </div>
-      </div>
-      <!-- Speed presets -->
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
-        <button onclick="vpSetSpeedPreset(0.5)" style="padding:4px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">0.5x</button>
-        <button onclick="vpSetSpeedPreset(0.75)" style="padding:4px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">0.75x</button>
-        <button onclick="vpSetSpeedPreset(1)" style="padding:4px 10px;background:rgba(139,26,26,0.2);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">1x</button>
-        <button onclick="vpSetSpeedPreset(1.5)" style="padding:4px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">1.5x</button>
-        <button onclick="vpSetSpeedPreset(2)" style="padding:4px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">2x</button>
-        <button onclick="vpSetSpeedPreset(3)" style="padding:4px 10px;background:none;border:1px solid rgba(139,26,26,0.3);color:#8a8070;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">3x</button>
-      </div>
-      <!-- Snapshot -->
-      <button onclick="vpSnapshot()" style="width:100%;padding:9px;background:rgba(139,26,26,0.15);border:1px solid rgba(139,26,26,0.4);color:#c9bfa8;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(139,26,26,0.3)'" onmouseout="this.style.background='rgba(139,26,26,0.15)'">📸 СНИМОК КАДРА</button>
-    </div>
 
-    <!-- TRIM TAB -->
-    <div id="vpPanel-trim" style="display:none">
-      <div style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;margin-bottom:8px">✂ ОБРЕЗКА ПО ВРЕМЕНИ</div>
-      <!-- Timeline -->
-      <div style="position:relative;height:40px;background:#0a0a0f;border:1px solid rgba(139,26,26,0.3);margin-bottom:10px;overflow:hidden;cursor:pointer" id="vpTrimline" onclick="vpTrimClick(event)">
-        <div id="vpTrimProgress" style="position:absolute;top:0;bottom:0;left:0;width:0%;background:rgba(139,26,26,0.15);pointer-events:none"></div>
-        <div id="vpTrimStart" style="position:absolute;top:0;bottom:0;left:0%;width:3px;background:#c9a96e;cursor:ew-resize" onmousedown="vpTrimDrag('start',event)"></div>
-        <div id="vpTrimEnd" style="position:absolute;top:0;bottom:0;right:0%;width:3px;background:#c9a96e;cursor:ew-resize" onmousedown="vpTrimDrag('end',event)"></div>
-        <div id="vpTrimRegion" style="position:absolute;top:0;bottom:0;left:0%;right:0%;background:rgba(201,169,110,0.12);pointer-events:none;border:1px solid rgba(201,169,110,0.3)"></div>
-        <div id="vpPlayHead" style="position:absolute;top:0;bottom:0;left:0%;width:2px;background:#e8e0d4;pointer-events:none"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-        <div style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e">
-          Начало: <span id="vpTrimStartTime">0:00</span>
+        <!-- TRIM PANEL -->
+        <div id="vpPanel-trim" style="display:none">
+          <div style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070;letter-spacing:0.06em;margin-bottom:10px">✂ ОБРЕЗКА ПО ВРЕМЕНИ</div>
+          <div style="position:relative;height:36px;background:#0a0a0f;border:1px solid rgba(139,26,26,0.3);margin-bottom:10px;cursor:pointer" id="vpTrimline" onclick="vpTrimClick(event)">
+            <div id="vpTrimProgress" style="position:absolute;top:0;bottom:0;left:0;width:0%;background:rgba(139,26,26,0.15);pointer-events:none"></div>
+            <div id="vpTrimStart" style="position:absolute;top:0;bottom:0;left:0%;width:3px;background:#c9a96e;cursor:ew-resize" onmousedown="vpTrimDrag('start',event)" ontouchstart="vpTrimDrag('start',event)"></div>
+            <div id="vpTrimEnd" style="position:absolute;top:0;bottom:0;right:0%;width:3px;background:#c9a96e;cursor:ew-resize" onmousedown="vpTrimDrag('end',event)" ontouchstart="vpTrimDrag('end',event)"></div>
+            <div id="vpTrimRegion" style="position:absolute;top:0;bottom:0;left:0%;right:0%;background:rgba(201,169,110,0.12);pointer-events:none;border:1px solid rgba(201,169,110,0.3)"></div>
+            <div id="vpPlayHead" style="position:absolute;top:0;bottom:0;left:0%;width:2px;background:#e8e0d4;pointer-events:none"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">Начало</span>
+              <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vpTrimStartTime">0:00</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">Конец</span>
+              <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vpTrimEndTime">0:00</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-family:'Cinzel',serif;font-size:8px;color:#8a8070">Длина</span>
+              <span style="font-family:'Cinzel',serif;font-size:8px;color:#c9a96e" id="vpTrimDur">0:00</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button onclick="vpTrimPreview()" style="width:100%;padding:8px;background:rgba(139,26,26,0.15);border:1px solid rgba(139,26,26,0.4);color:#c9bfa8;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">▶ ПРЕВЬЮ</button>
+            <button onclick="vpTrimExport()" style="width:100%;padding:8px;background:rgba(139,26,26,0.25);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:8px;cursor:pointer">⬇ СКАЧАТЬ ОБРЕЗАННОЕ</button>
+          </div>
         </div>
-        <div style="font-family:'Cinzel',serif;font-size:9px;color:#c9a96e">
-          Конец: <span id="vpTrimEndTime">0:00</span>
-        </div>
-        <div style="font-family:'Cinzel',serif;font-size:9px;color:#8a8070">
-          Длина: <span id="vpTrimDur">0:00</span>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px">
-        <button onclick="vpTrimPreview()" style="flex:1;padding:8px;background:rgba(139,26,26,0.15);border:1px solid rgba(139,26,26,0.4);color:#c9bfa8;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer">▶ ПРЕВЬЮ</button>
-        <button onclick="vpTrimExport()" style="flex:1;padding:8px;background:rgba(139,26,26,0.25);border:1px solid #8b1a1a;color:#e8e0d4;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.06em;cursor:pointer">⬇ СКАЧАТЬ ОБРЕЗАННОЕ</button>
-      </div>
-      <div style="font-family:'Cinzel',serif;font-size:8px;color:rgba(139,26,26,0.6);margin-top:8px;text-align:center;letter-spacing:0.04em">
-        * Обрезка выполняется в браузере через MediaRecorder
-      </div>
-    </div>
 
-  </div>
+      </div><!-- end scrollable -->
+    </div><!-- end right panel -->
+  </div><!-- end main area -->
+
 </div>
 <script>
 // ── Photo Editor state ──
