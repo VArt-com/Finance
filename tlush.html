@@ -895,11 +895,27 @@ function getMediaType(file) {
 
 function formatResult(text) {
   return text
+    // Escape HTML
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    // Headers ### -> h3
+    .replace(/^###\s*(.+)$/gm, '<h3>$1</h3>')
+    .replace(/^##\s*(.+)$/gm, '<h3>$1</h3>')
+    .replace(/^#\s*(.+)$/gm, '<h3>$1</h3>')
+    // Bold **text** -> strong
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // Italic *text* -> em
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    // Horizontal rule ---
+    .replace(/^---+$/gm, '<hr style="border-color:var(--border);margin:12px 0">')
+    // Emoji headers
     .replace(/^(📋|💰|📉|⚠️|💡).+$/gm, '<h3>$&</h3>')
+    // Status icons
     .replace(/✅/g, '<span class="status-ok">✅</span>')
     .replace(/⚠️/g, '<span class="status-warn">⚠️</span>')
     .replace(/❌/g, '<span class="status-err">❌</span>')
+    // Bullet points
+    .replace(/^[\*\-]\s+(.+)$/gm, '<div style="padding-left:16px;margin:2px 0">• $1</div>')
+    // Line breaks
     .replace(/\n/g, '<br>');
 }
 
