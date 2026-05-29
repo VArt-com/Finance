@@ -492,6 +492,29 @@
       <button class="btn-new" onclick="resetAnalysis('en')">🔄 Check another payslip</button>
     </div>
 
+    <div class="info-cards">
+      <div class="info-card">
+        <span class="ic-icon">💰</span>
+        <h4>Minimum Wage</h4>
+        <p>From April 2026: ₪35.40/hr · ₪6,443.85/month</p>
+      </div>
+      <div class="info-card">
+        <span class="ic-icon">⏰</span>
+        <h4>Overtime</h4>
+        <p>First 2 hours: 125% · After: 150%</p>
+      </div>
+      <div class="info-card">
+        <span class="ic-icon">🏥</span>
+        <h4>Bituach Leumi</h4>
+        <p>Deducted automatically per NII rates</p>
+      </div>
+      <div class="info-card">
+        <span class="ic-icon">📅</span>
+        <h4>Work Week</h4>
+        <p>Max 42 hours · 8.6 hours per day</p>
+      </div>
+    </div>
+
     <div class="disclaimer">
       ⚠️ This tool uses AI for analysis and is for informational purposes only. For legal disputes, consult a labor law specialist.
     </div>
@@ -558,6 +581,29 @@
       </div>
       <div class="result-content" id="result-text-he"></div>
       <button class="btn-new" onclick="resetAnalysis('he')">🔄 בדוק תלוש אחר</button>
+    </div>
+
+    <div class="info-cards">
+      <div class="info-card">
+        <span class="ic-icon">💰</span>
+        <h4>שכר מינימום</h4>
+        <p>מאפריל 2026: ₪35.40/שעה · ₪6,443.85/חודש</p>
+      </div>
+      <div class="info-card">
+        <span class="ic-icon">⏰</span>
+        <h4>שעות נוספות</h4>
+        <p>2 שעות ראשונות: 125% · לאחר מכן: 150%</p>
+      </div>
+      <div class="info-card">
+        <span class="ic-icon">🏥</span>
+        <h4>ביטוח לאומי</h4>
+        <p>מנוכה אוטומטית לפי תעריפי הביטוח הלאומי</p>
+      </div>
+      <div class="info-card">
+        <span class="ic-icon">📅</span>
+        <h4>שבוע עבודה</h4>
+        <p>מקסימום 42 שעות · 8.6 שעות ביום</p>
+      </div>
     </div>
 
     <div class="disclaimer">
@@ -800,6 +846,15 @@ If the document is poor quality or not a payslip, say so.`,
 
     const data = await response.json();
     const text = data.result || '';
+
+    if (!text) {
+      const langs = {
+        ru: 'AI не смог прочитать документ. Убедитесь что фото чёткое и хорошо освещено.',
+        en: 'AI could not read the document. Make sure the photo is clear and well-lit.',
+        he: 'הבינה המלאכותית לא הצליחה לקרוא את המסמך. ודא שהתמונה ברורה ומוארת היטב.'
+      };
+      throw new Error(langs[lang]);
+    }
 
     // Show result
     document.getElementById('loading-' + lang).classList.remove('show');
