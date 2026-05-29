@@ -782,40 +782,24 @@ If the document is poor quality or not a payslip, say so.`,
 אם המסמך באיכות ירודה או אינו תלוש שכר, ציין זאת.`
     };
 
-    // Call Claude API
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    // Call via Cloudflare Worker (Gemini)
+    const response = await fetch('https://tlush-api.artur32-1985.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1500,
-        messages: [{
-          role: 'user',
-          content: [
-            {
-              type: 'image',
-              source: {
-                type: 'base64',
-                media_type: mediaType,
-                data: base64
-              }
-            },
-            {
-              type: 'text',
-              text: prompts[lang]
-            }
-          ]
-        }]
+        image_base64: base64,
+        media_type: mediaType,
+        prompt: prompts[lang]
       })
     });
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      throw new Error(err.error?.message || 'API error ' + response.status);
+      throw new Error(err.error || 'API error ' + response.status);
     }
 
     const data = await response.json();
-    const text = data.content?.[0]?.text || '';
+    const text = data.result || '';
 
     // Show result
     document.getElementById('loading-' + lang).classList.remove('show');
