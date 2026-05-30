@@ -8,321 +8,88 @@
 <link rel="icon" href="https://org-va.com/favicon.ico">
 <meta name="theme-color" content="#6C63FF">
 
-<!-- ✅ Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4502841289225255" crossorigin="anonymous"></script>
+
+<!-- PDF.js для конвертации PDF в картинку -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap');
-
   :root {
-    --accent: #6C63FF;
-    --accent2: #a78bfa;
-    --bg: #0d0d1a;
-    --bg2: #13132a;
-    --card: #1a1a35;
-    --border: #2a2a50;
-    --text: #e0e0f0;
-    --muted: #8888aa;
-    --green: #34d399;
-    --orange: #fb923c;
-    --red: #f87171;
-    --yellow: #fbbf24;
-    --radius: 12px;
+    --accent:#6C63FF;--accent2:#a78bfa;--bg:#0d0d1a;--bg2:#13132a;
+    --card:#1a1a35;--border:#2a2a50;--text:#e0e0f0;--muted:#8888aa;
+    --green:#34d399;--red:#f87171;--yellow:#fbbf24;--radius:12px;
   }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'IBM Plex Sans', system-ui, sans-serif;
-    font-size: 15px;
-    line-height: 1.7;
-    min-height: 100vh;
-  }
-
-  /* HEADER */
-  header {
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 20px;
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 99;
-    gap: 10px; flex-wrap: wrap;
-  }
-  header a.logo { font-weight: 800; font-size: 1.15rem; color: var(--accent); text-decoration: none; letter-spacing: 0.3px; }
-  .lang-btns { display: flex; gap: 5px; }
-  .lang-btn {
-    background: var(--card); border: 1px solid var(--border);
-    color: var(--muted); padding: 4px 12px; border-radius: 20px;
-    font-size: 0.78rem; cursor: pointer; transition: all 0.2s;
-    font-family: inherit;
-  }
-  .lang-btn.active, .lang-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-  /* MAIN */
-  main { max-width: 780px; margin: 0 auto; padding: 40px 16px 80px; }
-
-  /* HERO */
-  .hero {
-    text-align: center;
-    padding: 48px 20px 40px;
-    position: relative;
-  }
-  .hero-icon {
-    font-size: 3.5rem;
-    display: block;
-    margin-bottom: 16px;
-    animation: float 3s ease-in-out infinite;
-  }
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-  }
-  .hero h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 12px;
-    line-height: 1.3;
-  }
-  .hero h1 span { color: var(--accent2); }
-  .hero p { color: var(--muted); font-size: 0.95rem; max-width: 520px; margin: 0 auto 24px; }
-  .hero-badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
-  .badge {
-    background: rgba(108,99,255,0.15);
-    border: 1px solid rgba(108,99,255,0.3);
-    color: var(--accent2);
-    font-size: 0.75rem;
-    padding: 3px 12px;
-    border-radius: 20px;
-  }
-
-  /* UPLOAD ZONE */
-  .upload-zone {
-    background: var(--card);
-    border: 2px dashed var(--border);
-    border-radius: 16px;
-    padding: 40px 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    margin-bottom: 20px;
-  }
-  .upload-zone:hover, .upload-zone.drag-over {
-    border-color: var(--accent);
-    background: rgba(108,99,255,0.05);
-  }
-  .upload-zone input[type="file"] {
-    position: absolute; inset: 0;
-    opacity: 0; cursor: pointer; width: 100%; height: 100%;
-  }
-  .upload-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
-  .upload-zone h3 { color: #fff; font-size: 1rem; margin-bottom: 6px; }
-  .upload-zone p { color: var(--muted); font-size: 0.85rem; }
-  .upload-formats {
-    display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 14px;
-  }
-  .fmt-badge {
-    background: var(--bg2); border: 1px solid var(--border);
-    color: var(--muted); font-size: 0.72rem; padding: 2px 10px;
-    border-radius: 8px; font-family: 'IBM Plex Mono', monospace;
-  }
-
-  /* PREVIEW */
-  .file-preview {
-    background: var(--bg2);
-    border: 1px solid var(--green);
-    border-radius: 12px;
-    padding: 14px 18px;
-    display: none;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 20px;
-  }
-  .file-preview.show { display: flex; }
-  .file-preview .fp-icon { font-size: 1.8rem; flex-shrink: 0; }
-  .file-preview .fp-info { flex: 1; }
-  .file-preview .fp-name { color: var(--green); font-weight: 600; font-size: 0.9rem; }
-  .file-preview .fp-size { color: var(--muted); font-size: 0.8rem; }
-  .file-preview .fp-remove {
-    background: none; border: none; color: var(--muted);
-    cursor: pointer; font-size: 1.2rem; padding: 4px;
-    transition: color 0.2s;
-  }
-  .file-preview .fp-remove:hover { color: var(--red); }
-
-  /* ANALYZE BUTTON */
-  .btn-analyze {
-    width: 100%;
-    background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 16px 24px;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: inherit;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    margin-bottom: 28px;
-  }
-  .btn-analyze:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(108,99,255,0.4); }
-  .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-
-  /* LOADING */
-  .loading {
-    display: none;
-    text-align: center;
-    padding: 40px 20px;
-  }
-  .loading.show { display: block; }
-  .spinner {
-    width: 48px; height: 48px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 16px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading p { color: var(--muted); font-size: 0.9rem; }
-  .loading .loading-dots::after {
-    content: '';
-    animation: dots 1.5s infinite;
-  }
-  @keyframes dots {
-    0% { content: ''; }
-    33% { content: '.'; }
-    66% { content: '..'; }
-    100% { content: '...'; }
-  }
-
-  /* RESULT */
-  .result {
-    display: none;
-    animation: fadeIn 0.4s ease;
-  }
-  .result.show { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-
-  .result-header {
-    background: linear-gradient(135deg, rgba(52,211,153,0.1) 0%, rgba(108,99,255,0.1) 100%);
-    border: 1px solid rgba(52,211,153,0.3);
-    border-radius: 12px;
-    padding: 20px 24px;
-    margin-bottom: 16px;
-    display: flex; align-items: center; gap: 14px;
-  }
-  .result-header .rh-icon { font-size: 2rem; }
-  .result-header h2 { color: var(--green); font-size: 1rem; font-weight: 700; }
-  .result-header p { color: var(--muted); font-size: 0.83rem; }
-
-  .result-content {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    color: var(--text);
-    font-size: 0.92rem;
-    line-height: 1.8;
-    white-space: pre-wrap;
-    font-family: 'IBM Plex Sans', sans-serif;
-  }
-
-  /* Markdown-like styling in result */
-  .result-content h3 {
-    color: var(--accent2);
-    font-size: 1rem;
-    font-weight: 700;
-    margin: 20px 0 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border);
-  }
-  .result-content h3:first-child { margin-top: 0; }
-
-  .status-ok { color: var(--green); }
-  .status-warn { color: var(--yellow); }
-  .status-err { color: var(--red); }
-
-  /* NEW ANALYSIS BTN */
-  .btn-new {
-    width: 100%;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    border-radius: 12px;
-    padding: 12px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    margin-top: 16px;
-    transition: all 0.2s;
-    font-family: inherit;
-  }
-  .btn-new:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* ERROR */
-  .error-box {
-    display: none;
-    background: rgba(248,113,113,0.1);
-    border: 1px solid rgba(248,113,113,0.3);
-    border-radius: 12px;
-    padding: 16px 20px;
-    color: var(--red);
-    font-size: 0.9rem;
-    margin-bottom: 16px;
-  }
-  .error-box.show { display: block; }
-
-  /* INFO CARDS */
-  .info-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 12px;
-    margin-top: 32px;
-  }
-  .info-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 18px;
-  }
-  .info-card .ic-icon { font-size: 1.5rem; margin-bottom: 8px; display: block; }
-  .info-card h4 { color: var(--accent2); font-size: 0.88rem; font-weight: 700; margin-bottom: 4px; }
-  .info-card p { color: var(--muted); font-size: 0.8rem; line-height: 1.5; }
-
-  /* DISCLAIMER */
-  .disclaimer {
-    background: rgba(251,191,36,0.08);
-    border: 1px solid rgba(251,191,36,0.2);
-    border-radius: 10px;
-    padding: 14px 18px;
-    margin-top: 24px;
-    color: var(--yellow);
-    font-size: 0.82rem;
-    line-height: 1.6;
-  }
-
-  /* FOOTER */
-  footer {
-    text-align: center; padding: 28px 16px;
-    color: var(--muted); font-size: 0.82rem;
-    border-top: 1px solid var(--border);
-  }
-  footer a { color: var(--accent2); text-decoration: none; }
-  footer .links { margin-top: 10px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-
-  /* LANG */
-  .lang-section { display: none; }
-  .lang-section.active { display: block; }
-
-  @media (max-width: 600px) {
-    .hero h1 { font-size: 1.5rem; }
-    .hero { padding: 32px 12px 28px; }
-    main { padding: 24px 12px 60px; }
-  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:15px;line-height:1.7;min-height:100vh}
+  header{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99;gap:10px;flex-wrap:wrap}
+  header a.logo{font-weight:800;font-size:1.15rem;color:var(--accent);text-decoration:none}
+  .lang-btns{display:flex;gap:5px}
+  .lang-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:4px 12px;border-radius:20px;font-size:.78rem;cursor:pointer;transition:all .2s;font-family:inherit}
+  .lang-btn.active,.lang-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+  main{max-width:780px;margin:0 auto;padding:40px 16px 80px}
+  .hero{text-align:center;padding:48px 20px 40px}
+  .hero-icon{font-size:3.5rem;display:block;margin-bottom:16px;animation:float 3s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .hero h1{font-size:2rem;font-weight:700;color:#fff;margin-bottom:12px;line-height:1.3}
+  .hero h1 span{color:var(--accent2)}
+  .hero p{color:var(--muted);font-size:.95rem;max-width:520px;margin:0 auto 24px}
+  .hero-badges{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+  .badge{background:rgba(108,99,255,.15);border:1px solid rgba(108,99,255,.3);color:var(--accent2);font-size:.75rem;padding:3px 12px;border-radius:20px}
+  .upload-zone{background:var(--card);border:2px dashed var(--border);border-radius:16px;padding:40px 24px;text-align:center;cursor:pointer;transition:all .2s;position:relative;margin-bottom:20px}
+  .upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:rgba(108,99,255,.05)}
+  .upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+  .upload-icon{font-size:2.5rem;margin-bottom:12px;display:block}
+  .upload-zone h3{color:#fff;font-size:1rem;margin-bottom:6px}
+  .upload-zone p{color:var(--muted);font-size:.85rem}
+  .upload-formats{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .fmt-badge{background:var(--bg2);border:1px solid var(--border);color:var(--muted);font-size:.72rem;padding:2px 10px;border-radius:8px;font-family:'IBM Plex Mono',monospace}
+  .file-preview{background:var(--bg2);border:1px solid var(--green);border-radius:12px;padding:14px 18px;display:none;align-items:center;gap:14px;margin-bottom:20px}
+  .file-preview.show{display:flex}
+  .fp-icon{font-size:1.8rem;flex-shrink:0}
+  .fp-info{flex:1}
+  .fp-name{color:var(--green);font-weight:600;font-size:.9rem}
+  .fp-size{color:var(--muted);font-size:.8rem}
+  .fp-remove{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;padding:4px;transition:color .2s}
+  .fp-remove:hover{color:var(--red)}
+  .btn-analyze{width:100%;background:linear-gradient(135deg,var(--accent) 0%,#8b5cf6 100%);color:#fff;border:none;border-radius:12px;padding:16px 24px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:28px}
+  .btn-analyze:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(108,99,255,.4)}
+  .btn-analyze:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+  .loading{display:none;text-align:center;padding:40px 20px}
+  .loading.show{display:block}
+  .spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading p{color:var(--muted);font-size:.9rem}
+  .loading-step{color:var(--accent2);font-size:.82rem;margin-top:8px;min-height:1.4em}
+  .result{display:none;animation:fadeIn .4s ease}
+  .result.show{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .result-header{background:linear-gradient(135deg,rgba(52,211,153,.1) 0%,rgba(108,99,255,.1) 100%);border:1px solid rgba(52,211,153,.3);border-radius:12px;padding:20px 24px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
+  .rh-icon{font-size:2rem}
+  .result-header h2{color:var(--green);font-size:1rem;font-weight:700}
+  .result-header p{color:var(--muted);font-size:.83rem}
+  .result-content{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;color:var(--text);font-size:.92rem;line-height:1.8}
+  .result-content h3{color:var(--accent2);font-size:1rem;font-weight:700;margin:20px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+  .result-content h3:first-child{margin-top:0}
+  .status-ok{color:var(--green)}
+  .status-warn{color:var(--yellow)}
+  .status-err{color:var(--red)}
+  .btn-new{width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:12px;padding:12px;font-size:.9rem;cursor:pointer;margin-top:16px;transition:all .2s;font-family:inherit}
+  .btn-new:hover{border-color:var(--accent);color:var(--accent)}
+  .error-box{display:none;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:12px;padding:16px 20px;color:var(--red);font-size:.9rem;margin-bottom:16px}
+  .error-box.show{display:block}
+  .info-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:32px}
+  .info-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+  .ic-icon{font-size:1.5rem;margin-bottom:8px;display:block}
+  .info-card h4{color:var(--accent2);font-size:.88rem;font-weight:700;margin-bottom:4px}
+  .info-card p{color:var(--muted);font-size:.8rem;line-height:1.5}
+  .disclaimer{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:14px 18px;margin-top:24px;color:var(--yellow);font-size:.82rem;line-height:1.6}
+  footer{text-align:center;padding:28px 16px;color:var(--muted);font-size:.82rem;border-top:1px solid var(--border)}
+  footer a{color:var(--accent2);text-decoration:none}
+  footer .links{margin-top:10px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  .lang-section{display:none}
+  .lang-section.active{display:block}
+  @media(max-width:600px){.hero h1{font-size:1.5rem}.hero{padding:32px 12px 28px}main{padding:24px 12px 60px}}
 </style>
 </head>
 <body>
@@ -338,278 +105,157 @@
 
 <main>
 
-  <!-- ===== RUSSIAN ===== -->
-  <div class="lang-section active" id="lang-ru">
-    <div class="hero">
-      <span class="hero-icon">📄</span>
-      <h1>Проверка <span>тлуша</span></h1>
-      <p>Загрузите свой расчётный листок (תלוש שכר) — AI проверит правильность расчётов и объяснит простым языком что к чему</p>
-      <div class="hero-badges">
-        <span class="badge">✅ Налоги</span>
-        <span class="badge">✅ Сверхурочные</span>
-        <span class="badge">✅ Биту"х Леуми</span>
-        <span class="badge">✅ Минималка</span>
-      </div>
-    </div>
-
-    <div id="upload-area-ru">
-      <div class="upload-zone" id="dropzone-ru"
-           ondragover="handleDrag(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'ru')">
-        <input type="file" id="file-input-ru" accept="image/*,.pdf" onchange="handleFile(event,'ru')">
-        <span class="upload-icon">📎</span>
-        <h3>Загрузите тлуш</h3>
-        <p>Перетащите файл сюда или нажмите для выбора</p>
-        <div class="upload-formats">
-          <span class="fmt-badge">JPG</span>
-          <span class="fmt-badge">PNG</span>
-          <span class="fmt-badge">PDF</span>
-          <span class="fmt-badge">HEIC</span>
-        </div>
-      </div>
-
-      <div class="file-preview" id="preview-ru">
-        <span class="fp-icon">📄</span>
-        <div class="fp-info">
-          <div class="fp-name" id="fname-ru"></div>
-          <div class="fp-size" id="fsize-ru"></div>
-        </div>
-        <button class="fp-remove" onclick="removeFile('ru')">✕</button>
-      </div>
-
-      <div class="error-box" id="error-ru"></div>
-
-      <button class="btn-analyze" id="btn-ru" onclick="analyze('ru')" disabled>
-        <span>🔍</span> Проверить тлуш
-      </button>
-    </div>
-
-    <div class="loading" id="loading-ru">
-      <div class="spinner"></div>
-      <p>AI анализирует ваш тлуш<span class="loading-dots"></span></p>
-      <p style="margin-top:8px;font-size:0.8rem;">Обычно занимает 10-20 секунд</p>
-    </div>
-
-    <div class="result" id="result-ru">
-      <div class="result-header">
-        <span class="rh-icon">✅</span>
-        <div>
-          <h2>Анализ завершён</h2>
-          <p>Результаты проверки вашего тлуша</p>
-        </div>
-      </div>
-      <div class="result-content" id="result-text-ru"></div>
-      <button class="btn-new" onclick="resetAnalysis('ru')">🔄 Проверить другой тлуш</button>
-    </div>
-
-    <div class="info-cards">
-      <div class="info-card">
-        <span class="ic-icon">💰</span>
-        <h4>Минимальная зарплата</h4>
-        <p>С апреля 2026: ₪35.40/час · ₪6,443.85/месяц</p>
-      </div>
-      <div class="info-card">
-        <span class="ic-icon">⏰</span>
-        <h4>Сверхурочные</h4>
-        <p>Первые 2 часа: 125% · Далее: 150%</p>
-      </div>
-      <div class="info-card">
-        <span class="ic-icon">🏥</span>
-        <h4>Биту"х Леуми</h4>
-        <p>Удерживается автоматически по ставкам НСС</p>
-      </div>
-      <div class="info-card">
-        <span class="ic-icon">📅</span>
-        <h4>Рабочая неделя</h4>
-        <p>Максимум 42 часа · 8.6 часов в день</p>
-      </div>
-    </div>
-
-    <div class="disclaimer">
-      ⚠️ Этот инструмент использует AI для анализа и носит информационный характер. Для юридических споров обратитесь к специалисту по трудовому праву.
+<!-- ===== RUSSIAN ===== -->
+<div class="lang-section active" id="lang-ru">
+  <div class="hero">
+    <span class="hero-icon">📄</span>
+    <h1>Проверка <span>тлуша</span></h1>
+    <p>Загрузите расчётный листок (תלוש שכר) — AI проверит правильность расчётов и объяснит что к чему</p>
+    <div class="hero-badges">
+      <span class="badge">✅ Налоги</span>
+      <span class="badge">✅ Сверхурочные</span>
+      <span class="badge">✅ Биту"х Леуми</span>
+      <span class="badge">✅ Минималка</span>
     </div>
   </div>
-
-  <!-- ===== ENGLISH ===== -->
-  <div class="lang-section" id="lang-en">
-    <div class="hero">
-      <span class="hero-icon">📄</span>
-      <h1>Payslip <span>Checker</span></h1>
-      <p>Upload your Israeli payslip (תלוש שכר) — AI will verify the calculations and explain everything in plain language</p>
-      <div class="hero-badges">
-        <span class="badge">✅ Taxes</span>
-        <span class="badge">✅ Overtime</span>
-        <span class="badge">✅ Bituach Leumi</span>
-        <span class="badge">✅ Minimum wage</span>
+  <div id="upload-area-ru">
+    <div class="upload-zone" id="dropzone-ru" ondragover="handleDrag(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'ru')">
+      <input type="file" id="file-input-ru" accept="image/*,.pdf" onchange="handleFile(event,'ru')">
+      <span class="upload-icon">📎</span>
+      <h3>Загрузите тлуш</h3>
+      <p>Перетащите файл сюда или нажмите для выбора</p>
+      <div class="upload-formats">
+        <span class="fmt-badge">JPG</span><span class="fmt-badge">PNG</span>
+        <span class="fmt-badge">PDF</span><span class="fmt-badge">HEIC</span>
       </div>
     </div>
-
-    <div id="upload-area-en">
-      <div class="upload-zone" id="dropzone-en"
-           ondragover="handleDrag(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'en')">
-        <input type="file" id="file-input-en" accept="image/*,.pdf" onchange="handleFile(event,'en')">
-        <span class="upload-icon">📎</span>
-        <h3>Upload your payslip</h3>
-        <p>Drag & drop here or click to select a file</p>
-        <div class="upload-formats">
-          <span class="fmt-badge">JPG</span>
-          <span class="fmt-badge">PNG</span>
-          <span class="fmt-badge">PDF</span>
-          <span class="fmt-badge">HEIC</span>
-        </div>
+    <div class="file-preview" id="preview-ru">
+      <span class="fp-icon">📄</span>
+      <div class="fp-info">
+        <div class="fp-name" id="fname-ru"></div>
+        <div class="fp-size" id="fsize-ru"></div>
       </div>
-
-      <div class="file-preview" id="preview-en">
-        <span class="fp-icon">📄</span>
-        <div class="fp-info">
-          <div class="fp-name" id="fname-en"></div>
-          <div class="fp-size" id="fsize-en"></div>
-        </div>
-        <button class="fp-remove" onclick="removeFile('en')">✕</button>
-      </div>
-
-      <div class="error-box" id="error-en"></div>
-
-      <button class="btn-analyze" id="btn-en" onclick="analyze('en')" disabled>
-        <span>🔍</span> Analyze Payslip
-      </button>
+      <button class="fp-remove" onclick="removeFile('ru')">✕</button>
     </div>
+    <div class="error-box" id="error-ru"></div>
+    <button class="btn-analyze" id="btn-ru" onclick="analyze('ru')" disabled><span>🔍</span> Проверить тлуш</button>
+  </div>
+  <div class="loading" id="loading-ru">
+    <div class="spinner"></div>
+    <p>AI анализирует ваш тлуш...</p>
+    <div class="loading-step" id="step-ru">Подготовка файла...</div>
+  </div>
+  <div class="result" id="result-ru">
+    <div class="result-header"><span class="rh-icon">✅</span><div><h2>Анализ завершён</h2><p>Результаты проверки вашего тлуша</p></div></div>
+    <div class="result-content" id="result-text-ru"></div>
+    <button class="btn-new" onclick="resetAnalysis('ru')">🔄 Проверить другой тлуш</button>
+  </div>
+  <div class="info-cards">
+    <div class="info-card"><span class="ic-icon">💰</span><h4>Минимальная зарплата</h4><p>С апреля 2026: ₪35.40/час · ₪6,443.85/месяц</p></div>
+    <div class="info-card"><span class="ic-icon">⏰</span><h4>Сверхурочные</h4><p>Первые 2 часа: 125% · Далее: 150%</p></div>
+    <div class="info-card"><span class="ic-icon">🏥</span><h4>Биту"х Леуми</h4><p>Удерживается автоматически по ставкам НСС</p></div>
+    <div class="info-card"><span class="ic-icon">📅</span><h4>Рабочая неделя</h4><p>Максимум 42 часа · 8.6 часов в день</p></div>
+  </div>
+  <div class="disclaimer">⚠️ Инструмент использует AI и носит информационный характер. Для юридических споров обратитесь к специалисту.</div>
+</div>
 
-    <div class="loading" id="loading-en">
-      <div class="spinner"></div>
-      <p>AI is analyzing your payslip<span class="loading-dots"></span></p>
-      <p style="margin-top:8px;font-size:0.8rem;">Usually takes 10-20 seconds</p>
-    </div>
-
-    <div class="result" id="result-en">
-      <div class="result-header">
-        <span class="rh-icon">✅</span>
-        <div>
-          <h2>Analysis complete</h2>
-          <p>Results of your payslip check</p>
-        </div>
-      </div>
-      <div class="result-content" id="result-text-en"></div>
-      <button class="btn-new" onclick="resetAnalysis('en')">🔄 Check another payslip</button>
-    </div>
-
-    <div class="info-cards">
-      <div class="info-card">
-        <span class="ic-icon">💰</span>
-        <h4>Minimum Wage</h4>
-        <p>From April 2026: ₪35.40/hr · ₪6,443.85/month</p>
-      </div>
-      <div class="info-card">
-        <span class="ic-icon">⏰</span>
-        <h4>Overtime</h4>
-        <p>First 2 hours: 125% · After: 150%</p>
-      </div>
-      <div class="info-card">
-        <span class="ic-icon">🏥</span>
-        <h4>Bituach Leumi</h4>
-        <p>Deducted automatically per NII rates</p>
-      </div>
-      <div class="info-card">
-        <span class="ic-icon">📅</span>
-        <h4>Work Week</h4>
-        <p>Max 42 hours · 8.6 hours per day</p>
-      </div>
-    </div>
-
-    <div class="disclaimer">
-      ⚠️ This tool uses AI for analysis and is for informational purposes only. For legal disputes, consult a labor law specialist.
+<!-- ===== ENGLISH ===== -->
+<div class="lang-section" id="lang-en">
+  <div class="hero">
+    <span class="hero-icon">📄</span>
+    <h1>Payslip <span>Checker</span></h1>
+    <p>Upload your Israeli payslip (תלוש שכר) — AI will verify all calculations and explain everything in plain language</p>
+    <div class="hero-badges">
+      <span class="badge">✅ Taxes</span><span class="badge">✅ Overtime</span>
+      <span class="badge">✅ Bituach Leumi</span><span class="badge">✅ Minimum wage</span>
     </div>
   </div>
-
-  <!-- ===== HEBREW ===== -->
-  <div class="lang-section" id="lang-he" dir="rtl">
-    <div class="hero">
-      <span class="hero-icon">📄</span>
-      <h1>בדיקת <span>תלוש שכר</span></h1>
-      <p>העלה את תלוש השכר שלך — הבינה המלאכותית תבדוק את החישובים ותסביר הכל בשפה פשוטה</p>
-      <div class="hero-badges">
-        <span class="badge">✅ מסים</span>
-        <span class="badge">✅ שעות נוספות</span>
-        <span class="badge">✅ ביטוח לאומי</span>
-        <span class="badge">✅ שכר מינימום</span>
+  <div id="upload-area-en">
+    <div class="upload-zone" id="dropzone-en" ondragover="handleDrag(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'en')">
+      <input type="file" id="file-input-en" accept="image/*,.pdf" onchange="handleFile(event,'en')">
+      <span class="upload-icon">📎</span>
+      <h3>Upload your payslip</h3>
+      <p>Drag & drop here or click to select</p>
+      <div class="upload-formats">
+        <span class="fmt-badge">JPG</span><span class="fmt-badge">PNG</span>
+        <span class="fmt-badge">PDF</span><span class="fmt-badge">HEIC</span>
       </div>
     </div>
-
-    <div id="upload-area-he">
-      <div class="upload-zone" id="dropzone-he"
-           ondragover="handleDrag(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'he')">
-        <input type="file" id="file-input-he" accept="image/*,.pdf" onchange="handleFile(event,'he')">
-        <span class="upload-icon">📎</span>
-        <h3>העלה את התלוש</h3>
-        <p>גרור לכאן או לחץ לבחירת קובץ</p>
-        <div class="upload-formats">
-          <span class="fmt-badge">JPG</span>
-          <span class="fmt-badge">PNG</span>
-          <span class="fmt-badge">PDF</span>
-          <span class="fmt-badge">HEIC</span>
-        </div>
-      </div>
-
-      <div class="file-preview" id="preview-he">
-        <span class="fp-icon">📄</span>
-        <div class="fp-info">
-          <div class="fp-name" id="fname-he"></div>
-          <div class="fp-size" id="fsize-he"></div>
-        </div>
-        <button class="fp-remove" onclick="removeFile('he')">✕</button>
-      </div>
-
-      <div class="error-box" id="error-he"></div>
-
-      <button class="btn-analyze" id="btn-he" onclick="analyze('he')" disabled>
-        <span>🔍</span> בדוק את התלוש
-      </button>
+    <div class="file-preview" id="preview-en">
+      <span class="fp-icon">📄</span>
+      <div class="fp-info"><div class="fp-name" id="fname-en"></div><div class="fp-size" id="fsize-en"></div></div>
+      <button class="fp-remove" onclick="removeFile('en')">✕</button>
     </div>
+    <div class="error-box" id="error-en"></div>
+    <button class="btn-analyze" id="btn-en" onclick="analyze('en')" disabled><span>🔍</span> Analyze Payslip</button>
+  </div>
+  <div class="loading" id="loading-en">
+    <div class="spinner"></div>
+    <p>AI is analyzing your payslip...</p>
+    <div class="loading-step" id="step-en">Preparing file...</div>
+  </div>
+  <div class="result" id="result-en">
+    <div class="result-header"><span class="rh-icon">✅</span><div><h2>Analysis complete</h2><p>Your payslip check results</p></div></div>
+    <div class="result-content" id="result-text-en"></div>
+    <button class="btn-new" onclick="resetAnalysis('en')">🔄 Check another payslip</button>
+  </div>
+  <div class="info-cards">
+    <div class="info-card"><span class="ic-icon">💰</span><h4>Minimum Wage</h4><p>From April 2026: ₪35.40/hr · ₪6,443.85/month</p></div>
+    <div class="info-card"><span class="ic-icon">⏰</span><h4>Overtime</h4><p>First 2 hours: 125% · After: 150%</p></div>
+    <div class="info-card"><span class="ic-icon">🏥</span><h4>Bituach Leumi</h4><p>Deducted per NII rates automatically</p></div>
+    <div class="info-card"><span class="ic-icon">📅</span><h4>Work Week</h4><p>Max 42 hours · 8.6 hours per day</p></div>
+  </div>
+  <div class="disclaimer">⚠️ This tool uses AI for informational purposes only. For legal disputes, consult a labor law specialist.</div>
+</div>
 
-    <div class="loading" id="loading-he">
-      <div class="spinner"></div>
-      <p>הבינה המלאכותית מנתחת את התלוש שלך<span class="loading-dots"></span></p>
-      <p style="margin-top:8px;font-size:0.8rem;">בדרך כלל לוקח 10-20 שניות</p>
-    </div>
-
-    <div class="result" id="result-he">
-      <div class="result-header">
-        <span class="rh-icon">✅</span>
-        <div>
-          <h2>הניתוח הושלם</h2>
-          <p>תוצאות בדיקת התלוש שלך</p>
-        </div>
-      </div>
-      <div class="result-content" id="result-text-he"></div>
-      <button class="btn-new" onclick="resetAnalysis('he')">🔄 בדוק תלוש אחר</button>
-    </div>
-
-    <div class="info-cards">
-      <div class="info-card">
-        <span class="ic-icon">💰</span>
-        <h4>שכר מינימום</h4>
-        <p>מאפריל 2026: ₪35.40/שעה · ₪6,443.85/חודש</p>
-      </div>
-      <div class="info-card">
-        <span class="ic-icon">⏰</span>
-        <h4>שעות נוספות</h4>
-        <p>2 שעות ראשונות: 125% · לאחר מכן: 150%</p>
-      </div>
-      <div class="info-card">
-        <span class="ic-icon">🏥</span>
-        <h4>ביטוח לאומי</h4>
-        <p>מנוכה אוטומטית לפי תעריפי הביטוח הלאומי</p>
-      </div>
-      <div class="info-card">
-        <span class="ic-icon">📅</span>
-        <h4>שבוע עבודה</h4>
-        <p>מקסימום 42 שעות · 8.6 שעות ביום</p>
-      </div>
-    </div>
-
-    <div class="disclaimer">
-      ⚠️ כלי זה משתמש בבינה מלאכותית לצורך ניתוח ומיועד למטרות מידע בלבד. לסכסוכים משפטיים, פנה למומחה בדיני עבודה.
+<!-- ===== HEBREW ===== -->
+<div class="lang-section" id="lang-he" dir="rtl">
+  <div class="hero">
+    <span class="hero-icon">📄</span>
+    <h1>בדיקת <span>תלוש שכר</span></h1>
+    <p>העלה את תלוש השכר — הבינה המלאכותית תבדוק את החישובים ותסביר הכל בשפה פשוטה</p>
+    <div class="hero-badges">
+      <span class="badge">✅ מסים</span><span class="badge">✅ שעות נוספות</span>
+      <span class="badge">✅ ביטוח לאומי</span><span class="badge">✅ שכר מינימום</span>
     </div>
   </div>
+  <div id="upload-area-he">
+    <div class="upload-zone" id="dropzone-he" ondragover="handleDrag(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'he')">
+      <input type="file" id="file-input-he" accept="image/*,.pdf" onchange="handleFile(event,'he')">
+      <span class="upload-icon">📎</span>
+      <h3>העלה את התלוש</h3>
+      <p>גרור לכאן או לחץ לבחירת קובץ</p>
+      <div class="upload-formats">
+        <span class="fmt-badge">JPG</span><span class="fmt-badge">PNG</span>
+        <span class="fmt-badge">PDF</span><span class="fmt-badge">HEIC</span>
+      </div>
+    </div>
+    <div class="file-preview" id="preview-he">
+      <span class="fp-icon">📄</span>
+      <div class="fp-info"><div class="fp-name" id="fname-he"></div><div class="fp-size" id="fsize-he"></div></div>
+      <button class="fp-remove" onclick="removeFile('he')">✕</button>
+    </div>
+    <div class="error-box" id="error-he"></div>
+    <button class="btn-analyze" id="btn-he" onclick="analyze('he')" disabled><span>🔍</span> בדוק את התלוש</button>
+  </div>
+  <div class="loading" id="loading-he">
+    <div class="spinner"></div>
+    <p>הבינה המלאכותית מנתחת את התלוש...</p>
+    <div class="loading-step" id="step-he">מכין את הקובץ...</div>
+  </div>
+  <div class="result" id="result-he">
+    <div class="result-header"><span class="rh-icon">✅</span><div><h2>הניתוח הושלם</h2><p>תוצאות בדיקת התלוש שלך</p></div></div>
+    <div class="result-content" id="result-text-he"></div>
+    <button class="btn-new" onclick="resetAnalysis('he')">🔄 בדוק תלוש אחר</button>
+  </div>
+  <div class="info-cards">
+    <div class="info-card"><span class="ic-icon">💰</span><h4>שכר מינימום</h4><p>מאפריל 2026: ₪35.40/שעה · ₪6,443.85/חודש</p></div>
+    <div class="info-card"><span class="ic-icon">⏰</span><h4>שעות נוספות</h4><p>2 שעות ראשונות: 125% · לאחר מכן: 150%</p></div>
+    <div class="info-card"><span class="ic-icon">🏥</span><h4>ביטוח לאומי</h4><p>מנוכה אוטומטית לפי תעריפי הביטוח הלאומי</p></div>
+    <div class="info-card"><span class="ic-icon">📅</span><h4>שבוע עבודה</h4><p>מקסימום 42 שעות · 8.6 שעות ביום</p></div>
+  </div>
+  <div class="disclaimer">⚠️ כלי זה משתמש בבינה מלאכותית ומיועד למטרות מידע בלבד. לסכסוכים משפטיים פנה למומחה.</div>
+</div>
 
 </main>
 
@@ -624,15 +270,9 @@
   <div style="margin-top:10px">© 2026 VArt Tools · org-va.com</div>
 </footer>
 
-<!-- WhatsApp -->
 <a href="https://wa.me/972533213698" target="_blank"
-   style="position:fixed;bottom:24px;right:24px;z-index:9999;
-          width:52px;height:52px;border-radius:50%;
-          background:#25D366;display:flex;align-items:center;
-          justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,0.4);
-          text-decoration:none;transition:transform 0.2s"
-   onmouseover="this.style.transform='scale(1.1)'"
-   onmouseout="this.style.transform='scale(1)'">
+   style="position:fixed;bottom:24px;right:24px;z-index:9999;width:52px;height:52px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,.4);text-decoration:none;transition:transform .2s"
+   onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
   <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="#fff">
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
     <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.855L0 24l6.334-1.508A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.817 9.817 0 01-5.003-1.367l-.36-.213-3.757.895.949-3.656-.235-.374A9.786 9.786 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
@@ -640,9 +280,13 @@
 </a>
 
 <script>
-// ============================================================
-// STATE
-// ============================================================
+// PDF.js worker
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+const WORKER_URL = 'https://tlush-api.artur32-1985.workers.dev';
 const state = { ru: null, en: null, he: null };
 
 // ============================================================
@@ -655,58 +299,36 @@ function setLang(lang) {
   if (section) section.classList.add('active');
   const btn = document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`);
   if (btn) btn.classList.add('active');
-  document.documentElement.lang = lang === 'he' ? 'he' : lang === 'en' ? 'en' : 'ru';
+  document.documentElement.lang = lang === 'he' ? 'he' : lang;
   document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
   localStorage.setItem('vart-lang', lang);
 }
 (function() {
   const saved = localStorage.getItem('vart-lang');
-  const lang = (saved && ['ru','en','he'].includes(saved)) ? saved : 'ru';
-  setLang(lang);
+  setLang((saved && ['ru','en','he'].includes(saved)) ? saved : 'ru');
 })();
 
 // ============================================================
 // FILE HANDLING
 // ============================================================
-function handleFile(event, lang) {
-  const file = event.target.files[0];
-  if (file) setFile(file, lang);
-}
-
-function handleDrag(event) {
-  event.preventDefault();
-  event.currentTarget.classList.add('drag-over');
-}
-
-function handleDragLeave(event) {
-  event.currentTarget.classList.remove('drag-over');
-}
-
-function handleDrop(event, lang) {
-  event.preventDefault();
-  event.currentTarget.classList.remove('drag-over');
-  const file = event.dataTransfer.files[0];
-  if (file) setFile(file, lang);
+function handleFile(e, lang) { const f = e.target.files[0]; if (f) setFile(f, lang); }
+function handleDrag(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function handleDrop(e, lang) {
+  e.preventDefault(); e.currentTarget.classList.remove('drag-over');
+  const f = e.dataTransfer.files[0]; if (f) setFile(f, lang);
 }
 
 function setFile(file, lang) {
-  // Validate
   const allowed = ['image/jpeg','image/png','image/heic','image/webp','application/pdf'];
   if (!allowed.includes(file.type) && !file.name.match(/\.(jpg|jpeg|png|pdf|heic|webp)$/i)) {
-    showError(lang, lang === 'ru' ? 'Неподдерживаемый формат файла' :
-                    lang === 'en' ? 'Unsupported file format' : 'פורמט קובץ לא נתמך');
-    return;
+    return showError(lang, { ru:'Неподдерживаемый формат', en:'Unsupported format', he:'פורמט לא נתמך' }[lang]);
   }
   if (file.size > 20 * 1024 * 1024) {
-    showError(lang, lang === 'ru' ? 'Файл слишком большой (макс. 20MB)' :
-                    lang === 'en' ? 'File too large (max 20MB)' : 'הקובץ גדול מדי (מקסימום 20MB)');
-    return;
+    return showError(lang, { ru:'Файл слишком большой (макс. 20MB)', en:'File too large (max 20MB)', he:'קובץ גדול מדי (מקסימום 20MB)' }[lang]);
   }
-
   state[lang] = file;
   hideError(lang);
-
-  // Show preview
   document.getElementById('fname-' + lang).textContent = file.name;
   document.getElementById('fsize-' + lang).textContent = formatSize(file.size);
   document.getElementById('preview-' + lang).classList.add('show');
@@ -720,143 +342,211 @@ function removeFile(lang) {
   document.getElementById('file-input-' + lang).value = '';
 }
 
-function formatSize(bytes) {
-  if (bytes < 1024) return bytes + ' B';
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+function formatSize(b) {
+  return b < 1024 ? b + ' B' : b < 1048576 ? (b/1024).toFixed(1) + ' KB' : (b/1048576).toFixed(1) + ' MB';
 }
 
 // ============================================================
-// ANALYZE
+// PDF → base64 JPEG (первая страница, scale 2x)
+// ============================================================
+async function pdfToBase64(file) {
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  const page = await pdf.getPage(1);
+  const vp = page.getViewport({ scale: 2.0 });
+  const canvas = document.createElement('canvas');
+  canvas.width = vp.width; canvas.height = vp.height;
+  await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+  return canvas.toDataURL('image/jpeg', 0.92).split(',')[1];
+}
+
+// ============================================================
+// ПРОМПТЫ
+// ============================================================
+const PROMPTS = {
+  ru: `Ты — опытный израильский бухгалтер и эксперт по трудовому праву.
+Перед тобой тлуш (תלוש שכר — расчётный листок работника в Израиле).
+
+ОБЯЗАТЕЛЬНО: Прочитай ВСЕ строки и цифры на документе. Не пропускай ничего.
+
+Составь подробный отчёт по структуре:
+
+📋 ОБЩАЯ ИНФОРМАЦИЯ
+- Работодатель, имя работника (если видно), период, должность
+- Брутто (שכר ברוטו): ₪___
+- Нетто (שכר נטו): ₪___
+
+💰 ВСЕ НАЧИСЛЕНИЯ (זכויות)
+Каждая строка: название — сумма ₪
+Проверь:
+- Соответствует ли ставка минималке (₪35.40/час, ₪6,443.85/мес с апреля 2026)?
+- Сверхурочные: первые 2 часа ×125%, остальные ×150% — правильно ли?
+- Все ли положенные надбавки есть?
+
+📉 ВСЕ УДЕРЖАНИЯ (ניכויים)
+Каждая строка: название — сумма ₪ — правильно/нет
+Проверь обязательные удержания:
+1. מס הכנסה (подоходный налог) — % соответствует доходу?
+2. ביטוח לאומי עובד — ~3.5% до порога, ~12% выше
+3. מס בריאות — ~3.1% до порога, ~5% выше
+4. פנסיה — работник ~6%, работодатель ~6.5%+
+5. קרן השתלמות — если есть
+6. ביטוח מנהלים — если есть
+
+⚠️ ИТОГ
+✅ Что правильно
+⚠️ Что вызывает вопросы
+❌ Что неправильно или отсутствует
+
+💡 СОВЕТЫ РАБОТНИКУ
+Что проверить у работодателя, на что обратить внимание.
+
+Если документ нечёткий — опиши что прочитал. Если не тлуш — скажи прямо.
+НЕ ПИШИ "всё в порядке" без реального анализа цифр.`,
+
+  en: `You are an experienced Israeli accountant and labor law expert.
+You are looking at a תלוש שכר (Israeli payslip).
+
+MANDATORY: Read ALL lines and numbers. Do not skip anything.
+
+Provide a detailed report:
+
+📋 GENERAL INFORMATION
+- Employer, employee name (if visible), period, position
+- Gross salary (שכר ברוטו): ₪___
+- Net salary (שכר נטו): ₪___
+
+💰 ALL EARNINGS (זכויות)
+Every line: name — amount ₪
+Check:
+- Does rate meet minimum wage (₪35.40/hr, ₪6,443.85/month from April 2026)?
+- Overtime: first 2 hours ×125%, rest ×150% — correct?
+- All required allowances present?
+
+📉 ALL DEDUCTIONS (ניכויים)
+Every line: name — amount ₪ — correct or not
+Check required deductions:
+1. מס הכנסה (income tax) — % matches income level?
+2. ביטוח לאומי עובד — ~3.5% below threshold, ~12% above
+3. מס בריאות — ~3.1% below threshold, ~5% above
+4. פנסיה — employee ~6%, employer ~6.5%+
+5. קרן השתלמות — if applicable
+6. ביטוח מנהלים — if applicable
+
+⚠️ CONCLUSIONS
+✅ What is correct
+⚠️ What raises questions
+❌ What is wrong or missing
+
+💡 TIPS FOR EMPLOYEE
+What to check with employer, what to pay attention to.
+
+If document is unclear — describe what you could read. If not a payslip — say so.
+Do NOT write "everything is fine" without actually analyzing the numbers.`,
+
+  he: `אתה רואה חשבון ישראלי מנוסה ומומחה לדיני עבודה.
+לפניך תלוש שכר ישראלי.
+
+חובה: קרא את כל השורות והמספרים. אל תדלג על כלום.
+
+הכן דוח מפורט:
+
+📋 מידע כללי
+- מעסיק, שם עובד (אם מופיע), תקופה, תפקיד
+- שכר ברוטו: ₪___
+- שכר נטו: ₪___
+
+💰 כל ההכנסות (זכויות)
+כל שורה: שם — סכום ₪
+בדוק:
+- האם השכר עומד בשכר מינימום (₪35.40/שעה, ₪6,443.85/חודש מאפריל 2026)?
+- שעות נוספות: 2 שעות ראשונות ×125%, השאר ×150% — נכון?
+- כל התוספות הנדרשות קיימות?
+
+📉 כל הניכויים
+כל שורה: שם — סכום ₪ — נכון/לא
+בדוק ניכויים חובה:
+1. מס הכנסה — האחוז תואם לרמת ההכנסה?
+2. ביטוח לאומי עובד — ~3.5% עד תקרה, ~12% מעל
+3. מס בריאות — ~3.1% עד תקרה, ~5% מעל
+4. פנסיה — עובד ~6%, מעסיק ~6.5%+
+5. קרן השתלמות — אם רלוונטי
+6. ביטוח מנהלים — אם רלוונטי
+
+⚠️ מסקנות
+✅ מה נכון
+⚠️ מה מעורר שאלות
+❌ מה שגוי או חסר
+
+💡 המלצות לעובד
+מה לבדוק מול המעסיק, למה לשים לב.
+
+אם המסמך אינו ברור — תאר מה קראת. אם זה לא תלוש — אמור ישירות.
+אל תכתוב "הכל בסדר" ללא ניתוח מספרים אמיתי.`
+};
+
+// ============================================================
+// ANALYZE — через Cloudflare Worker → Gemini
 // ============================================================
 async function analyze(lang) {
   const file = state[lang];
   if (!file) return;
 
-  // UI: show loading
   document.getElementById('upload-area-' + lang).style.display = 'none';
   document.getElementById('loading-' + lang).classList.add('show');
   document.getElementById('result-' + lang).classList.remove('show');
   hideError(lang);
 
+  const stepEl = document.getElementById('step-' + lang);
+  const step = (msg) => { if (stepEl) stepEl.textContent = msg; };
+
   try {
-    // Convert file to base64
-    const base64 = await fileToBase64(file);
-    const mediaType = getMediaType(file);
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    let base64, mediaType;
 
-    // Build prompt based on language
-    const prompts = {
-      ru: `Ты эксперт по израильскому трудовому праву и расчёту зарплат. 
-Проанализируй этот тлуш (расчётный листок) и дай подробный отчёт на РУССКОМ языке.
+    if (isPdf) {
+      step({ ru:'Конвертация PDF в изображение...', en:'Converting PDF to image...', he:'ממיר PDF לתמונה...' }[lang]);
+      if (typeof pdfjsLib === 'undefined') throw new Error('PDF.js не загружен. Попробуйте обновить страницу.');
+      base64 = await pdfToBase64(file);
+      mediaType = 'image/jpeg';
+    } else {
+      step({ ru:'Загрузка изображения...', en:'Loading image...', he:'טוען תמונה...' }[lang]);
+      base64 = await new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result.split(',')[1]);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+      });
+      mediaType = file.type === 'image/png' ? 'image/png' :
+                  file.type === 'image/webp' ? 'image/webp' : 'image/jpeg';
+    }
 
-Структура ответа:
-📋 ОБЩАЯ ИНФОРМАЦИЯ
-- Работодатель, период, должность (если видно)
-- Брутто зарплата, нетто зарплата
+    step({ ru:'Отправка в Gemini AI...', en:'Sending to Gemini AI...', he:'שולח ל-Gemini AI...' }[lang]);
 
-💰 НАЧИСЛЕНИЯ
-- Перечисли все начисления с суммами
-- Проверь правильность расчёта сверхурочных (125%/150%)
-- Проверь соответствие минимальной зарплате (₪35.40/час с апреля 2026)
-
-📉 УДЕРЖАНИЯ
-- Перечисли все удержания (мас, биту"х леуми, купат холим)
-- Проверь правильность расчёта
-
-⚠️ ВЫВОДЫ И ПРЕДУПРЕЖДЕНИЯ
-- Что посчитано правильно ✅
-- Что вызывает вопросы ⚠️
-- Что посчитано неправильно ❌
-
-💡 СОВЕТЫ
-- Что нужно знать работнику
-
-Если документ плохого качества или не является тлушем — скажи об этом.`,
-
-      en: `You are an expert in Israeli labor law and payroll calculations.
-Analyze this payslip (תלוש שכר) and provide a detailed report in ENGLISH.
-
-Structure:
-📋 GENERAL INFORMATION
-- Employer, period, position (if visible)
-- Gross salary, net salary
-
-💰 EARNINGS
-- List all earnings with amounts
-- Check overtime calculations (125%/150%)
-- Check minimum wage compliance (₪35.40/hour from April 2026)
-
-📉 DEDUCTIONS
-- List all deductions (income tax, Bituach Leumi, Kupat Holim)
-- Verify calculations
-
-⚠️ CONCLUSIONS
-- What's calculated correctly ✅
-- What raises questions ⚠️
-- What's calculated incorrectly ❌
-
-💡 TIPS
-- What the employee should know
-
-If the document is poor quality or not a payslip, say so.`,
-
-      he: `אתה מומחה בדיני עבודה ישראליים וחישובי שכר.
-נתח את תלוש השכר הזה ותן דוח מפורט בעברית.
-
-מבנה:
-📋 מידע כללי
-- מעסיק, תקופה, תפקיד (אם מופיע)
-- שכר ברוטו, שכר נטו
-
-💰 הכנסות
-- רשום את כל ההכנסות עם הסכומים
-- בדוק חישובי שעות נוספות (125%/150%)
-- בדוק עמידה בשכר מינימום (₪35.40/שעה מאפריל 2026)
-
-📉 ניכויים
-- רשום את כל הניכויים (מס הכנסה, ביטוח לאומי, קופת חולים)
-- בדוק את הנכונות
-
-⚠️ מסקנות
-- מה חושב נכון ✅
-- מה מעורר שאלות ⚠️
-- מה חושב שגוי ❌
-
-💡 טיפים
-- מה העובד צריך לדעת
-
-אם המסמך באיכות ירודה או אינו תלוש שכר, ציין זאת.`
-    };
-
-    // Call via Cloudflare Worker (Gemini)
-    const response = await fetch('https://tlush-api.artur32-1985.workers.dev', {
+    const response = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         image_base64: base64,
         media_type: mediaType,
-        prompt: prompts[lang]
+        prompt: PROMPTS[lang]
       })
     });
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      throw new Error(err.error || 'API error ' + response.status);
+      throw new Error(err.error || 'Worker error ' + response.status);
     }
 
     const data = await response.json();
-    const text = data.result || '';
+    const text = (data.result || '').trim();
 
-    if (!text) {
-      const langs = {
-        ru: 'AI не смог прочитать документ. Убедитесь что фото чёткое и хорошо освещено.',
-        en: 'AI could not read the document. Make sure the photo is clear and well-lit.',
-        he: 'הבינה המלאכותית לא הצליחה לקרוא את המסמך. ודא שהתמונה ברורה ומוארת היטב.'
-      };
-      throw new Error(langs[lang]);
-    }
+    if (!text) throw new Error(
+      { ru:'AI не смог прочитать документ. Убедитесь что изображение чёткое.',
+        en:'AI could not read the document. Make sure the image is clear.',
+        he:'הבינה המלאכותית לא הצליחה לקרוא. ודא שהתמונה ברורה.' }[lang]
+    );
 
-    // Show result
     document.getElementById('loading-' + lang).classList.remove('show');
     document.getElementById('result-' + lang).classList.add('show');
     document.getElementById('result-text-' + lang).innerHTML = formatResult(text);
@@ -864,70 +554,34 @@ If the document is poor quality or not a payslip, say so.`,
   } catch (err) {
     document.getElementById('loading-' + lang).classList.remove('show');
     document.getElementById('upload-area-' + lang).style.display = 'block';
-
-    const msgs = {
-      ru: `Ошибка анализа: ${err.message}. Попробуйте ещё раз.`,
-      en: `Analysis error: ${err.message}. Please try again.`,
-      he: `שגיאת ניתוח: ${err.message}. אנא נסה שנית.`
-    };
-    showError(lang, msgs[lang]);
+    showError(lang, { ru:`Ошибка: ${err.message}`, en:`Error: ${err.message}`, he:`שגיאה: ${err.message}` }[lang]);
   }
 }
 
 // ============================================================
-// HELPERS
+// FORMAT RESULT
 // ============================================================
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-function getMediaType(file) {
-  if (file.type === 'application/pdf') return 'application/pdf';
-  if (file.type === 'image/png') return 'image/png';
-  if (file.type === 'image/webp') return 'image/webp';
-  return 'image/jpeg';
-}
-
 function formatResult(text) {
   return text
-    // Escape HTML
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    // Headers ### -> h3
-    .replace(/^###\s*(.+)$/gm, '<h3>$1</h3>')
-    .replace(/^##\s*(.+)$/gm, '<h3>$1</h3>')
-    .replace(/^#\s*(.+)$/gm, '<h3>$1</h3>')
-    // Bold **text** -> strong
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    // Italic *text* -> em
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    // Horizontal rule ---
-    .replace(/^---+$/gm, '<hr style="border-color:var(--border);margin:12px 0">')
-    // Emoji headers
-    .replace(/^(📋|💰|📉|⚠️|💡).+$/gm, '<h3>$&</h3>')
-    // Status icons
-    .replace(/✅/g, '<span class="status-ok">✅</span>')
-    .replace(/⚠️/g, '<span class="status-warn">⚠️</span>')
-    .replace(/❌/g, '<span class="status-err">❌</span>')
-    // Bullet points
-    .replace(/^[\*\-]\s+(.+)$/gm, '<div style="padding-left:16px;margin:2px 0">• $1</div>')
-    // Line breaks
-    .replace(/\n/g, '<br>');
+    .replace(/^###?\s*(.+)$/gm,'<h3>$1</h3>')
+    .replace(/^##?\s*(.+)$/gm,'<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^---+$/gm,'<hr style="border-color:var(--border);margin:12px 0">')
+    .replace(/^(📋|💰|📉|⚠️|💡).+$/gm,'<h3>$&</h3>')
+    .replace(/✅/g,'<span class="status-ok">✅</span>')
+    .replace(/⚠️/g,'<span class="status-warn">⚠️</span>')
+    .replace(/❌/g,'<span class="status-err">❌</span>')
+    .replace(/^[\*\-]\s+(.+)$/gm,'<div style="padding-left:16px;margin:2px 0">• $1</div>')
+    .replace(/\n/g,'<br>');
 }
 
 function showError(lang, msg) {
   const el = document.getElementById('error-' + lang);
-  el.textContent = msg;
-  el.classList.add('show');
+  el.textContent = msg; el.classList.add('show');
 }
-
-function hideError(lang) {
-  document.getElementById('error-' + lang).classList.remove('show');
-}
+function hideError(lang) { document.getElementById('error-' + lang).classList.remove('show'); }
 
 function resetAnalysis(lang) {
   state[lang] = null;
