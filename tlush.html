@@ -486,7 +486,7 @@ Do NOT write "everything is fine" without actually analyzing the numbers.`,
 };
 
 // ============================================================
-// ANALYZE — через Cloudflare Worker → Gemini
+// ANALYZE — через Cloudflare Worker → Claude
 // ============================================================
 async function analyze(lang) {
   const file = state[lang];
@@ -521,15 +521,14 @@ async function analyze(lang) {
                   file.type === 'image/webp' ? 'image/webp' : 'image/jpeg';
     }
 
-    step({ ru:'Отправка в Gemini AI...', en:'Sending to Gemini AI...', he:'שולח ל-Gemini AI...' }[lang]);
+    step({ ru:'Отправка в Claude AI...', en:'Sending to Claude AI...', he:'שולח ל-Claude AI...' }[lang]);
 
     const response = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        image_base64: base64,
-        media_type: mediaType,
-        prompt: PROMPTS[lang]
+        imageBase64: base64,
+        mimeType: mediaType
       })
     });
 
