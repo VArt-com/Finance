@@ -176,7 +176,7 @@ footer .links { margin-top: 10px; display: flex; gap: 16px; justify-content: cen
 
   <div class="error-msg" id="errorMsg"></div>
 
-  <button class="btn-translate" id="translateBtn" onclick="translate()" disabled>
+  <button class="btn-translate" id="translateBtn" onclick="doTranslate()" disabled>
     <div class="spinner" id="spinner"></div>
     <span id="btnText">🌐 Перевести</span>
   </button>
@@ -296,7 +296,7 @@ function onInput() {
 }
 
 function onKeyDown(e) {
-  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) translate();
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) doTranslate();
 }
 
 function clearInput() {
@@ -328,7 +328,7 @@ function setError(msg) {
   document.getElementById('errorMsg').textContent = msg;
 }
 
-async function translate() {
+async function doTranslate() {
   const text = document.getElementById('inputText').value.trim();
   if (!text) return;
 
