@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4502841289225255" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap');
 :root {
@@ -22,15 +23,53 @@
 body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
 header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 99; flex-wrap: wrap; gap: 10px; }
 header a.logo { font-weight: 800; font-size: 1.15rem; color: var(--accent); text-decoration: none; }
+.header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .kofi-btn { background: #ff5e5b; color: #fff; border: none; border-radius: 20px; padding: 6px 14px; font-size: .78rem; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 6px; font-weight: 600; transition: all .2s; }
 .kofi-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,94,91,.4); }
+.user-badge { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: .78rem; color: var(--accent2); display: flex; align-items: center; gap: 6px; }
+.plan-tag { background: var(--accent); color: #fff; border-radius: 10px; padding: 2px 7px; font-size: .68rem; font-weight: 700; text-transform: uppercase; }
+.plan-tag.free { background: var(--muted); }
+.plan-tag.basic { background: #0891b2; }
+.plan-tag.pro { background: var(--accent); }
+.plan-tag.business { background: #d97706; }
+.btn-logout { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 20px; padding: 5px 12px; font-size: .75rem; cursor: pointer; font-family: inherit; transition: all .2s; }
+.btn-logout:hover { border-color: var(--red); color: var(--red); }
 main { max-width: 900px; margin: 0 auto; padding: 32px 16px 80px; }
-.hero { text-align: center; padding: 32px 20px 28px; }
-.hero-icon { font-size: 3rem; display: block; margin-bottom: 12px; animation: float 3s ease-in-out infinite; }
+
+/* ── Auth экран ── */
+.auth-screen { display: none; text-align: center; padding: 60px 20px; }
+.auth-screen.show { display: block; }
+.auth-icon { font-size: 3.5rem; display: block; margin-bottom: 16px; animation: float 3s ease-in-out infinite; }
 @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.auth-screen h2 { font-size: 1.6rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+.auth-screen p { color: var(--muted); font-size: .9rem; margin-bottom: 32px; line-height: 1.7; }
+.btn-google { display: inline-flex; align-items: center; gap: 12px; background: #fff; color: #333; border: none; border-radius: 12px; padding: 14px 28px; font-size: 1rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .2s; box-shadow: 0 4px 16px rgba(0,0,0,.3); }
+.btn-google:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+.btn-google svg { width: 22px; height: 22px; flex-shrink: 0; }
+.auth-note { color: var(--muted); font-size: .78rem; margin-top: 16px; }
+
+/* ── Основной контент ── */
+.app-screen { display: none; }
+.app-screen.show { display: block; }
+.hero { text-align: center; padding: 28px 20px 24px; }
+.hero-icon { font-size: 3rem; display: block; margin-bottom: 12px; animation: float 3s ease-in-out infinite; }
 .hero h1 { font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
 .hero h1 span { color: var(--accent2); }
 .hero p { color: var(--muted); font-size: .9rem; }
+
+/* ── Переключатель режимов ── */
+.mode-tabs { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 4px; margin-bottom: 16px; }
+.mode-tab { flex: 1; background: none; border: none; color: var(--muted); padding: 8px 12px; border-radius: 7px; font-size: .85rem; font-family: inherit; cursor: pointer; font-weight: 600; transition: all .2s; }
+.mode-tab.active { background: var(--accent); color: #fff; }
+
+/* ── Счётчик ── */
+.counter-bar { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; font-size: .83rem; flex-wrap: wrap; gap: 8px; }
+.counter-bar .count { color: var(--green); font-weight: 700; }
+.counter-bar .count.low { color: var(--yellow); }
+.counter-bar .count.zero { color: var(--red); }
+.upgrade-link { color: var(--accent2); font-size: .78rem; cursor: pointer; text-decoration: underline; }
+
+/* ── Языки ── */
 .lang-selector { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 20px 0; }
 .lang-pill { background: var(--card); border: 2px solid var(--border); color: var(--muted); padding: 8px 18px; border-radius: 24px; font-size: .85rem; cursor: pointer; transition: all .2s; font-family: inherit; font-weight: 600; }
 .lang-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
@@ -51,7 +90,6 @@ textarea[dir="rtl"] { text-align: right; }
 .char-count { padding: 6px 14px; color: var(--muted); font-size: .75rem; text-align: right; border-top: 1px solid var(--border); }
 .swap-btn { background: var(--card); border: 1px solid var(--border); color: var(--accent2); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: all .2s; margin-top: 44px; flex-shrink: 0; }
 .swap-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); transform: rotate(180deg); }
-.result-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 .result-text { padding: 14px; min-height: 140px; font-size: .95rem; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
 .result-text.rtl { direction: rtl; text-align: right; }
 .result-text.placeholder { color: var(--muted); font-style: italic; }
@@ -60,10 +98,32 @@ textarea[dir="rtl"] { text-align: right; }
 .btn-translate:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
 .spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; display: none; }
 @keyframes spin { to{transform:rotate(360deg)} }
-.counter-bar { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; font-size: .83rem; }
-.counter-bar .count { color: var(--green); font-weight: 700; }
-.counter-bar .count.low { color: var(--yellow); }
-.counter-bar .count.zero { color: var(--red); }
+.error-msg { color: var(--red); font-size: .83rem; text-align: center; margin: 8px 0; min-height: 1.2em; }
+
+/* ── Документы ── */
+.doc-section { display: none; }
+.doc-section.show { display: block; }
+.drop-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 40px 20px; text-align: center; cursor: pointer; transition: all .2s; margin-bottom: 16px; }
+.drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: rgba(108,99,255,.05); }
+.drop-zone-icon { font-size: 2.5rem; display: block; margin-bottom: 12px; }
+.drop-zone p { color: var(--muted); font-size: .88rem; }
+.drop-zone strong { color: var(--text); }
+.file-input { display: none; }
+.file-info { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; display: none; align-items: center; justify-content: space-between; }
+.file-info.show { display: flex; }
+.file-name { color: var(--accent2); font-size: .88rem; font-weight: 600; }
+.file-size { color: var(--muted); font-size: .78rem; }
+.btn-remove-file { background: none; border: none; color: var(--red); cursor: pointer; font-size: 1.1rem; }
+.doc-result { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; min-height: 120px; font-size: .9rem; line-height: 1.8; white-space: pre-wrap; display: none; }
+.doc-result.show { display: block; }
+.doc-actions { display: flex; gap: 8px; margin-top: 10px; }
+.btn-copy-doc { background: var(--card); border: 1px solid var(--border); color: var(--accent2); border-radius: 8px; padding: 8px 16px; font-size: .85rem; cursor: pointer; font-family: inherit; transition: all .2s; }
+.btn-copy-doc:hover { background: rgba(108,99,255,.15); }
+.doc-locked { background: rgba(108,99,255,.08); border: 1px solid rgba(108,99,255,.3); border-radius: var(--radius); padding: 24px; text-align: center; }
+.doc-locked h3 { color: var(--accent2); margin-bottom: 8px; }
+.doc-locked p { color: var(--muted); font-size: .88rem; }
+
+/* ── Лимит ── */
 .limit-box { display: none; background: rgba(108,99,255,.08); border: 1px solid rgba(108,99,255,.3); border-radius: var(--radius); padding: 24px; text-align: center; margin-bottom: 20px; }
 .limit-box.show { display: block; }
 .limit-box h3 { color: var(--accent2); margin-bottom: 12px; font-size: 1.1rem; }
@@ -74,14 +134,8 @@ textarea[dir="rtl"] { text-align: right; }
 .btn-kofi:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,94,91,.4); }
 .btn-wa { display: inline-flex; align-items: center; gap: 8px; background: #25D366; color: #fff; border: none; border-radius: 10px; padding: 12px 24px; font-size: .95rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: all .2s; margin: 6px; }
 .btn-wa:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,211,102,.4); }
-.unlock-box { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-.unlock-input { background: var(--bg2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 10px 14px; font-size: .9rem; font-family: inherit; outline: none; width: 180px; }
-.unlock-input:focus { border-color: var(--accent); }
-.btn-unlock { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 10px 18px; font-size: .9rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .2s; }
-.btn-unlock:hover { background: #5a52d5; }
-.unlocked-badge { background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.3); color: var(--green); border-radius: 8px; padding: 6px 14px; font-size: .8rem; font-weight: 700; display: none; }
-.unlocked-badge.show { display: inline-flex; align-items: center; gap: 6px; }
-.error-msg { color: var(--red); font-size: .83rem; text-align: center; margin: 8px 0; min-height: 1.2em; }
+
+/* ── История ── */
 .history { margin-top: 32px; }
 .history h3 { color: var(--accent2); font-size: .95rem; margin-bottom: 12px; }
 .history-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; cursor: pointer; transition: all .2s; }
@@ -100,111 +154,207 @@ footer .links { margin-top: 10px; display: flex; gap: 16px; justify-content: cen
 
 <header>
   <a class="logo" href="https://org-va.com/">🛠 VArt Tools</a>
-  <a class="kofi-btn" href="https://ko-fi.com/varthur" target="_blank">☕ Ko-fi</a>
+  <div class="header-right">
+    <div class="user-badge" id="userBadge" style="display:none">
+      <span id="userEmail"></span>
+      <span class="plan-tag" id="planTag">free</span>
+    </div>
+    <button class="btn-logout" id="btnLogout" style="display:none" onclick="logout()">Выйти</button>
+    <a class="kofi-btn" href="https://ko-fi.com/varthur" target="_blank">☕ Ko-fi</a>
+  </div>
 </header>
 
 <main>
-  <div class="hero">
-    <span class="hero-icon">🌐</span>
-    <h1>VArt <span>Переводчик</span></h1>
-    <p>Русский · English · עברית · العربية — текст и голос</p>
+
+  <!-- ══ Экран входа ══ -->
+  <div class="auth-screen" id="authScreen">
+    <span class="auth-icon">🌐</span>
+    <h2>VArt <span style="color:var(--accent2)">Переводчик</span></h2>
+    <p>Русский · English · עברית · العربية<br>
+    Текст и голос · Перевод документов<br><br>
+    Войдите чтобы получить <strong>10 бесплатных переводов</strong></p>
+    <button class="btn-google" onclick="loginGoogle()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Войти через Google
+    </button>
+    <p class="auth-note">Вход через Google — безопасно и без паролей</p>
   </div>
 
-  <!-- Счётчик -->
-  <div class="counter-bar" id="counterBar">
-    <span>Бесплатных переводов: <span class="count" id="countDisplay">10</span> из 10</span>
-    <span class="unlocked-badge" id="unlockedBadge">✅ Разблокировано</span>
-  </div>
+  <!-- ══ Основное приложение ══ -->
+  <div class="app-screen" id="appScreen">
 
-  <!-- Выбор языков -->
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
-    <div>
-      <div style="color:var(--muted);font-size:.75rem;margin-bottom:6px">Исходный язык</div>
-      <div class="lang-selector" id="fromSelector">
-        <button class="lang-pill active" data-lang="ru" onclick="setFrom('ru')">🇷🇺 РУС</button>
-        <button class="lang-pill" data-lang="en" onclick="setFrom('en')">🇬🇧 EN</button>
-        <button class="lang-pill" data-lang="he" onclick="setFrom('he')">🇮🇱 עב</button>
-        <button class="lang-pill" data-lang="ar" onclick="setFrom('ar')">🇸🇦 عر</button>
-      </div>
+    <div class="hero">
+      <span class="hero-icon">🌐</span>
+      <h1>VArt <span>Переводчик</span></h1>
+      <p>Русский · English · עברית · العربية — текст, голос и документы</p>
     </div>
-    <button class="swap-btn" onclick="swapLangs()" title="Поменять языки">⇄</button>
-    <div>
-      <div style="color:var(--muted);font-size:.75rem;margin-bottom:6px">Перевести на</div>
-      <div class="lang-selector" id="toSelector">
-        <button class="lang-pill" data-lang="ru" onclick="setTo('ru')">🇷🇺 РУС</button>
-        <button class="lang-pill active" data-lang="en" onclick="setTo('en')">🇬🇧 EN</button>
-        <button class="lang-pill" data-lang="he" onclick="setTo('he')">🇮🇱 עב</button>
-        <button class="lang-pill active" data-lang="ar" onclick="setTo('ar')">🇸🇦 عر</button>
-      </div>
-    </div>
-  </div>
 
-  <!-- Поля ввода/вывода -->
-  <div class="translator-box">
-    <!-- Ввод -->
-    <div class="lang-box">
-      <div class="lang-box-header">
-        <span id="fromLangLabel">🇷🇺 Русский</span>
-        <div class="lang-box-actions">
-          <button class="icon-btn" id="micBtn" onclick="toggleVoice()" title="Голосовой ввод">🎤</button>
-          <button class="icon-btn" onclick="clearInput()" title="Очистить">✕</button>
+    <!-- Счётчик -->
+    <div class="counter-bar" id="counterBar">
+      <span>Переводов: <span class="count" id="countDisplay">—</span></span>
+      <span class="upgrade-link" onclick="showLimitBox()">Upgrade ↑</span>
+    </div>
+
+    <!-- Переключатель режимов -->
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="tabText" onclick="setMode('text')">✏️ Текст</button>
+      <button class="mode-tab" id="tabDoc" onclick="setMode('doc')">📄 Документ</button>
+    </div>
+
+    <!-- ── Режим: Текст ── -->
+    <div id="textSection">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+        <div>
+          <div style="color:var(--muted);font-size:.75rem;margin-bottom:6px">Исходный язык</div>
+          <div class="lang-selector" id="fromSelector">
+            <button class="lang-pill active" data-lang="ru" onclick="setFrom('ru')">🇷🇺 РУС</button>
+            <button class="lang-pill" data-lang="en" onclick="setFrom('en')">🇬🇧 EN</button>
+            <button class="lang-pill" data-lang="he" onclick="setFrom('he')">🇮🇱 עב</button>
+            <button class="lang-pill" data-lang="ar" onclick="setFrom('ar')">🇸🇦 عر</button>
+          </div>
+        </div>
+        <button class="swap-btn" onclick="swapLangs()" title="Поменять языки">⇄</button>
+        <div>
+          <div style="color:var(--muted);font-size:.75rem;margin-bottom:6px">Перевести на</div>
+          <div class="lang-selector" id="toSelector">
+            <button class="lang-pill" data-lang="ru" onclick="setTo('ru')">🇷🇺 РУС</button>
+            <button class="lang-pill active" data-lang="en" onclick="setTo('en')">🇬🇧 EN</button>
+            <button class="lang-pill" data-lang="he" onclick="setTo('he')">🇮🇱 עב</button>
+            <button class="lang-pill" data-lang="ar" onclick="setTo('ar')">🇸🇦 عر</button>
+          </div>
         </div>
       </div>
-      <textarea id="inputText"
-        placeholder="Введите текст для перевода..."
-        oninput="onInput()"
-        onkeydown="onKeyDown(event)"
-        maxlength="3000"></textarea>
-      <div class="char-count"><span id="charCount">0</span>/3000</div>
-    </div>
 
-    <button class="swap-btn" onclick="swapLangs()" title="Поменять языки">⇄</button>
+      <div class="translator-box">
+        <div class="lang-box">
+          <div class="lang-box-header">
+            <span id="fromLangLabel">🇷🇺 Русский</span>
+            <div class="lang-box-actions">
+              <button class="icon-btn" id="micBtn" onclick="toggleVoice()" title="Голосовой ввод">🎤</button>
+              <button class="icon-btn" onclick="clearInput()" title="Очистить">✕</button>
+            </div>
+          </div>
+          <textarea id="inputText" placeholder="Введите текст для перевода..."
+            oninput="onInput()" onkeydown="onKeyDown(event)" maxlength="3000"></textarea>
+          <div class="char-count"><span id="charCount">0</span>/3000</div>
+        </div>
 
-    <!-- Вывод -->
-    <div class="lang-box">
-      <div class="lang-box-header">
-        <span id="toLangLabel">🇬🇧 English</span>
-        <div class="lang-box-actions">
-          <button class="icon-btn" onclick="speakResult()" title="Озвучить перевод">🔊</button>
-          <button class="icon-btn" onclick="copyResult()" title="Скопировать">📋</button>
+        <button class="swap-btn" onclick="swapLangs()">⇄</button>
+
+        <div class="lang-box">
+          <div class="lang-box-header">
+            <span id="toLangLabel">🇬🇧 English</span>
+            <div class="lang-box-actions">
+              <button class="icon-btn" onclick="speakResult()" title="Озвучить">🔊</button>
+              <button class="icon-btn" onclick="copyResult()" title="Копировать">📋</button>
+            </div>
+          </div>
+          <div class="result-text placeholder" id="resultText">Перевод появится здесь...</div>
+          <div class="char-count" id="resultCount"></div>
         </div>
       </div>
-      <div class="result-text placeholder" id="resultText">Перевод появится здесь...</div>
-      <div class="char-count" id="resultCount"></div>
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <button class="btn-translate" id="translateBtn" onclick="doTranslate()" disabled>
+        <div class="spinner" id="spinner"></div>
+        <span id="btnText">🌐 Перевести</span>
+      </button>
     </div>
-  </div>
 
-  <div class="error-msg" id="errorMsg"></div>
+    <!-- ── Режим: Документ ── -->
+    <div class="doc-section" id="docSection">
 
-  <button class="btn-translate" id="translateBtn" onclick="doTranslate()" disabled>
-    <div class="spinner" id="spinner"></div>
-    <span id="btnText">🌐 Перевести</span>
-  </button>
+      <!-- Заблокировано для free -->
+      <div id="docLocked" class="doc-locked" style="display:none">
+        <h3>📄 Перевод документов</h3>
+        <p>Доступно в платных тарифах — Базовый (₪19/мес) и выше.<br>
+        После оплаты напишите нам в WhatsApp для активации.</p>
+        <div style="margin-top:16px">
+          <a class="btn-kofi" href="https://ko-fi.com/varthur" target="_blank">☕ Оплатить</a>
+          <a class="btn-wa" href="https://wa.me/972533213698?text=Хочу активировать перевод документов" target="_blank">💬 WhatsApp</a>
+        </div>
+      </div>
 
-  <!-- Лимит -->
-  <div class="limit-box" id="limitBox">
-    <h3>🔒 Бесплатный лимит исчерпан</h3>
-    <p>Вы использовали 10 бесплатных переводов сегодня.<br>
-    Для продолжения оформите подписку — ₪15 в месяц.</p>
-    <div class="price">₪15 <span>/ месяц</span></div>
-    <p style="font-size:.82rem;color:var(--muted)">После оплаты напишите нам в WhatsApp — получите код разблокировки.</p>
-    <div style="margin:16px 0">
-      <a class="btn-kofi" href="https://ko-fi.com/varthur" target="_blank">☕ Оплатить через Ko-fi</a>
-      <a class="btn-wa" href="https://wa.me/972533213698?text=Оплатил подписку на переводчик, прошу код" target="_blank">💬 WhatsApp</a>
+      <!-- Доступно для платных -->
+      <div id="docUnlocked" style="display:none">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+          <div>
+            <div style="color:var(--muted);font-size:.75rem;margin-bottom:6px">С языка</div>
+            <div class="lang-selector" id="fromSelectorDoc">
+              <button class="lang-pill active" data-lang="ru" onclick="setFromDoc('ru')">🇷🇺 РУС</button>
+              <button class="lang-pill" data-lang="en" onclick="setFromDoc('en')">🇬🇧 EN</button>
+              <button class="lang-pill" data-lang="he" onclick="setFromDoc('he')">🇮🇱 עב</button>
+              <button class="lang-pill" data-lang="ar" onclick="setFromDoc('ar')">🇸🇦 عر</button>
+            </div>
+          </div>
+          <div style="margin-top:20px;color:var(--accent2);font-size:1.2rem">→</div>
+          <div>
+            <div style="color:var(--muted);font-size:.75rem;margin-bottom:6px">На язык</div>
+            <div class="lang-selector" id="toSelectorDoc">
+              <button class="lang-pill" data-lang="ru" onclick="setToDoc('ru')">🇷🇺 РУС</button>
+              <button class="lang-pill active" data-lang="en" onclick="setToDoc('en')">🇬🇧 EN</button>
+              <button class="lang-pill" data-lang="he" onclick="setToDoc('he')">🇮🇱 עב</button>
+              <button class="lang-pill" data-lang="ar" onclick="setToDoc('ar')">🇸🇦 عר</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()"
+          ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+          <span class="drop-zone-icon">📎</span>
+          <p><strong>Нажмите или перетащите файл</strong></p>
+          <p style="margin-top:6px">PDF, TXT · Макс. 10 МБ</p>
+        </div>
+        <input type="file" class="file-input" id="fileInput" accept=".pdf,.txt" onchange="onFileSelect(event)">
+
+        <div class="file-info" id="fileInfo">
+          <div>
+            <div class="file-name" id="fileName">—</div>
+            <div class="file-size" id="fileSize">—</div>
+          </div>
+          <button class="btn-remove-file" onclick="removeFile()">✕</button>
+        </div>
+
+        <div class="error-msg" id="docErrorMsg"></div>
+
+        <button class="btn-translate" id="docTranslateBtn" onclick="doTranslateDoc()" disabled>
+          <div class="spinner" id="docSpinner"></div>
+          <span id="docBtnText">📄 Перевести документ</span>
+        </button>
+
+        <div class="doc-result" id="docResult"></div>
+        <div class="doc-actions" id="docActions" style="display:none">
+          <button class="btn-copy-doc" onclick="copyDoc()">📋 Копировать</button>
+        </div>
+      </div>
     </div>
-    <div class="unlock-box">
-      <input class="unlock-input" id="unlockInput" type="text" placeholder="Введите код..." maxlength="20">
-      <button class="btn-unlock" onclick="applyCode()">Активировать</button>
+
+    <!-- Лимит исчерпан -->
+    <div class="limit-box" id="limitBox">
+      <h3>🔒 Лимит переводов исчерпан</h3>
+      <p>Вы использовали все бесплатные переводы.<br>
+      Оформите подписку для продолжения.</p>
+      <div class="price">₪19 <span>/ месяц — Базовый</span></div>
+      <p style="font-size:.82rem;color:var(--muted)">После оплаты напишите в WhatsApp — активируем аккаунт.</p>
+      <div style="margin:16px 0">
+        <a class="btn-kofi" href="https://ko-fi.com/varthur" target="_blank">☕ Оплатить</a>
+        <a class="btn-wa" href="https://wa.me/972533213698?text=Оплатил подписку на переводчик" target="_blank">💬 WhatsApp</a>
+      </div>
     </div>
-    <div class="error-msg" id="codeError"></div>
-  </div>
 
-  <!-- История -->
-  <div class="history" id="historySection" style="display:none">
-    <h3>📋 История переводов</h3>
-    <div id="historyList"></div>
-  </div>
+    <!-- История -->
+    <div class="history" id="historySection" style="display:none">
+      <h3>📋 История переводов</h3>
+      <div id="historyList"></div>
+    </div>
 
+  </div><!-- /app-screen -->
 </main>
 
 <footer>
@@ -227,33 +377,132 @@ footer .links { margin-top: 10px; display: flex; gap: 16px; justify-content: cen
 
 <script>
 const WORKER_URL = 'https://translator-api.artur32-1985.workers.dev';
-const FREE_LIMIT = 10;
+const SUPABASE_URL = 'https://bnunjxrqtaywebcfhuvp.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_swYhe7YB9SmsGvBbd9fsQw_tD_uQFn5';
+
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const LANG_NAMES = {
   ru: { label: '🇷🇺 Русский', dir: 'ltr', placeholder: 'Введите текст для перевода...', voice: 'ru-RU' },
   en: { label: '🇬🇧 English', dir: 'ltr', placeholder: 'Enter text to translate...', voice: 'en-US' },
   he: { label: '🇮🇱 עברית', dir: 'rtl', placeholder: 'הכנס טקסט לתרגום...', voice: 'he-IL' },
-  ar: { label: '🇸🇦 العربية', dir: 'rtl', placeholder: 'أدخل النص للترجمة...', voice: 'ar-SA' }
+  ar: { label: '🇸🇦 العربية', dir: 'rtl', placeholder: 'أدخل النص للترجمة...', voice: 'ar-SA' },
 };
 
-let fromLang = 'ru';
-let toLang = 'en';
-let isRecording = false;
-let recognition = null;
+let fromLang = 'ru', toLang = 'en';
+let fromLangDoc = 'ru', toLangDoc = 'en';
+let isRecording = false, recognition = null;
 let history = JSON.parse(localStorage.getItem('vart-trans-history') || '[]');
-let remaining = parseInt(localStorage.getItem('vart-remaining') || String(FREE_LIMIT));
-let isUnlocked = localStorage.getItem('vart-unlocked') === 'true';
+let currentSession = null;
+let currentProfile = null;
+let selectedFile = null;
+let currentMode = 'text';
 
-// Инициализация
-function init() {
-  updateCounterBar();
+// ── Auth ──────────────────────────────────────
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    await onLogin(session);
+  } else {
+    showAuth();
+  }
+
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) await onLogin(session);
+    if (event === 'SIGNED_OUT') showAuth();
+  });
+}
+
+async function loginGoogle() {
+  await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href },
+  });
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  showAuth();
+}
+
+function showAuth() {
+  document.getElementById('authScreen').classList.add('show');
+  document.getElementById('appScreen').classList.remove('show');
+  document.getElementById('userBadge').style.display = 'none';
+  document.getElementById('btnLogout').style.display = 'none';
+  currentSession = null;
+  currentProfile = null;
+}
+
+async function onLogin(session) {
+  currentSession = session;
+  document.getElementById('authScreen').classList.remove('show');
+  document.getElementById('appScreen').classList.add('show');
+  document.getElementById('btnLogout').style.display = 'inline-block';
+
+  const email = session.user.email || '';
+  const shortEmail = email.length > 18 ? email.slice(0, 15) + '...' : email;
+  document.getElementById('userEmail').textContent = shortEmail;
+  document.getElementById('userBadge').style.display = 'flex';
+
+  await loadProfile();
   renderHistory();
-  // Восстановить выбор языков
+
   const savedFrom = localStorage.getItem('vart-from') || 'ru';
   const savedTo = localStorage.getItem('vart-to') || 'en';
   setFrom(savedFrom, false);
   setTo(savedTo, false);
 }
+
+async function loadProfile() {
+  if (!currentSession) return;
+  const { data } = await sb.from('profiles').select('*').eq('id', currentSession.user.id).single();
+  currentProfile = data;
+  if (data) {
+    updateCounterBar(data);
+    updateDocSection(data);
+  }
+}
+
+function updateCounterBar(profile) {
+  if (!profile) return;
+  const plan = profile.plan || 'free';
+  const limits = { free: 10, basic: 200, pro: 500, business: 9999 };
+  const limit = limits[plan] || 10;
+  const used = profile.translations_used || 0;
+  const remaining = Math.max(0, limit - used);
+
+  const display = document.getElementById('countDisplay');
+  display.textContent = `${remaining} из ${limit}`;
+  display.className = 'count' + (remaining === 0 ? ' zero' : remaining <= 3 ? ' low' : '');
+
+  const planTag = document.getElementById('planTag');
+  planTag.textContent = plan;
+  planTag.className = `plan-tag ${plan}`;
+}
+
+function updateDocSection(profile) {
+  const plan = profile?.plan || 'free';
+  const canDocs = plan !== 'free';
+  document.getElementById('docLocked').style.display = canDocs ? 'none' : 'block';
+  document.getElementById('docUnlocked').style.display = canDocs ? 'block' : 'none';
+}
+
+// ── Режимы ────────────────────────────────────
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('tabText').classList.toggle('active', mode === 'text');
+  document.getElementById('tabDoc').classList.toggle('active', mode === 'doc');
+  document.getElementById('textSection').style.display = mode === 'text' ? 'block' : 'none';
+  document.getElementById('docSection').style.display = mode === 'doc' ? 'block' : 'none';
+  document.getElementById('limitBox').classList.remove('show');
+  setError('');
+}
+
+// ── Языки ─────────────────────────────────────
 
 function setFrom(lang, save = true) {
   fromLang = lang;
@@ -275,6 +524,16 @@ function setTo(lang, save = true) {
   if (save) localStorage.setItem('vart-to', lang);
 }
 
+function setFromDoc(lang) {
+  fromLangDoc = lang;
+  document.querySelectorAll('#fromSelectorDoc .lang-pill').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+}
+
+function setToDoc(lang) {
+  toLangDoc = lang;
+  document.querySelectorAll('#toSelectorDoc .lang-pill').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+}
+
 function swapLangs() {
   const tmp = fromLang;
   setFrom(toLang);
@@ -283,7 +542,7 @@ function swapLangs() {
   const resultEl = document.getElementById('resultText');
   if (!resultEl.classList.contains('placeholder')) {
     inputEl.value = resultEl.textContent;
-    resultEl.textContent = LANG_NAMES[toLang].placeholder || 'Translation will appear here...';
+    resultEl.textContent = 'Перевод появится здесь...';
     resultEl.classList.add('placeholder');
     onInput();
   }
@@ -303,85 +562,53 @@ function clearInput() {
   document.getElementById('inputText').value = '';
   document.getElementById('charCount').textContent = '0';
   document.getElementById('translateBtn').disabled = true;
-  document.getElementById('resultText').textContent = LANG_NAMES[toLang]?.placeholder || 'Translation...';
+  document.getElementById('resultText').textContent = 'Перевод появится здесь...';
   document.getElementById('resultText').className = 'result-text placeholder';
   document.getElementById('resultCount').textContent = '';
   setError('');
 }
 
-function updateCounterBar() {
-  const display = document.getElementById('countDisplay');
-  const badge = document.getElementById('unlockedBadge');
-  const bar = document.getElementById('counterBar');
-  if (isUnlocked) {
-    bar.style.display = 'none';
-    badge.classList.add('show');
-  } else {
-    bar.style.display = 'flex';
-    badge.classList.remove('show');
-    display.textContent = remaining;
-    display.className = 'count' + (remaining <= 0 ? ' zero' : remaining <= 3 ? ' low' : '');
-  }
-}
+function setError(msg) { document.getElementById('errorMsg').textContent = msg; }
+function showLimitBox() { document.getElementById('limitBox').classList.add('show'); }
 
-function setError(msg) {
-  document.getElementById('errorMsg').textContent = msg;
-}
+// ── Перевод текста ────────────────────────────
 
 async function doTranslate() {
   const text = document.getElementById('inputText').value.trim();
-  if (!text) return;
-
-  if (!isUnlocked && remaining <= 0) {
-    document.getElementById('limitBox').classList.add('show');
-    return;
-  }
+  if (!text || !currentSession) return;
 
   setError('');
   document.getElementById('limitBox').classList.remove('show');
   document.getElementById('translateBtn').disabled = true;
   document.getElementById('spinner').style.display = 'block';
-  document.getElementById('btnText').textContent = 'Выполняется перевод...';
+  document.getElementById('btnText').textContent = 'Переводим...';
 
   try {
     const res = await fetch(WORKER_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, fromLang, toLang })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${currentSession.access_token}`,
+      },
+      body: JSON.stringify({ text, fromLang, toLang }),
     });
 
     const data = await res.json();
 
+    if (res.status === 401) { setError('Сессия истекла — войдите снова'); showAuth(); return; }
     if (res.status === 429 || data.error === 'limit_reached') {
-      remaining = 0;
-      localStorage.setItem('vart-remaining', '0');
-      updateCounterBar();
-      document.getElementById('limitBox').classList.add('show');
+      showLimitBox();
+      await loadProfile();
       return;
     }
-
-    if (!res.ok || data.error) {
-      throw new Error(data.error || 'Ошибка перевода');
-    }
+    if (!res.ok || data.error) throw new Error(data.message || data.error || 'Ошибка перевода');
 
     const resultEl = document.getElementById('resultText');
     resultEl.textContent = data.translation;
     resultEl.className = 'result-text' + (LANG_NAMES[toLang]?.dir === 'rtl' ? ' rtl' : '');
     document.getElementById('resultCount').textContent = data.translation.length + ' симв.';
 
-    // Обновляем счётчик
-    if (!data.isUnlocked && data.remaining !== null) {
-      remaining = data.remaining;
-      localStorage.setItem('vart-remaining', String(remaining));
-      updateCounterBar();
-    }
-    if (data.isUnlocked) {
-      isUnlocked = true;
-      localStorage.setItem('vart-unlocked', 'true');
-      updateCounterBar();
-    }
-
-    // Сохраняем в историю
+    await loadProfile();
     addToHistory(text, data.translation, fromLang, toLang);
 
   } catch (err) {
@@ -390,61 +617,139 @@ async function doTranslate() {
     document.getElementById('translateBtn').disabled = false;
     document.getElementById('spinner').style.display = 'none';
     document.getElementById('btnText').textContent = '🌐 Перевести';
+    onInput();
   }
 }
 
-async function applyCode() {
-  const code = document.getElementById('unlockInput').value.trim();
-  if (!code) return;
-  document.getElementById('codeError').textContent = '';
+// ── Перевод документа ─────────────────────────
+
+function onDragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('dragover'); }
+function onDragLeave() { document.getElementById('dropZone').classList.remove('dragover'); }
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file);
+}
+
+function onFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) processFile(file);
+}
+
+function processFile(file) {
+  const allowed = ['application/pdf', 'text/plain'];
+  if (!allowed.includes(file.type)) {
+    document.getElementById('docErrorMsg').textContent = 'Только PDF и TXT файлы';
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    document.getElementById('docErrorMsg').textContent = 'Файл слишком большой (макс. 10 МБ)';
+    return;
+  }
+  selectedFile = file;
+  document.getElementById('fileName').textContent = file.name;
+  document.getElementById('fileSize').textContent = (file.size / 1024).toFixed(0) + ' КБ';
+  document.getElementById('fileInfo').classList.add('show');
+  document.getElementById('docTranslateBtn').disabled = false;
+  document.getElementById('docErrorMsg').textContent = '';
+  document.getElementById('docResult').classList.remove('show');
+  document.getElementById('docActions').style.display = 'none';
+}
+
+function removeFile() {
+  selectedFile = null;
+  document.getElementById('fileInfo').classList.remove('show');
+  document.getElementById('docTranslateBtn').disabled = true;
+  document.getElementById('fileInput').value = '';
+}
+
+async function doTranslateDoc() {
+  if (!selectedFile || !currentSession) return;
+
+  document.getElementById('docErrorMsg').textContent = '';
+  document.getElementById('docTranslateBtn').disabled = true;
+  document.getElementById('docSpinner').style.display = 'block';
+  document.getElementById('docBtnText').textContent = 'Переводим документ...';
 
   try {
+    const base64 = await fileToBase64(selectedFile);
+
     const res = await fetch(WORKER_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: '', fromLang: 'ru', toLang: 'en', unlockCode: code })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${currentSession.access_token}`,
+      },
+      body: JSON.stringify({
+        fileContent: base64,
+        fileType: selectedFile.type,
+        fromLang: fromLangDoc,
+        toLang: toLangDoc,
+        text: ' ',
+      }),
     });
+
     const data = await res.json();
 
-    if (data.unlocked) {
-      isUnlocked = true;
-      localStorage.setItem('vart-unlocked', 'true');
-      updateCounterBar();
-      document.getElementById('limitBox').classList.remove('show');
-      setError('');
-    } else {
-      document.getElementById('codeError').textContent = data.message || 'Неверный код';
+    if (res.status === 401) { document.getElementById('docErrorMsg').textContent = 'Сессия истекла'; showAuth(); return; }
+    if (res.status === 429 || data.error === 'limit_reached') {
+      document.getElementById('docErrorMsg').textContent = data.message || 'Лимит документов исчерпан';
+      return;
     }
+    if (!res.ok || data.error) throw new Error(data.message || 'Ошибка перевода');
+
+    const resultEl = document.getElementById('docResult');
+    resultEl.textContent = data.translation;
+    resultEl.classList.add('show');
+    document.getElementById('docActions').style.display = 'flex';
+
+    await loadProfile();
+
   } catch (err) {
-    document.getElementById('codeError').textContent = 'Ошибка проверки кода';
+    document.getElementById('docErrorMsg').textContent = 'Ошибка: ' + err.message;
+  } finally {
+    document.getElementById('docTranslateBtn').disabled = false;
+    document.getElementById('docSpinner').style.display = 'none';
+    document.getElementById('docBtnText').textContent = '📄 Перевести документ';
   }
 }
 
-// Голосовой ввод
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function copyDoc() {
+  const text = document.getElementById('docResult').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.btn-copy-doc');
+    btn.textContent = '✅ Скопировано';
+    setTimeout(() => btn.textContent = '📋 Копировать', 1500);
+  });
+}
+
+// ── Голос ─────────────────────────────────────
+
 function toggleVoice() {
   if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-    setError('Голосовой ввод не поддерживается в вашем браузере');
-    return;
+    setError('Голосовой ввод не поддерживается'); return;
   }
-  if (isRecording) {
-    recognition?.stop();
-    return;
-  }
+  if (isRecording) { recognition?.stop(); return; }
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SR();
   recognition.lang = LANG_NAMES[fromLang]?.voice || 'ru-RU';
-  recognition.continuous = false;
-  recognition.interimResults = false;
-
   recognition.onstart = () => {
     isRecording = true;
     document.getElementById('micBtn').classList.add('recording');
     document.getElementById('micBtn').textContent = '⏹';
-    setError('');
   };
   recognition.onresult = (e) => {
-    const transcript = e.results[0][0].transcript;
-    document.getElementById('inputText').value = transcript;
+    document.getElementById('inputText').value = e.results[0][0].transcript;
     onInput();
   };
   recognition.onend = () => {
@@ -452,20 +757,18 @@ function toggleVoice() {
     document.getElementById('micBtn').classList.remove('recording');
     document.getElementById('micBtn').textContent = '🎤';
   };
-  recognition.onerror = (e) => {
+  recognition.onerror = () => {
     isRecording = false;
     document.getElementById('micBtn').classList.remove('recording');
     document.getElementById('micBtn').textContent = '🎤';
-    setError('Ошибка микрофона: ' + e.error);
   };
   recognition.start();
 }
 
-// Озвучить перевод
 function speakResult() {
   const text = document.getElementById('resultText').textContent;
   if (!text || document.getElementById('resultText').classList.contains('placeholder')) return;
-  if (!window.speechSynthesis) { setError('Синтез речи не поддерживается'); return; }
+  if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(text);
   utt.lang = LANG_NAMES[toLang]?.voice || 'en-US';
@@ -473,20 +776,19 @@ function speakResult() {
   window.speechSynthesis.speak(utt);
 }
 
-// Копировать
 function copyResult() {
   const text = document.getElementById('resultText').textContent;
   if (!text || document.getElementById('resultText').classList.contains('placeholder')) return;
   navigator.clipboard.writeText(text).then(() => {
-    const btn = document.querySelector('.lang-box:last-child .icon-btn');
-    const orig = btn?.textContent;
-    if (btn) { btn.textContent = '✅'; setTimeout(() => btn.textContent = orig, 1500); }
+    const btn = document.querySelector('#toSelector + div .icon-btn:last-child') || document.querySelector('.lang-box:last-child .icon-btn:last-child');
+    if (btn) { const orig = btn.textContent; btn.textContent = '✅'; setTimeout(() => btn.textContent = orig, 1500); }
   });
 }
 
-// История
+// ── История ───────────────────────────────────
+
 function addToHistory(text, translation, from, to) {
-  history.unshift({ text: text.slice(0, 100), translation: translation.slice(0, 100), from, to, time: Date.now() });
+  history.unshift({ text: text.slice(0, 100), translation: translation.slice(0, 100), from, to });
   if (history.length > 20) history = history.slice(0, 20);
   localStorage.setItem('vart-trans-history', JSON.stringify(history));
   renderHistory();
@@ -495,8 +797,7 @@ function addToHistory(text, translation, from, to) {
 function renderHistory() {
   if (history.length === 0) return;
   document.getElementById('historySection').style.display = 'block';
-  const list = document.getElementById('historyList');
-  list.innerHTML = history.slice(0, 5).map((h, i) => `
+  document.getElementById('historyList').innerHTML = history.slice(0, 5).map((h, i) => `
     <div class="history-item" onclick="loadHistory(${i})">
       <div class="hi-langs">${LANG_NAMES[h.from]?.label} → ${LANG_NAMES[h.to]?.label}</div>
       <div class="hi-text">${h.text}</div>
@@ -507,19 +808,19 @@ function renderHistory() {
 
 function loadHistory(i) {
   const h = history[i];
-  setFrom(h.from);
-  setTo(h.to);
+  setMode('text');
+  setFrom(h.from); setTo(h.to);
   document.getElementById('inputText').value = h.text;
   document.getElementById('resultText').textContent = h.translation;
   document.getElementById('resultText').className = 'result-text' + (LANG_NAMES[h.to]?.dir === 'rtl' ? ' rtl' : '');
   onInput();
 }
 
-// Service Worker для PWA
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {});
-}
+// ── PWA ───────────────────────────────────────
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 
+// ── Старт ─────────────────────────────────────
+setMode('text');
 init();
 </script>
 
