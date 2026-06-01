@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Переводчик на русский, английский, иврит и арабский. Голосовой и текстовый перевод.">
+<title>VАrt Переводчик | מתרגם | Translator | مترجم</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="https://org-va.com/favicon.ico">
+<meta name="theme-color" content="#6C63FF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4502841289225255" crossorigin="anonymous"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap');
+:root {
+  --accent: #6C63FF; --accent2: #a78bfa; --bg: #0d0d1a; --bg2: #13132a;
+  --card: #1a1a35; --border: #2a2a50; --text: #e0e0f0; --muted: #8888aa;
+  --green: #34d399; --red: #f87171; --yellow: #fbbf24; --radius: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 99; flex-wrap: wrap; gap: 10px; }
+header a.logo { font-weight: 800; font-size: 1.15rem; color: var(--accent); text-decoration: none; }
+.kofi-btn { background: #ff5e5b; color: #fff; border: none; border-radius: 20px; padding: 6px 14px; font-size: .78rem; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 6px; font-weight: 600; transition: all .2s; }
+.kofi-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,94,91,.4); }
+main { max-width: 900px; margin: 0 auto; padding: 32px 16px 80px; }
+.hero { text-align: center; padding: 32px 20px 28px; }
+.hero-icon { font-size: 3rem; display: block; margin-bottom: 12px; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.hero h1 { font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+.hero h1 span { color: var(--accent2); }
+.hero p { color: var(--muted); font-size: .9rem; }
+.lang-selector { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 20px 0; }
+.lang-pill { background: var(--card); border: 2px solid var(--border); color: var(--muted); padding: 8px 18px; border-radius: 24px; font-size: .85rem; cursor: pointer; transition: all .2s; font-family: inherit; font-weight: 600; }
+.lang-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.lang-pill:hover:not(.active) { border-color: var(--accent2); color: var(--accent2); }
+.translator-box { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: start; margin-bottom: 20px; }
+@media(max-width: 640px) { .translator-box { grid-template-columns: 1fr; } .swap-btn { transform: rotate(90deg); margin: 0 auto; } }
+.lang-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.lang-box-header { background: var(--bg2); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.lang-box-header span { color: var(--accent2); font-weight: 700; font-size: .85rem; }
+.lang-box-actions { display: flex; gap: 6px; }
+.icon-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.1rem; padding: 4px 6px; border-radius: 6px; transition: all .2s; }
+.icon-btn:hover { color: var(--accent2); background: rgba(108,99,255,.1); }
+.icon-btn.recording { color: var(--red); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+textarea { width: 100%; background: transparent; border: none; color: var(--text); font-family: inherit; font-size: .95rem; padding: 14px; resize: vertical; min-height: 140px; outline: none; line-height: 1.7; }
+textarea::placeholder { color: var(--muted); }
+textarea[dir="rtl"] { text-align: right; }
+.char-count { padding: 6px 14px; color: var(--muted); font-size: .75rem; text-align: right; border-top: 1px solid var(--border); }
+.swap-btn { background: var(--card); border: 1px solid var(--border); color: var(--accent2); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: all .2s; margin-top: 44px; flex-shrink: 0; }
+.swap-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); transform: rotate(180deg); }
+.result-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.result-text { padding: 14px; min-height: 140px; font-size: .95rem; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
+.result-text.rtl { direction: rtl; text-align: right; }
+.result-text.placeholder { color: var(--muted); font-style: italic; }
+.btn-translate { width: 100%; background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%); color: #fff; border: none; border-radius: var(--radius); padding: 16px 24px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all .2s; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; }
+.btn-translate:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(108,99,255,.4); }
+.btn-translate:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+.spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; display: none; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.counter-bar { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; font-size: .83rem; }
+.counter-bar .count { color: var(--green); font-weight: 700; }
+.counter-bar .count.low { color: var(--yellow); }
+.counter-bar .count.zero { color: var(--red); }
+.limit-box { display: none; background: rgba(108,99,255,.08); border: 1px solid rgba(108,99,255,.3); border-radius: var(--radius); padding: 24px; text-align: center; margin-bottom: 20px; }
+.limit-box.show { display: block; }
+.limit-box h3 { color: var(--accent2); margin-bottom: 12px; font-size: 1.1rem; }
+.limit-box p { color: var(--muted); font-size: .88rem; margin-bottom: 16px; line-height: 1.7; }
+.limit-box .price { font-size: 1.8rem; font-weight: 800; color: #fff; margin: 12px 0; }
+.limit-box .price span { font-size: 1rem; color: var(--muted); }
+.btn-kofi { display: inline-flex; align-items: center; gap: 8px; background: #ff5e5b; color: #fff; border: none; border-radius: 10px; padding: 12px 24px; font-size: .95rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: all .2s; margin: 6px; }
+.btn-kofi:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,94,91,.4); }
+.btn-wa { display: inline-flex; align-items: center; gap: 8px; background: #25D366; color: #fff; border: none; border-radius: 10px; padding: 12px 24px; font-size: .95rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: all .2s; margin: 6px; }
+.btn-wa:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,211,102,.4); }
+.unlock-box { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.unlock-input { background: var(--bg2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 10px 14px; font-size: .9rem; font-family: inherit; outline: none; width: 180px; }
+.unlock-input:focus { border-color: var(--accent); }
+.btn-unlock { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 10px 18px; font-size: .9rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .2s; }
+.btn-unlock:hover { background: #5a52d5; }
+.unlocked-badge { background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.3); color: var(--green); border-radius: 8px; padding: 6px 14px; font-size: .8rem; font-weight: 700; display: none; }
+.unlocked-badge.show { display: inline-flex; align-items: center; gap: 6px; }
+.error-msg { color: var(--red); font-size: .83rem; text-align: center; margin: 8px 0; min-height: 1.2em; }
+.history { margin-top: 32px; }
+.history h3 { color: var(--accent2); font-size: .95rem; margin-bottom: 12px; }
+.history-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; cursor: pointer; transition: all .2s; }
+.history-item:hover { border-color: var(--accent2); }
+.history-item .hi-langs { color: var(--muted); font-size: .75rem; margin-bottom: 4px; }
+.history-item .hi-text { font-size: .85rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.history-item .hi-result { font-size: .85rem; color: var(--accent2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+footer { text-align: center; padding: 28px 16px; color: var(--muted); font-size: .82rem; border-top: 1px solid var(--border); }
+footer a { color: var(--accent2); text-decoration: none; }
+footer .links { margin-top: 10px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.wa-float { position: fixed; bottom: 24px; right: 24px; z-index: 9999; width: 52px; height: 52px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(37,211,102,.4); text-decoration: none; transition: transform .2s; }
+.wa-float:hover { transform: scale(1.1); }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="https://org-va.com/">🛠 VArt Tools</a>
+  <a class="kofi-btn" href="https://ko-fi.com/varthur" target="_blank">☕ Ko-fi</a>
+</header>
+
+<main>
+  <div class="hero">
+    <span class="hero-icon">🌐</span>
+    <h1>VArt <span>Переводчик</span></h1>
+    <p>Русский · English · עברית · العربية — текст и голос</p>
+  </div>
+
+  <!-- Счётчик -->
+  <div class="counter-bar" id="counterBar">
+    <span>Бесплатных переводов: <span class="count" id="countDisplay">10</span> из 10</span>
+    <span class="unlocked-badge" id="unlockedBadge">✅ Разблокировано</span>
+  </div>
+
+  <!-- Выбор языков -->
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+    <div>
+      <div style="color:var(--muted);font-size:.75rem;margin-bottom:6px">Исходный язык</div>
+      <div class="lang-selector" id="fromSelector">
+        <button class="lang-pill active" data-lang="ru" onclick="setFrom('ru')">🇷🇺 РУС</button>
+        <button class="lang-pill" data-lang="en" onclick="setFrom('en')">🇬🇧 EN</button>
+        <button class="lang-pill" data-lang="he" onclick="setFrom('he')">🇮🇱 עב</button>
+        <button class="lang-pill" data-lang="ar" onclick="setFrom('ar')">🇸🇦 عر</button>
+      </div>
+    </div>
+    <button class="swap-btn" onclick="swapLangs()" title="Поменять языки">⇄</button>
+    <div>
+      <div style="color:var(--muted);font-size:.75rem;margin-bottom:6px">Перевести на</div>
+      <div class="lang-selector" id="toSelector">
+        <button class="lang-pill" data-lang="ru" onclick="setTo('ru')">🇷🇺 РУС</button>
+        <button class="lang-pill active" data-lang="en" onclick="setTo('en')">🇬🇧 EN</button>
+        <button class="lang-pill" data-lang="he" onclick="setTo('he')">🇮🇱 עב</button>
+        <button class="lang-pill active" data-lang="ar" onclick="setTo('ar')">🇸🇦 عر</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Поля ввода/вывода -->
+  <div class="translator-box">
+    <!-- Ввод -->
+    <div class="lang-box">
+      <div class="lang-box-header">
+        <span id="fromLangLabel">🇷🇺 Русский</span>
+        <div class="lang-box-actions">
+          <button class="icon-btn" id="micBtn" onclick="toggleVoice()" title="Голосовой ввод">🎤</button>
+          <button class="icon-btn" onclick="clearInput()" title="Очистить">✕</button>
+        </div>
+      </div>
+      <textarea id="inputText"
+        placeholder="Введите текст для перевода..."
+        oninput="onInput()"
+        onkeydown="onKeyDown(event)"
+        maxlength="3000"></textarea>
+      <div class="char-count"><span id="charCount">0</span>/3000</div>
+    </div>
+
+    <button class="swap-btn" onclick="swapLangs()" title="Поменять языки">⇄</button>
+
+    <!-- Вывод -->
+    <div class="lang-box">
+      <div class="lang-box-header">
+        <span id="toLangLabel">🇬🇧 English</span>
+        <div class="lang-box-actions">
+          <button class="icon-btn" onclick="speakResult()" title="Озвучить перевод">🔊</button>
+          <button class="icon-btn" onclick="copyResult()" title="Скопировать">📋</button>
+        </div>
+      </div>
+      <div class="result-text placeholder" id="resultText">Перевод появится здесь...</div>
+      <div class="char-count" id="resultCount"></div>
+    </div>
+  </div>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <button class="btn-translate" id="translateBtn" onclick="translate()" disabled>
+    <div class="spinner" id="spinner"></div>
+    <span id="btnText">🌐 Перевести</span>
+  </button>
+
+  <!-- Лимит -->
+  <div class="limit-box" id="limitBox">
+    <h3>🔒 Бесплатный лимит исчерпан</h3>
+    <p>Вы использовали 10 бесплатных переводов сегодня.<br>
+    Для продолжения оформите подписку — ₪15 в месяц.</p>
+    <div class="price">₪15 <span>/ месяц</span></div>
+    <p style="font-size:.82rem;color:var(--muted)">После оплаты напишите нам в WhatsApp — получите код разблокировки.</p>
+    <div style="margin:16px 0">
+      <a class="btn-kofi" href="https://ko-fi.com/varthur" target="_blank">☕ Оплатить через Ko-fi</a>
+      <a class="btn-wa" href="https://wa.me/972533213698?text=Оплатил подписку на переводчик, прошу код" target="_blank">💬 WhatsApp</a>
+    </div>
+    <div class="unlock-box">
+      <input class="unlock-input" id="unlockInput" type="text" placeholder="Введите код..." maxlength="20">
+      <button class="btn-unlock" onclick="applyCode()">Активировать</button>
+    </div>
+    <div class="error-msg" id="codeError"></div>
+  </div>
+
+  <!-- История -->
+  <div class="history" id="historySection" style="display:none">
+    <h3>📋 История переводов</h3>
+    <div id="historyList"></div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="links">
+    <a href="/">Главная</a>
+    <a href="tlush.html">📄 Проверка тлуша</a>
+    <a href="work-tracker.html">⏱ Work Tracker</a>
+    <a href="https://ko-fi.com/varthur" target="_blank">☕ Ko-fi</a>
+    <a href="privacy.html">Privacy</a>
+  </div>
+  <div style="margin-top:10px">© 2026 VArt Tools · org-va.com</div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/972533213698" target="_blank">
+  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="#fff">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.855L0 24l6.334-1.508A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.817 9.817 0 01-5.003-1.367l-.36-.213-3.757.895.949-3.656-.235-.374A9.786 9.786 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
+  </svg>
+</a>
+
+<script>
+const WORKER_URL = 'https://translator-api.artur32-1985.workers.dev';
+const FREE_LIMIT = 10;
+
+const LANG_NAMES = {
+  ru: { label: '🇷🇺 Русский', dir: 'ltr', placeholder: 'Введите текст для перевода...', voice: 'ru-RU' },
+  en: { label: '🇬🇧 English', dir: 'ltr', placeholder: 'Enter text to translate...', voice: 'en-US' },
+  he: { label: '🇮🇱 עברית', dir: 'rtl', placeholder: 'הכנס טקסט לתרגום...', voice: 'he-IL' },
+  ar: { label: '🇸🇦 العربية', dir: 'rtl', placeholder: 'أدخل النص للترجمة...', voice: 'ar-SA' }
+};
+
+let fromLang = 'ru';
+let toLang = 'en';
+let isRecording = false;
+let recognition = null;
+let history = JSON.parse(localStorage.getItem('vart-trans-history') || '[]');
+let remaining = parseInt(localStorage.getItem('vart-remaining') || String(FREE_LIMIT));
+let isUnlocked = localStorage.getItem('vart-unlocked') === 'true';
+
+// Инициализация
+function init() {
+  updateCounterBar();
+  renderHistory();
+  // Восстановить выбор языков
+  const savedFrom = localStorage.getItem('vart-from') || 'ru';
+  const savedTo = localStorage.getItem('vart-to') || 'en';
+  setFrom(savedFrom, false);
+  setTo(savedTo, false);
+}
+
+function setFrom(lang, save = true) {
+  fromLang = lang;
+  document.querySelectorAll('#fromSelector .lang-pill').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  document.getElementById('fromLangLabel').textContent = LANG_NAMES[lang].label;
+  const ta = document.getElementById('inputText');
+  ta.dir = LANG_NAMES[lang].dir;
+  ta.placeholder = LANG_NAMES[lang].placeholder;
+  if (save) localStorage.setItem('vart-from', lang);
+}
+
+function setTo(lang, save = true) {
+  toLang = lang;
+  document.querySelectorAll('#toSelector .lang-pill').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  document.getElementById('toLangLabel').textContent = LANG_NAMES[lang].label;
+  const rt = document.getElementById('resultText');
+  rt.dir = LANG_NAMES[lang].dir === 'rtl' ? 'rtl' : 'ltr';
+  rt.className = 'result-text placeholder' + (LANG_NAMES[lang].dir === 'rtl' ? ' rtl' : '');
+  if (save) localStorage.setItem('vart-to', lang);
+}
+
+function swapLangs() {
+  const tmp = fromLang;
+  setFrom(toLang);
+  setTo(tmp);
+  const inputEl = document.getElementById('inputText');
+  const resultEl = document.getElementById('resultText');
+  if (!resultEl.classList.contains('placeholder')) {
+    inputEl.value = resultEl.textContent;
+    resultEl.textContent = LANG_NAMES[toLang].placeholder || 'Translation will appear here...';
+    resultEl.classList.add('placeholder');
+    onInput();
+  }
+}
+
+function onInput() {
+  const val = document.getElementById('inputText').value;
+  document.getElementById('charCount').textContent = val.length;
+  document.getElementById('translateBtn').disabled = val.trim().length === 0;
+}
+
+function onKeyDown(e) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) translate();
+}
+
+function clearInput() {
+  document.getElementById('inputText').value = '';
+  document.getElementById('charCount').textContent = '0';
+  document.getElementById('translateBtn').disabled = true;
+  document.getElementById('resultText').textContent = LANG_NAMES[toLang]?.placeholder || 'Translation...';
+  document.getElementById('resultText').className = 'result-text placeholder';
+  document.getElementById('resultCount').textContent = '';
+  setError('');
+}
+
+function updateCounterBar() {
+  const display = document.getElementById('countDisplay');
+  const badge = document.getElementById('unlockedBadge');
+  const bar = document.getElementById('counterBar');
+  if (isUnlocked) {
+    bar.style.display = 'none';
+    badge.classList.add('show');
+  } else {
+    bar.style.display = 'flex';
+    badge.classList.remove('show');
+    display.textContent = remaining;
+    display.className = 'count' + (remaining <= 0 ? ' zero' : remaining <= 3 ? ' low' : '');
+  }
+}
+
+function setError(msg) {
+  document.getElementById('errorMsg').textContent = msg;
+}
+
+async function translate() {
+  const text = document.getElementById('inputText').value.trim();
+  if (!text) return;
+
+  if (!isUnlocked && remaining <= 0) {
+    document.getElementById('limitBox').classList.add('show');
+    return;
+  }
+
+  setError('');
+  document.getElementById('limitBox').classList.remove('show');
+  document.getElementById('translateBtn').disabled = true;
+  document.getElementById('spinner').style.display = 'block';
+  document.getElementById('btnText').textContent = 'Выполняется перевод...';
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, fromLang, toLang })
+    });
+
+    const data = await res.json();
+
+    if (res.status === 429 || data.error === 'limit_reached') {
+      remaining = 0;
+      localStorage.setItem('vart-remaining', '0');
+      updateCounterBar();
+      document.getElementById('limitBox').classList.add('show');
+      return;
+    }
+
+    if (!res.ok || data.error) {
+      throw new Error(data.error || 'Ошибка перевода');
+    }
+
+    const resultEl = document.getElementById('resultText');
+    resultEl.textContent = data.translation;
+    resultEl.className = 'result-text' + (LANG_NAMES[toLang]?.dir === 'rtl' ? ' rtl' : '');
+    document.getElementById('resultCount').textContent = data.translation.length + ' симв.';
+
+    // Обновляем счётчик
+    if (!data.isUnlocked && data.remaining !== null) {
+      remaining = data.remaining;
+      localStorage.setItem('vart-remaining', String(remaining));
+      updateCounterBar();
+    }
+    if (data.isUnlocked) {
+      isUnlocked = true;
+      localStorage.setItem('vart-unlocked', 'true');
+      updateCounterBar();
+    }
+
+    // Сохраняем в историю
+    addToHistory(text, data.translation, fromLang, toLang);
+
+  } catch (err) {
+    setError('Ошибка: ' + err.message);
+  } finally {
+    document.getElementById('translateBtn').disabled = false;
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('btnText').textContent = '🌐 Перевести';
+  }
+}
+
+async function applyCode() {
+  const code = document.getElementById('unlockInput').value.trim();
+  if (!code) return;
+  document.getElementById('codeError').textContent = '';
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: '', fromLang: 'ru', toLang: 'en', unlockCode: code })
+    });
+    const data = await res.json();
+
+    if (data.unlocked) {
+      isUnlocked = true;
+      localStorage.setItem('vart-unlocked', 'true');
+      updateCounterBar();
+      document.getElementById('limitBox').classList.remove('show');
+      setError('');
+    } else {
+      document.getElementById('codeError').textContent = data.message || 'Неверный код';
+    }
+  } catch (err) {
+    document.getElementById('codeError').textContent = 'Ошибка проверки кода';
+  }
+}
+
+// Голосовой ввод
+function toggleVoice() {
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    setError('Голосовой ввод не поддерживается в вашем браузере');
+    return;
+  }
+  if (isRecording) {
+    recognition?.stop();
+    return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = LANG_NAMES[fromLang]?.voice || 'ru-RU';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onstart = () => {
+    isRecording = true;
+    document.getElementById('micBtn').classList.add('recording');
+    document.getElementById('micBtn').textContent = '⏹';
+    setError('');
+  };
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    document.getElementById('inputText').value = transcript;
+    onInput();
+  };
+  recognition.onend = () => {
+    isRecording = false;
+    document.getElementById('micBtn').classList.remove('recording');
+    document.getElementById('micBtn').textContent = '🎤';
+  };
+  recognition.onerror = (e) => {
+    isRecording = false;
+    document.getElementById('micBtn').classList.remove('recording');
+    document.getElementById('micBtn').textContent = '🎤';
+    setError('Ошибка микрофона: ' + e.error);
+  };
+  recognition.start();
+}
+
+// Озвучить перевод
+function speakResult() {
+  const text = document.getElementById('resultText').textContent;
+  if (!text || document.getElementById('resultText').classList.contains('placeholder')) return;
+  if (!window.speechSynthesis) { setError('Синтез речи не поддерживается'); return; }
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = LANG_NAMES[toLang]?.voice || 'en-US';
+  utt.rate = 0.9;
+  window.speechSynthesis.speak(utt);
+}
+
+// Копировать
+function copyResult() {
+  const text = document.getElementById('resultText').textContent;
+  if (!text || document.getElementById('resultText').classList.contains('placeholder')) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.lang-box:last-child .icon-btn');
+    const orig = btn?.textContent;
+    if (btn) { btn.textContent = '✅'; setTimeout(() => btn.textContent = orig, 1500); }
+  });
+}
+
+// История
+function addToHistory(text, translation, from, to) {
+  history.unshift({ text: text.slice(0, 100), translation: translation.slice(0, 100), from, to, time: Date.now() });
+  if (history.length > 20) history = history.slice(0, 20);
+  localStorage.setItem('vart-trans-history', JSON.stringify(history));
+  renderHistory();
+}
+
+function renderHistory() {
+  if (history.length === 0) return;
+  document.getElementById('historySection').style.display = 'block';
+  const list = document.getElementById('historyList');
+  list.innerHTML = history.slice(0, 5).map((h, i) => `
+    <div class="history-item" onclick="loadHistory(${i})">
+      <div class="hi-langs">${LANG_NAMES[h.from]?.label} → ${LANG_NAMES[h.to]?.label}</div>
+      <div class="hi-text">${h.text}</div>
+      <div class="hi-result">${h.translation}</div>
+    </div>
+  `).join('');
+}
+
+function loadHistory(i) {
+  const h = history[i];
+  setFrom(h.from);
+  setTo(h.to);
+  document.getElementById('inputText').value = h.text;
+  document.getElementById('resultText').textContent = h.translation;
+  document.getElementById('resultText').className = 'result-text' + (LANG_NAMES[h.to]?.dir === 'rtl' ? ' rtl' : '');
+  onInput();
+}
+
+// Service Worker для PWA
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+
+init();
+</script>
+
+</body>
+</html>
