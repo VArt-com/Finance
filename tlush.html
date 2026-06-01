@@ -8,7 +8,24 @@
 <link rel="icon" href="https://org-va.com/favicon.ico">
 <meta name="theme-color" content="#6C63FF">
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4502841289225255" crossorigin="anonymous"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4502841289225255" crossorigin="anonymous">
+// ============================================================
+// SAVE AS PDF
+// ============================================================
+function savePdf(lang) {
+  const resultEl = document.getElementById('result-text-' + lang);
+  if (!resultEl) return;
+  const date = new Date().toLocaleDateString('he-IL');
+  const titles = { ru: 'Анализ тлуша', en: 'Payslip Analysis', he: 'ניתוח תלוש שכר' };
+  const title = titles[lang] || 'Analysis';
+  const dir = lang === 'he' ? 'rtl' : 'ltr';
+  const win = window.open('', '_blank');
+  win.document.write('<!DOCTYPE html><html dir="' + dir + '" lang="' + lang + '"><head><meta charset="UTF-8"><title>' + title + '</title><style>body{font-family:Arial,sans-serif;font-size:13px;line-height:1.7;color:#1a1a2e;padding:30px;max-width:800px;margin:0 auto}h1{color:#6C63FF;font-size:1.4rem;border-bottom:2px solid #6C63FF;padding-bottom:8px;margin-bottom:20px}h3{color:#5b21b6;font-size:1rem;margin:18px 0 6px;border-bottom:1px solid #e5e7eb;padding-bottom:4px}table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px}th{background:#6C63FF;color:white;padding:6px 10px;text-align:right}td{padding:5px 10px;border-bottom:1px solid #e5e7eb}tr:nth-child(even){background:#f9fafb}.footer{margin-top:30px;font-size:11px;color:#9ca3af;border-top:1px solid #e5e7eb;padding-top:10px}@media print{body{padding:10px}}</style></head><body><h1>&#128196; ' + title + ' &#8212; ' + date + '</h1>' + resultEl.innerHTML + '<div class="footer">&#9888;&#65039; ניתוח זה מבוסס על מה שנראה בתמונה בלבד. לייעוץ משפטי &#8212; פנה לעורך דין. | org-va.com</div></body></html>');
+  win.document.close();
+  setTimeout(function(){ win.print(); }, 500);
+}
+
+</script>
 
 <!-- PDF.js для конвертации PDF в картинку -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -76,6 +93,8 @@
   .status-err{color:var(--red)}
   .btn-new{width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:12px;padding:12px;font-size:.9rem;cursor:pointer;margin-top:16px;transition:all .2s;font-family:inherit}
   .btn-new:hover{border-color:var(--accent);color:var(--accent)}
+  .btn-pdf{width:100%;background:linear-gradient(135deg,#059669 0%,#10b981 100%);color:#fff;border:none;border-radius:12px;padding:12px;font-size:.9rem;cursor:pointer;margin-top:10px;transition:all .2s;font-family:inherit;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn-pdf:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(16,185,129,.4)}
   .error-box{display:none;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:12px;padding:16px 20px;color:var(--red);font-size:.9rem;margin-bottom:16px}
   .error-box.show{display:block}
   .info-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:32px}
@@ -149,6 +168,7 @@
     <div class="result-header"><span class="rh-icon">✅</span><div><h2>Анализ завершён</h2><p>Результаты проверки вашего тлуша</p></div></div>
     <div class="result-content" id="result-text-ru"></div>
     <button class="btn-new" onclick="resetAnalysis('ru')">🔄 Проверить другой тлуш</button>
+    <button class="btn-pdf" onclick="savePdf('ru')">💾 Сохранить анализ в PDF</button>
   </div>
   <div class="info-cards">
     <div class="info-card"><span class="ic-icon">💰</span><h4>Минимальная зарплата</h4><p>С апреля 2026: ₪35.40/час · ₪6,443.85/месяц</p></div>
@@ -198,6 +218,7 @@
     <div class="result-header"><span class="rh-icon">✅</span><div><h2>Analysis complete</h2><p>Your payslip check results</p></div></div>
     <div class="result-content" id="result-text-en"></div>
     <button class="btn-new" onclick="resetAnalysis('en')">🔄 Check another payslip</button>
+    <button class="btn-pdf" onclick="savePdf('en')">💾 Save analysis as PDF</button>
   </div>
   <div class="info-cards">
     <div class="info-card"><span class="ic-icon">💰</span><h4>Minimum Wage</h4><p>From April 2026: ₪35.40/hr · ₪6,443.85/month</p></div>
@@ -247,6 +268,7 @@
     <div class="result-header"><span class="rh-icon">✅</span><div><h2>הניתוח הושלם</h2><p>תוצאות בדיקת התלוש שלך</p></div></div>
     <div class="result-content" id="result-text-he"></div>
     <button class="btn-new" onclick="resetAnalysis('he')">🔄 בדוק תלוש אחר</button>
+    <button class="btn-pdf" onclick="savePdf('he')">💾 שמור ניתוח כ-PDF</button>
   </div>
   <div class="info-cards">
     <div class="info-card"><span class="ic-icon">💰</span><h4>שכר מינימום</h4><p>מאפריל 2026: ₪35.40/שעה · ₪6,443.85/חודש</p></div>
@@ -486,7 +508,7 @@ Do NOT write "everything is fine" without actually analyzing the numbers.`,
 };
 
 // ============================================================
-// ANALYZE — через Cloudflare Worker → Claude
+// ANALYZE — через Cloudflare Worker → Gemini
 // ============================================================
 async function analyze(lang) {
   const file = state[lang];
@@ -521,7 +543,7 @@ async function analyze(lang) {
                   file.type === 'image/webp' ? 'image/webp' : 'image/jpeg';
     }
 
-    step({ ru:'Отправка в Claude AI...', en:'Sending to Claude AI...', he:'שולח ל-Claude AI...' }[lang]);
+    step({ ru:'Выполняется проверка...', en:'Running check...', he:'מבצע בדיקה...' }[lang]);
 
     const response = await fetch(WORKER_URL, {
       method: 'POST',
@@ -529,6 +551,7 @@ async function analyze(lang) {
       body: JSON.stringify({
         imageBase64: base64,
         mimeType: mediaType
+        
       })
     });
 
