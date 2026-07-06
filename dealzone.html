@@ -578,7 +578,7 @@ body.lang-he .user-dropdown{right:auto;left:0;}
     <button class="lang-btn" id="btnRu" onclick="setLang('ru')">🇷🇺 РУС</button>
     <button class="lang-btn" id="btnEn" onclick="setLang('en')">🇺🇸 EN</button>
     <a href="https://ko-fi.com/varthur" class="kofi-nav" target="_blank">☕ Ko-fi</a>
-    <button class="nav-submit-btn" id="btnSubmit" onclick="checkAdminAndOpen()">+ <span class="he-text">הוסף מבצע</span><span class="ru-text" style="display:none">+ Добавить</span><span class="en-text" style="display:none">+ Add Deal</span></button>
+    <button class="nav-submit-btn" id="btnSubmit" onclick="checkAdminAndOpen()" style="display:none">+ <span class="he-text">הוסף מבצע</span><span class="ru-text" style="display:none">+ Добавить</span><span class="en-text" style="display:none">+ Add Deal</span></button>
   </div>
 </nav>
 
@@ -1130,17 +1130,47 @@ async function submitDeal() {
   if (!store || !title) {
     showToast(lang==='he'?'נא למלא שדות חובה':'Заполни обязательные поля'); return;
   }
+
+  const isAdmin = document.body.classList.contains('admin-mode');
+  const priceNew = pNew ? parseFloat(pNew) : null;
+  const priceOld = pOld ? parseFloat(pOld) : null;
+  const discount = (priceNew && priceOld && priceOld > priceNew)
+    ? Math.round((1 - priceNew / priceOld) * 100)
+    : null;
+
   try {
-    const { error } = await sb.from('pending_deals').insert([{
-      store, title, cat,
-      price_new: pNew ? parseFloat(pNew) : null,
-      price_old: pOld ? parseFloat(pOld) : null,
-      coupon: coupon || null,
-      link: link || null
-    }]);
-    if (error) throw error;
-    showToast(lang==='he'?'תודה! המבצע נשלח לבדיקה ✓':'Спасибо! Акция отправлена на проверку ✓');
-    setTimeout(closeSubmitModal, 1500);
+    if (isAdmin) {
+      const { error } = await sb.from('deals').insert([{
+        store,
+        store_name: store,
+        cat,
+        title_he: title,
+        title_ru: title,
+        price_new: priceNew,
+        price_old: priceOld,
+        discount,
+        coupon: coupon || null,
+        link: link || null,
+        active: true,
+        featured: false,
+        affiliate: true
+      }]);
+      if (error) throw error;
+      showToast(lang==='he'?'המבצע פורסם מיד ✓':'Акция опубликована сразу ✓');
+      setTimeout(closeSubmitModal, 1500);
+      loadAllDeals();
+    } else {
+      const { error } = await sb.from('pending_deals').insert([{
+        store, title, cat,
+        price_new: priceNew,
+        price_old: priceOld,
+        coupon: coupon || null,
+        link: link || null
+      }]);
+      if (error) throw error;
+      showToast(lang==='he'?'תודה! המבצע נשלח לבדיקה ✓':'Спасибо! Акция отправлена на проверку ✓');
+      setTimeout(closeSubmitModal, 1500);
+    }
   } catch(e) {
     showToast(lang==='he'?'שגיאה, נסה שוב':'Ошибка, попробуй снова');
   }
