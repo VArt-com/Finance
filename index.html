@@ -25,6 +25,7 @@
     --muted: #8888aa;
     --green: #34d399;
     --orange: #fb923c;
+    --pink: #ec4899;
     --radius: 12px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -80,11 +81,16 @@
     gap: 10px; transition: border-color 0.2s, transform 0.15s; position: relative;
   }
   .tool-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+  .tool-card.tool-card-music { border-color: rgba(236,72,153,0.4); background: linear-gradient(160deg, var(--card) 0%, #2a1330 100%); }
+  .tool-card.tool-card-music:hover { border-color: var(--pink); box-shadow: 0 8px 24px rgba(236,72,153,0.18); }
+  .tool-card.tool-card-music .tc-badge { background: var(--pink); }
+  .tool-card.tool-card-music .tc-arrow { color: var(--pink); }
   .tool-card .tc-top { display: flex; align-items: flex-start; gap: 14px; }
   .tool-card .tc-icon { font-size: 2rem; flex-shrink: 0; }
   .tool-card .tc-name { font-weight: 700; color: #fff; font-size: 0.97rem; }
   .tool-card .tc-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
   .tool-card .tc-tag { background: rgba(108,99,255,0.12); color: var(--muted); font-size: 0.68rem; padding: 1px 7px; border-radius: 10px; }
+  .tool-card.tool-card-music .tc-tag { background: rgba(236,72,153,0.14); }
   .tool-card .tc-desc { color: var(--muted); font-size: 0.85rem; line-height: 1.55; }
   .tool-card .tc-badge { position: absolute; top: 12px; right: 12px; background: var(--orange); color: #fff; font-size: 0.65rem; font-weight: 700; padding: 1px 7px; border-radius: 10px; letter-spacing: 0.3px; }
   .tool-card .tc-arrow { color: var(--accent); font-size: 0.82rem; font-weight: 600; margin-top: auto; }
@@ -157,7 +163,7 @@
       <h1>Бесплатные инструменты<br>для <span>жизни в Израиле</span></h1>
       <p>Трекер рабочих часов, онлайн-радио, поиск работы и многое другое — всё бесплатно, без регистрации, на трёх языках</p>
       <div class="hero-stats">
-        <div class="hero-stat"><span class="val">7+</span><span class="lbl">инструментов</span></div>
+        <div class="hero-stat"><span class="val">8+</span><span class="lbl">инструментов</span></div>
         <div class="hero-stat"><span class="val">3</span><span class="lbl">языка</span></div>
         <div class="hero-stat"><span class="val">100%</span><span class="lbl">бесплатно</span></div>
         <div class="hero-stat"><span class="val">0</span><span class="lbl">регистраций</span></div>
@@ -199,6 +205,23 @@
           </div>
         </div>
         <div class="tc-desc">Слушайте любимые радиостанции онлайн: украинские, русские, израильские и американские. Работает прямо в браузере без установки приложений. Живой звук 24/7.</div>
+        <span class="tc-arrow">Слушать →</span>
+      </a>
+
+      <a class="tool-card tool-card-music" href="https://va-music-one.vercel.app" target="_blank" rel="noopener">
+        <div class="tc-badge">NEW</div>
+        <div class="tc-top">
+          <span class="tc-icon">🎵</span>
+          <div>
+            <div class="tc-name">MusicHub — Музыка</div>
+            <div class="tc-tags">
+              <span class="tc-tag">Бесплатно</span>
+              <span class="tc-tag">Артисты</span>
+              <span class="tc-tag">Плейлисты</span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-desc">Загружай, слушай и скачивай музыку бесплатно. Плейлисты, поиск по трекам и поддержка независимых артистов через донаты.</div>
         <span class="tc-arrow">Слушать →</span>
       </a>
 
@@ -364,7 +387,7 @@
       <h1>Free Web Tools<br>for <span>Life in Israel</span></h1>
       <p>Work hours tracker, online radio, job search, and more — all free, no registration, in three languages</p>
       <div class="hero-stats">
-        <div class="hero-stat"><span class="val">6+</span><span class="lbl">tools</span></div>
+        <div class="hero-stat"><span class="val">7+</span><span class="lbl">tools</span></div>
         <div class="hero-stat"><span class="val">3</span><span class="lbl">languages</span></div>
         <div class="hero-stat"><span class="val">100%</span><span class="lbl">free</span></div>
         <div class="hero-stat"><span class="val">0</span><span class="lbl">sign-ups</span></div>
@@ -383,6 +406,12 @@
       <a class="tool-card" href="radio.html">
         <div class="tc-top"><span class="tc-icon">📻</span><div><div class="tc-name">Online Radio</div><div class="tc-tags"><span class="tc-tag">🇺🇦</span><span class="tc-tag">🇷🇺</span><span class="tc-tag">🇮🇱</span><span class="tc-tag">🇺🇸</span></div></div></div>
         <div class="tc-desc">Listen to your favorite radio stations online: Ukrainian, Russian, Israeli and American. Works right in your browser without installing apps. Live sound 24/7.</div>
+        <span class="tc-arrow">Listen →</span>
+      </a>
+      <a class="tool-card tool-card-music" href="https://va-music-one.vercel.app" target="_blank" rel="noopener">
+        <div class="tc-badge">NEW</div>
+        <div class="tc-top"><span class="tc-icon">🎵</span><div><div class="tc-name">MusicHub</div><div class="tc-tags"><span class="tc-tag">Free</span><span class="tc-tag">Artists</span><span class="tc-tag">Playlists</span></div></div></div>
+        <div class="tc-desc">Upload, stream and download music for free. Playlists, track search, and support for independent artists via donations.</div>
         <span class="tc-arrow">Listen →</span>
       </a>
       <a class="tool-card" href="jobsil.html">
@@ -450,7 +479,7 @@
       <h1>כלי אינטרנט חינמיים<br>ל<span>חיים בישראל</span></h1>
       <p>עוקב שעות עבודה, רדיו אונליין, חיפוש עבודה ועוד — הכל חינם, ללא הרשמה, בשלוש שפות</p>
       <div class="hero-stats">
-        <div class="hero-stat"><span class="val">6+</span><span class="lbl">כלים</span></div>
+        <div class="hero-stat"><span class="val">7+</span><span class="lbl">כלים</span></div>
         <div class="hero-stat"><span class="val">3</span><span class="lbl">שפות</span></div>
         <div class="hero-stat"><span class="val">100%</span><span class="lbl">חינם</span></div>
         <div class="hero-stat"><span class="val">0</span><span class="lbl">הרשמות</span></div>
@@ -469,6 +498,12 @@
       <a class="tool-card" href="radio.html">
         <div class="tc-top"><span class="tc-icon">📻</span><div><div class="tc-name">רדיו אונליין</div><div class="tc-tags"><span class="tc-tag">🇺🇦</span><span class="tc-tag">🇷🇺</span><span class="tc-tag">🇮🇱</span><span class="tc-tag">🇺🇸</span></div></div></div>
         <div class="tc-desc">האזן לתחנות הרדיו האהובות עליך אונליין: אוקראיניות, רוסיות, ישראליות ואמריקאיות. עובד ישירות בדפדפן ללא התקנת אפליקציות. שידור חי 24/7.</div>
+        <span class="tc-arrow">האזן ←</span>
+      </a>
+      <a class="tool-card tool-card-music" href="https://va-music-one.vercel.app" target="_blank" rel="noopener">
+        <div class="tc-badge">חדש</div>
+        <div class="tc-top"><span class="tc-icon">🎵</span><div><div class="tc-name">MusicHub - מוזיקה</div><div class="tc-tags"><span class="tc-tag">חינם</span><span class="tc-tag">אמנים</span><span class="tc-tag">פלייליסטים</span></div></div></div>
+        <div class="tc-desc">העלה, האזן והורד מוזיקה בחינם. פלייליסטים, חיפוש שירים ותמיכה באמנים עצמאיים באמצעות תרומות.</div>
         <span class="tc-arrow">האזן ←</span>
       </a>
       <a class="tool-card" href="jobsil.html">
