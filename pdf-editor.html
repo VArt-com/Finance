@@ -44,28 +44,32 @@
     max-width:100%;
   }
   .page-wrap canvas{display:block;max-width:100%;height:auto;}
-  .overlay{position:absolute;top:0;left:0;right:0;bottom:0;}
+  .overlay{position:absolute;top:0;left:0;right:0;bottom:0;z-index:3;}
   .text-box{
     position:absolute;min-width:20px;padding:2px 4px;font-family:Helvetica,Arial,sans-serif;
     border:1px dashed transparent;cursor:move;outline:none;white-space:pre;touch-action:none;
   }
   .text-box:hover, .text-box:focus{border-color:var(--accent);}
-  .sig-img{position:absolute;cursor:move;touch-action:none;}
+  .sig-img{position:absolute;cursor:move;touch-action:none;-webkit-user-drag:none;user-select:none;}
   .mask-box{
     position:absolute;background:#ffffff;cursor:move;border:1px dashed rgba(0,0,0,.25);touch-action:none;
+    user-select:none;-webkit-user-drag:none;
   }
   .resize-handle{
     position:absolute;right:-5px;bottom:-5px;width:12px;height:12px;border-radius:50%;
-    background:var(--accent);cursor:nwse-resize;touch-action:none;
+    background:var(--accent);cursor:nwse-resize;touch-action:none;user-select:none;-webkit-user-drag:none;
   }
-  .image-el{position:absolute;cursor:move;}
+  .image-el{position:absolute;cursor:move;-webkit-user-drag:none;user-select:none;}
   .del-btn{
     position:absolute;top:-10px;right:-10px;width:22px;height:22px;border-radius:50%;
     background:var(--danger);color:#fff;border:2px solid var(--panel);cursor:pointer;
     font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;
-    padding:0;touch-action:none;z-index:2;
+    padding:0;touch-action:none;z-index:2;user-select:none;-webkit-user-drag:none;
   }
-  .highlight-box{position:absolute;background:#ffe36b;opacity:.45;cursor:move;touch-action:none;}
+  .highlight-box{
+    position:absolute;background:#ffe36b;opacity:.45;cursor:move;touch-action:none;
+    user-select:none;-webkit-user-drag:none;
+  }
   #deletedBanner{
     position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(209,67,67,.15);
     display:none;align-items:center;justify-content:center;text-align:center;padding:16px;z-index:8;
@@ -88,7 +92,7 @@
   .docx-toolbar button.ghost{
     background:transparent;color:var(--ink);border:1px solid var(--border);padding:6px 10px;
   }
-  #textHitLayer{position:absolute;top:0;left:0;pointer-events:none;}
+  #textHitLayer{position:absolute;top:0;left:0;pointer-events:none;z-index:1;}
   .text-hit{
     position:absolute;pointer-events:auto;cursor:text;background:transparent;
   }
@@ -706,6 +710,10 @@ let selectedEl = null;
 const fileInput = document.getElementById('fileInput');
 const pdfCanvas = document.getElementById('pdfCanvas');
 const overlay = document.getElementById('overlay');
+// Safety net: never let the browser start its own native drag (of an image, or of
+// selected text) from inside the overlay -- that silently steals the gesture from
+// our own pointer-based dragging/resizing and leaves a box looking "stuck".
+overlay.addEventListener('dragstart', (e) => e.preventDefault());
 const pageWrap = document.getElementById('pageWrap');
 const emptyMsg = document.getElementById('empty');
 const addTextBtn = document.getElementById('addTextBtn');
@@ -1285,6 +1293,7 @@ function rebuildOverlay(){
     } else if(item.type === 'sig'){
       const img = document.createElement('img');
       img.className = 'sig-img';
+      img.draggable = false;
       img.src = item.dataUrl;
       img.style.left = (item.xRatio * pdfCanvas.width) + 'px';
       img.style.top = (item.yRatio * pdfCanvas.height) + 'px';
@@ -1295,6 +1304,7 @@ function rebuildOverlay(){
     } else if(item.type === 'image'){
       const img = document.createElement('img');
       img.className = 'image-el';
+      img.draggable = false;
       img.src = item.dataUrl;
       img.style.left = (item.xRatio * pdfCanvas.width) + 'px';
       img.style.top = (item.yRatio * pdfCanvas.height) + 'px';
@@ -1382,7 +1392,13 @@ function makeDraggable(el, item, canvas){
   const THRESHOLD = 4;
 
   el.addEventListener('pointerdown', (e) => {
-    if(e.target.classList && e.target.classList.contains('resize-handle')) return;
+    if(e.target.classList && (e.target.classList.contains('resize-handle') || e.target.classList.contains('del-btn'))) return;
+    // Stop the browser's own text-selection/native-drag gesture from racing our
+    // custom drag — without this, dragging over real page text (or an <img>)
+    // can start a native drag-ghost in parallel and swallow our pointer events,
+    // leaving the box looking "stuck". Skip this for contentEditable text boxes,
+    // where preventDefault would also block the caret from being placed.
+    if(!el.isContentEditable) e.preventDefault();
     pointerId = e.pointerId;
     startX = e.clientX; startY = e.clientY;
     origLeft = parseFloat(el.style.left) || 0;
@@ -1393,6 +1409,7 @@ function makeDraggable(el, item, canvas){
 
   el.addEventListener('pointermove', (e) => {
     if(pointerId === null || e.pointerId !== pointerId) return;
+    e.preventDefault();
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
     if(!dragging && Math.hypot(dx, dy) > THRESHOLD){
@@ -1430,6 +1447,7 @@ function makeResizable(boxEl, handle, item, canvas){
   let pointerId = null, startX, startY, startW, startH;
   handle.addEventListener('pointerdown', (e) => {
     e.stopPropagation();
+    e.preventDefault();
     pushUndo();
     pointerId = e.pointerId;
     startX = e.clientX; startY = e.clientY;
@@ -1439,6 +1457,7 @@ function makeResizable(boxEl, handle, item, canvas){
   });
   handle.addEventListener('pointermove', (e) => {
     if(pointerId === null || e.pointerId !== pointerId) return;
+    e.preventDefault();
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
     const newW = Math.max(10, startW + dx);
@@ -1492,6 +1511,7 @@ addHighlightBtn.addEventListener('click', () => {
 let drawStart = null;
 drawLayer.addEventListener('pointerdown', (e) => {
   if(!highlightMode) return;
+  e.preventDefault();
   const rect = drawLayer.getBoundingClientRect();
   drawStart = { x: e.clientX - rect.left, y: e.clientY - rect.top };
   drawRect.style.left = drawStart.x + 'px';
@@ -1503,6 +1523,7 @@ drawLayer.addEventListener('pointerdown', (e) => {
 });
 drawLayer.addEventListener('pointermove', (e) => {
   if(!highlightMode || !drawStart) return;
+  e.preventDefault();
   const rect = drawLayer.getBoundingClientRect();
   const x = e.clientX - rect.left, y = e.clientY - rect.top;
   const left = Math.min(x, drawStart.x), top = Math.min(y, drawStart.y);
