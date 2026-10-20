@@ -104,6 +104,12 @@
   #drawRect{
     position:absolute;background:#ffe36b;opacity:.45;border:1px dashed #cc9a00;display:none;pointer-events:none;
   }
+  #shapePreviewSvg{position:absolute;top:0;left:0;display:none;pointer-events:none;overflow:visible;}
+  .shape-el{position:absolute;cursor:move;touch-action:none;user-select:none;-webkit-user-drag:none;}
+  .shape-el svg{display:block;width:100%;height:100%;overflow:visible;}
+  .draw-el{position:absolute;top:0;left:0;pointer-events:none;overflow:visible;}
+  .draw-el.selected polyline{filter:drop-shadow(0 0 0 2px var(--accent));}
+  .draw-el .del-btn{pointer-events:auto;position:absolute;}
   .toolbar-group{display:flex;gap:4px;align-items:center;padding:4px 8px;border-left:1px solid var(--border);}
   .toolbar-group:first-of-type{border-left:none;}
   html[dir="rtl"] .toolbar-group{border-left:none;border-right:1px solid var(--border);}
@@ -234,7 +240,27 @@
   <div class="toolbar-group">
     <button id="addMaskBtn" disabled class="secondary" data-i18n="addMask">🧹 Ластик (плашка)</button>
     <button id="addHighlightBtn" disabled class="secondary" data-i18n="addHighlight">+ Выделение</button>
+    <input type="color" id="highlightColorPicker" value="#ffe36b" data-i18n-title="highlightColorTitle" title="Цвет выделения">
     <button id="deleteSelectedBtn" disabled class="secondary" data-i18n="deleteSelected">🗑 Удалить выделенное</button>
+  </div>
+  <div class="toolbar-group">
+    <button id="addDrawBtn" disabled class="secondary" data-i18n="addDraw">✏️ Рисование</button>
+    <input type="color" id="drawColorPicker" value="#e0393b">
+    <select id="shapeTypeSelect">
+      <option value="rect" data-i18n="shapeRect">▭ Прямоугольник</option>
+      <option value="oval" data-i18n="shapeOval">◯ Овал</option>
+      <option value="arrow" data-i18n="shapeArrow">→ Стрелка</option>
+    </select>
+    <button id="addShapeBtn" disabled class="secondary" data-i18n="addShape">+ Фигура</button>
+  </div>
+  <div class="toolbar-group">
+    <select id="stampSelect">
+      <option value="approved" data-i18n="stampApproved">ОДОБРЕНО</option>
+      <option value="paid" data-i18n="stampPaid">ОПЛАЧЕНО</option>
+      <option value="draft" data-i18n="stampDraft">ЧЕРНОВИК</option>
+      <option value="date" data-i18n="stampDate">Сегодняшняя дата</option>
+    </select>
+    <button id="addStampBtn" disabled class="secondary" data-i18n="addStamp">🖊 Штамп</button>
   </div>
   <div class="toolbar-group">
     <label class="file-btn" id="addImageLabel" style="opacity:.4;pointer-events:none;">
@@ -250,6 +276,8 @@
   <div class="toolbar-group">
     <button id="rotateBtn" disabled class="secondary" data-i18n="rotatePage">⟳ Повернуть</button>
     <button id="deleteBtn" disabled class="secondary">Удалить страницу</button>
+    <button id="movePageLeftBtn" disabled class="secondary" data-i18n="movePageLeft">◀ Порядок</button>
+    <button id="movePageRightBtn" disabled class="secondary" data-i18n="movePageRight">Порядок ▶</button>
   </div>
   <div class="toolbar-group">
     <label class="file-btn" id="mergeLabel" style="opacity:.4;pointer-events:none;">
@@ -266,6 +294,10 @@
     </select>
     <button id="exportPageBtn" disabled class="secondary" data-i18n="exportPage">Страница в картинку</button>
     <button id="exportAllBtn" disabled class="secondary" data-i18n="exportAll">Все страницы (ZIP)</button>
+  </div>
+  <div class="toolbar-group">
+    <input type="text" id="splitRangeInput" data-i18n-placeholder="splitRangePlaceholder" placeholder="напр. 1-3,5" style="width:90px;">
+    <button id="exportRangeBtn" disabled class="secondary" data-i18n="exportRange">✂ Страницы → PDF</button>
   </div>
   <span class="status" id="status"></span>
   <a id="supportLink" class="support-link" data-i18n="supportLink" href="https://buymeacoffee.com/artur32198z" target="_blank" rel="noopener noreferrer">☕ Поддержать проект</a>
@@ -285,7 +317,7 @@
     <div id="textHitLayer"></div>
     <div id="overlay" class="overlay"></div>
     <div id="formFieldLayer"></div>
-    <div id="drawLayer"><div id="drawRect"></div></div>
+    <div id="drawLayer"><div id="drawRect"></div><svg id="shapePreviewSvg"></svg></div>
     <div id="deletedBanner"><div class="card"><div data-i18n="deletedBanner" id="deletedBannerText">Страница будет удалена при сохранении</div><button class="secondary" id="restoreBtn" data-i18n="restorePage" style="margin-top:8px;">Восстановить страницу</button></div></div>
   </div>
 </main>
@@ -361,6 +393,26 @@ const translations = {
     addSig: '+ Подпись',
     addMask: '🧹 Ластик (плашка)',
     addHighlight: '+ Выделение',
+    highlightColorTitle: 'Цвет выделения',
+    addDraw: '✏️ Рисование',
+    shapeRect: '▭ Прямоугольник',
+    shapeOval: '◯ Овал',
+    shapeArrow: '→ Стрелка',
+    addShape: '+ Фигура',
+    stampApproved: 'ОДОБРЕНО',
+    stampPaid: 'ОПЛАЧЕНО',
+    stampDraft: 'ЧЕРНОВИК',
+    stampDate: 'Сегодняшняя дата',
+    addStamp: '🖊 Штамп',
+    movePageLeft: '◀ Порядок',
+    movePageRight: 'Порядок ▶',
+    splitRangePlaceholder: 'напр. 1-3,5',
+    exportRange: '✂ Страницы → PDF',
+    statusDrawPrompt: 'Рисуйте мышью или пальцем...',
+    statusShapePrompt: 'Перетащите, чтобы нарисовать фигуру...',
+    statusRangeEmpty: 'Укажите номера страниц, например 1-3,5',
+    statusRangeInvalid: 'Не удалось распознать номера страниц',
+    statusRangeSaved: 'Страницы сохранены в отдельный PDF',
     deleteSelected: '🗑 Удалить выделенное',
     addImage: '+ Изображение',
     save: 'Сохранить PDF',
@@ -456,6 +508,26 @@ const translations = {
     addSig: '+ Signature',
     addMask: '🧹 Eraser (cover box)',
     addHighlight: '+ Highlight',
+    highlightColorTitle: 'Highlight color',
+    addDraw: '✏️ Draw',
+    shapeRect: '▭ Rectangle',
+    shapeOval: '◯ Oval',
+    shapeArrow: '→ Arrow',
+    addShape: '+ Shape',
+    stampApproved: 'APPROVED',
+    stampPaid: 'PAID',
+    stampDraft: 'DRAFT',
+    stampDate: "Today's date",
+    addStamp: '🖊 Stamp',
+    movePageLeft: '◀ Reorder',
+    movePageRight: 'Reorder ▶',
+    splitRangePlaceholder: 'e.g. 1-3,5',
+    exportRange: '✂ Pages → PDF',
+    statusDrawPrompt: 'Draw with mouse or finger...',
+    statusShapePrompt: 'Drag to draw a shape...',
+    statusRangeEmpty: 'Enter page numbers, e.g. 1-3,5',
+    statusRangeInvalid: "Couldn't parse the page numbers",
+    statusRangeSaved: 'Pages saved as a separate PDF',
     deleteSelected: '🗑 Delete selected',
     addImage: '+ Image',
     save: 'Save PDF',
@@ -551,6 +623,26 @@ const translations = {
     addSig: '+ חתימה',
     addMask: '🧹 מחק (כיסוי)',
     addHighlight: '+ הדגשה',
+    highlightColorTitle: 'צבע ההדגשה',
+    addDraw: '✏️ ציור',
+    shapeRect: '▭ מלבן',
+    shapeOval: '◯ אליפסה',
+    shapeArrow: '→ חץ',
+    addShape: '+ צורה',
+    stampApproved: 'מאושר',
+    stampPaid: 'שולם',
+    stampDraft: 'טיוטה',
+    stampDate: 'תאריך של היום',
+    addStamp: '🖊 חותמת',
+    movePageLeft: '◀ סידור',
+    movePageRight: 'סידור ▶',
+    splitRangePlaceholder: 'למשל 1-3,5',
+    exportRange: '✂ עמודים ל-PDF',
+    statusDrawPrompt: 'ציירו עם העכבר או האצבע...',
+    statusShapePrompt: 'גררו כדי לצייר צורה...',
+    statusRangeEmpty: 'הזינו מספרי עמודים, למשל 1-3,5',
+    statusRangeInvalid: 'לא ניתן לפענח את מספרי העמודים',
+    statusRangeSaved: 'העמודים נשמרו כ-PDF נפרד',
     deleteSelected: '🗑 מחק את הנבחר',
     addImage: '+ תמונה',
     save: 'שמור PDF',
@@ -652,6 +744,12 @@ function applyTranslations(){
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     el.textContent = t(el.getAttribute('data-i18n'));
   });
+  document.querySelectorAll('[data-i18n-title]').forEach((el) => {
+    el.title = t(el.getAttribute('data-i18n-title'));
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+    el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+  });
 }
 
 function setLanguage(lang){
@@ -676,6 +774,9 @@ let totalPages = 1;
 let currentScale = 1.5;
 let currentViewport = null;
 let highlightMode = false;
+let drawMode = false;      // freehand "pencil" tool
+let shapeMode = false;     // rectangle/oval/arrow tool
+let pageOrder = null;      // null = natural 1..totalPages order; else array of original page numbers in display order
 
 // edits[pageIndex] = array of { type:'text'|'sig', xRatio, yRatio, wRatio, hRatio, ... }
 // ratios are relative to the rendered page canvas size at render time (top-left origin)
@@ -721,6 +822,18 @@ const addSigBtn = document.getElementById('addSigBtn');
 const addMaskBtn = document.getElementById('addMaskBtn');
 const addHighlightBtn = document.getElementById('addHighlightBtn');
 const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+const highlightColorPicker = document.getElementById('highlightColorPicker');
+const addDrawBtn = document.getElementById('addDrawBtn');
+const drawColorPicker = document.getElementById('drawColorPicker');
+const shapeTypeSelect = document.getElementById('shapeTypeSelect');
+const addShapeBtn = document.getElementById('addShapeBtn');
+const shapePreviewSvg = document.getElementById('shapePreviewSvg');
+const stampSelect = document.getElementById('stampSelect');
+const addStampBtn = document.getElementById('addStampBtn');
+const movePageLeftBtn = document.getElementById('movePageLeftBtn');
+const movePageRightBtn = document.getElementById('movePageRightBtn');
+const splitRangeInput = document.getElementById('splitRangeInput');
+const exportRangeBtn = document.getElementById('exportRangeBtn');
 const addImageLabel = document.getElementById('addImageLabel');
 const imageInput = document.getElementById('imageInput');
 const textHitLayer = document.getElementById('textHitLayer');
@@ -952,6 +1065,7 @@ async function loadPdfFile(file){
   formFieldValues = {};
   undoStack = [];
   redoStack = [];
+  pageOrder = null;
   selectedItemRef = null;
   selectedEl = null;
   deleteSelectedBtn.disabled = true;
@@ -963,15 +1077,21 @@ async function loadPdfFile(file){
   addSigBtn.disabled = false;
   addMaskBtn.disabled = false;
   addHighlightBtn.disabled = false;
+  addDrawBtn.disabled = false;
+  addShapeBtn.disabled = false;
+  addStampBtn.disabled = false;
   addImageLabel.style.opacity = '1';
   addImageLabel.style.pointerEvents = 'auto';
   rotateBtn.disabled = false;
   deleteBtn.disabled = false;
+  movePageLeftBtn.disabled = false;
+  movePageRightBtn.disabled = false;
   mergeLabel.style.opacity = '1';
   mergeLabel.style.pointerEvents = 'auto';
   saveBtn.disabled = false;
   exportPageBtn.disabled = false;
   exportAllBtn.disabled = false;
+  exportRangeBtn.disabled = false;
   prevPageBtn.disabled = false;
   nextPageBtn.disabled = false;
   pdfToDocxBtn.disabled = false;
@@ -1021,7 +1141,7 @@ function scheduleAutosave(){
   autosaveTimer = setTimeout(() => {
     try{
       localStorage.setItem(key, JSON.stringify({
-        edits, rotations, deletedPages: Array.from(deletedPages), formFieldValues, ts: Date.now()
+        edits, rotations, deletedPages: Array.from(deletedPages), formFieldValues, pageOrder, ts: Date.now()
       }));
     }catch(err){ /* storage full/unavailable — skip silently, not fatal */ }
   }, 800);
@@ -1037,6 +1157,7 @@ function restoreAutosave(){
     rotations = snap.rotations || {};
     deletedPages = new Set(snap.deletedPages || []);
     formFieldValues = snap.formFieldValues || {};
+    pageOrder = snap.pageOrder || null;
     setStatus(t('autosaveRestored'));
   }catch(err){ /* corrupt entry — ignore, start clean */ }
 }
@@ -1044,7 +1165,7 @@ function restoreAutosave(){
 // ---- Undo / redo: snapshot the whole mutable PDF-edit state as JSON. Simple and
 // correct; the documents this tool handles are small enough that this isn't costly. ----
 function snapshotState(){
-  return JSON.stringify({ edits, rotations, deletedPages: Array.from(deletedPages) });
+  return JSON.stringify({ edits, rotations, deletedPages: Array.from(deletedPages), pageOrder });
 }
 function pushUndo(){
   undoStack.push(snapshotState());
@@ -1056,6 +1177,7 @@ function restoreSnapshot(str){
   edits = snap.edits || {};
   rotations = snap.rotations || {};
   deletedPages = new Set(snap.deletedPages || []);
+  pageOrder = snap.pageOrder || null;
   selectedItemRef = null;
   selectedEl = null;
   deleteSelectedBtn.disabled = true;
@@ -1192,9 +1314,17 @@ async function buildFormFieldLayer(page, viewport){
   });
 }
 
+function ensurePageOrder(){
+  if(!pageOrder || pageOrder.length !== totalPages){
+    pageOrder = Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+}
+
 function updatePageInfo(){
+  ensurePageOrder();
+  const pos = pageOrder.indexOf(currentPageNum);
   const rot = rotations[currentPageNum] || 0;
-  pageInfo.textContent = currentPageNum + ' / ' + totalPages + (rot ? t('rotatedBadge', rot) : '');
+  pageInfo.textContent = (pos + 1) + ' / ' + totalPages + (rot ? t('rotatedBadge', rot) : '');
 }
 
 function updateDeletedBanner(){
@@ -1330,6 +1460,7 @@ function rebuildOverlay(){
     } else if(item.type === 'highlight'){
       const el = document.createElement('div');
       el.className = 'highlight-box';
+      el.style.background = item.color || '#ffe36b';
       el.style.left = (item.xRatio * pdfCanvas.width) + 'px';
       el.style.top = (item.yRatio * pdfCanvas.height) + 'px';
       el.style.width = (item.wRatio * pdfCanvas.width) + 'px';
@@ -1341,7 +1472,175 @@ function rebuildOverlay(){
       makeDraggable(el, item, pdfCanvas);
       attachDelete(el, idx, 'highlight');
       overlay.appendChild(el);
+    } else if(item.type === 'draw'){
+      overlay.appendChild(buildDrawEl(item, idx));
+    } else if(item.type === 'shape'){
+      overlay.appendChild(buildShapeEl(item, idx));
     }
+  });
+}
+
+// ---- Freehand drawing: a <polyline> of ratio-points inside a small absolutely
+// positioned SVG wrapper sized to the item's own bounding box, so dragging it just
+// means moving the wrapper (no need to touch every point individually while dragging). ----
+function drawItemBounds(item){
+  const xs = item.points.map((p) => p.x), ys = item.points.map((p) => p.y);
+  const minX = Math.min(...xs), minY = Math.min(...ys);
+  const maxX = Math.max(...xs), maxY = Math.max(...ys);
+  // pad is a pixel amount (stroke width margin) — convert to the same 0..1 ratio
+  // space as the points before mixing it into this math, or it swamps small ratios.
+  const padPx = (item.lineWidth || 3) + 2;
+  const padX = padPx / pdfCanvas.width, padY = padPx / pdfCanvas.height;
+  return { minX: minX - padX, minY: minY - padY, w: (maxX - minX) + padX * 2, h: (maxY - minY) + padY * 2 };
+}
+function buildDrawEl(item, idx){
+  const b = drawItemBounds(item);
+  const wrap = document.createElement('div');
+  wrap.className = 'shape-el';
+  wrap.style.left = (b.minX * pdfCanvas.width) + 'px';
+  wrap.style.top = (b.minY * pdfCanvas.height) + 'px';
+  wrap.style.width = (b.w * pdfCanvas.width) + 'px';
+  wrap.style.height = (b.h * pdfCanvas.height) + 'px';
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', `0 0 ${b.w * pdfCanvas.width} ${b.h * pdfCanvas.height}`);
+  const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+  const pts = item.points.map((p) => `${(p.x - b.minX) * pdfCanvas.width},${(p.y - b.minY) * pdfCanvas.height}`).join(' ');
+  poly.setAttribute('points', pts);
+  poly.setAttribute('fill', 'none');
+  poly.setAttribute('stroke', item.color || '#e0393b');
+  poly.setAttribute('stroke-width', item.lineWidth || 3);
+  poly.setAttribute('stroke-linecap', 'round');
+  poly.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(poly);
+  wrap.appendChild(svg);
+  makeDraggableShape(wrap, item, pdfCanvas, 'points');
+  attachDelete(wrap, idx, 'draw');
+  return wrap;
+}
+
+// ---- Shapes (rectangle/oval/arrow outline): stored as the two corner points the
+// person dragged (x1/y1 start, x2/y2 end) so an arrow keeps its direction; rect/oval
+// just use the bounding box of those two points. ----
+function buildShapeEl(item, idx){
+  const minX = Math.min(item.x1Ratio, item.x2Ratio), minY = Math.min(item.y1Ratio, item.y2Ratio);
+  const w = Math.max(0.01, Math.abs(item.x2Ratio - item.x1Ratio));
+  const h = Math.max(0.01, Math.abs(item.y2Ratio - item.y1Ratio));
+  const wrap = document.createElement('div');
+  wrap.className = 'shape-el';
+  wrap.style.left = (minX * pdfCanvas.width) + 'px';
+  wrap.style.top = (minY * pdfCanvas.height) + 'px';
+  wrap.style.width = (w * pdfCanvas.width) + 'px';
+  wrap.style.height = (h * pdfCanvas.height) + 'px';
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  const pw = w * pdfCanvas.width, ph = h * pdfCanvas.height;
+  svg.setAttribute('viewBox', `0 0 ${pw} ${ph}`);
+  renderShapeSvg(svg, item.shapeType, item, pdfCanvas.width, pdfCanvas.height, minX * pdfCanvas.width, minY * pdfCanvas.height);
+  wrap.appendChild(svg);
+  makeDraggableShape(wrap, item, pdfCanvas, 'shape');
+  attachDelete(wrap, idx, 'shape');
+  return wrap;
+}
+// pw/ph are the full canvas's pixel dimensions (used to turn the item's ratios into
+// pixels); offsetX/offsetY shift those pixels into the caller's own local coordinate
+// space (0 when the svg's viewBox already spans the whole canvas, as in the live
+// preview; the bounding box's own top-left when it's a small per-item svg, as in
+// buildShapeEl) — this keeps the math identical to renderShapeOnCanvas's.
+function renderShapeSvg(svg, shapeType, item, pw, ph, offsetX, offsetY){
+  offsetX = offsetX || 0; offsetY = offsetY || 0;
+  const color = item.color || '#e0393b';
+  const sw = item.lineWidth || 3;
+  const x1 = item.x1Ratio * pw - offsetX, y1 = item.y1Ratio * ph - offsetY;
+  const x2 = item.x2Ratio * pw - offsetX, y2 = item.y2Ratio * ph - offsetY;
+  if(shapeType === 'rect'){
+    const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    r.setAttribute('x', Math.min(x1, x2)); r.setAttribute('y', Math.min(y1, y2));
+    r.setAttribute('width', Math.max(0.01, Math.abs(x2 - x1))); r.setAttribute('height', Math.max(0.01, Math.abs(y2 - y1)));
+    r.setAttribute('fill', 'none'); r.setAttribute('stroke', color); r.setAttribute('stroke-width', sw);
+    svg.appendChild(r);
+  } else if(shapeType === 'oval'){
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+    el.setAttribute('cx', (x1 + x2) / 2); el.setAttribute('cy', (y1 + y2) / 2);
+    el.setAttribute('rx', Math.max(0.01, Math.abs(x2 - x1) / 2)); el.setAttribute('ry', Math.max(0.01, Math.abs(y2 - y1) / 2));
+    el.setAttribute('fill', 'none'); el.setAttribute('stroke', color); el.setAttribute('stroke-width', sw);
+    svg.appendChild(el);
+  } else { // arrow — line from the item's actual start point to its actual end point
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1); line.setAttribute('y1', y1); line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('stroke', color); line.setAttribute('stroke-width', sw); line.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(line);
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const headLen = Math.max(10, sw * 4);
+    const p1x = x2 - headLen * Math.cos(angle - Math.PI / 7), p1y = y2 - headLen * Math.sin(angle - Math.PI / 7);
+    const p2x = x2 - headLen * Math.cos(angle + Math.PI / 7), p2y = y2 - headLen * Math.sin(angle + Math.PI / 7);
+    const head = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    head.setAttribute('points', `${x2},${y2} ${p1x},${p1y} ${p2x},${p2y}`);
+    head.setAttribute('fill', color);
+    svg.appendChild(head);
+  }
+}
+
+// Canvas-2D mirror of renderShapeSvg, used when flattening a page to a PNG/JPEG
+// (export-as-image / ZIP-all-pages) instead of embedding vector shapes in a PDF.
+function renderShapeOnCanvas(ctx, item, cw, ch){
+  const x1 = item.x1Ratio * cw, y1 = item.y1Ratio * ch, x2 = item.x2Ratio * cw, y2 = item.y2Ratio * ch;
+  const color = item.color || '#e0393b';
+  const sw = item.lineWidth || 3;
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = sw;
+  if(item.shapeType === 'rect'){
+    ctx.strokeRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1));
+  } else if(item.shapeType === 'oval'){
+    const cx = (x1 + x2) / 2, cy = (y1 + y2) / 2, rx = Math.abs(x2 - x1) / 2, ry = Math.abs(y2 - y1) / 2;
+    ctx.beginPath(); ctx.ellipse(cx, cy, Math.max(0.01, rx), Math.max(0.01, ry), 0, 0, Math.PI * 2); ctx.stroke();
+  } else { // arrow
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const headLen = Math.max(10, sw * 4);
+    const p1x = x2 - headLen * Math.cos(angle - Math.PI / 7), p1y = y2 - headLen * Math.sin(angle - Math.PI / 7);
+    const p2x = x2 - headLen * Math.cos(angle + Math.PI / 7), p2y = y2 - headLen * Math.sin(angle + Math.PI / 7);
+    ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(p1x, p1y); ctx.lineTo(p2x, p2y); ctx.closePath(); ctx.fill();
+  }
+}
+
+// Drag a whole shape/draw item by its wrapper's left/top, translating all its stored
+// ratio-coordinates by the same delta at the end (kind === 'shape' -> x1/y1/x2/y2Ratio,
+// kind === 'points' -> every point in item.points).
+function makeDraggableShape(el, item, canvas, kind){
+  let pointerId = null, startX, startY, origLeft, origTop, dragging = false;
+  el.addEventListener('pointerdown', (e) => {
+    if(e.target.classList && e.target.classList.contains('del-btn')) return;
+    e.preventDefault();
+    pointerId = e.pointerId;
+    startX = e.clientX; startY = e.clientY;
+    origLeft = parseFloat(el.style.left) || 0;
+    origTop = parseFloat(el.style.top) || 0;
+    dragging = false;
+  });
+  el.addEventListener('pointermove', (e) => {
+    if(pointerId === null || e.pointerId !== pointerId) return;
+    e.preventDefault();
+    const dx = e.clientX - startX, dy = e.clientY - startY;
+    if(!dragging && Math.hypot(dx, dy) > 4){ dragging = true; pushUndo(); el.setPointerCapture(pointerId); }
+    if(dragging){
+      el.style.left = (origLeft + dx) + 'px';
+      el.style.top = (origTop + dy) + 'px';
+    }
+  });
+  el.addEventListener('pointerup', () => {
+    if(dragging && pointerId !== null){
+      const dxRatio = (parseFloat(el.style.left) - origLeft) / canvas.width;
+      const dyRatio = (parseFloat(el.style.top) - origTop) / canvas.height;
+      if(kind === 'points'){
+        item.points = item.points.map((p) => ({ x: p.x + dxRatio, y: p.y + dyRatio }));
+      } else {
+        item.x1Ratio += dxRatio; item.x2Ratio += dxRatio;
+        item.y1Ratio += dyRatio; item.y2Ratio += dyRatio;
+      }
+      try{ el.releasePointerCapture(pointerId); }catch(err){}
+      rebuildOverlay();
+      scheduleAutosave();
+    }
+    dragging = false;
+    pointerId = null;
   });
 }
 
@@ -1545,7 +1844,8 @@ drawLayer.addEventListener('pointerup', (e) => {
       xRatio: parseFloat(drawRect.style.left) / pdfCanvas.width,
       yRatio: parseFloat(drawRect.style.top) / pdfCanvas.height,
       wRatio: w / pdfCanvas.width,
-      hRatio: h / pdfCanvas.height
+      hRatio: h / pdfCanvas.height,
+      color: highlightColorPicker.value
     });
     scheduleAutosave();
   }
@@ -1555,6 +1855,153 @@ drawLayer.addEventListener('pointerup', (e) => {
   drawLayer.classList.remove('active');
   setStatus('');
   rebuildOverlay();
+});
+
+// ---- Freehand draw ("pencil") tool: click the button, then drag to scribble.
+// Points are collected in canvas-ratio space as the pointer moves, previewed live
+// with a temporary SVG polyline, and saved as a single 'draw' item on release. ----
+let drawPoints = null;
+addDrawBtn.addEventListener('click', () => {
+  drawMode = true;
+  drawLayer.classList.add('active');
+  setStatus(t('statusDrawPrompt'));
+});
+drawLayer.addEventListener('pointerdown', (e) => {
+  if(!drawMode) return;
+  e.preventDefault();
+  const rect = drawLayer.getBoundingClientRect();
+  drawPoints = [{ x: (e.clientX - rect.left) / pdfCanvas.width, y: (e.clientY - rect.top) / pdfCanvas.height }];
+  drawLayer.setPointerCapture(e.pointerId);
+  showShapePreview();
+});
+drawLayer.addEventListener('pointermove', (e) => {
+  if(!drawMode || !drawPoints) return;
+  e.preventDefault();
+  const rect = drawLayer.getBoundingClientRect();
+  drawPoints.push({ x: (e.clientX - rect.left) / pdfCanvas.width, y: (e.clientY - rect.top) / pdfCanvas.height });
+  renderPolylinePreview(drawPoints, drawColorPicker.value);
+});
+drawLayer.addEventListener('pointerup', () => {
+  if(!drawMode || !drawPoints) return;
+  if(drawPoints.length > 1){
+    pushUndo();
+    if(!edits[currentPageNum]) edits[currentPageNum] = [];
+    edits[currentPageNum].push({ type: 'draw', points: drawPoints, color: drawColorPicker.value, lineWidth: 3 });
+    scheduleAutosave();
+  }
+  drawPoints = null;
+  hideShapePreview();
+  drawMode = false;
+  drawLayer.classList.remove('active');
+  setStatus('');
+  rebuildOverlay();
+});
+
+// ---- Shape tool (rectangle / oval / arrow outline): drag from a start point to an
+// end point, same gesture as the highlight tool, but preview + stored data differ. ----
+let shapeStart = null;
+addShapeBtn.addEventListener('click', () => {
+  shapeMode = true;
+  drawLayer.classList.add('active');
+  setStatus(t('statusShapePrompt'));
+});
+drawLayer.addEventListener('pointerdown', (e) => {
+  if(!shapeMode) return;
+  e.preventDefault();
+  const rect = drawLayer.getBoundingClientRect();
+  shapeStart = { x: (e.clientX - rect.left) / pdfCanvas.width, y: (e.clientY - rect.top) / pdfCanvas.height };
+  showShapePreview();
+  drawLayer.setPointerCapture(e.pointerId);
+});
+drawLayer.addEventListener('pointermove', (e) => {
+  if(!shapeMode || !shapeStart) return;
+  e.preventDefault();
+  const rect = drawLayer.getBoundingClientRect();
+  const x2 = (e.clientX - rect.left) / pdfCanvas.width, y2 = (e.clientY - rect.top) / pdfCanvas.height;
+  renderShapePreview(shapeTypeSelect.value, shapeStart.x, shapeStart.y, x2, y2, drawColorPicker.value);
+});
+drawLayer.addEventListener('pointerup', (e) => {
+  if(!shapeMode || !shapeStart) return;
+  const rect = drawLayer.getBoundingClientRect();
+  const x2 = (e.clientX - rect.left) / pdfCanvas.width, y2 = (e.clientY - rect.top) / pdfCanvas.height;
+  if(Math.abs(x2 - shapeStart.x) * pdfCanvas.width > 4 || Math.abs(y2 - shapeStart.y) * pdfCanvas.height > 4){
+    pushUndo();
+    if(!edits[currentPageNum]) edits[currentPageNum] = [];
+    edits[currentPageNum].push({
+      type: 'shape', shapeType: shapeTypeSelect.value,
+      x1Ratio: shapeStart.x, y1Ratio: shapeStart.y, x2Ratio: x2, y2Ratio: y2,
+      color: drawColorPicker.value, lineWidth: 3
+    });
+    scheduleAutosave();
+  }
+  shapeStart = null;
+  hideShapePreview();
+  shapeMode = false;
+  drawLayer.classList.remove('active');
+  setStatus('');
+  rebuildOverlay();
+});
+
+// Shared live-preview SVG for both the draw and shape tools (drawLayer's one child
+// besides the highlight-drag drawRect).
+function showShapePreview(){ shapePreviewSvg.style.display = 'block'; }
+function hideShapePreview(){ shapePreviewSvg.style.display = 'none'; shapePreviewSvg.innerHTML = ''; }
+function renderPolylinePreview(points, color){
+  shapePreviewSvg.setAttribute('viewBox', `0 0 ${pdfCanvas.width} ${pdfCanvas.height}`);
+  shapePreviewSvg.style.left = '0px'; shapePreviewSvg.style.top = '0px';
+  shapePreviewSvg.style.width = pdfCanvas.width + 'px'; shapePreviewSvg.style.height = pdfCanvas.height + 'px';
+  const pts = points.map((p) => `${p.x * pdfCanvas.width},${p.y * pdfCanvas.height}`).join(' ');
+  shapePreviewSvg.innerHTML = `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+}
+function renderShapePreview(shapeType, x1, y1, x2, y2, color){
+  shapePreviewSvg.setAttribute('viewBox', `0 0 ${pdfCanvas.width} ${pdfCanvas.height}`);
+  shapePreviewSvg.style.left = '0px'; shapePreviewSvg.style.top = '0px';
+  shapePreviewSvg.style.width = pdfCanvas.width + 'px'; shapePreviewSvg.style.height = pdfCanvas.height + 'px';
+  shapePreviewSvg.innerHTML = '';
+  renderShapeSvg(shapePreviewSvg, shapeType, { x1Ratio: x1, y1Ratio: y1, x2Ratio: x2, y2Ratio: y2, color, lineWidth: 3 }, pdfCanvas.width, pdfCanvas.height, 0, 0);
+}
+
+// ---- Stamp tool: a preset text ("APPROVED"/"PAID"/"DRAFT"/today's date) rendered to
+// a small canvas and inserted exactly like an uploaded image, so it reuses all the
+// existing image move/resize/delete/save logic for free. ----
+addStampBtn.addEventListener('click', () => {
+  const kind = stampSelect.value;
+  const label = kind === 'date'
+    ? new Date().toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : currentLang === 'he' ? 'he-IL' : 'en-US')
+    : t('stamp' + kind.charAt(0).toUpperCase() + kind.slice(1));
+  const colors = { approved: '#1e8e3e', paid: '#1e8e3e', draft: '#d14343', date: '#3b6fe0' };
+  const color = colors[kind] || '#3b6fe0';
+  const off = document.createElement('canvas');
+  const padX = 24, padY = 14, fontSize = 34;
+  off.width = 10; off.height = 10; // temp, resized below once we know text metrics
+  let ctx = off.getContext('2d');
+  ctx.font = `bold ${fontSize}px Helvetica, Arial, sans-serif`;
+  const textW = ctx.measureText(label).width;
+  off.width = Math.ceil(textW + padX * 2);
+  off.height = Math.ceil(fontSize + padY * 2);
+  ctx = off.getContext('2d'); // re-fetch after resize (resizing clears the context state)
+  ctx.font = `bold ${fontSize}px Helvetica, Arial, sans-serif`;
+  const lw = 4;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lw;
+  ctx.strokeRect(lw/2, lw/2, off.width - lw, off.height - lw);
+  ctx.fillStyle = color;
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'center';
+  ctx.fillText(label, off.width / 2, off.height / 2);
+  const dataUrl = off.toDataURL('image/png');
+  pushUndo();
+  if(!edits[currentPageNum]) edits[currentPageNum] = [];
+  const wRatio = Math.min(0.35, (off.width / pdfCanvas.width) * 1.3);
+  edits[currentPageNum].push({
+    type: 'image',
+    xRatio: 0.38, yRatio: 0.38,
+    wRatio,
+    hRatio: wRatio * (off.height / off.width),
+    dataUrl
+  });
+  rebuildOverlay();
+  scheduleAutosave();
 });
 
 // ---- Insert image (stamp, logo, photo) ----
@@ -1592,11 +2039,41 @@ imageInput.addEventListener('change', (e) => {
   imageInput.value = '';
 });
 
+// Navigation walks the *display* order (pageOrder), not raw page numbers, so moving
+// a page with the reorder buttons below actually changes what prev/next visit next.
 prevPageBtn.addEventListener('click', async () => {
-  if(currentPageNum > 1){ currentPageNum--; await renderPage(currentPageNum); }
+  ensurePageOrder();
+  const pos = pageOrder.indexOf(currentPageNum);
+  if(pos > 0){ currentPageNum = pageOrder[pos - 1]; await renderPage(currentPageNum); }
 });
 nextPageBtn.addEventListener('click', async () => {
-  if(currentPageNum < totalPages){ currentPageNum++; await renderPage(currentPageNum); }
+  ensurePageOrder();
+  const pos = pageOrder.indexOf(currentPageNum);
+  if(pos < pageOrder.length - 1){ currentPageNum = pageOrder[pos + 1]; await renderPage(currentPageNum); }
+});
+
+// ---- Reorder pages: swap the current page with its left/right neighbour in the
+// display order. The underlying page content and its edits stay keyed by the
+// original page number — only the order they're displayed/saved in changes. ----
+movePageLeftBtn.addEventListener('click', () => {
+  ensurePageOrder();
+  const pos = pageOrder.indexOf(currentPageNum);
+  if(pos > 0){
+    pushUndo();
+    [pageOrder[pos - 1], pageOrder[pos]] = [pageOrder[pos], pageOrder[pos - 1]];
+    updatePageInfo();
+    scheduleAutosave();
+  }
+});
+movePageRightBtn.addEventListener('click', () => {
+  ensurePageOrder();
+  const pos = pageOrder.indexOf(currentPageNum);
+  if(pos < pageOrder.length - 1){
+    pushUndo();
+    [pageOrder[pos], pageOrder[pos + 1]] = [pageOrder[pos + 1], pageOrder[pos]];
+    updatePageInfo();
+    scheduleAutosave();
+  }
 });
 
 // ---- Rotate / delete current page (applied at save time) ----
@@ -1780,7 +2257,7 @@ async function renderFlattenedPageBlob(pageNum){
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(item.xRatio * off.width, item.yRatio * off.height, item.wRatio * off.width, item.hRatio * off.height);
     } else if(item.type === 'highlight'){
-      ctx.fillStyle = '#ffe36b';
+      ctx.fillStyle = item.color || '#ffe36b';
       ctx.globalAlpha = 0.45;
       ctx.fillRect(item.xRatio * off.width, item.yRatio * off.height, item.wRatio * off.width, item.hRatio * off.height);
       ctx.globalAlpha = 1;
@@ -1800,6 +2277,19 @@ async function renderFlattenedPageBlob(pageNum){
         };
         im.src = item.dataUrl;
       });
+    } else if(item.type === 'draw'){
+      ctx.strokeStyle = item.color || '#e0393b';
+      ctx.lineWidth = (item.lineWidth || 3) * (off.width / pdfCanvas.width);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      item.points.forEach((p, i) => {
+        const x = p.x * off.width, y = p.y * off.height;
+        if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    } else if(item.type === 'shape'){
+      renderShapeOnCanvas(ctx, item, off.width, off.height);
     }
   }
 
@@ -1824,100 +2314,171 @@ async function renderFlattenedPageBlob(pageNum){
   return new Promise((resolve) => off.toBlob(resolve, mime));
 }
 
+// Draws every stored edit (mask/text/sig/image/highlight/draw/shape) for every page
+// that has any, plus accumulated page rotations, directly onto pdfDoc's own pages.
+// Shared by the normal "Save PDF" flow and the "pages -> separate PDF" (split) flow,
+// so both stay in sync automatically.
+async function applyEditsAndRotations(pdfDoc){
+  const pages = pdfDoc.getPages();
+
+  for(const pageNumStr of Object.keys(edits)){
+    const pageNum = parseInt(pageNumStr, 10);
+    if(deletedPages.has(pageNum)) continue; // skip edits on pages that will be removed
+    const pageIndex = pageNum - 1;
+    if(pageIndex < 0 || pageIndex >= pages.length) continue;
+    const page = pages[pageIndex];
+    const { width: pw, height: ph } = page.getSize();
+    const items = edits[pageNum];
+
+    for(const item of items){
+      if(item.type === 'mask'){
+        const x = item.xRatio * pw;
+        const yTop = item.yRatio * ph;
+        const w = item.wRatio * pw;
+        const h = item.hRatio * ph;
+        const y = ph - yTop - h;
+        page.drawRectangle({ x, y, width: w, height: h, color: rgb(1, 1, 1) });
+      } else if(item.type === 'text'){
+        const x = item.xRatio * pw;
+        const yTop = item.yRatio * ph;
+        const fontSize = item.fontSize * (pw / pdfCanvas.width);
+        const y = ph - yTop - fontSize; // pdf-lib origin is bottom-left
+        const { r, g, b } = hexToRgb(item.color);
+        page.drawText(item.text || '', {
+          x, y, size: fontSize,
+          color: rgb(r, g, b)
+        });
+      } else if(item.type === 'sig'){
+        const pngBytes = dataUrlToBytes(item.dataUrl);
+        const pngImage = await pdfDoc.embedPng(pngBytes);
+        const w = item.wRatio * pw;
+        const h = w * (pngImage.height / pngImage.width);
+        const x = item.xRatio * pw;
+        const yTop = item.yRatio * ph;
+        const y = ph - yTop - h;
+        page.drawImage(pngImage, { x, y, width: w, height: h });
+      } else if(item.type === 'image'){
+        const isPng = item.dataUrl.startsWith('data:image/png');
+        const bytes = dataUrlToBytes(item.dataUrl);
+        const embedded = isPng ? await pdfDoc.embedPng(bytes) : await pdfDoc.embedJpg(bytes);
+        const w = item.wRatio * pw;
+        const h = item.hRatio * ph;
+        const x = item.xRatio * pw;
+        const yTop = item.yRatio * ph;
+        const y = ph - yTop - h;
+        page.drawImage(embedded, { x, y, width: w, height: h });
+      } else if(item.type === 'highlight'){
+        const x = item.xRatio * pw;
+        const yTop = item.yRatio * ph;
+        const w = item.wRatio * pw;
+        const h = item.hRatio * ph;
+        const y = ph - yTop - h;
+        const { r, g, b } = hexToRgb(item.color || '#ffe36b');
+        page.drawRectangle({ x, y, width: w, height: h, color: rgb(r, g, b), opacity: 0.45 });
+      } else if(item.type === 'draw'){
+        const { r, g, b } = hexToRgb(item.color || '#e0393b');
+        const thickness = (item.lineWidth || 3) * (pw / pdfCanvas.width);
+        for(let i = 1; i < item.points.length; i++){
+          const p0 = item.points[i - 1], p1 = item.points[i];
+          page.drawLine({
+            start: { x: p0.x * pw, y: ph - p0.y * ph },
+            end: { x: p1.x * pw, y: ph - p1.y * ph },
+            thickness, color: rgb(r, g, b)
+          });
+        }
+      } else if(item.type === 'shape'){
+        const { r, g, b } = hexToRgb(item.color || '#e0393b');
+        const thickness = (item.lineWidth || 3) * (pw / pdfCanvas.width);
+        const x1 = item.x1Ratio * pw, y1 = ph - item.y1Ratio * ph;
+        const x2 = item.x2Ratio * pw, y2 = ph - item.y2Ratio * ph;
+        if(item.shapeType === 'rect'){
+          page.drawRectangle({
+            x: Math.min(x1, x2), y: Math.min(y1, y2),
+            width: Math.abs(x2 - x1), height: Math.abs(y2 - y1),
+            borderColor: rgb(r, g, b), borderWidth: thickness
+          });
+        } else if(item.shapeType === 'oval'){
+          page.drawEllipse({
+            x: (x1 + x2) / 2, y: (y1 + y2) / 2,
+            xScale: Math.abs(x2 - x1) / 2, yScale: Math.abs(y2 - y1) / 2,
+            borderColor: rgb(r, g, b), borderWidth: thickness
+          });
+        } else { // arrow: shaft + two short flank lines for the head (avoids SVG-path y-flip ambiguity)
+          page.drawLine({ start: { x: x1, y: y1 }, end: { x: x2, y: y2 }, thickness, color: rgb(r, g, b) });
+          const angle = Math.atan2(y2 - y1, x2 - x1);
+          const headLen = Math.max(10, thickness * 4);
+          const a1 = angle + Math.PI - Math.PI / 7, a2 = angle + Math.PI + Math.PI / 7;
+          page.drawLine({ start: { x: x2, y: y2 }, end: { x: x2 + headLen * Math.cos(a1), y: y2 + headLen * Math.sin(a1) }, thickness, color: rgb(r, g, b) });
+          page.drawLine({ start: { x: x2, y: y2 }, end: { x: x2 + headLen * Math.cos(a2), y: y2 + headLen * Math.sin(a2) }, thickness, color: rgb(r, g, b) });
+        }
+      }
+    }
+  }
+
+  // Apply rotations (added on top of each page's existing rotation)
+  for(const pageNumStr of Object.keys(rotations)){
+    const pageNum = parseInt(pageNumStr, 10);
+    if(deletedPages.has(pageNum)) continue;
+    const pageIndex = pageNum - 1;
+    if(pageIndex < 0 || pageIndex >= pages.length) continue;
+    const extra = rotations[pageNum];
+    if(!extra) continue;
+    const page = pages[pageIndex];
+    const current = page.getRotation().angle;
+    page.setRotation(degrees((current + extra) % 360));
+  }
+}
+
+function addFreeWatermark(doc){
+  if(isSupported()) return;
+  doc.getPages().forEach((page) => {
+    const { width } = page.getSize();
+    page.drawText('VArt PDF Editor — free tool', {
+      x: Math.max(8, width - 160), y: 8, size: 7, color: rgb(0.6, 0.6, 0.6), opacity: 0.55
+    });
+  });
+}
+
 // ---- Save / export ----
 saveBtn.addEventListener('click', async () => {
   setStatus(t('statusSaving'));
   try{
     const pdfDoc = await PDFDocument.load(originalBytes.slice(0));
-    const pages = pdfDoc.getPages();
+    await applyEditsAndRotations(pdfDoc);
 
-    for(const pageNumStr of Object.keys(edits)){
-      const pageNum = parseInt(pageNumStr, 10);
-      if(deletedPages.has(pageNum)) continue; // skip edits on pages that will be removed
-      const pageIndex = pageNum - 1;
-      if(pageIndex < 0 || pageIndex >= pages.length) continue;
-      const page = pages[pageIndex];
-      const { width: pw, height: ph } = page.getSize();
-      const items = edits[pageNum];
-
-      for(const item of items){
-        if(item.type === 'mask'){
-          const x = item.xRatio * pw;
-          const yTop = item.yRatio * ph;
-          const w = item.wRatio * pw;
-          const h = item.hRatio * ph;
-          const y = ph - yTop - h;
-          page.drawRectangle({ x, y, width: w, height: h, color: rgb(1, 1, 1) });
-        } else if(item.type === 'text'){
-          const x = item.xRatio * pw;
-          const yTop = item.yRatio * ph;
-          const fontSize = item.fontSize * (pw / pdfCanvas.width);
-          const y = ph - yTop - fontSize; // pdf-lib origin is bottom-left
-          const { r, g, b } = hexToRgb(item.color);
-          page.drawText(item.text || '', {
-            x, y, size: fontSize,
-            color: rgb(r, g, b)
-          });
-        } else if(item.type === 'sig'){
-          const pngBytes = dataUrlToBytes(item.dataUrl);
-          const pngImage = await pdfDoc.embedPng(pngBytes);
-          const w = item.wRatio * pw;
-          const h = w * (pngImage.height / pngImage.width);
-          const x = item.xRatio * pw;
-          const yTop = item.yRatio * ph;
-          const y = ph - yTop - h;
-          page.drawImage(pngImage, { x, y, width: w, height: h });
-        } else if(item.type === 'image'){
-          const isPng = item.dataUrl.startsWith('data:image/png');
-          const bytes = dataUrlToBytes(item.dataUrl);
-          const embedded = isPng ? await pdfDoc.embedPng(bytes) : await pdfDoc.embedJpg(bytes);
-          const w = item.wRatio * pw;
-          const h = item.hRatio * ph;
-          const x = item.xRatio * pw;
-          const yTop = item.yRatio * ph;
-          const y = ph - yTop - h;
-          page.drawImage(embedded, { x, y, width: w, height: h });
-        } else if(item.type === 'highlight'){
-          const x = item.xRatio * pw;
-          const yTop = item.yRatio * ph;
-          const w = item.wRatio * pw;
-          const h = item.hRatio * ph;
-          const y = ph - yTop - h;
-          page.drawRectangle({ x, y, width: w, height: h, color: rgb(1, 0.89, 0.42), opacity: 0.45 });
-        }
-      }
+    // Reorder + remove deleted pages together, respecting pageOrder if the person
+    // used the "Порядок" (reorder) buttons — otherwise keep the simpler/faster
+    // in-place removePage path. Rotations above were already applied to pdfDoc's
+    // own pages by original page number, so they carry over through the copy either way.
+    ensurePageOrder();
+    const naturalOrder = pageOrder.every((n, i) => n === i + 1);
+    let finalDoc = pdfDoc;
+    if(!naturalOrder){
+      const orderedIndices = pageOrder
+        .filter((n) => !deletedPages.has(n))
+        .map((n) => n - 1)
+        .filter((i) => i >= 0 && i < pdfDoc.getPageCount());
+      finalDoc = await PDFDocument.create();
+      const copied = await finalDoc.copyPages(pdfDoc, orderedIndices);
+      copied.forEach((p) => finalDoc.addPage(p));
+    } else {
+      const toRemove = Array.from(deletedPages)
+        .map((n) => n - 1)
+        .filter((i) => i >= 0 && i < pdfDoc.getPageCount())
+        .sort((a, b) => b - a);
+      for(const idx of toRemove) pdfDoc.removePage(idx);
     }
-
-    // Apply rotations (added on top of each page's existing rotation)
-    for(const pageNumStr of Object.keys(rotations)){
-      const pageNum = parseInt(pageNumStr, 10);
-      if(deletedPages.has(pageNum)) continue;
-      const pageIndex = pageNum - 1;
-      if(pageIndex < 0 || pageIndex >= pages.length) continue;
-      const extra = rotations[pageNum];
-      if(!extra) continue;
-      const page = pages[pageIndex];
-      const current = page.getRotation().angle;
-      page.setRotation(degrees((current + extra) % 360));
-    }
-
-    // Remove deleted pages (descending order so indices stay valid)
-    const toRemove = Array.from(deletedPages)
-      .map((n) => n - 1)
-      .filter((i) => i >= 0 && i < pdfDoc.getPageCount())
-      .sort((a, b) => b - a);
-    for(const idx of toRemove) pdfDoc.removePage(idx);
 
     // Append merged PDFs, in the order they were added
     for(const merge of pendingMerges){
       const mergeDoc = await PDFDocument.load(merge.bytes.slice(0));
-      const copied = await pdfDoc.copyPages(mergeDoc, mergeDoc.getPageIndices());
-      copied.forEach((p) => pdfDoc.addPage(p));
+      const copied = await finalDoc.copyPages(mergeDoc, mergeDoc.getPageIndices());
+      copied.forEach((p) => finalDoc.addPage(p));
     }
 
     // Write form-field values back in, if the PDF has an AcroForm.
     try{
-      const form = pdfDoc.getForm();
+      const form = finalDoc.getForm();
       Object.entries(formFieldValues).forEach(([name, val]) => {
         try{ form.getTextField(name).setText(String(val ?? '')); return; }catch(e1){}
         try{ const cb = form.getCheckBox(name); if(val) cb.check(); else cb.uncheck(); }catch(e2){}
@@ -1926,18 +2487,57 @@ saveBtn.addEventListener('click', async () => {
 
     // Small watermark unless the person has already supported the project — see the
     // "Уже поддержал" link in the header. Soft nudge, never blocks the export itself.
-    if(!isSupported()){
-      pdfDoc.getPages().forEach((page) => {
-        const { width } = page.getSize();
-        page.drawText('VArt PDF Editor — free tool', {
-          x: Math.max(8, width - 160), y: 8, size: 7, color: rgb(0.6, 0.6, 0.6), opacity: 0.55
-        });
-      });
-    }
+    addFreeWatermark(finalDoc);
 
-    const outBytes = await pdfDoc.save();
+    const outBytes = await finalDoc.save();
     downloadBlob(outBytes, 'edited.pdf', 'application/pdf');
     setStatus(t('statusSaved'));
+  }catch(err){
+    console.error(err);
+    setStatus(t('statusSaveError'));
+    alert(t('saveErrorAlert', err.message));
+  }
+});
+
+// ---- Split: export a chosen set of pages (as currently shown/ordered in the
+// viewer — "1-3,5" refers to display position, same numbers the page counter
+// shows) into their own standalone PDF, edits/rotations included. ----
+function parsePageRange(rangeStr, maxPos){
+  const out = [];
+  const seen = new Set();
+  const parts = rangeStr.split(',').map((s) => s.trim()).filter(Boolean);
+  for(const part of parts){
+    const m = part.match(/^(\d+)(?:-(\d+))?$/);
+    if(!m) return null;
+    let a = parseInt(m[1], 10), b = m[2] ? parseInt(m[2], 10) : a;
+    if(a > b){ const tmp = a; a = b; b = tmp; }
+    for(let n = a; n <= b; n++){
+      if(n >= 1 && n <= maxPos && !seen.has(n)){ seen.add(n); out.push(n); }
+    }
+  }
+  return out.length ? out : null;
+}
+
+exportRangeBtn.addEventListener('click', async () => {
+  const raw = splitRangeInput.value.trim();
+  if(!raw){ setStatus(t('statusRangeEmpty')); return; }
+  ensurePageOrder();
+  const positions = parsePageRange(raw, totalPages);
+  if(!positions){ setStatus(t('statusRangeInvalid')); return; }
+  setStatus(t('statusSaving'));
+  try{
+    const pdfDoc = await PDFDocument.load(originalBytes.slice(0));
+    await applyEditsAndRotations(pdfDoc);
+    const originalNums = positions.map((pos) => pageOrder[pos - 1]).filter((n) => n && !deletedPages.has(n));
+    const indices = originalNums.map((n) => n - 1).filter((i) => i >= 0 && i < pdfDoc.getPageCount());
+    if(!indices.length){ setStatus(t('statusRangeInvalid')); return; }
+    const outDoc = await PDFDocument.create();
+    const copied = await outDoc.copyPages(pdfDoc, indices);
+    copied.forEach((p) => outDoc.addPage(p));
+    addFreeWatermark(outDoc);
+    const outBytes = await outDoc.save();
+    downloadBlob(outBytes, 'pages.pdf', 'application/pdf');
+    setStatus(t('statusRangeSaved'));
   }catch(err){
     console.error(err);
     setStatus(t('statusSaveError'));
