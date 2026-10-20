@@ -1,0 +1,2457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="title">PDF Editor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{
+    --bg:#f4f4f6; --panel:#ffffff; --ink:#1c1c1e; --muted:#6b6b70;
+    --accent:#3b6fe0; --accent-ink:#ffffff; --border:#e1e1e6; --danger:#d14343;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#17181b; --panel:#222327; --ink:#f0f0f2; --muted:#9a9aa0; --border:#3a3b40; }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+  header{
+    display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+    padding:12px 16px;background:var(--panel);border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:10;
+  }
+  header h1{font-size:16px;margin:0 16px 0 0;white-space:nowrap;}
+  button, .file-btn{
+    background:var(--accent);color:var(--accent-ink);border:none;border-radius:8px;
+    padding:8px 14px;font-size:13px;cursor:pointer;font-weight:600;
+  }
+  button.secondary{background:var(--panel);color:var(--ink);border:1px solid var(--border);}
+  button.danger{background:var(--danger);}
+  button:disabled{opacity:.4;cursor:not-allowed;}
+  input[type=file]{display:none;}
+  select, input[type=color]{
+    border:1px solid var(--border);border-radius:6px;padding:6px 8px;background:var(--panel);color:var(--ink);
+  }
+  main{padding:16px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+  #empty{color:var(--muted);text-align:center;margin-top:64px;font-size:14px;max-width:320px;}
+  .page-wrap{
+    position:relative;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15);
+    max-width:100%;
+  }
+  .page-wrap canvas{display:block;max-width:100%;height:auto;}
+  .overlay{position:absolute;top:0;left:0;right:0;bottom:0;}
+  .text-box{
+    position:absolute;min-width:20px;padding:2px 4px;font-family:Helvetica,Arial,sans-serif;
+    border:1px dashed transparent;cursor:move;outline:none;white-space:pre;
+  }
+  .text-box:hover, .text-box:focus{border-color:var(--accent);}
+  .sig-img{position:absolute;cursor:move;}
+  .mask-box{
+    position:absolute;background:#ffffff;cursor:move;border:1px dashed rgba(0,0,0,.25);
+  }
+  .resize-handle{
+    position:absolute;right:-5px;bottom:-5px;width:12px;height:12px;border-radius:50%;
+    background:var(--accent);cursor:nwse-resize;touch-action:none;
+  }
+  .image-el{position:absolute;cursor:move;}
+  .highlight-box{position:absolute;background:#ffe36b;opacity:.45;cursor:move;}
+  #deletedBanner{
+    position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(209,67,67,.15);
+    display:none;align-items:center;justify-content:center;text-align:center;padding:16px;z-index:8;
+  }
+  #deletedBanner.show{display:flex;}
+  #deletedBanner .card{background:var(--panel);border:1px solid var(--danger);border-radius:10px;padding:12px 16px;}
+  .merge-badge{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;}
+  .merge-badge a{color:var(--accent);cursor:pointer;text-decoration:underline;}
+  #docxSection{display:none;padding:16px;}
+  #docxSection.show{display:block;}
+  .docx-toolbar{
+    display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px;
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:8px;
+  }
+  #docxEditor{
+    background:#fff;color:#000;max-width:800px;margin:0 auto;padding:40px;min-height:600px;
+    border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.1);line-height:1.5;
+    font-family:Georgia,"Times New Roman",serif;outline:none;
+  }
+  .docx-toolbar button.ghost{
+    background:transparent;color:var(--ink);border:1px solid var(--border);padding:6px 10px;
+  }
+  #textHitLayer{position:absolute;top:0;left:0;pointer-events:none;}
+  .text-hit{
+    position:absolute;pointer-events:auto;cursor:text;background:transparent;
+  }
+  .text-hit:hover{background:rgba(59,111,224,.18);outline:1px dashed var(--accent);}
+  #drawLayer{
+    position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:5;
+  }
+  #drawLayer.active{pointer-events:auto;cursor:crosshair;}
+  #drawRect{
+    position:absolute;background:#ffe36b;opacity:.45;border:1px dashed #cc9a00;display:none;pointer-events:none;
+  }
+  .toolbar-group{display:flex;gap:4px;align-items:center;padding:4px 8px;border-left:1px solid var(--border);}
+  .toolbar-group:first-of-type{border-left:none;}
+  html[dir="rtl"] .toolbar-group{border-left:none;border-right:1px solid var(--border);}
+  html[dir="rtl"] .toolbar-group:first-of-type{border-right:none;}
+  html[dir="rtl"] header h1{margin:0 0 0 16px;}
+  html[dir="rtl"] .status{margin-left:0;margin-right:auto;}
+  #sigModal{
+    position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;
+    align-items:center;justify-content:center;z-index:50;
+  }
+  #sigModal.open{display:flex;}
+  .sig-card{
+    background:var(--panel);border-radius:12px;padding:16px;width:min(420px,90vw);
+  }
+  .sig-card h2{margin:0 0 12px;font-size:15px;}
+  #sigCanvas{
+    width:100%;height:160px;background:#fff;border:1px solid var(--border);border-radius:8px;touch-action:none;
+  }
+  .sig-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px;}
+  small.hint{color:var(--muted);font-size:12px;display:block;margin-top:4px;}
+  .status{font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap;}
+  .support-link{
+    font-size:12px;color:#ffdd57;background:#2a2a2a;border:1px solid #444;
+    border-radius:999px;padding:6px 12px;text-decoration:none;white-space:nowrap;
+    transition:opacity .15s;
+  }
+  .support-link:hover{opacity:.8;}
+  html[dir="rtl"] .support-link{margin-right:0;}
+  #docxEditor table{border-collapse:collapse;width:100%;margin:12px 0;}
+  #docxEditor table td,#docxEditor table th{border:1px solid #888;padding:6px 8px;min-width:40px;vertical-align:top;}
+  #docxEditor img{max-width:100%;height:auto;display:inline-block;}
+  .docx-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;}
+  #formFieldLayer{position:absolute;top:0;left:0;}
+  .form-field-input{
+    position:absolute;border:1px solid rgba(59,111,224,.6);background:rgba(59,111,224,.08);
+    font-size:12px;padding:1px 3px;box-sizing:border-box;
+  }
+  .form-field-input[type=checkbox]{width:16px!important;height:16px!important;padding:0;}
+  .drop-active{outline:3px dashed var(--accent);outline-offset:-3px;}
+  #accessGate{
+    position:fixed;inset:0;background:rgba(10,10,12,.92);display:none;
+    align-items:center;justify-content:center;z-index:200;padding:20px;
+  }
+  #accessGate.open{display:flex;}
+  .gate-card{
+    background:var(--panel);color:var(--ink);border-radius:14px;padding:28px;
+    width:min(420px,92vw);text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.4);
+  }
+  .gate-card h2{margin:0 0 10px;font-size:19px;}
+  .gate-card p{margin:0 0 18px;color:var(--muted);font-size:14px;line-height:1.5;}
+  .gate-card input[type=email]{
+    width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;
+    background:var(--bg);color:var(--ink);font-size:14px;margin-bottom:12px;
+  }
+  .gate-card button{width:100%;margin-bottom:8px;padding:11px;font-size:14px;}
+  .gate-card a.gate-subscribe{
+    display:block;width:100%;padding:11px;font-size:14px;font-weight:600;border-radius:8px;
+    background:var(--accent);color:var(--accent-ink);text-decoration:none;margin-bottom:8px;box-sizing:border-box;
+  }
+  .gate-trial-note{font-size:12px;color:var(--muted);margin-top:4px;}
+  .support-ok{color:#4caf50;}
+  #xlsxSection{display:none;padding:16px;}
+  #xlsxSection.show{display:block;}
+  .xlsx-toolbar{
+    display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:8px;
+  }
+  #sheetWrap{overflow:auto;max-width:100%;}
+  #sheetTable{border-collapse:collapse;background:#fff;color:#000;}
+  #sheetTable th, #sheetTable td{
+    border:1px solid #ccc;min-width:70px;padding:4px 6px;font-size:13px;text-align:left;
+  }
+  #sheetTable th{background:#eee;position:sticky;top:0;}
+  #sheetTable td[contenteditable]:focus{outline:2px solid var(--accent);background:#fffde7;}
+</style>
+</head>
+<body>
+
+<div id="accessGate">
+  <div class="gate-card">
+    <h2 id="gateTitle" data-i18n="gateTrialTitle">Бесплатный тест на 3 дня</h2>
+    <p id="gateMsg" data-i18n="gateTrialMsg">Введите email, чтобы начать — доступ ко всем функциям на 3 дня, без карты.</p>
+    <div id="gateEmailForm">
+      <input type="email" id="gateEmailInput" placeholder="you@example.com" autocomplete="email">
+      <button id="gateEmailSubmit" data-i18n="gateStartTrial">Начать тест</button>
+    </div>
+    <div id="gateSubscribeForm" style="display:none;">
+      <a id="gateSubscribeLink" class="gate-subscribe" href="https://vart-tools.lemonsqueezy.com/checkout/buy/0a510adf-c949-4e2d-b00a-a6c6a76f1485" target="_blank" rel="noopener noreferrer" data-i18n="gateSubscribeBtn">Оформить Pro — 5₪/мес</a>
+      <button id="gateRecheckBtn" class="secondary" data-i18n="gateRecheckBtn">Я уже оплатил — проверить</button>
+      <div class="gate-trial-note" id="gateSubEmailNote"></div>
+    </div>
+  </div>
+</div>
+
+<header>
+  <h1 data-i18n="title">PDF Editor</h1>
+  <div class="toolbar-group">
+    <select id="langSelect">
+      <option value="ru">RU</option>
+      <option value="en">EN</option>
+      <option value="he">עברית</option>
+    </select>
+  </div>
+  <div class="toolbar-group">
+    <label class="file-btn">
+      <span data-i18n="openPdf">Открыть PDF</span>
+      <input type="file" id="fileInput" accept="application/pdf">
+    </label>
+    <button id="docxModeBtn" class="secondary" data-i18n="docxMode">Word (.docx)</button>
+    <button id="xlsxModeBtn" class="secondary" data-i18n="xlsxMode">Таблица (.xlsx)</button>
+    <button id="pdfToDocxBtn" class="secondary" disabled data-i18n="pdfToDocx">PDF → Word</button>
+  </div>
+  <div class="toolbar-group">
+    <button id="addTextBtn" disabled data-i18n="addText">+ Текст</button>
+    <select id="fontSize">
+      <option value="10">10px</option>
+      <option value="14" selected>14px</option>
+      <option value="18">18px</option>
+      <option value="24">24px</option>
+      <option value="32">32px</option>
+    </select>
+    <input type="color" id="textColor" value="#000000">
+  </div>
+  <div class="toolbar-group">
+    <button id="addSigBtn" disabled data-i18n="addSig">+ Подпись</button>
+    <button id="useSavedSigBtn" disabled class="secondary" style="display:none;" data-i18n="useSavedSig">+ Моя подпись</button>
+  </div>
+  <div class="toolbar-group">
+    <button id="addMaskBtn" disabled class="secondary" data-i18n="addMask">+ Плашка</button>
+    <button id="addHighlightBtn" disabled class="secondary" data-i18n="addHighlight">+ Выделение</button>
+  </div>
+  <div class="toolbar-group">
+    <label class="file-btn" id="addImageLabel" style="opacity:.4;pointer-events:none;">
+      <span data-i18n="addImage">+ Изображение</span>
+      <input type="file" id="imageInput" accept="image/*">
+    </label>
+  </div>
+  <div class="toolbar-group">
+    <button id="prevPage" disabled class="secondary">‹</button>
+    <span id="pageInfo" style="font-size:13px;color:var(--muted);min-width:70px;text-align:center;">– / –</span>
+    <button id="nextPage" disabled class="secondary">›</button>
+  </div>
+  <div class="toolbar-group">
+    <button id="rotateBtn" disabled class="secondary" data-i18n="rotatePage">⟳ Повернуть</button>
+    <button id="deleteBtn" disabled class="secondary">Удалить страницу</button>
+  </div>
+  <div class="toolbar-group">
+    <label class="file-btn" id="mergeLabel" style="opacity:.4;pointer-events:none;">
+      <span data-i18n="mergeAdd">+ Объединить PDF</span>
+      <input type="file" id="mergeInput" accept="application/pdf" multiple>
+    </label>
+    <span class="merge-badge" id="mergeBadge" style="display:none;"></span>
+  </div>
+  <div class="toolbar-group">
+    <button id="saveBtn" disabled data-i18n="save">Сохранить PDF</button>
+    <select id="exportFormat">
+      <option value="png">PNG</option>
+      <option value="jpeg">JPEG</option>
+    </select>
+    <button id="exportPageBtn" disabled class="secondary" data-i18n="exportPage">Страница в картинку</button>
+    <button id="exportAllBtn" disabled class="secondary" data-i18n="exportAll">Все страницы (ZIP)</button>
+  </div>
+  <span class="status" id="status"></span>
+  <a id="supportLink" class="support-link" data-i18n="supportLink" href="https://buymeacoffee.com/artur32198z" target="_blank" rel="noopener noreferrer">☕ Поддержать проект</a>
+  <a id="markSupportedLink" class="support-link" href="#" data-i18n="markSupported">Уже поддержал</a>
+  <a id="subscribeLink" class="support-link" href="https://vart-tools.lemonsqueezy.com/checkout/buy/0a510adf-c949-4e2d-b00a-a6c6a76f1485" target="_blank" rel="noopener noreferrer" data-i18n="subscribeLink">⭐ Pro — $1/мес</a>
+  <a id="activateProLink" class="support-link" href="#" data-i18n="activatePro">Уже оформил — активировать</a>
+</header>
+
+<main>
+  <div id="empty">
+    <span data-i18n="emptyMain">Загрузите PDF-файл: текст, подписи, штампы, выделения — всё редактируется прямо на странице.</span>
+    <br><br>
+    <small class="hint" data-i18n="emptyHint">Кликните по существующему тексту в документе, чтобы отредактировать его на месте (под капотом: старый текст закрывается плашкой, а сверху ставится новый — точного перезаписывания PDF-потока здесь нет).</small>
+  </div>
+  <div id="pageWrap" class="page-wrap" style="display:none;">
+    <canvas id="pdfCanvas"></canvas>
+    <div id="textHitLayer"></div>
+    <div id="overlay" class="overlay"></div>
+    <div id="formFieldLayer"></div>
+    <div id="drawLayer"><div id="drawRect"></div></div>
+    <div id="deletedBanner"><div class="card"><div data-i18n="deletedBanner" id="deletedBannerText">Страница будет удалена при сохранении</div><button class="secondary" id="restoreBtn" data-i18n="restorePage" style="margin-top:8px;">Восстановить страницу</button></div></div>
+  </div>
+</main>
+
+<section id="docxSection">
+  <div class="docx-toolbar">
+    <button id="docxBackBtn" class="secondary" data-i18n="backToPdf">← PDF</button>
+    <label class="file-btn">
+      <span data-i18n="docxOpen">Открыть .docx</span>
+      <input type="file" id="docxInput" accept=".docx">
+    </label>
+    <button class="ghost" id="docxBoldBtn"><b>B</b></button>
+    <button class="ghost" id="docxItalicBtn"><i>I</i></button>
+    <button class="ghost" id="docxUnderlineBtn"><u>U</u></button>
+    <select id="docxHeadingSel">
+      <option value="P" data-i18n="docxParagraph">Абзац</option>
+      <option value="H1">Heading 1</option>
+      <option value="H2">Heading 2</option>
+      <option value="H3">Heading 3</option>
+    </select>
+    <button class="secondary" id="docxInsertTableBtn" data-i18n="docxInsertTable">+ Таблица</button>
+    <label class="file-btn" id="docxImageLabel">
+      <span data-i18n="docxInsertImage">+ Картинка</span>
+      <input type="file" id="docxImageInput" accept="image/*">
+    </label>
+    <button id="docxExportBtn" data-i18n="docxExport">Экспорт .docx</button>
+    <span class="status" id="docxStatus"></span>
+  </div>
+  <small class="hint" data-i18n="docxTableHint">Клик правой кнопкой по ячейке — добавить/удалить строку или столбец</small>
+  <div id="docxEditor" contenteditable="true">Откройте .docx-файл или начните печатать здесь...</div>
+</section>
+
+<section id="xlsxSection">
+  <div class="xlsx-toolbar">
+    <button id="xlsxBackBtn" class="secondary" data-i18n="backToPdf">← PDF</button>
+    <label class="file-btn">
+      <span data-i18n="xlsxOpen">Открыть .xlsx</span>
+      <input type="file" id="xlsxInput" accept=".xlsx,.xls">
+    </label>
+    <button class="secondary" id="xlsxAddRowBtn" data-i18n="xlsxAddRow">+ Строка</button>
+    <button class="secondary" id="xlsxAddColBtn" data-i18n="xlsxAddCol">+ Столбец</button>
+    <button id="xlsxExportBtn" data-i18n="xlsxExport">Экспорт .xlsx</button>
+    <span class="status" id="xlsxStatus"></span>
+  </div>
+  <small class="hint" data-i18n="xlsxHint">Формулы: =SUM(A1:A5), =AVERAGE(A1:A5), =MIN(...), =MAX(...), =A1+B2</small>
+  <div id="sheetWrap"><table id="sheetTable"></table></div>
+</section>
+
+<div id="sigModal">
+  <div class="sig-card">
+    <h2 data-i18n="sigTitle">Нарисуйте подпись</h2>
+    <canvas id="sigCanvas"></canvas>
+    <small class="hint" data-i18n="sigHint">Рисуйте мышью или пальцем. "Готово" добавит подпись на страницу.</small>
+    <div class="sig-actions">
+      <button class="secondary" id="sigClear" data-i18n="sigClear">Очистить</button>
+      <button class="secondary" id="sigCancel" data-i18n="sigCancel">Отмена</button>
+      <button id="sigDone" data-i18n="sigDone">Готово</button>
+    </div>
+  </div>
+</div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+const { PDFDocument, rgb, degrees } = PDFLib;
+
+// ---- i18n ----
+const translations = {
+  ru: {
+    title: 'PDF Editor',
+    openPdf: 'Открыть PDF',
+    addText: '+ Текст',
+    addSig: '+ Подпись',
+    addMask: '+ Плашка',
+    addHighlight: '+ Выделение',
+    addImage: '+ Изображение',
+    save: 'Сохранить PDF',
+    exportPage: 'Страница в картинку',
+    exportAll: 'Все страницы (ZIP)',
+    emptyMain: 'Загрузите PDF-файл: текст, подписи, штампы, выделения — всё редактируется прямо на странице.',
+    emptyHint: 'Кликните по существующему тексту в документе, чтобы отредактировать его на месте (под капотом: старый текст закрывается плашкой, а сверху ставится новый — точного перезаписывания PDF-потока здесь нет).',
+    sigTitle: 'Нарисуйте подпись',
+    sigHint: 'Рисуйте мышью или пальцем. "Готово" добавит подпись на страницу.',
+    sigClear: 'Очистить',
+    sigCancel: 'Отмена',
+    sigDone: 'Готово',
+    statusLoading: 'Загрузка...',
+    statusReady: 'Готово',
+    statusSaving: 'Сохранение...',
+    statusSaved: 'Сохранено',
+    statusSaveError: 'Ошибка сохранения',
+    statusExportPage: 'Экспорт страницы...',
+    statusExportAll: 'Экспорт всех страниц...',
+    statusExportOf: (i, n) => `Экспорт страницы ${i} из ${n}...`,
+    statusExportError: 'Ошибка экспорта',
+    statusHighlightPrompt: 'Выделите область перетаскиванием...',
+    saveErrorAlert: (msg) => 'Не удалось сохранить PDF: ' + msg,
+    clickToEdit: 'Нажмите, чтобы отредактировать этот текст',
+    doubleClickDelete: 'Двойной клик — удалить',
+    defaultText: 'Текст',
+    rotatePage: '⟳ Повернуть',
+    deletePage: 'Удалить страницу',
+    restorePage: 'Восстановить страницу',
+    mergeAdd: '+ Объединить PDF',
+    mergePending: (n) => `Будет добавлено файлов: ${n}`,
+    mergeClear: 'Очистить',
+    deletedBanner: 'Страница будет удалена при сохранении',
+    rotatedBadge: (deg) => ` · ⟳${deg}°`,
+    docxMode: 'Word (.docx)',
+    backToPdf: '← PDF',
+    docxOpen: 'Открыть .docx',
+    docxParagraph: 'Абзац',
+    docxExport: 'Экспорт .docx',
+    docxStatusLoading: 'Загрузка .docx...',
+    docxStatusLoaded: 'Документ загружен',
+    docxStatusExporting: 'Формирование .docx...',
+    docxStatusExported: 'Файл сохранён',
+    docxStatusError: 'Не удалось обработать файл',
+    docxLibMissing: 'Библиотека для .docx не загрузилась — проверьте интернет-соединение и обновите страницу',
+    docxInsertTable: '+ Таблица',
+    docxInsertImage: '+ Картинка',
+    supportLink: '☕ Поддержать проект',
+    docxTableHint: 'Клик правой кнопкой по ячейке — добавить/удалить строку или столбец',
+    docxRowBelow: '+ Строка ниже',
+    docxRowDelete: '− Удалить строку',
+    docxColRight: '+ Столбец справа',
+    docxColDelete: '− Удалить столбец',
+    xlsxMode: 'Таблица (.xlsx)',
+    pdfToDocx: 'PDF → Word',
+    markSupported: 'Уже поддержал',
+    markSupportedThanks: 'Спасибо за поддержку! Чтобы убрать водяной знак и снять все ограничения — оформи Pro за $1/мес.',
+    subscribeLink: '⭐ Pro — 5₪/мес',
+    activatePro: 'Уже оформил — активировать',
+    proEmailPrompt: 'Введите email, который указали при оформлении подписки:',
+    proActivateChecking: 'Проверяем подписку…',
+    proActivateOk: 'Подписка активна! Все функции разблокированы на этом устройстве.',
+    proActivateFail: 'Подписка с таким email не найдена или ещё не активна. Если вы только что оплатили — подождите пару минут и попробуйте снова.',
+    proActive: '✓ Pro активен',
+    gateTrialTitle: 'Бесплатный тест на 3 дня',
+    gateTrialMsg: 'Введите email, чтобы начать — доступ ко всем функциям на 3 дня, без карты.',
+    gateStartTrial: 'Начать тест',
+    gateChecking: 'Проверяем…',
+    gateTrialStarted: (days) => `Триал начат — осталось ${days} дн. Все функции доступны.`,
+    gateNetworkError: 'Не удалось связаться с сервером. Проверьте интернет и попробуйте ещё раз.',
+    gateTrialOverTitle: 'Пробный период закончился',
+    gateTrialOverMsg: '3 дня бесплатного теста истекли. Чтобы продолжить пользоваться редактором — оформите подписку Pro.',
+    gateSubExpiredTitle: 'Подписка не активна',
+    gateSubExpiredMsg: 'Для доступа ко всем функциям редактора нужна активная подписка Pro.',
+    gateSubscribeBtn: 'Оформить Pro — 5₪/мес',
+    gateRecheckBtn: 'Я уже оплатил — проверить',
+    gateSubEmailNote: (email) => `Привязано к email: ${email}`,
+    useSavedSig: '+ Моя подпись',
+    xlsxOpen: 'Открыть .xlsx',
+    xlsxAddRow: '+ Строка',
+    xlsxAddCol: '+ Столбец',
+    xlsxExport: 'Экспорт .xlsx',
+    xlsxHint: 'Формулы: =SUM(A1:A5), =AVERAGE(A1:A5), =MIN(...), =MAX(...), =A1+B2',
+    xlsxStatusLoaded: 'Таблица загружена',
+    xlsxStatusExported: 'Файл сохранён',
+    xlsxStatusError: 'Не удалось обработать файл',
+    autosaveRestored: 'Восстановлены несохранённые изменения'
+  },
+  en: {
+    title: 'PDF Editor',
+    openPdf: 'Open PDF',
+    addText: '+ Text',
+    addSig: '+ Signature',
+    addMask: '+ Cover box',
+    addHighlight: '+ Highlight',
+    addImage: '+ Image',
+    save: 'Save PDF',
+    exportPage: 'Page as image',
+    exportAll: 'All pages (ZIP)',
+    emptyMain: 'Load a PDF file: text, signatures, stamps, highlights — everything can be edited right on the page.',
+    emptyHint: 'Click on existing text in the document to edit it in place (under the hood: the old text is covered with a box and new text is placed on top — this is not a true rewrite of the PDF\'s text stream).',
+    sigTitle: 'Draw your signature',
+    sigHint: 'Draw with your mouse or finger. "Done" adds the signature to the page.',
+    sigClear: 'Clear',
+    sigCancel: 'Cancel',
+    sigDone: 'Done',
+    statusLoading: 'Loading...',
+    statusReady: 'Ready',
+    statusSaving: 'Saving...',
+    statusSaved: 'Saved',
+    statusSaveError: 'Save error',
+    statusExportPage: 'Exporting page...',
+    statusExportAll: 'Exporting all pages...',
+    statusExportOf: (i, n) => `Exporting page ${i} of ${n}...`,
+    statusExportError: 'Export error',
+    statusHighlightPrompt: 'Drag to select an area...',
+    saveErrorAlert: (msg) => 'Could not save the PDF: ' + msg,
+    clickToEdit: 'Click to edit this text',
+    doubleClickDelete: 'Double-click to delete',
+    defaultText: 'Text',
+    rotatePage: '⟳ Rotate',
+    deletePage: 'Delete page',
+    restorePage: 'Restore page',
+    mergeAdd: '+ Merge PDF',
+    mergePending: (n) => `Files to append: ${n}`,
+    mergeClear: 'Clear',
+    deletedBanner: 'This page will be deleted on save',
+    rotatedBadge: (deg) => ` · ⟳${deg}°`,
+    docxMode: 'Word (.docx)',
+    backToPdf: '← PDF',
+    docxOpen: 'Open .docx',
+    docxParagraph: 'Paragraph',
+    docxExport: 'Export .docx',
+    docxStatusLoading: 'Loading .docx...',
+    docxStatusLoaded: 'Document loaded',
+    docxStatusExporting: 'Building .docx...',
+    docxStatusExported: 'File saved',
+    docxStatusError: 'Could not process the file',
+    docxLibMissing: 'The .docx library failed to load — check your internet connection and reload the page',
+    docxInsertTable: '+ Table',
+    docxInsertImage: '+ Image',
+    supportLink: '☕ Support this project',
+    docxTableHint: 'Right-click a cell to add/remove a row or column',
+    docxRowBelow: '+ Row below',
+    docxRowDelete: '− Delete row',
+    docxColRight: '+ Column right',
+    docxColDelete: '− Delete column',
+    xlsxMode: 'Spreadsheet (.xlsx)',
+    pdfToDocx: 'PDF → Word',
+    markSupported: 'Already supported',
+    subscribeLink: '⭐ Pro — ₪5/mo',
+    activatePro: 'Already subscribed — activate',
+    proEmailPrompt: 'Enter the email you used at checkout:',
+    proActivateChecking: 'Checking subscription…',
+    proActivateOk: 'Subscription active! All features unlocked on this device.',
+    proActivateFail: 'No active subscription found for that email. If you just paid, wait a minute and try again.',
+    proActive: '✓ Pro active',
+    gateTrialTitle: 'Free 3-day trial',
+    gateTrialMsg: 'Enter your email to start — full access to every feature for 3 days, no card needed.',
+    gateStartTrial: 'Start trial',
+    gateChecking: 'Checking…',
+    gateTrialStarted: (days) => `Trial started — ${days} day(s) left. All features unlocked.`,
+    gateNetworkError: 'Could not reach the server. Check your connection and try again.',
+    gateTrialOverTitle: 'Your trial has ended',
+    gateTrialOverMsg: 'The 3-day free trial is over. Subscribe to Pro to keep using the editor.',
+    gateSubExpiredTitle: 'No active subscription',
+    gateSubExpiredMsg: 'An active Pro subscription is required to use the editor.',
+    gateSubscribeBtn: 'Subscribe to Pro — ₪5/mo',
+    gateRecheckBtn: 'I already paid — check again',
+    gateSubEmailNote: (email) => `Linked to: ${email}`,
+    markSupportedThanks: 'Thanks for the support! To remove the watermark and all limits, subscribe to Pro for $1/mo.',
+    useSavedSig: '+ My signature',
+    xlsxOpen: 'Open .xlsx',
+    xlsxAddRow: '+ Row',
+    xlsxAddCol: '+ Column',
+    xlsxExport: 'Export .xlsx',
+    xlsxHint: 'Formulas: =SUM(A1:A5), =AVERAGE(A1:A5), =MIN(...), =MAX(...), =A1+B2',
+    xlsxStatusLoaded: 'Spreadsheet loaded',
+    xlsxStatusExported: 'File saved',
+    xlsxStatusError: 'Could not process the file',
+    autosaveRestored: 'Unsaved changes were restored'
+  },
+  he: {
+    title: 'עורך PDF',
+    openPdf: 'פתח PDF',
+    addText: '+ טקסט',
+    addSig: '+ חתימה',
+    addMask: '+ כיסוי',
+    addHighlight: '+ הדגשה',
+    addImage: '+ תמונה',
+    save: 'שמור PDF',
+    exportPage: 'עמוד כתמונה',
+    exportAll: 'כל העמודים (ZIP)',
+    emptyMain: 'טען קובץ PDF: טקסט, חתימות, חותמות, הדגשות — הכול ניתן לעריכה ישירות על העמוד.',
+    emptyHint: 'לחץ על טקסט קיים במסמך כדי לערוך אותו במקום (מאחורי הקלעים: הטקסט הישן מכוסה בריבוע וטקסט חדש מוצב מעליו — זו לא כתיבה מחדש אמיתית של זרם הטקסט של ה-PDF).',
+    sigTitle: 'ציירו את החתימה שלכם',
+    sigHint: 'ציירו בעכבר או באצבע. "סיום" יוסיף את החתימה לעמוד.',
+    sigClear: 'נקה',
+    sigCancel: 'ביטול',
+    sigDone: 'סיום',
+    statusLoading: 'טוען...',
+    statusReady: 'מוכן',
+    statusSaving: 'שומר...',
+    statusSaved: 'נשמר',
+    statusSaveError: 'שגיאת שמירה',
+    statusExportPage: 'מייצא עמוד...',
+    statusExportAll: 'מייצא את כל העמודים...',
+    statusExportOf: (i, n) => `מייצא עמוד ${i} מתוך ${n}...`,
+    statusExportError: 'שגיאת ייצוא',
+    statusHighlightPrompt: 'גררו כדי לבחור אזור...',
+    saveErrorAlert: (msg) => 'לא ניתן היה לשמור את ה-PDF: ' + msg,
+    clickToEdit: 'לחצו כדי לערוך טקסט זה',
+    doubleClickDelete: 'לחיצה כפולה למחיקה',
+    defaultText: 'טקסט',
+    rotatePage: '⟳ סובב',
+    deletePage: 'מחק עמוד',
+    restorePage: 'שחזר עמוד',
+    mergeAdd: '+ מזג PDF',
+    mergePending: (n) => `קבצים להוספה: ${n}`,
+    mergeClear: 'נקה',
+    deletedBanner: 'עמוד זה יימחק בעת השמירה',
+    rotatedBadge: (deg) => ` · ⟳${deg}°`,
+    docxMode: 'Word (.docx)',
+    backToPdf: '← PDF',
+    docxOpen: 'פתח .docx',
+    docxParagraph: 'פסקה',
+    docxExport: 'ייצוא .docx',
+    docxStatusLoading: 'טוען .docx...',
+    docxStatusLoaded: 'המסמך נטען',
+    docxStatusExporting: 'בונה .docx...',
+    docxStatusExported: 'הקובץ נשמר',
+    docxStatusError: 'עיבוד הקובץ נכשל',
+    docxLibMissing: 'טעינת ספריית ה-.docx נכשלה — בדקו את החיבור לאינטרנט וטענו מחדש',
+    docxInsertTable: '+ טבלה',
+    docxInsertImage: '+ תמונה',
+    supportLink: '☕ תמיכה בפרויקט',
+    docxTableHint: 'קליק ימני על תא — הוספה/מחיקה של שורה או עמודה',
+    docxRowBelow: '+ שורה מתחת',
+    docxRowDelete: '− מחק שורה',
+    docxColRight: '+ עמודה מימין',
+    docxColDelete: '− מחק עמודה',
+    xlsxMode: 'גיליון (.xlsx)',
+    pdfToDocx: 'PDF → Word',
+    markSupported: 'כבר תרמתי',
+    subscribeLink: '⭐ Pro — 5₪/חודש',
+    activatePro: 'כבר נרשמתי — הפעלה',
+    proEmailPrompt: 'הזינו את האימייל שהשתמשתם בו בתשלום:',
+    proActivateChecking: 'בודקים מנוי…',
+    proActivateOk: 'המנוי פעיל! כל התכונות פתוחות במכשיר הזה.',
+    proActivateFail: 'לא נמצא מנוי פעיל לאימייל הזה. אם שילמתם זה עתה — המתינו דקה ונסו שוב.',
+    proActive: '✓ Pro פעיל',
+    gateTrialTitle: 'ניסיון חינם ל-3 ימים',
+    gateTrialMsg: 'הזינו אימייל כדי להתחיל — גישה מלאה לכל התכונות ל-3 ימים, בלי כרטיס אשראי.',
+    gateStartTrial: 'התחלת ניסיון',
+    gateChecking: 'בודקים…',
+    gateTrialStarted: (days) => `הניסיון התחיל — נותרו ${days} ימים. כל התכונות פתוחות.`,
+    gateNetworkError: 'לא ניתן להתחבר לשרת. בדקו את החיבור לאינטרנט ונסו שוב.',
+    gateTrialOverTitle: 'תקופת הניסיון הסתיימה',
+    gateTrialOverMsg: '3 ימי הניסיון החינמי הסתיימו. כדי להמשיך להשתמש בעורך — יש לרכוש מנוי Pro.',
+    gateSubExpiredTitle: 'אין מנוי פעיל',
+    gateSubExpiredMsg: 'נדרש מנוי Pro פעיל כדי להשתמש בעורך.',
+    gateSubscribeBtn: 'הרשמה ל-Pro — 5₪/חודש',
+    gateRecheckBtn: 'כבר שילמתי — בדיקה מחדש',
+    gateSubEmailNote: (email) => `מקושר לאימייל: ${email}`,
+    markSupportedThanks: 'תודה על התמיכה! כדי להסיר את סימן המים ואת כל המגבלות — הירשמו ל-Pro ב-$1 לחודש.',
+    useSavedSig: '+ החתימה שלי',
+    xlsxOpen: 'פתח .xlsx',
+    xlsxAddRow: '+ שורה',
+    xlsxAddCol: '+ עמודה',
+    xlsxExport: 'ייצוא .xlsx',
+    xlsxHint: 'נוסחאות: =SUM(A1:A5), =AVERAGE(A1:A5), =MIN(...), =MAX(...), =A1+B2',
+    xlsxStatusLoaded: 'הגיליון נטען',
+    xlsxStatusExported: 'הקובץ נשמר',
+    xlsxStatusError: 'עיבוד הקובץ נכשל',
+    autosaveRestored: 'שינויים שלא נשמרו שוחזרו'
+  }
+};
+let currentLang = localStorage.getItem('pdfEditorLang') || 'ru';
+
+function t(key, ...args){
+  const dict = translations[currentLang] || translations.ru;
+  const val = dict[key] !== undefined ? dict[key] : translations.ru[key];
+  return typeof val === 'function' ? val(...args) : val;
+}
+
+function applyTranslations(){
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+}
+
+function setLanguage(lang){
+  currentLang = translations[lang] ? lang : 'ru';
+  localStorage.setItem('pdfEditorLang', currentLang);
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = currentLang === 'he' ? 'rtl' : 'ltr';
+  applyTranslations();
+  if(isSupported() && typeof markSupportedLink !== 'undefined'){
+    markSupportedLink.textContent = '✓ ' + t('markSupported');
+  }
+  if(typeof activateProLink !== 'undefined' && activateProLink){
+    activateProLink.textContent = (typeof isProActive === 'function' && isProActive()) ? t('proActive') : t('activatePro');
+  }
+  if(pdfJsDoc){ updatePageInfo(); updateDeletedBanner(); updateMergeBadge(); }
+}
+
+let originalBytes = null;   // ArrayBuffer of the loaded PDF (unmodified)
+let pdfJsDoc = null;        // pdf.js document, for rendering/preview
+let currentPageNum = 1;
+let totalPages = 1;
+let currentScale = 1.5;
+let currentViewport = null;
+let highlightMode = false;
+
+// edits[pageIndex] = array of { type:'text'|'sig', xRatio, yRatio, wRatio, hRatio, ... }
+// ratios are relative to the rendered page canvas size at render time (top-left origin)
+let edits = {};
+
+// Page management: rotation is applied only at save time (added to the page's existing
+// rotation), deletion marks a page to be dropped on save, merges are whole PDFs appended
+// at the end. None of this touches the live pdf.js preview beyond the "deleted" banner.
+let rotations = {};        // pageNum -> extra degrees (0/90/180/270)
+let deletedPages = new Set(); // pageNum set
+let pendingMerges = [];    // [{ name, bytes: ArrayBuffer }]
+
+// Form fields (basic AcroForm support): fieldName -> current value (string, or
+// boolean for checkboxes). Read from pdf.js annotations, written back via pdf-lib on save.
+let formFieldValues = {};
+
+// Which PDF file is currently open, used only as an autosave key (name+size — good
+// enough to avoid clobbering a different file's draft, not a real content hash).
+let currentFileMeta = null;
+let autosaveTimer = null;
+
+// Undo/redo: a small stack of JSON snapshots of {edits, rotations, deletedPages}.
+// Snapshotting the whole thing is wasteful for huge documents but simple and correct,
+// and these documents are small enough in practice that it doesn't matter.
+let undoStack = [];
+let redoStack = [];
+
+// Selection (for the Delete key) — tracks the one overlay item last interacted with.
+let selectedItemRef = null;
+let selectedEl = null;
+
+const fileInput = document.getElementById('fileInput');
+const pdfCanvas = document.getElementById('pdfCanvas');
+const overlay = document.getElementById('overlay');
+const pageWrap = document.getElementById('pageWrap');
+const emptyMsg = document.getElementById('empty');
+const addTextBtn = document.getElementById('addTextBtn');
+const addSigBtn = document.getElementById('addSigBtn');
+const addMaskBtn = document.getElementById('addMaskBtn');
+const addHighlightBtn = document.getElementById('addHighlightBtn');
+const addImageLabel = document.getElementById('addImageLabel');
+const imageInput = document.getElementById('imageInput');
+const textHitLayer = document.getElementById('textHitLayer');
+const drawLayer = document.getElementById('drawLayer');
+const drawRect = document.getElementById('drawRect');
+const exportFormatSel = document.getElementById('exportFormat');
+const exportPageBtn = document.getElementById('exportPageBtn');
+const exportAllBtn = document.getElementById('exportAllBtn');
+const saveBtn = document.getElementById('saveBtn');
+const prevPageBtn = document.getElementById('prevPage');
+const nextPageBtn = document.getElementById('nextPage');
+const pageInfo = document.getElementById('pageInfo');
+const rotateBtn = document.getElementById('rotateBtn');
+const deleteBtn = document.getElementById('deleteBtn');
+const restoreBtn = document.getElementById('restoreBtn');
+const deletedBanner = document.getElementById('deletedBanner');
+const mergeLabel = document.getElementById('mergeLabel');
+const mergeInput = document.getElementById('mergeInput');
+const mergeBadge = document.getElementById('mergeBadge');
+const statusEl = document.getElementById('status');
+const fontSizeSel = document.getElementById('fontSize');
+const textColorInput = document.getElementById('textColor');
+const langSelect = document.getElementById('langSelect');
+const formFieldLayer = document.getElementById('formFieldLayer');
+const useSavedSigBtn = document.getElementById('useSavedSigBtn');
+const pdfToDocxBtn = document.getElementById('pdfToDocxBtn');
+const xlsxModeBtn = document.getElementById('xlsxModeBtn');
+const xlsxBackBtn = document.getElementById('xlsxBackBtn');
+const xlsxSection = document.getElementById('xlsxSection');
+const supportLinkEl = document.getElementById('supportLink');
+const markSupportedLink = document.getElementById('markSupportedLink');
+const activateProLink = document.getElementById('activateProLink');
+
+function setStatus(msg){ statusEl.textContent = msg || ''; }
+
+// ---- Trial + subscription access gate against the billing Worker (verified server-side
+// via LemonSqueezy webhooks → Supabase). First visit: ask for an email, start a 3-day
+// free trial. After the trial (or if a paid subscription lapses), the whole editor is
+// blocked behind a full-screen gate until the person subscribes. Declared before the
+// "support" block below because isSupported() calls isProActive() — these must exist first. ----
+const BILLING_WORKER_URL = 'https://pdf-editor-billing.artur32-1985.workers.dev';
+const PRO_EMAIL_KEY = 'vartProEmail';
+const PRO_STATUS_KEY = 'vartProStatus';       // 'trial' | 'active' | 'inactive' | 'expired'
+const PRO_ACTIVE_KEY = 'vartProActive';       // cached '1' | '0'
+const PRO_TRIAL_END_KEY = 'vartProTrialEnd';  // ISO timestamp
+const PRO_CHECKED_AT_KEY = 'vartProCheckedAt';
+const PRO_RECHECK_MS = 6 * 60 * 60 * 1000; // re-verify at most every 6h
+
+function isProActive(){ return localStorage.getItem(PRO_ACTIVE_KEY) === '1'; }
+
+function daysLeft(isoEnd){
+  if(!isoEnd) return 0;
+  return Math.max(0, Math.ceil((new Date(isoEnd).getTime() - Date.now()) / 86400000));
+}
+
+function applyAccessResult(data, email){
+  localStorage.setItem(PRO_EMAIL_KEY, email);
+  localStorage.setItem(PRO_STATUS_KEY, data.status || '');
+  localStorage.setItem(PRO_ACTIVE_KEY, data.active ? '1' : '0');
+  localStorage.setItem(PRO_TRIAL_END_KEY, data.trial_end || '');
+  localStorage.setItem(PRO_CHECKED_AT_KEY, String(Date.now()));
+  if(activateProLink){
+    activateProLink.textContent = data.active ? t('proActive') : t('activatePro');
+    activateProLink.classList.toggle('support-ok', !!data.active);
+  }
+}
+
+async function registerEmail(email){
+  const res = await fetch(`${BILLING_WORKER_URL}/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  });
+  const data = await res.json();
+  applyAccessResult(data, email);
+  return data;
+}
+
+async function checkAccess(email){
+  try {
+    const res = await fetch(`${BILLING_WORKER_URL}/check?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    applyAccessResult(data, email);
+    return data;
+  } catch(err) {
+    return {
+      active: isProActive(),
+      status: localStorage.getItem(PRO_STATUS_KEY),
+      trial_end: localStorage.getItem(PRO_TRIAL_END_KEY)
+    };
+  }
+}
+
+// ---- Full-screen access gate: blocks the whole editor until there's a valid trial or paid subscription ----
+const accessGate = document.getElementById('accessGate');
+const gateTitle = document.getElementById('gateTitle');
+const gateMsg = document.getElementById('gateMsg');
+const gateEmailForm = document.getElementById('gateEmailForm');
+const gateEmailInput = document.getElementById('gateEmailInput');
+const gateEmailSubmit = document.getElementById('gateEmailSubmit');
+const gateSubscribeForm = document.getElementById('gateSubscribeForm');
+const gateRecheckBtn = document.getElementById('gateRecheckBtn');
+const gateSubEmailNote = document.getElementById('gateSubEmailNote');
+
+function openGate(mode, info){
+  accessGate.classList.add('open');
+  if(mode === 'signup'){
+    gateTitle.textContent = t('gateTrialTitle');
+    gateMsg.textContent = t('gateTrialMsg');
+    gateEmailForm.style.display = '';
+    gateSubscribeForm.style.display = 'none';
+  } else {
+    const status = info && info.status;
+    if(status === 'trial'){
+      gateTitle.textContent = t('gateTrialOverTitle');
+      gateMsg.textContent = t('gateTrialOverMsg');
+    } else {
+      gateTitle.textContent = t('gateSubExpiredTitle');
+      gateMsg.textContent = t('gateSubExpiredMsg');
+    }
+    gateEmailForm.style.display = 'none';
+    gateSubscribeForm.style.display = '';
+    const email = localStorage.getItem(PRO_EMAIL_KEY) || '';
+    gateSubEmailNote.textContent = email ? t('gateSubEmailNote', email) : '';
+  }
+}
+
+function closeGate(){ accessGate.classList.remove('open'); }
+
+gateEmailSubmit.addEventListener('click', async () => {
+  const email = (gateEmailInput.value || '').trim();
+  if(!email || !email.includes('@')){ gateEmailInput.focus(); return; }
+  gateEmailSubmit.disabled = true;
+  gateEmailSubmit.textContent = t('gateChecking');
+  try {
+    const data = await registerEmail(email);
+    if(data.active){ closeGate(); setStatus(t('gateTrialStarted', daysLeft(data.trial_end))); }
+    else { openGate('blocked', data); }
+  } catch(err) {
+    gateMsg.textContent = t('gateNetworkError');
+  } finally {
+    gateEmailSubmit.disabled = false;
+    gateEmailSubmit.textContent = t('gateStartTrial');
+  }
+});
+
+gateRecheckBtn.addEventListener('click', async () => {
+  const email = localStorage.getItem(PRO_EMAIL_KEY);
+  if(!email){ openGate('signup'); return; }
+  gateRecheckBtn.disabled = true;
+  gateRecheckBtn.textContent = t('gateChecking');
+  const data = await checkAccess(email);
+  gateRecheckBtn.disabled = false;
+  gateRecheckBtn.textContent = t('gateRecheckBtn');
+  if(data.active){ closeGate(); setStatus(t('proActivateOk')); }
+  else { openGate('blocked', data); }
+});
+
+// The header "Уже оформил" link just reopens the gate's recheck flow for the stored email.
+if(activateProLink){
+  activateProLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    const email = localStorage.getItem(PRO_EMAIL_KEY);
+    if(email){ openGate('blocked', { status: localStorage.getItem(PRO_STATUS_KEY) }); }
+    else { openGate('signup'); }
+  });
+}
+
+// ---- Run the access check on load. No stored email → force signup. Otherwise trust the
+// cached state immediately (so a flaky connection doesn't lock out an already-verified
+// paid user) and re-verify in the background, at most every PRO_RECHECK_MS. ----
+(async function initAccessGate(){
+  const savedEmail = localStorage.getItem(PRO_EMAIL_KEY);
+  if(!savedEmail){ openGate('signup'); return; }
+  if(!isProActive()){ openGate('blocked', { status: localStorage.getItem(PRO_STATUS_KEY) }); }
+  const lastChecked = Number(localStorage.getItem(PRO_CHECKED_AT_KEY) || 0);
+  if(Date.now() - lastChecked > PRO_RECHECK_MS || !isProActive()){
+    const data = await checkAccess(savedEmail);
+    if(data.active){ closeGate(); } else { openGate('blocked', data); }
+  }
+})();
+
+// ---- Lightweight "support this project" nudge (client-side, trust-based — same
+// pattern as the Ko-fi manual-activation used elsewhere). NOTE: this button is now a
+// pure thank-you — it does NOT remove the watermark (that would make the $1 Pro
+// subscription pointless, since anyone could just click a free button instead).
+// Only a verified Pro subscription (isProActive()) removes the watermark. ----
+const SUPPORT_KEY = 'vartSupported';
+function isSupported(){ return isProActive(); }
+markSupportedLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  localStorage.setItem(SUPPORT_KEY, '1');
+  markSupportedLink.textContent = '✓ ' + t('markSupported');
+  markSupportedLink.classList.add('support-ok');
+  setStatus(t('markSupportedThanks'));
+});
+if(localStorage.getItem(SUPPORT_KEY) === '1'){ markSupportedLink.textContent = '✓ ' + t('markSupported'); markSupportedLink.classList.add('support-ok'); }
+
+// ---- Three mutually-exclusive views: the PDF tools, the Word editor, the spreadsheet ----
+function showView(view){
+  mainEl.style.display = view === 'pdf' ? 'flex' : 'none';
+  docxSection.classList.toggle('show', view === 'docx');
+  xlsxSection.classList.toggle('show', view === 'xlsx');
+}
+
+langSelect.value = currentLang;
+langSelect.addEventListener('change', () => setLanguage(langSelect.value));
+setLanguage(currentLang);
+
+fileInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(file) await loadPdfFile(file);
+  fileInput.value = '';
+});
+
+// Shared by the "Открыть PDF" input and by dropping a file onto the page.
+async function loadPdfFile(file){
+  setStatus(t('statusLoading'));
+  const buf = await file.arrayBuffer();
+  originalBytes = buf.slice(0); // keep a pristine copy
+  const loadingTask = pdfjsLib.getDocument({ data: buf.slice(0) });
+  pdfJsDoc = await loadingTask.promise;
+  totalPages = pdfJsDoc.numPages;
+  currentPageNum = 1;
+  edits = {};
+  rotations = {};
+  deletedPages = new Set();
+  pendingMerges = [];
+  formFieldValues = {};
+  undoStack = [];
+  redoStack = [];
+  selectedItemRef = null;
+  selectedEl = null;
+  currentFileMeta = { name: file.name, size: file.size };
+  updateMergeBadge();
+  emptyMsg.style.display = 'none';
+  pageWrap.style.display = 'block';
+  addTextBtn.disabled = false;
+  addSigBtn.disabled = false;
+  addMaskBtn.disabled = false;
+  addHighlightBtn.disabled = false;
+  addImageLabel.style.opacity = '1';
+  addImageLabel.style.pointerEvents = 'auto';
+  rotateBtn.disabled = false;
+  deleteBtn.disabled = false;
+  mergeLabel.style.opacity = '1';
+  mergeLabel.style.pointerEvents = 'auto';
+  saveBtn.disabled = false;
+  exportPageBtn.disabled = false;
+  exportAllBtn.disabled = false;
+  prevPageBtn.disabled = false;
+  nextPageBtn.disabled = false;
+  pdfToDocxBtn.disabled = false;
+  if(localStorage.getItem('pdfEditorSavedSig')){
+    useSavedSigBtn.style.display = '';
+    useSavedSigBtn.disabled = false;
+  }
+  restoreAutosave();
+  await renderPage(currentPageNum);
+  setStatus(t('statusReady'));
+}
+
+// ---- Drag-and-drop a PDF straight onto the page (anywhere in the window while the
+// PDF view is showing), instead of only through the "Открыть PDF" button. ----
+['dragover', 'dragenter'].forEach((evt) => {
+  window.addEventListener(evt, (e) => {
+    if(docxSection.classList.contains('show') || xlsxSection.classList.contains('show')) return;
+    e.preventDefault();
+    pageWrap.classList.add('drop-active');
+    emptyMsg.classList.add('drop-active');
+  });
+});
+['dragleave', 'drop'].forEach((evt) => {
+  window.addEventListener(evt, () => {
+    pageWrap.classList.remove('drop-active');
+    emptyMsg.classList.remove('drop-active');
+  });
+});
+window.addEventListener('drop', async (e) => {
+  if(docxSection.classList.contains('show') || xlsxSection.classList.contains('show')) return;
+  e.preventDefault();
+  const file = e.dataTransfer.files && e.dataTransfer.files[0];
+  if(file && file.type === 'application/pdf') await loadPdfFile(file);
+});
+
+// ---- Autosave: periodically stash {edits, rotations, deletedPages, formFieldValues}
+// in localStorage, keyed by the open file's name+size, so an accidental tab close
+// doesn't lose work. Not a real file hash — reopening a different file with the same
+// name/size would wrongly restore the old draft, but that's a rare, low-cost mistake. ----
+function autosaveKey(){
+  return currentFileMeta ? ('pdfEditorAutosave::' + currentFileMeta.name + '::' + currentFileMeta.size) : null;
+}
+function scheduleAutosave(){
+  const key = autosaveKey();
+  if(!key) return;
+  clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(() => {
+    try{
+      localStorage.setItem(key, JSON.stringify({
+        edits, rotations, deletedPages: Array.from(deletedPages), formFieldValues, ts: Date.now()
+      }));
+    }catch(err){ /* storage full/unavailable — skip silently, not fatal */ }
+  }, 800);
+}
+function restoreAutosave(){
+  const key = autosaveKey();
+  if(!key) return;
+  try{
+    const raw = localStorage.getItem(key);
+    if(!raw) return;
+    const snap = JSON.parse(raw);
+    edits = snap.edits || {};
+    rotations = snap.rotations || {};
+    deletedPages = new Set(snap.deletedPages || []);
+    formFieldValues = snap.formFieldValues || {};
+    setStatus(t('autosaveRestored'));
+  }catch(err){ /* corrupt entry — ignore, start clean */ }
+}
+
+// ---- Undo / redo: snapshot the whole mutable PDF-edit state as JSON. Simple and
+// correct; the documents this tool handles are small enough that this isn't costly. ----
+function snapshotState(){
+  return JSON.stringify({ edits, rotations, deletedPages: Array.from(deletedPages) });
+}
+function pushUndo(){
+  undoStack.push(snapshotState());
+  if(undoStack.length > 30) undoStack.shift();
+  redoStack = [];
+}
+function restoreSnapshot(str){
+  const snap = JSON.parse(str);
+  edits = snap.edits || {};
+  rotations = snap.rotations || {};
+  deletedPages = new Set(snap.deletedPages || []);
+  selectedItemRef = null;
+  selectedEl = null;
+  rebuildOverlay();
+  updatePageInfo();
+  updateDeletedBanner();
+  updateMergeBadge();
+  scheduleAutosave();
+}
+function undo(){
+  if(!undoStack.length) return;
+  redoStack.push(snapshotState());
+  restoreSnapshot(undoStack.pop());
+}
+function redo(){
+  if(!redoStack.length) return;
+  undoStack.push(snapshotState());
+  restoreSnapshot(redoStack.pop());
+}
+
+// ---- Keyboard shortcuts: Ctrl/Cmd+S save, Ctrl/Cmd+Z undo, Ctrl/Cmd+Shift+Z or
+// Ctrl/Cmd+Y redo, Delete/Backspace removes the last-selected overlay item — but
+// never while the person is actually typing somewhere editable. ----
+document.addEventListener('keydown', (e) => {
+  const active = document.activeElement;
+  const tag = active && active.tagName;
+  const isEditableFocus = active && (active.isContentEditable || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT');
+  const ctrlOrCmd = e.ctrlKey || e.metaKey;
+  const key = e.key.toLowerCase();
+
+  if(ctrlOrCmd && key === 's'){
+    e.preventDefault();
+    if(xlsxSection.classList.contains('show')){ xlsxExportBtn.click(); }
+    else if(docxSection.classList.contains('show')){ docxExportBtn.click(); }
+    else if(!saveBtn.disabled){ saveBtn.click(); }
+    return;
+  }
+  const inPdfView = !docxSection.classList.contains('show') && !xlsxSection.classList.contains('show');
+  if(!inPdfView) return;
+  if(ctrlOrCmd && key === 'z' && !e.shiftKey){ e.preventDefault(); undo(); return; }
+  if(ctrlOrCmd && (key === 'y' || (key === 'z' && e.shiftKey))){ e.preventDefault(); redo(); return; }
+  if((e.key === 'Delete' || e.key === 'Backspace') && !isEditableFocus && selectedItemRef){
+    e.preventDefault();
+    pushUndo();
+    const list = edits[currentPageNum] || [];
+    const i = list.indexOf(selectedItemRef);
+    if(i > -1) list.splice(i, 1);
+    selectedItemRef = null;
+    selectedEl = null;
+    rebuildOverlay();
+    scheduleAutosave();
+  }
+});
+
+function selectOverlayEl(el, item){
+  if(selectedEl) selectedEl.style.outline = '';
+  selectedEl = el;
+  selectedItemRef = item;
+  el.style.outline = '2px solid #e0a500';
+}
+
+async function renderPage(num){
+  const page = await pdfJsDoc.getPage(num);
+  const viewport = page.getViewport({ scale: currentScale });
+  currentViewport = viewport;
+  pdfCanvas.width = viewport.width;
+  pdfCanvas.height = viewport.height;
+  overlay.style.width = viewport.width + 'px';
+  overlay.style.height = viewport.height + 'px';
+  textHitLayer.style.width = viewport.width + 'px';
+  textHitLayer.style.height = viewport.height + 'px';
+  formFieldLayer.style.width = viewport.width + 'px';
+  formFieldLayer.style.height = viewport.height + 'px';
+  const ctx = pdfCanvas.getContext('2d');
+  await page.render({ canvasContext: ctx, viewport }).promise;
+  updatePageInfo();
+  await buildTextHitLayer(page, viewport);
+  await buildFormFieldLayer(page, viewport);
+  rebuildOverlay();
+  updateDeletedBanner();
+}
+
+// ---- Basic AcroForm support: render each text field / checkbox pdf.js finds as a
+// plain HTML input positioned over it. Values are kept in formFieldValues and written
+// back into the real PDF fields on save via pdf-lib. Radio buttons, dropdowns, and any
+// field pdf.js can't parse the rect for are skipped — honest limitation, not a bug. ----
+async function buildFormFieldLayer(page, viewport){
+  formFieldLayer.innerHTML = '';
+  let annotations;
+  try{ annotations = await page.getAnnotations({ intent: 'display' }); }catch(err){ return; }
+  annotations.forEach((a) => {
+    if(!a.fieldName || (a.fieldType !== 'Tx' && !(a.fieldType === 'Btn' && a.checkBox))) return;
+    const rect = a.rect;
+    const p1 = pdfjsLib.Util.applyTransform([rect[0], rect[1]], viewport.transform);
+    const p2 = pdfjsLib.Util.applyTransform([rect[2], rect[3]], viewport.transform);
+    const left = Math.min(p1[0], p2[0]);
+    const top = Math.min(p1[1], p2[1]);
+    const width = Math.abs(p2[0] - p1[0]);
+    const height = Math.abs(p2[1] - p1[1]);
+    const name = a.fieldName;
+    if(formFieldValues[name] === undefined){
+      formFieldValues[name] = a.fieldType === 'Btn' ? !!a.fieldValue : (a.fieldValue || '');
+    }
+    const input = document.createElement('input');
+    input.className = 'form-field-input';
+    input.style.left = left + 'px';
+    input.style.top = top + 'px';
+    input.style.width = Math.max(10, width) + 'px';
+    input.style.height = Math.max(10, height) + 'px';
+    if(a.fieldType === 'Btn'){
+      input.type = 'checkbox';
+      input.checked = !!formFieldValues[name];
+      input.addEventListener('change', () => { formFieldValues[name] = input.checked; scheduleAutosave(); });
+    } else {
+      input.type = 'text';
+      input.value = formFieldValues[name] || '';
+      input.style.fontSize = Math.max(8, height * 0.6) + 'px';
+      input.addEventListener('input', () => { formFieldValues[name] = input.value; scheduleAutosave(); });
+    }
+    formFieldLayer.appendChild(input);
+  });
+}
+
+function updatePageInfo(){
+  const rot = rotations[currentPageNum] || 0;
+  pageInfo.textContent = currentPageNum + ' / ' + totalPages + (rot ? t('rotatedBadge', rot) : '');
+}
+
+function updateDeletedBanner(){
+  const isDeleted = deletedPages.has(currentPageNum);
+  deletedBanner.classList.toggle('show', isDeleted);
+  deleteBtn.textContent = isDeleted ? t('restorePage') : t('deletePage');
+}
+
+// Builds invisible clickable boxes over each run of text pdf.js can detect, so the
+// user can click existing PDF text to "edit" it. Under the hood this is still mask +
+// overlay (see note in the empty-state hint) — true in-place rewriting of the PDF's
+// text content stream is a much bigger job than pdf-lib supports out of the box.
+async function buildTextHitLayer(page, viewport){
+  textHitLayer.innerHTML = '';
+  let textContent;
+  try{ textContent = await page.getTextContent(); }catch(err){ return; }
+  const scale = Math.hypot(viewport.transform[0], viewport.transform[1]);
+  textContent.items.forEach((item) => {
+    if(!item.str || !item.str.trim()) return;
+    const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
+    const fontHeight = Math.hypot(tx[2], tx[3]);
+    const left = tx[4];
+    const top = tx[5] - fontHeight;
+    const width = (item.width ? item.width * scale : fontHeight * item.str.length * 0.5);
+    const height = fontHeight * 1.2;
+    const div = document.createElement('div');
+    div.className = 'text-hit';
+    div.style.left = left + 'px';
+    div.style.top = top + 'px';
+    div.style.width = Math.max(4, width) + 'px';
+    div.style.height = Math.max(4, height) + 'px';
+    div.title = t('clickToEdit');
+    div.addEventListener('click', () => {
+      startEditExistingText(item.str, { left, top, width: Math.max(4, width), height: Math.max(4, height) }, fontHeight);
+    });
+    textHitLayer.appendChild(div);
+  });
+}
+
+function startEditExistingText(str, box, fontHeight){
+  pushUndo();
+  if(!edits[currentPageNum]) edits[currentPageNum] = [];
+  const pad = 2;
+  edits[currentPageNum].push({
+    type: 'mask',
+    xRatio: (box.left - pad) / pdfCanvas.width,
+    yRatio: (box.top - pad) / pdfCanvas.height,
+    wRatio: (box.width + pad * 2) / pdfCanvas.width,
+    hRatio: (box.height + pad * 2) / pdfCanvas.height
+  });
+  edits[currentPageNum].push({
+    type: 'text',
+    xRatio: box.left / pdfCanvas.width,
+    yRatio: box.top / pdfCanvas.height,
+    text: str,
+    fontSize: Math.max(8, Math.round(fontHeight)),
+    color: '#000000',
+    autofocus: true
+  });
+  rebuildOverlay();
+  scheduleAutosave();
+}
+
+function rebuildOverlay(){
+  overlay.innerHTML = '';
+  const list = edits[currentPageNum] || [];
+  list.forEach((item, idx) => {
+    if(item.type === 'mask'){
+      const el = document.createElement('div');
+      el.className = 'mask-box';
+      el.style.left = (item.xRatio * pdfCanvas.width) + 'px';
+      el.style.top = (item.yRatio * pdfCanvas.height) + 'px';
+      el.style.width = (item.wRatio * pdfCanvas.width) + 'px';
+      el.style.height = (item.hRatio * pdfCanvas.height) + 'px';
+      const handle = document.createElement('div');
+      handle.className = 'resize-handle';
+      el.appendChild(handle);
+      makeResizable(el, handle, item, pdfCanvas);
+      makeDraggable(el, item, pdfCanvas);
+      attachDelete(el, idx, 'mask');
+      overlay.appendChild(el);
+    } else if(item.type === 'text'){
+      const el = document.createElement('div');
+      el.className = 'text-box';
+      el.contentEditable = 'true';
+      el.style.left = (item.xRatio * pdfCanvas.width) + 'px';
+      el.style.top = (item.yRatio * pdfCanvas.height) + 'px';
+      el.style.fontSize = item.fontSize + 'px';
+      el.style.color = item.color;
+      el.textContent = item.text;
+      el.addEventListener('input', () => { item.text = el.textContent; scheduleAutosave(); });
+      makeDraggable(el, item, pdfCanvas);
+      attachDelete(el, idx, 'text');
+      overlay.appendChild(el);
+      if(item.autofocus){ delete item.autofocus; setTimeout(() => { el.focus(); placeCaretAtEnd(el); }, 0); }
+    } else if(item.type === 'sig'){
+      const img = document.createElement('img');
+      img.className = 'sig-img';
+      img.src = item.dataUrl;
+      img.style.left = (item.xRatio * pdfCanvas.width) + 'px';
+      img.style.top = (item.yRatio * pdfCanvas.height) + 'px';
+      img.style.width = (item.wRatio * pdfCanvas.width) + 'px';
+      makeDraggable(img, item, pdfCanvas);
+      attachDelete(img, idx, 'sig');
+      overlay.appendChild(img);
+    } else if(item.type === 'image'){
+      const img = document.createElement('img');
+      img.className = 'image-el';
+      img.src = item.dataUrl;
+      img.style.left = (item.xRatio * pdfCanvas.width) + 'px';
+      img.style.top = (item.yRatio * pdfCanvas.height) + 'px';
+      img.style.width = (item.wRatio * pdfCanvas.width) + 'px';
+      img.style.height = (item.hRatio * pdfCanvas.height) + 'px';
+      const handle = document.createElement('div');
+      handle.className = 'resize-handle';
+      img.style.position = 'absolute';
+      const wrap = document.createElement('div');
+      wrap.style.position = 'absolute';
+      wrap.style.left = img.style.left;
+      wrap.style.top = img.style.top;
+      wrap.style.width = img.style.width;
+      wrap.style.height = img.style.height;
+      img.style.left = '0'; img.style.top = '0'; img.style.width = '100%'; img.style.height = '100%';
+      wrap.appendChild(img);
+      wrap.appendChild(handle);
+      makeResizable(wrap, handle, item, pdfCanvas);
+      makeDraggable(wrap, item, pdfCanvas);
+      attachDelete(wrap, idx, 'image');
+      overlay.appendChild(wrap);
+    } else if(item.type === 'highlight'){
+      const el = document.createElement('div');
+      el.className = 'highlight-box';
+      el.style.left = (item.xRatio * pdfCanvas.width) + 'px';
+      el.style.top = (item.yRatio * pdfCanvas.height) + 'px';
+      el.style.width = (item.wRatio * pdfCanvas.width) + 'px';
+      el.style.height = (item.hRatio * pdfCanvas.height) + 'px';
+      const handle = document.createElement('div');
+      handle.className = 'resize-handle';
+      el.appendChild(handle);
+      makeResizable(el, handle, item, pdfCanvas);
+      makeDraggable(el, item, pdfCanvas);
+      attachDelete(el, idx, 'highlight');
+      overlay.appendChild(el);
+    }
+  });
+}
+
+function placeCaretAtEnd(el){
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  range.collapse(false);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+function attachDelete(el, idx, type){
+  el.title = t('doubleClickDelete');
+  // Any interaction with an overlay item also selects it, so Delete/Backspace can remove it.
+  el.addEventListener('pointerdown', () => selectOverlayEl(el, edits[currentPageNum][idx]));
+  el.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    pushUndo();
+    const list = edits[currentPageNum] || [];
+    list.splice(idx, 1);
+    selectedItemRef = null;
+    selectedEl = null;
+    rebuildOverlay();
+    scheduleAutosave();
+  });
+}
+
+// Drag-to-move that doesn't fight with clicking into a contentEditable box to type.
+// Key fix: we no longer grab the pointer immediately on pointerdown (that was blocking
+// the click from focusing the text box, so typing never worked). We wait until the
+// pointer has actually moved a few pixels before treating it as a drag.
+function makeDraggable(el, item, canvas){
+  let pointerId = null, startX, startY, origLeft, origTop, dragging = false, moved = false;
+  const THRESHOLD = 4;
+
+  el.addEventListener('pointerdown', (e) => {
+    if(e.target.classList && e.target.classList.contains('resize-handle')) return;
+    pointerId = e.pointerId;
+    startX = e.clientX; startY = e.clientY;
+    origLeft = parseFloat(el.style.left) || 0;
+    origTop = parseFloat(el.style.top) || 0;
+    dragging = false;
+    moved = false;
+  });
+
+  el.addEventListener('pointermove', (e) => {
+    if(pointerId === null || e.pointerId !== pointerId) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    if(!dragging && Math.hypot(dx, dy) > THRESHOLD){
+      dragging = true;
+      moved = true;
+      pushUndo();
+      el.setPointerCapture(pointerId);
+      if(el.isContentEditable && document.activeElement === el) el.blur();
+    }
+    if(dragging){
+      const newLeft = origLeft + dx;
+      const newTop = origTop + dy;
+      el.style.left = newLeft + 'px';
+      el.style.top = newTop + 'px';
+      item.xRatio = newLeft / canvas.width;
+      item.yRatio = newTop / canvas.height;
+    }
+  });
+
+  el.addEventListener('pointerup', (e) => {
+    if(dragging && pointerId !== null){
+      try{ el.releasePointerCapture(pointerId); }catch(err){}
+    }
+    dragging = false;
+    pointerId = null;
+    // A plain click (no movement) on a contentEditable box should focus it for typing.
+    if(!moved && el.isContentEditable){
+      el.focus();
+    }
+    if(moved) scheduleAutosave();
+  });
+}
+
+function makeResizable(boxEl, handle, item, canvas){
+  let pointerId = null, startX, startY, startW, startH;
+  handle.addEventListener('pointerdown', (e) => {
+    e.stopPropagation();
+    pushUndo();
+    pointerId = e.pointerId;
+    startX = e.clientX; startY = e.clientY;
+    startW = parseFloat(boxEl.style.width) || 20;
+    startH = parseFloat(boxEl.style.height) || 20;
+    handle.setPointerCapture(pointerId);
+  });
+  handle.addEventListener('pointermove', (e) => {
+    if(pointerId === null || e.pointerId !== pointerId) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    const newW = Math.max(10, startW + dx);
+    const newH = Math.max(10, startH + dy);
+    boxEl.style.width = newW + 'px';
+    boxEl.style.height = newH + 'px';
+    item.wRatio = newW / canvas.width;
+    item.hRatio = newH / canvas.height;
+  });
+  handle.addEventListener('pointerup', (e) => {
+    if(pointerId !== null){ try{ handle.releasePointerCapture(pointerId); }catch(err){} }
+    pointerId = null;
+    scheduleAutosave();
+  });
+}
+
+addTextBtn.addEventListener('click', () => {
+  pushUndo();
+  if(!edits[currentPageNum]) edits[currentPageNum] = [];
+  edits[currentPageNum].push({
+    type: 'text',
+    xRatio: 0.4, yRatio: 0.4,
+    text: t('defaultText'),
+    fontSize: parseInt(fontSizeSel.value, 10),
+    color: textColorInput.value,
+    autofocus: true
+  });
+  rebuildOverlay();
+  scheduleAutosave();
+});
+
+addMaskBtn.addEventListener('click', () => {
+  pushUndo();
+  if(!edits[currentPageNum]) edits[currentPageNum] = [];
+  edits[currentPageNum].push({
+    type: 'mask',
+    xRatio: 0.35, yRatio: 0.4,
+    wRatio: 0.3, hRatio: 0.06
+  });
+  rebuildOverlay();
+  scheduleAutosave();
+});
+
+// ---- Highlight tool: click the button, then drag a rectangle on the page ----
+addHighlightBtn.addEventListener('click', () => {
+  highlightMode = true;
+  drawLayer.classList.add('active');
+  setStatus(t('statusHighlightPrompt'));
+});
+
+let drawStart = null;
+drawLayer.addEventListener('pointerdown', (e) => {
+  if(!highlightMode) return;
+  const rect = drawLayer.getBoundingClientRect();
+  drawStart = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  drawRect.style.left = drawStart.x + 'px';
+  drawRect.style.top = drawStart.y + 'px';
+  drawRect.style.width = '0px';
+  drawRect.style.height = '0px';
+  drawRect.style.display = 'block';
+  drawLayer.setPointerCapture(e.pointerId);
+});
+drawLayer.addEventListener('pointermove', (e) => {
+  if(!highlightMode || !drawStart) return;
+  const rect = drawLayer.getBoundingClientRect();
+  const x = e.clientX - rect.left, y = e.clientY - rect.top;
+  const left = Math.min(x, drawStart.x), top = Math.min(y, drawStart.y);
+  const w = Math.abs(x - drawStart.x), h = Math.abs(y - drawStart.y);
+  drawRect.style.left = left + 'px';
+  drawRect.style.top = top + 'px';
+  drawRect.style.width = w + 'px';
+  drawRect.style.height = h + 'px';
+});
+drawLayer.addEventListener('pointerup', (e) => {
+  if(!highlightMode || !drawStart) return;
+  const w = parseFloat(drawRect.style.width) || 0;
+  const h = parseFloat(drawRect.style.height) || 0;
+  if(w > 4 && h > 4){
+    pushUndo();
+    if(!edits[currentPageNum]) edits[currentPageNum] = [];
+    edits[currentPageNum].push({
+      type: 'highlight',
+      xRatio: parseFloat(drawRect.style.left) / pdfCanvas.width,
+      yRatio: parseFloat(drawRect.style.top) / pdfCanvas.height,
+      wRatio: w / pdfCanvas.width,
+      hRatio: h / pdfCanvas.height
+    });
+    scheduleAutosave();
+  }
+  drawStart = null;
+  drawRect.style.display = 'none';
+  highlightMode = false;
+  drawLayer.classList.remove('active');
+  setStatus('');
+  rebuildOverlay();
+});
+
+// ---- Insert image (stamp, logo, photo) ----
+imageInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      // Normalize every uploaded format (webp, gif, bmp, etc.) to PNG via canvas,
+      // so embedding into the PDF later always works regardless of source format.
+      const off = document.createElement('canvas');
+      off.width = img.naturalWidth;
+      off.height = img.naturalHeight;
+      off.getContext('2d').drawImage(img, 0, 0);
+      const dataUrl = off.toDataURL('image/png');
+      const aspect = img.naturalHeight / img.naturalWidth;
+      pushUndo();
+      if(!edits[currentPageNum]) edits[currentPageNum] = [];
+      const wRatio = 0.3;
+      edits[currentPageNum].push({
+        type: 'image',
+        xRatio: 0.35, yRatio: 0.35,
+        wRatio: wRatio,
+        hRatio: wRatio * aspect * (pdfCanvas.width / pdfCanvas.height),
+        dataUrl
+      });
+      rebuildOverlay();
+      scheduleAutosave();
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+  imageInput.value = '';
+});
+
+prevPageBtn.addEventListener('click', async () => {
+  if(currentPageNum > 1){ currentPageNum--; await renderPage(currentPageNum); }
+});
+nextPageBtn.addEventListener('click', async () => {
+  if(currentPageNum < totalPages){ currentPageNum++; await renderPage(currentPageNum); }
+});
+
+// ---- Rotate / delete current page (applied at save time) ----
+rotateBtn.addEventListener('click', () => {
+  pushUndo();
+  rotations[currentPageNum] = ((rotations[currentPageNum] || 0) + 90) % 360;
+  updatePageInfo();
+  scheduleAutosave();
+});
+deleteBtn.addEventListener('click', () => {
+  pushUndo();
+  if(deletedPages.has(currentPageNum)) deletedPages.delete(currentPageNum);
+  else deletedPages.add(currentPageNum);
+  updateDeletedBanner();
+  scheduleAutosave();
+});
+restoreBtn.addEventListener('click', () => {
+  pushUndo();
+  deletedPages.delete(currentPageNum);
+  updateDeletedBanner();
+  scheduleAutosave();
+});
+
+// ---- Merge other PDFs: appended as extra pages at save time ----
+mergeInput.addEventListener('change', async (e) => {
+  const files = Array.from(e.target.files || []);
+  for(const file of files){
+    const bytes = await file.arrayBuffer();
+    pendingMerges.push({ name: file.name, bytes });
+  }
+  updateMergeBadge();
+  mergeInput.value = '';
+});
+
+function updateMergeBadge(){
+  if(pendingMerges.length === 0){
+    mergeBadge.style.display = 'none';
+    mergeBadge.innerHTML = '';
+    return;
+  }
+  mergeBadge.style.display = 'flex';
+  mergeBadge.innerHTML = '';
+  const span = document.createElement('span');
+  span.textContent = t('mergePending', pendingMerges.length);
+  const clear = document.createElement('a');
+  clear.textContent = t('mergeClear');
+  clear.addEventListener('click', () => { pendingMerges = []; updateMergeBadge(); });
+  mergeBadge.appendChild(span);
+  mergeBadge.appendChild(clear);
+}
+
+// ---- Signature modal ----
+const sigModal = document.getElementById('sigModal');
+const sigCanvas = document.getElementById('sigCanvas');
+const sigCtx = sigCanvas.getContext('2d');
+let sigDrawing = false;
+
+function sizeSigCanvas(){
+  const rect = sigCanvas.getBoundingClientRect();
+  sigCanvas.width = rect.width * 2;
+  sigCanvas.height = rect.height * 2;
+  sigCtx.scale(2,2);
+  sigCtx.lineWidth = 2;
+  sigCtx.lineCap = 'round';
+  sigCtx.strokeStyle = '#111';
+}
+
+addSigBtn.addEventListener('click', () => {
+  sigModal.classList.add('open');
+  requestAnimationFrame(() => {
+    sizeSigCanvas();
+    sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);
+  });
+});
+
+function sigPos(e){
+  const rect = sigCanvas.getBoundingClientRect();
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+}
+sigCanvas.addEventListener('pointerdown', (e) => {
+  sigDrawing = true;
+  const p = sigPos(e);
+  sigCtx.beginPath();
+  sigCtx.moveTo(p.x, p.y);
+  sigCanvas.setPointerCapture(e.pointerId);
+});
+sigCanvas.addEventListener('pointermove', (e) => {
+  if(!sigDrawing) return;
+  const p = sigPos(e);
+  sigCtx.lineTo(p.x, p.y);
+  sigCtx.stroke();
+});
+sigCanvas.addEventListener('pointerup', () => { sigDrawing = false; });
+
+document.getElementById('sigClear').addEventListener('click', () => {
+  sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);
+});
+document.getElementById('sigCancel').addEventListener('click', () => {
+  sigModal.classList.remove('open');
+});
+document.getElementById('sigDone').addEventListener('click', () => {
+  pushUndo();
+  const dataUrl = sigCanvas.toDataURL('image/png');
+  if(!edits[currentPageNum]) edits[currentPageNum] = [];
+  edits[currentPageNum].push({
+    type: 'sig',
+    xRatio: 0.3, yRatio: 0.6,
+    wRatio: 0.25,
+    dataUrl
+  });
+  sigModal.classList.remove('open');
+  rebuildOverlay();
+  scheduleAutosave();
+  // Remember this signature so it can be dropped onto later documents with one click.
+  try{
+    localStorage.setItem('pdfEditorSavedSig', dataUrl);
+    useSavedSigBtn.style.display = '';
+    useSavedSigBtn.disabled = false;
+  }catch(err){}
+});
+
+// ---- Reuse a previously-drawn signature without opening the drawing modal again ----
+useSavedSigBtn.addEventListener('click', () => {
+  const dataUrl = localStorage.getItem('pdfEditorSavedSig');
+  if(!dataUrl) return;
+  pushUndo();
+  if(!edits[currentPageNum]) edits[currentPageNum] = [];
+  edits[currentPageNum].push({ type: 'sig', xRatio: 0.3, yRatio: 0.6, wRatio: 0.25, dataUrl });
+  rebuildOverlay();
+  scheduleAutosave();
+});
+
+// ---- Export current page as an image (PNG/JPEG), flattening all edits onto it ----
+exportPageBtn.addEventListener('click', async () => {
+  setStatus(t('statusExportPage'));
+  try{
+    const blob = await renderFlattenedPageBlob(currentPageNum);
+    const ext = exportFormatSel.value === 'jpeg' ? 'jpg' : 'png';
+    downloadBlob(await blob.arrayBuffer(), `page-${currentPageNum}.${ext}`, blob.type);
+    setStatus(t('statusReady'));
+  }catch(err){
+    console.error(err);
+    setStatus(t('statusExportError'));
+  }
+});
+
+// ---- Export all pages as images, zipped ----
+exportAllBtn.addEventListener('click', async () => {
+  setStatus(t('statusExportAll'));
+  try{
+    const zip = new JSZip();
+    const ext = exportFormatSel.value === 'jpeg' ? 'jpg' : 'png';
+    for(let i = 1; i <= totalPages; i++){
+      setStatus(t('statusExportOf', i, totalPages));
+      const blob = await renderFlattenedPageBlob(i);
+      zip.file(`page-${i}.${ext}`, blob);
+    }
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    downloadBlob(await zipBlob.arrayBuffer(), 'pages.zip', 'application/zip');
+    setStatus(t('statusReady'));
+  }catch(err){
+    console.error(err);
+    setStatus(t('statusExportError'));
+  }
+});
+
+// Renders one page to an offscreen canvas, draws all its edits on top (text, masks,
+// signatures, images, highlights), and returns it as a PNG/JPEG blob.
+async function renderFlattenedPageBlob(pageNum){
+  const page = await pdfJsDoc.getPage(pageNum);
+  const viewport = page.getViewport({ scale: currentScale });
+  const off = document.createElement('canvas');
+  off.width = viewport.width;
+  off.height = viewport.height;
+  const ctx = off.getContext('2d');
+  await page.render({ canvasContext: ctx, viewport }).promise;
+
+  const items = edits[pageNum] || [];
+  for(const item of items){
+    if(item.type === 'mask'){
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(item.xRatio * off.width, item.yRatio * off.height, item.wRatio * off.width, item.hRatio * off.height);
+    } else if(item.type === 'highlight'){
+      ctx.fillStyle = '#ffe36b';
+      ctx.globalAlpha = 0.45;
+      ctx.fillRect(item.xRatio * off.width, item.yRatio * off.height, item.wRatio * off.width, item.hRatio * off.height);
+      ctx.globalAlpha = 1;
+    } else if(item.type === 'text'){
+      ctx.fillStyle = item.color;
+      ctx.font = `${item.fontSize}px Helvetica, Arial, sans-serif`;
+      ctx.textBaseline = 'top';
+      ctx.fillText(item.text || '', item.xRatio * off.width, item.yRatio * off.height);
+    } else if(item.type === 'sig' || item.type === 'image'){
+      await new Promise((resolve) => {
+        const im = new Image();
+        im.onload = () => {
+          const w = item.wRatio * off.width;
+          const h = item.hRatio ? item.hRatio * off.height : w * (im.naturalHeight / im.naturalWidth);
+          ctx.drawImage(im, item.xRatio * off.width, item.yRatio * off.height, w, h);
+          resolve();
+        };
+        im.src = item.dataUrl;
+      });
+    }
+  }
+
+  if(!isSupported()){
+    ctx.fillStyle = 'rgba(120,120,120,0.55)';
+    ctx.font = '11px Helvetica, Arial, sans-serif';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('VArt PDF Editor — free tool', 8, off.height - 6);
+  }
+
+  const mime = exportFormatSel.value === 'jpeg' ? 'image/jpeg' : 'image/png';
+  if(mime === 'image/jpeg'){
+    // flatten onto white background first, JPEG has no transparency
+    const flat = document.createElement('canvas');
+    flat.width = off.width; flat.height = off.height;
+    const fctx = flat.getContext('2d');
+    fctx.fillStyle = '#fff';
+    fctx.fillRect(0, 0, flat.width, flat.height);
+    fctx.drawImage(off, 0, 0);
+    return new Promise((resolve) => flat.toBlob(resolve, mime, 0.92));
+  }
+  return new Promise((resolve) => off.toBlob(resolve, mime));
+}
+
+// ---- Save / export ----
+saveBtn.addEventListener('click', async () => {
+  setStatus(t('statusSaving'));
+  try{
+    const pdfDoc = await PDFDocument.load(originalBytes.slice(0));
+    const pages = pdfDoc.getPages();
+
+    for(const pageNumStr of Object.keys(edits)){
+      const pageNum = parseInt(pageNumStr, 10);
+      if(deletedPages.has(pageNum)) continue; // skip edits on pages that will be removed
+      const pageIndex = pageNum - 1;
+      if(pageIndex < 0 || pageIndex >= pages.length) continue;
+      const page = pages[pageIndex];
+      const { width: pw, height: ph } = page.getSize();
+      const items = edits[pageNum];
+
+      for(const item of items){
+        if(item.type === 'mask'){
+          const x = item.xRatio * pw;
+          const yTop = item.yRatio * ph;
+          const w = item.wRatio * pw;
+          const h = item.hRatio * ph;
+          const y = ph - yTop - h;
+          page.drawRectangle({ x, y, width: w, height: h, color: rgb(1, 1, 1) });
+        } else if(item.type === 'text'){
+          const x = item.xRatio * pw;
+          const yTop = item.yRatio * ph;
+          const fontSize = item.fontSize * (pw / pdfCanvas.width);
+          const y = ph - yTop - fontSize; // pdf-lib origin is bottom-left
+          const { r, g, b } = hexToRgb(item.color);
+          page.drawText(item.text || '', {
+            x, y, size: fontSize,
+            color: rgb(r, g, b)
+          });
+        } else if(item.type === 'sig'){
+          const pngBytes = dataUrlToBytes(item.dataUrl);
+          const pngImage = await pdfDoc.embedPng(pngBytes);
+          const w = item.wRatio * pw;
+          const h = w * (pngImage.height / pngImage.width);
+          const x = item.xRatio * pw;
+          const yTop = item.yRatio * ph;
+          const y = ph - yTop - h;
+          page.drawImage(pngImage, { x, y, width: w, height: h });
+        } else if(item.type === 'image'){
+          const isPng = item.dataUrl.startsWith('data:image/png');
+          const bytes = dataUrlToBytes(item.dataUrl);
+          const embedded = isPng ? await pdfDoc.embedPng(bytes) : await pdfDoc.embedJpg(bytes);
+          const w = item.wRatio * pw;
+          const h = item.hRatio * ph;
+          const x = item.xRatio * pw;
+          const yTop = item.yRatio * ph;
+          const y = ph - yTop - h;
+          page.drawImage(embedded, { x, y, width: w, height: h });
+        } else if(item.type === 'highlight'){
+          const x = item.xRatio * pw;
+          const yTop = item.yRatio * ph;
+          const w = item.wRatio * pw;
+          const h = item.hRatio * ph;
+          const y = ph - yTop - h;
+          page.drawRectangle({ x, y, width: w, height: h, color: rgb(1, 0.89, 0.42), opacity: 0.45 });
+        }
+      }
+    }
+
+    // Apply rotations (added on top of each page's existing rotation)
+    for(const pageNumStr of Object.keys(rotations)){
+      const pageNum = parseInt(pageNumStr, 10);
+      if(deletedPages.has(pageNum)) continue;
+      const pageIndex = pageNum - 1;
+      if(pageIndex < 0 || pageIndex >= pages.length) continue;
+      const extra = rotations[pageNum];
+      if(!extra) continue;
+      const page = pages[pageIndex];
+      const current = page.getRotation().angle;
+      page.setRotation(degrees((current + extra) % 360));
+    }
+
+    // Remove deleted pages (descending order so indices stay valid)
+    const toRemove = Array.from(deletedPages)
+      .map((n) => n - 1)
+      .filter((i) => i >= 0 && i < pdfDoc.getPageCount())
+      .sort((a, b) => b - a);
+    for(const idx of toRemove) pdfDoc.removePage(idx);
+
+    // Append merged PDFs, in the order they were added
+    for(const merge of pendingMerges){
+      const mergeDoc = await PDFDocument.load(merge.bytes.slice(0));
+      const copied = await pdfDoc.copyPages(mergeDoc, mergeDoc.getPageIndices());
+      copied.forEach((p) => pdfDoc.addPage(p));
+    }
+
+    // Write form-field values back in, if the PDF has an AcroForm.
+    try{
+      const form = pdfDoc.getForm();
+      Object.entries(formFieldValues).forEach(([name, val]) => {
+        try{ form.getTextField(name).setText(String(val ?? '')); return; }catch(e1){}
+        try{ const cb = form.getCheckBox(name); if(val) cb.check(); else cb.uncheck(); }catch(e2){}
+      });
+    }catch(formErr){ /* no AcroForm, or pdf-lib couldn't parse it — skip, not fatal */ }
+
+    // Small watermark unless the person has already supported the project — see the
+    // "Уже поддержал" link in the header. Soft nudge, never blocks the export itself.
+    if(!isSupported()){
+      pdfDoc.getPages().forEach((page) => {
+        const { width } = page.getSize();
+        page.drawText('VArt PDF Editor — free tool', {
+          x: Math.max(8, width - 160), y: 8, size: 7, color: rgb(0.6, 0.6, 0.6), opacity: 0.55
+        });
+      });
+    }
+
+    const outBytes = await pdfDoc.save();
+    downloadBlob(outBytes, 'edited.pdf', 'application/pdf');
+    setStatus(t('statusSaved'));
+  }catch(err){
+    console.error(err);
+    setStatus(t('statusSaveError'));
+    alert(t('saveErrorAlert', err.message));
+  }
+});
+
+function hexToRgb(hex){
+  const m = hex.replace('#','');
+  const bigint = parseInt(m, 16);
+  return {
+    r: ((bigint >> 16) & 255) / 255,
+    g: ((bigint >> 8) & 255) / 255,
+    b: (bigint & 255) / 255
+  };
+}
+
+function dataUrlToBytes(dataUrl){
+  const base64 = dataUrl.split(',')[1];
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+function downloadBlob(bytes, filename, mime){
+  const blob = new Blob([bytes], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+// ==========================================================================
+// ---- DOCX mode: a basic Word-document editor (open / format / export) ----
+// Separate from the PDF tooling above. Opens a .docx via mammoth.js (converts
+// it to clean HTML), lets the person edit that HTML with the browser's own
+// rich-text editing (document.execCommand — old API, but small and reliable
+// for this), then rebuilds a real .docx from the edited HTML with the `docx`
+// library on export. This is a basic round trip: paragraphs, headings, bold/
+// italic/underline survive. Tables and images now round-trip too (basic
+// grids and inline pictures); comments and tracked changes still do not —
+// honest limitation, not a bug.
+// ==========================================================================
+const mainEl = document.querySelector('main');
+const docxModeBtn = document.getElementById('docxModeBtn');
+const docxBackBtn = document.getElementById('docxBackBtn');
+const docxSection = document.getElementById('docxSection');
+const docxInput = document.getElementById('docxInput');
+const docxEditor = document.getElementById('docxEditor');
+const docxBoldBtn = document.getElementById('docxBoldBtn');
+const docxItalicBtn = document.getElementById('docxItalicBtn');
+const docxUnderlineBtn = document.getElementById('docxUnderlineBtn');
+const docxHeadingSel = document.getElementById('docxHeadingSel');
+const docxExportBtn = document.getElementById('docxExportBtn');
+const docxStatusEl = document.getElementById('docxStatus');
+const docxInsertTableBtn = document.getElementById('docxInsertTableBtn');
+const docxImageInput = document.getElementById('docxImageInput');
+
+function setDocxStatus(msg){ docxStatusEl.textContent = msg || ''; }
+
+function docxLibsReady(){
+  return typeof window.mammoth !== 'undefined' && typeof window.docx !== 'undefined';
+}
+
+docxModeBtn.addEventListener('click', () => showView('docx'));
+docxBackBtn.addEventListener('click', () => showView('pdf'));
+xlsxModeBtn.addEventListener('click', () => { showView('xlsx'); if(!sheetBuilt) initSheet(); });
+xlsxBackBtn.addEventListener('click', () => showView('pdf'));
+
+// ---- Autosave the Word editor's content (debounced), independent of any "file"
+// identity — it's just free-form text, so one localStorage slot is enough. ----
+function scheduleDocxAutosave(){
+  clearTimeout(docxAutosaveTimer);
+  docxAutosaveTimer = setTimeout(() => {
+    try{ localStorage.setItem('pdfEditorDocxAutosave', docxEditor.innerHTML); }catch(err){}
+  }, 800);
+}
+let docxAutosaveTimer = null;
+docxEditor.addEventListener('input', scheduleDocxAutosave);
+(function restoreDocxAutosave(){
+  try{
+    const saved = localStorage.getItem('pdfEditorDocxAutosave');
+    if(saved && saved.trim()) docxEditor.innerHTML = saved;
+  }catch(err){}
+})();
+
+docxInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  if(!docxLibsReady()){ setDocxStatus(t('docxLibMissing')); docxInput.value = ''; return; }
+  setDocxStatus(t('docxStatusLoading'));
+  try{
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await window.mammoth.convertToHtml({ arrayBuffer });
+    docxEditor.innerHTML = result.value || '<p></p>';
+    setDocxStatus(t('docxStatusLoaded'));
+    scheduleDocxAutosave();
+  }catch(err){
+    console.error(err);
+    setDocxStatus(t('docxStatusError'));
+  }
+  docxInput.value = '';
+});
+
+docxBoldBtn.addEventListener('click', () => { docxEditor.focus(); document.execCommand('bold'); });
+docxItalicBtn.addEventListener('click', () => { docxEditor.focus(); document.execCommand('italic'); });
+docxUnderlineBtn.addEventListener('click', () => { docxEditor.focus(); document.execCommand('underline'); });
+docxHeadingSel.addEventListener('change', () => {
+  docxEditor.focus();
+  document.execCommand('formatBlock', false, docxHeadingSel.value === 'P' ? 'P' : docxHeadingSel.value);
+});
+
+// Insert a basic 3x3 table at the caret. Right-click a cell for a tiny
+// context menu to add/remove the row or column under the pointer.
+docxInsertTableBtn.addEventListener('click', () => {
+  docxEditor.focus();
+  const rows = 3, cols = 3;
+  let html = '<table>';
+  for(let r = 0; r < rows; r++){
+    html += '<tr>';
+    for(let c = 0; c < cols; c++) html += '<td>&nbsp;</td>';
+    html += '</tr>';
+  }
+  html += '</table><p><br></p>';
+  if(!document.execCommand('insertHTML', false, html)){
+    docxEditor.insertAdjacentHTML('beforeend', html);
+  }
+});
+
+// Tiny table context menu: right-click a cell to add/remove its row/column.
+let docxTableMenuEl = null;
+function closeDocxTableMenu(){
+  if(docxTableMenuEl){ docxTableMenuEl.remove(); docxTableMenuEl = null; }
+}
+document.addEventListener('click', closeDocxTableMenu);
+docxEditor.addEventListener('contextmenu', (e) => {
+  const cell = e.target.closest('td,th');
+  if(!cell) return;
+  e.preventDefault();
+  closeDocxTableMenu();
+  const row = cell.parentElement;
+  const table = cell.closest('table');
+  const cellIndex = Array.prototype.indexOf.call(row.children, cell);
+  const menu = document.createElement('div');
+  menu.className = 'card';
+  menu.style.position = 'fixed';
+  menu.style.left = e.clientX + 'px';
+  menu.style.top = e.clientY + 'px';
+  menu.style.zIndex = 60;
+  menu.style.display = 'flex';
+  menu.style.flexDirection = 'column';
+  menu.style.gap = '4px';
+  menu.style.padding = '6px';
+  const addBtn = (label, fn) => {
+    const b = document.createElement('button');
+    b.className = 'secondary';
+    b.textContent = label;
+    b.style.whiteSpace = 'nowrap';
+    b.addEventListener('click', (ev) => { ev.stopPropagation(); fn(); closeDocxTableMenu(); });
+    menu.appendChild(b);
+  };
+  addBtn(t('docxRowBelow'), () => {
+    const nr = row.cloneNode(true);
+    Array.from(nr.children).forEach(td => td.innerHTML = '&nbsp;');
+    row.after(nr);
+  });
+  addBtn(t('docxRowDelete'), () => {
+    if(table.querySelectorAll('tr').length > 1) row.remove();
+  });
+  addBtn(t('docxColRight'), () => {
+    table.querySelectorAll('tr').forEach(tr => {
+      const ref = tr.children[cellIndex];
+      const nc = document.createElement(ref.tagName.toLowerCase());
+      nc.innerHTML = '&nbsp;';
+      ref.after(nc);
+    });
+  });
+  addBtn(t('docxColDelete'), () => {
+    if(row.children.length > 1){
+      table.querySelectorAll('tr').forEach(tr => { if(tr.children[cellIndex]) tr.children[cellIndex].remove(); });
+    }
+  });
+  document.body.appendChild(menu);
+  docxTableMenuEl = menu;
+});
+
+// Insert an inline image at the caret (stored as a data URL in the HTML,
+// same as what mammoth gives us on import).
+docxImageInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    docxEditor.focus();
+    const html = `<img src="${reader.result}" style="max-width:100%;">`;
+    if(!document.execCommand('insertHTML', false, html)){
+      docxEditor.insertAdjacentHTML('beforeend', html);
+    }
+  };
+  reader.readAsDataURL(file);
+  docxImageInput.value = '';
+});
+
+// Reads a <img> element's natural pixel size (from a data: URL this is
+// instant — the browser already decoded it to show it on the page).
+function imageNaturalSize(imgEl){
+  return new Promise((resolve) => {
+    if(imgEl.naturalWidth) { resolve({ w: imgEl.naturalWidth, h: imgEl.naturalHeight }); return; }
+    const probe = new Image();
+    probe.onload = () => resolve({ w: probe.naturalWidth || 200, h: probe.naturalHeight || 200 });
+    probe.onerror = () => resolve({ w: 200, h: 200 });
+    probe.src = imgEl.src;
+  });
+}
+
+docxExportBtn.addEventListener('click', async () => {
+  if(!docxLibsReady()){ setDocxStatus(t('docxLibMissing')); return; }
+  setDocxStatus(t('docxStatusExporting'));
+  try{
+    const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, HeadingLevel, WidthType } = window.docx;
+    const headingMap = { H1: HeadingLevel.HEADING_1, H2: HeadingLevel.HEADING_2, H3: HeadingLevel.HEADING_3, H4: HeadingLevel.HEADING_4 };
+    const MAX_IMG_WIDTH = 500; // points-ish px cap so a big photo doesn't blow out the page
+
+    // Walks inline content (text, b/i/u, line breaks, inline images) of a
+    // block-level node and collects docx "runs" for it. Async because an
+    // image run needs its bytes decoded first.
+    async function walkInline(node, fmt, runs){
+      for(const child of Array.from(node.childNodes)){
+        if(child.nodeType === 3){ // text node
+          if(child.textContent) runs.push(new TextRun({ text: child.textContent, bold: fmt.bold, italics: fmt.italic, underline: fmt.underline ? {} : undefined }));
+        } else if(child.nodeType === 1){
+          const tag = child.tagName;
+          if(tag === 'BR'){ runs.push(new TextRun({ text: '', break: 1 })); continue; }
+          if(tag === 'IMG'){
+            try{
+              const { w, h } = await imageNaturalSize(child);
+              const scale = w > MAX_IMG_WIDTH ? MAX_IMG_WIDTH / w : 1;
+              const bytes = dataUrlToBytes(child.src);
+              const isPng = /image\/png/i.test(child.src);
+              runs.push(new ImageRun({
+                data: bytes,
+                type: isPng ? 'png' : 'jpg',
+                transformation: { width: Math.round(w * scale), height: Math.round(h * scale) }
+              }));
+            }catch(imgErr){ console.error('image export failed', imgErr); }
+            continue;
+          }
+          const nf = { ...fmt };
+          if(tag === 'B' || tag === 'STRONG') nf.bold = true;
+          if(tag === 'I' || tag === 'EM') nf.italic = true;
+          if(tag === 'U') nf.underline = true;
+          await walkInline(child, nf, runs);
+        }
+      }
+    }
+
+    // Builds a paragraph for one block-level element (p/h1-h4/li/div/...).
+    async function buildParagraph(node){
+      const tag = node.tagName;
+      const runs = [];
+      await walkInline(node, { bold: false, italic: false, underline: false }, runs);
+      return new Paragraph({
+        heading: headingMap[tag] || undefined,
+        bullet: tag === 'LI' ? { level: 0 } : undefined,
+        children: runs.length ? runs : [new TextRun('')]
+      });
+    }
+
+    // Builds a docx Table from an HTML <table>: one paragraph per cell
+    // (a cell's own inline formatting/images survive; nested tables don't).
+    async function buildTable(tableEl){
+      const rows = [];
+      for(const tr of Array.from(tableEl.querySelectorAll('tr'))){
+        const cells = [];
+        for(const cell of Array.from(tr.children)){
+          const runs = [];
+          await walkInline(cell, { bold: false, italic: false, underline: false }, runs);
+          cells.push(new TableCell({
+            children: [new Paragraph({ children: runs.length ? runs : [new TextRun('')] })]
+          }));
+        }
+        rows.push(new TableRow({ children: cells }));
+      }
+      return new Table({ rows, width: { size: 100, type: WidthType.PERCENTAGE } });
+    }
+
+    const blocks = [];
+    for(const node of Array.from(docxEditor.childNodes)){
+      if(node.nodeType !== 1) continue; // skip stray top-level text nodes
+      if(node.tagName === 'TABLE'){
+        blocks.push(await buildTable(node));
+      } else if(node.tagName === 'UL' || node.tagName === 'OL'){
+        for(const li of Array.from(node.children)) blocks.push(await buildParagraph(li));
+      } else {
+        blocks.push(await buildParagraph(node));
+      }
+    }
+    if(blocks.length === 0) blocks.push(new Paragraph({ children: [new TextRun(docxEditor.textContent || '')] }));
+    if(!isSupported()){
+      blocks.push(new Paragraph({
+        children: [new TextRun({ text: 'Сделано в VArt PDF Editor (vart tools) — бесплатный инструмент', size: 14, color: '999999', italics: true })]
+      }));
+    }
+
+    const doc = new Document({ sections: [{ children: blocks }] });
+    const blob = await Packer.toBlob(doc);
+    downloadBlob(await blob.arrayBuffer(), 'document.docx', blob.type);
+    setDocxStatus(t('docxStatusExported'));
+  }catch(err){
+    console.error(err);
+    setDocxStatus(t('docxStatusError'));
+  }
+});
+
+// ==========================================================================
+// ---- PDF → Word: pulls text out of the currently-open PDF (via pdf.js's
+// getTextContent, grouped into lines by y-position) and drops it into the Word
+// editor as plain paragraphs. This is a text extraction, not a layout-preserving
+// conversion — columns, tables, and images in the PDF don't survive. ----
+// ==========================================================================
+function escapeHtml(s){
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+async function convertPdfToDocxHtml(){
+  let html = '';
+  for(let p = 1; p <= totalPages; p++){
+    const page = await pdfJsDoc.getPage(p);
+    const content = await page.getTextContent();
+    const lines = {};
+    content.items.forEach((item) => {
+      if(!item.str) return;
+      const y = Math.round(item.transform[5]);
+      if(!lines[y]) lines[y] = [];
+      lines[y].push({ x: item.transform[4], str: item.str });
+    });
+    Object.keys(lines).map(Number).sort((a, b) => b - a).forEach((y) => {
+      const text = lines[y].sort((a, b) => a.x - b.x).map((it) => it.str).join(' ').trim();
+      if(text) html += '<p>' + escapeHtml(text) + '</p>';
+    });
+    if(p < totalPages) html += '<p><br></p>';
+  }
+  return html || '<p></p>';
+}
+pdfToDocxBtn.addEventListener('click', async () => {
+  if(!pdfJsDoc) return;
+  setStatus(t('statusLoading'));
+  try{
+    const html = await convertPdfToDocxHtml();
+    docxEditor.innerHTML = html;
+    scheduleDocxAutosave();
+    showView('docx');
+    setDocxStatus(t('docxStatusLoaded'));
+  }finally{
+    setStatus('');
+  }
+});
+
+// ==========================================================================
+// ---- Spreadsheet (.xlsx) mode: a basic grid with formula support (SUM,
+// AVERAGE, MIN, MAX, and plain arithmetic between cell refs), built with the
+// SheetJS (xlsx) library for real .xlsx import/export, including formulas. ----
+// ==========================================================================
+let SHEET_ROWS = 20, SHEET_COLS = 10;
+let sheetData = {};      // 'r_c' -> raw string (literal or "=FORMULA")
+let sheetComputed = {};  // 'r_c' -> last computed display value
+let sheetBuilt = false;
+const sheetTable = document.getElementById('sheetTable');
+const xlsxInput = document.getElementById('xlsxInput');
+const xlsxAddRowBtn = document.getElementById('xlsxAddRowBtn');
+const xlsxAddColBtn = document.getElementById('xlsxAddColBtn');
+const xlsxExportBtn = document.getElementById('xlsxExportBtn');
+const xlsxStatusEl = document.getElementById('xlsxStatus');
+function setXlsxStatus(msg){ xlsxStatusEl.textContent = msg || ''; }
+
+function cellKey(r, c){ return r + '_' + c; }
+function colLetterToIndex(letters){
+  let n = 0;
+  for(const ch of letters.toUpperCase()) n = n * 26 + (ch.charCodeAt(0) - 64);
+  return n - 1;
+}
+function indexToColLetter(idx){
+  let s = '', i = idx + 1;
+  while(i > 0){ const rem = (i - 1) % 26; s = String.fromCharCode(65 + rem) + s; i = Math.floor((i - 1) / 26); }
+  return s;
+}
+function parseRef(ref){
+  const m = /^([A-Za-z]+)(\d+)$/.exec(ref);
+  return m ? { r: parseInt(m[2], 10) - 1, c: colLetterToIndex(m[1]) } : null;
+}
+
+function initSheet(){
+  (function restoreXlsxAutosave(){
+    try{
+      const raw = localStorage.getItem('pdfEditorXlsxAutosave');
+      if(raw) sheetData = JSON.parse(raw) || {};
+    }catch(err){}
+  })();
+  buildSheetGrid();
+  recomputeSheet();
+  sheetBuilt = true;
+}
+
+let xlsxAutosaveTimer = null;
+function scheduleXlsxAutosave(){
+  clearTimeout(xlsxAutosaveTimer);
+  xlsxAutosaveTimer = setTimeout(() => {
+    try{ localStorage.setItem('pdfEditorXlsxAutosave', JSON.stringify(sheetData)); }catch(err){}
+  }, 800);
+}
+
+function buildSheetGrid(){
+  sheetTable.innerHTML = '';
+  const headRow = document.createElement('tr');
+  headRow.appendChild(document.createElement('th'));
+  for(let c = 0; c < SHEET_COLS; c++){
+    const th = document.createElement('th');
+    th.textContent = indexToColLetter(c);
+    headRow.appendChild(th);
+  }
+  sheetTable.appendChild(headRow);
+  for(let r = 0; r < SHEET_ROWS; r++){
+    const tr = document.createElement('tr');
+    const rowHead = document.createElement('th');
+    rowHead.textContent = r + 1;
+    tr.appendChild(rowHead);
+    for(let c = 0; c < SHEET_COLS; c++){
+      const td = document.createElement('td');
+      td.contentEditable = 'true';
+      const key = cellKey(r, c);
+      td.dataset.key = key;
+      td.addEventListener('focus', () => { td.textContent = sheetData[key] || ''; });
+      td.addEventListener('blur', () => {
+        sheetData[key] = td.textContent;
+        recomputeSheet();
+        scheduleXlsxAutosave();
+      });
+      td.addEventListener('keydown', (e) => { if(e.key === 'Enter'){ e.preventDefault(); td.blur(); } });
+      tr.appendChild(td);
+    }
+    sheetTable.appendChild(tr);
+  }
+}
+
+function rangeValues(a, b, computed){
+  const pa = parseRef(a), pb = parseRef(b);
+  if(!pa || !pb) return [];
+  const r1 = Math.min(pa.r, pb.r), r2 = Math.max(pa.r, pb.r);
+  const c1 = Math.min(pa.c, pb.c), c2 = Math.max(pa.c, pb.c);
+  const vals = [];
+  for(let r = r1; r <= r2; r++) for(let c = c1; c <= c2; c++){
+    const n = parseFloat(computed[cellKey(r, c)]);
+    if(!isNaN(n)) vals.push(n);
+  }
+  return vals;
+}
+function cellNumericValue(ref, computed){
+  const p = parseRef(ref);
+  if(!p) return 0;
+  const n = parseFloat(computed[cellKey(p.r, p.c)]);
+  return isNaN(n) ? 0 : n;
+}
+function evalFormulaRaw(raw, computed){
+  let expr = raw.slice(1);
+  expr = expr.replace(/(SUM|AVERAGE|MIN|MAX)\(([A-Za-z]+\d+):([A-Za-z]+\d+)\)/gi, (m, fn, a, b) => {
+    const vals = rangeValues(a, b, computed);
+    fn = fn.toUpperCase();
+    if(fn === 'SUM') return String(vals.reduce((s, v) => s + v, 0));
+    if(fn === 'AVERAGE') return String(vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : 0);
+    if(fn === 'MIN') return String(vals.length ? Math.min(...vals) : 0);
+    return String(vals.length ? Math.max(...vals) : 0); // MAX
+  });
+  expr = expr.replace(/[A-Za-z]+\d+/g, (ref) => String(cellNumericValue(ref, computed)));
+  if(!/^[\d+\-*/().\s]*$/.test(expr)) return '#ERR';
+  try{ const r = Function('"use strict";return (' + expr + ')')(); return isFinite(r) ? r : '#ERR'; }catch(e){ return '#ERR'; }
+}
+function recomputeSheet(){
+  const computed = {};
+  Object.keys(sheetData).forEach((key) => {
+    const raw = sheetData[key];
+    if(typeof raw === 'string' && raw.startsWith('=')) return;
+    if(raw === undefined || raw === ''){ computed[key] = ''; return; }
+    const num = parseFloat(raw);
+    computed[key] = isNaN(num) ? raw : num;
+  });
+  Object.keys(sheetData).forEach((key) => {
+    const raw = sheetData[key];
+    if(typeof raw === 'string' && raw.startsWith('=')) computed[key] = evalFormulaRaw(raw, computed);
+  });
+  sheetTable.querySelectorAll('td[data-key]').forEach((td) => {
+    if(document.activeElement === td) return;
+    const v = computed[td.dataset.key];
+    td.textContent = (v === undefined || v === '') ? '' : v;
+  });
+  sheetComputed = computed;
+}
+
+xlsxAddRowBtn.addEventListener('click', () => { SHEET_ROWS++; buildSheetGrid(); recomputeSheet(); });
+xlsxAddColBtn.addEventListener('click', () => { SHEET_COLS++; buildSheetGrid(); recomputeSheet(); });
+
+xlsxInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  setXlsxStatus(t('docxStatusLoading'));
+  try{
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(buf, { type: 'array' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    sheetData = {};
+    let maxR = SHEET_ROWS - 1, maxC = SHEET_COLS - 1;
+    Object.keys(ws).forEach((addr) => {
+      if(addr[0] === '!') return;
+      const cell = XLSX.utils.decode_cell(addr);
+      maxR = Math.max(maxR, cell.r);
+      maxC = Math.max(maxC, cell.c);
+      const cellObj = ws[addr];
+      sheetData[cellKey(cell.r, cell.c)] = cellObj.f ? ('=' + cellObj.f) : (cellObj.v !== undefined ? String(cellObj.v) : '');
+    });
+    SHEET_ROWS = maxR + 1;
+    SHEET_COLS = maxC + 1;
+    buildSheetGrid();
+    recomputeSheet();
+    scheduleXlsxAutosave();
+    setXlsxStatus(t('xlsxStatusLoaded'));
+  }catch(err){
+    console.error(err);
+    setXlsxStatus(t('xlsxStatusError'));
+  }
+  xlsxInput.value = '';
+});
+
+xlsxExportBtn.addEventListener('click', () => {
+  try{
+    recomputeSheet();
+    const ws = {};
+    let maxR = SHEET_ROWS - 1, maxC = SHEET_COLS - 1;
+    Object.keys(sheetData).forEach((key) => {
+      const [r, c] = key.split('_').map(Number);
+      maxR = Math.max(maxR, r); maxC = Math.max(maxC, c);
+    });
+    for(let r = 0; r <= maxR; r++){
+      for(let c = 0; c <= maxC; c++){
+        const key = cellKey(r, c);
+        const raw = sheetData[key];
+        if(raw === undefined || raw === '') continue;
+        const addr = XLSX.utils.encode_cell({ r, c });
+        if(typeof raw === 'string' && raw.startsWith('=')){
+          ws[addr] = { t: 'n', f: raw.slice(1), v: Number(sheetComputed[key]) || 0 };
+        } else {
+          const num = parseFloat(raw);
+          ws[addr] = isNaN(num) ? { t: 's', v: raw } : { t: 'n', v: num };
+        }
+      }
+    }
+    if(!isSupported()){
+      const footerR = maxR + 2;
+      const addr = XLSX.utils.encode_cell({ r: footerR, c: 0 });
+      ws[addr] = { t: 's', v: 'Сделано в VArt PDF Editor — бесплатный инструмент' };
+      maxR = footerR;
+    }
+    ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: maxR, c: maxC } });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    downloadBlob(wbout, 'spreadsheet.xlsx', 'application/octet-stream');
+    setXlsxStatus(t('xlsxStatusExported'));
+  }catch(err){
+    console.error(err);
+    setXlsxStatus(t('xlsxStatusError'));
+  }
+});
+</script>
+</body>
+</html>
