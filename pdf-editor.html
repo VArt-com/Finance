@@ -56,15 +56,25 @@
     user-select:none;-webkit-user-drag:none;
   }
   .resize-handle{
-    position:absolute;right:-5px;bottom:-5px;width:12px;height:12px;border-radius:50%;
-    background:var(--accent);cursor:nwse-resize;touch-action:none;user-select:none;-webkit-user-drag:none;
+    position:absolute;right:-7px;bottom:-7px;width:16px;height:16px;border-radius:50%;
+    background:var(--accent);border:2px solid var(--panel);cursor:nwse-resize;touch-action:none;
+    user-select:none;-webkit-user-drag:none;z-index:2;
   }
   .image-el{position:absolute;cursor:move;-webkit-user-drag:none;user-select:none;}
+  /* Delete (×) sits at the opposite corner from the resize handle (top-left vs.
+     bottom-right) on purpose — on a small/shrunk box, two controls on the same
+     corner overlap and it becomes impossible to grab the resize handle without
+     hitting delete instead. Keeping them diagonal keeps both reachable. */
   .del-btn{
-    position:absolute;top:-10px;right:-10px;width:22px;height:22px;border-radius:50%;
+    position:absolute;top:-9px;left:-9px;width:20px;height:20px;border-radius:50%;
     background:var(--danger);color:#fff;border:2px solid var(--panel);cursor:pointer;
-    font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;
+    font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;
     padding:0;touch-action:none;z-index:2;user-select:none;-webkit-user-drag:none;
+  }
+  @media (pointer:coarse){
+    /* Finger-sized targets: a mouse can click a 16px dot precisely, a fingertip can't. */
+    .resize-handle{width:22px;height:22px;right:-10px;bottom:-10px;}
+    .del-btn{width:26px;height:26px;top:-12px;left:-12px;font-size:15px;}
   }
   .highlight-box{
     position:absolute;background:#ffe36b;opacity:.45;cursor:move;touch-action:none;
@@ -184,6 +194,29 @@
   }
   #sheetTable th{background:#eee;position:sticky;top:0;}
   #sheetTable td[contenteditable]:focus{outline:2px solid var(--accent);background:#fffde7;}
+
+  /* ---- Phones/small tablets: the toolbar has grown to ~10 groups of controls,
+     so tighten spacing/sizing instead of letting it eat half the screen height,
+     and shrink the fixed-width editors (docx/xlsx) so they don't force horizontal
+     scrolling on a narrow viewport. ---- */
+  @media (max-width: 760px){
+    header{padding:8px 10px;gap:5px;}
+    header h1{font-size:14px;margin:0 8px 0 0;}
+    .toolbar-group{padding:3px 5px;gap:3px;}
+    button, .file-btn{padding:7px 10px;font-size:12.5px;}
+    select, input[type=color], input[type=text]{padding:5px 6px;font-size:12.5px;}
+    input[type=color]{width:34px;padding:2px;}
+    #splitRangeInput{width:70px;}
+    main{padding:10px;gap:10px;}
+    #empty{margin-top:32px;}
+    .sig-card, .gate-card{padding:18px;}
+    #docxEditor{padding:16px;}
+    .xlsx-toolbar, .docx-toolbar{gap:5px;padding:6px;}
+  }
+  @media (max-width: 420px){
+    header h1{display:none;} /* title costs a full line on very narrow phones; the app is self-evident once a file is open */
+    .status{display:none;}
+  }
 </style>
 </head>
 <body>
