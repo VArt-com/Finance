@@ -47,19 +47,25 @@
   .overlay{position:absolute;top:0;left:0;right:0;bottom:0;}
   .text-box{
     position:absolute;min-width:20px;padding:2px 4px;font-family:Helvetica,Arial,sans-serif;
-    border:1px dashed transparent;cursor:move;outline:none;white-space:pre;
+    border:1px dashed transparent;cursor:move;outline:none;white-space:pre;touch-action:none;
   }
   .text-box:hover, .text-box:focus{border-color:var(--accent);}
-  .sig-img{position:absolute;cursor:move;}
+  .sig-img{position:absolute;cursor:move;touch-action:none;}
   .mask-box{
-    position:absolute;background:#ffffff;cursor:move;border:1px dashed rgba(0,0,0,.25);
+    position:absolute;background:#ffffff;cursor:move;border:1px dashed rgba(0,0,0,.25);touch-action:none;
   }
   .resize-handle{
     position:absolute;right:-5px;bottom:-5px;width:12px;height:12px;border-radius:50%;
     background:var(--accent);cursor:nwse-resize;touch-action:none;
   }
   .image-el{position:absolute;cursor:move;}
-  .highlight-box{position:absolute;background:#ffe36b;opacity:.45;cursor:move;}
+  .del-btn{
+    position:absolute;top:-10px;right:-10px;width:22px;height:22px;border-radius:50%;
+    background:var(--danger);color:#fff;border:2px solid var(--panel);cursor:pointer;
+    font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;
+    padding:0;touch-action:none;z-index:2;
+  }
+  .highlight-box{position:absolute;background:#ffe36b;opacity:.45;cursor:move;touch-action:none;}
   #deletedBanner{
     position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(209,67,67,.15);
     display:none;align-items:center;justify-content:center;text-align:center;padding:16px;z-index:8;
@@ -88,7 +94,7 @@
   }
   .text-hit:hover{background:rgba(59,111,224,.18);outline:1px dashed var(--accent);}
   #drawLayer{
-    position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:5;
+    position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:5;touch-action:none;
   }
   #drawLayer.active{pointer-events:auto;cursor:crosshair;}
   #drawRect{
@@ -224,6 +230,7 @@
   <div class="toolbar-group">
     <button id="addMaskBtn" disabled class="secondary" data-i18n="addMask">+ Плашка</button>
     <button id="addHighlightBtn" disabled class="secondary" data-i18n="addHighlight">+ Выделение</button>
+    <button id="deleteSelectedBtn" disabled class="secondary" data-i18n="deleteSelected">🗑 Удалить выделенное</button>
   </div>
   <div class="toolbar-group">
     <label class="file-btn" id="addImageLabel" style="opacity:.4;pointer-events:none;">
@@ -350,6 +357,7 @@ const translations = {
     addSig: '+ Подпись',
     addMask: '+ Плашка',
     addHighlight: '+ Выделение',
+    deleteSelected: '🗑 Удалить выделенное',
     addImage: '+ Изображение',
     save: 'Сохранить PDF',
     exportPage: 'Страница в картинку',
@@ -444,6 +452,7 @@ const translations = {
     addSig: '+ Signature',
     addMask: '+ Cover box',
     addHighlight: '+ Highlight',
+    deleteSelected: '🗑 Delete selected',
     addImage: '+ Image',
     save: 'Save PDF',
     exportPage: 'Page as image',
@@ -538,6 +547,7 @@ const translations = {
     addSig: '+ חתימה',
     addMask: '+ כיסוי',
     addHighlight: '+ הדגשה',
+    deleteSelected: '🗑 מחק את הנבחר',
     addImage: '+ תמונה',
     save: 'שמור PDF',
     exportPage: 'עמוד כתמונה',
@@ -702,6 +712,7 @@ const addTextBtn = document.getElementById('addTextBtn');
 const addSigBtn = document.getElementById('addSigBtn');
 const addMaskBtn = document.getElementById('addMaskBtn');
 const addHighlightBtn = document.getElementById('addHighlightBtn');
+const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
 const addImageLabel = document.getElementById('addImageLabel');
 const imageInput = document.getElementById('imageInput');
 const textHitLayer = document.getElementById('textHitLayer');
@@ -935,6 +946,7 @@ async function loadPdfFile(file){
   redoStack = [];
   selectedItemRef = null;
   selectedEl = null;
+  deleteSelectedBtn.disabled = true;
   currentFileMeta = { name: file.name, size: file.size };
   updateMergeBadge();
   emptyMsg.style.display = 'none';
@@ -1038,6 +1050,7 @@ function restoreSnapshot(str){
   deletedPages = new Set(snap.deletedPages || []);
   selectedItemRef = null;
   selectedEl = null;
+  deleteSelectedBtn.disabled = true;
   rebuildOverlay();
   updatePageInfo();
   updateDeletedBanner();
@@ -1078,14 +1091,7 @@ document.addEventListener('keydown', (e) => {
   if(ctrlOrCmd && (key === 'y' || (key === 'z' && e.shiftKey))){ e.preventDefault(); redo(); return; }
   if((e.key === 'Delete' || e.key === 'Backspace') && !isEditableFocus && selectedItemRef){
     e.preventDefault();
-    pushUndo();
-    const list = edits[currentPageNum] || [];
-    const i = list.indexOf(selectedItemRef);
-    if(i > -1) list.splice(i, 1);
-    selectedItemRef = null;
-    selectedEl = null;
-    rebuildOverlay();
-    scheduleAutosave();
+    deleteSelectedItem();
   }
 });
 
@@ -1094,7 +1100,27 @@ function selectOverlayEl(el, item){
   selectedEl = el;
   selectedItemRef = item;
   el.style.outline = '2px solid #e0a500';
+  updateDeleteBtnState();
 }
+
+function updateDeleteBtnState(){
+  deleteSelectedBtn.disabled = !selectedItemRef;
+}
+
+function deleteSelectedItem(){
+  if(!selectedItemRef) return;
+  pushUndo();
+  const list = edits[currentPageNum] || [];
+  const i = list.indexOf(selectedItemRef);
+  if(i > -1) list.splice(i, 1);
+  selectedItemRef = null;
+  selectedEl = null;
+  rebuildOverlay();
+  scheduleAutosave();
+  updateDeleteBtnState();
+}
+
+deleteSelectedBtn.addEventListener('click', deleteSelectedItem);
 
 async function renderPage(num){
   const page = await pdfJsDoc.getPage(num);
@@ -1279,6 +1305,7 @@ function rebuildOverlay(){
       img.style.position = 'absolute';
       const wrap = document.createElement('div');
       wrap.style.position = 'absolute';
+      wrap.style.touchAction = 'none';
       wrap.style.left = img.style.left;
       wrap.style.top = img.style.top;
       wrap.style.width = img.style.width;
@@ -1319,18 +1346,31 @@ function placeCaretAtEnd(el){
 
 function attachDelete(el, idx, type){
   el.title = t('doubleClickDelete');
-  // Any interaction with an overlay item also selects it, so Delete/Backspace can remove it.
+  // Any interaction with an overlay item also selects it, so Delete/Backspace
+  // (desktop) or the "Delete selected" toolbar button (mobile/touch) can remove it.
   el.addEventListener('pointerdown', () => selectOverlayEl(el, edits[currentPageNum][idx]));
   el.addEventListener('dblclick', (e) => {
     e.preventDefault();
-    pushUndo();
-    const list = edits[currentPageNum] || [];
-    list.splice(idx, 1);
-    selectedItemRef = null;
-    selectedEl = null;
-    rebuildOverlay();
-    scheduleAutosave();
+    selectOverlayEl(el, edits[currentPageNum][idx]);
+    deleteSelectedItem();
   });
+  // A visible delete (×) button, for everything except text boxes — appending a
+  // button inside a contentEditable text box would get swept into its saved text.
+  if(type !== 'text'){
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'del-btn';
+    delBtn.textContent = '×';
+    delBtn.title = t('deleteSelected');
+    delBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); });
+    delBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      selectOverlayEl(el, edits[currentPageNum][idx]);
+      deleteSelectedItem();
+    });
+    el.appendChild(delBtn);
+  }
 }
 
 // Drag-to-move that doesn't fight with clicking into a contentEditable box to type.
