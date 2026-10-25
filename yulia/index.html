@@ -145,6 +145,12 @@ nav.scrolled{background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-fi
 .ex li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
 .ex li:first-child{border-top:none}
 .ex li span:last-child{color:var(--gold);font-weight:600;white-space:nowrap}
+.appban{display:flex;align-items:center;gap:16px;margin:0 0 26px;padding:16px 18px;border:1px solid rgba(210,174,85,.45);border-radius:20px;background:linear-gradient(135deg,rgba(210,174,85,.14),rgba(210,174,85,.03));text-decoration:none;color:inherit;transition:.25s}
+.appban:hover{border-color:var(--gold);transform:translateY(-2px)}
+.appban img{border-radius:16px;flex:none}
+.appban-tx{flex:1;display:block;font-size:14px;color:var(--text2);line-height:1.45}
+.appban-tx b{display:block;font-size:16px;color:var(--gold2);margin-bottom:2px}
+@media(max-width:640px){.appban{flex-wrap:wrap}.appban .btn{width:100%}}
 .note{margin-top:20px;font-size:13px;color:var(--muted);border-inline-start:2px solid var(--gold);padding-inline-start:14px}
 
 /* ───── video lessons ───── */
@@ -462,6 +468,11 @@ footer{border-top:1px solid var(--line);padding:34px 0;background:var(--bg2)}
       <h2 class="h2" data-i18n-html="pH">Выбери свой <em>план</em></h2>
       <p class="lead" data-i18n="pLead">Базовые шаблоны для зала. Индивидуальная программа составляется под твои цели, уровень и график.</p>
     </div>
+    <a class="appban reveal" href="app/">
+      <img src="app/icons/icon-192.png" alt="" width="64" height="64"/>
+      <span class="appban-tx"><b data-i18n="appT">Программа Yulia Fit — приложение</b><span data-i18n="appD">Анимация техники каждого упражнения, таймер отдыха и дневник тренировок. Устанавливается на телефон и компьютер, работает без интернета.</span></span>
+      <span class="btn btn-gold" data-i18n="appB">Открыть</span>
+    </a>
     <div class="tabs" id="progTabs"></div>
     <div class="prog-meta" id="progMeta"></div>
     <div class="days" id="progDays"></div>
@@ -639,6 +650,7 @@ c2t:'Онлайн-тренировки',c2p:'Программа под твою 
 c3t:'Комплексное ведение',c3p:'Тренировки + питание + постоянная обратная связь.',c3a:'Тренировки и план питания',c3b:'Постоянная обратная связь',c3c:'Корректировка по результатам',
 signup:'Записаться',join:'Присоединиться',popular:'Популярное',
 pEye:'Программы тренировок',pH:'Выбери свой <em>план</em>',pLead:'Базовые шаблоны для зала. Индивидуальная программа составляется под твои цели, уровень и график.',
+appT:'Программа Yulia Fit — приложение',appD:'Анимация техники каждого упражнения, таймер отдыха и дневник тренировок. Устанавливается на телефон и компьютер, работает без интернета.',appB:'Открыть',
 pNote:'Вес подбирай так, чтобы в запасе оставалось 1–2 повторения. Отдых между подходами — 60–120 секунд. Перед началом разомнись 5–10 минут. При болезнях и травмах сначала проконсультируйся с врачом.',
 perWeek:'раз в неделю',level:'Уровень',day:'День',
 vEye:'Видеоуроки',vH:'Онлайн-<em>уроки</em>',vLead:'Техника упражнений, тренировки и питание — в видео. Доступно зарегистрированным участникам.',
@@ -694,6 +706,7 @@ c2t:'אימוני אונליין',c2p:'תוכנית לפי המטרה שלך ו�
 c3t:'ליווי מלא',c3p:'אימונים + תזונה + משוב שוטף.',c3a:'אימונים ותפריט',c3b:'משוב שוטף',c3c:'התאמות לפי התוצאות',
 signup:'להרשמה',join:'להצטרפות',popular:'פופולרי',
 pEye:'תוכניות אימון',pH:'בחרו את <em>התוכנית</em>',pLead:'תבניות בסיס לחדר כושר. תוכנית אישית נבנית לפי המטרות, הרמה ולוח הזמנים שלך.',
+appT:'תוכנית Yulia Fit — אפליקציה',appD:'אנימציה של הטכניקה בכל תרגיל, טיימר מנוחה ויומן אימונים. מותקנת בטלפון ובמחשב ועובדת בלי אינטרנט.',appB:'פתיחה',
 pNote:'בחרו משקל כך שיישארו 1–2 חזרות בצד. מנוחה בין סטים — 60–120 שניות. לפני האימון חממו 5–10 דקות. במקרה של מחלה או פציעה — התייעצו קודם עם רופא.',
 perWeek:'בשבוע',level:'רמה',day:'יום',
 vEye:'שיעורי וידאו',vH:'שיעורי <em>אונליין</em>',vLead:'טכניקת תרגילים, אימונים ותזונה — בווידאו. זמין לחברים רשומים.',
