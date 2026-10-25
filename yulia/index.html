@@ -4,9 +4,9 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Yulia — тренер по натуральному бодибилдингу | Онлайн-тренировки и питание</title>
-<meta name="description" content="Yulia — персональный тренер по натуральному бодибилдингу. Онлайн-тренировки, видеоуроки, программы тренировок, планы питания, чат и видеокомната для участников."/>
+<meta name="description" content="Yulia — персональный тренер по натуральному бодибилдингу. Персональные и онлайн-тренировки, программы, питание, цены. Связь в WhatsApp и Instagram."/>
 <meta property="og:title" content="Yulia — натуральный бодибилдинг, онлайн-тренировки и питание"/>
-<meta property="og:description" content="Программы тренировок, видеоуроки, планы питания и сообщество. Без химии и фанатизма."/>
+<meta property="og:description" content="Персональные и онлайн-тренировки, программы, питание. Без химии и фанатизма."/>
 <meta property="og:image" content="https://org-va.com/yulia/img/hero.jpg"/>
 <meta name="theme-color" content="#0d0c0b"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -280,6 +280,18 @@ footer{border-top:1px solid var(--line);padding:34px 0;background:var(--bg2)}
 .js .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s,transform .8s}
 .js .reveal.in{opacity:1;transform:none}
 
+/* ───── nav socials / prices ───── */
+.ig-chip{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);display:inline-flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;transition:transform .2s}
+.ig-chip:hover{transform:translateY(-2px)}
+.nav-wa{gap:6px;padding:9px 14px}
+.pr{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:14px 0;border-top:1px solid var(--line);font-size:14px;color:var(--text2)}
+.pr:first-of-type{border-top:none}
+.pr b{color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:26px;line-height:1;white-space:nowrap;text-align:end}
+.pr b small{display:block;font-family:'Jost','Heebo',sans-serif;font-size:11px;font-weight:500;color:var(--muted);margin-top:4px}
+.pr em{display:block;font-style:normal;font-size:12px;color:var(--muted);margin-top:2px}
+.card .ic.emoji{font-size:26px}
+.freebar{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:26px;padding:18px;border:1px dashed color-mix(in srgb,var(--gold) 50%,transparent);border-radius:var(--r);background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 8%,transparent),transparent)}
+.freebar b{font-size:16px}
 /* ───── responsive ───── */
 @media(max-width:980px){
   .hero-grid,.about-grid,.nut-grid,.comm,.contact-grid{grid-template-columns:1fr}
@@ -307,7 +319,8 @@ footer{border-top:1px solid var(--line);padding:34px 0;background:var(--bg2)}
   .chat{height:520px}
   .citem{width:240px;height:350px}
   .medal{inset-inline-start:8px}
-  #btnAuth span.txt{display:none}
+  #btnAuth span.txt,.nav-wa .txt{display:none}
+  .nav-wa{padding:9px 11px}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 </style>
@@ -320,16 +333,19 @@ footer{border-top:1px solid var(--line);padding:34px 0;background:var(--bg2)}
     <a href="#top" class="brand"><b>Yulia</b><small data-i18n="brandSub">Natural Bodybuilding</small></a>
     <div class="nav-links" id="navLinks">
       <a href="#about" data-i18n="nAbout">О тренере</a>
+      <a href="#prices" data-feature="prices" data-i18n="nPrices">Цены</a>
       <a href="#programs" data-i18n="nPrograms">Программы</a>
-      <a href="#lessons" data-i18n="nLessons">Видеоуроки</a>
+      <a href="#lessons" data-feature="lessons" data-i18n="nLessons">Видеоуроки</a>
       <a href="#nutrition" data-i18n="nNutrition">Питание</a>
-      <a href="#community" data-i18n="nCommunity">Сообщество</a>
+      <a href="#community" data-feature="community" data-i18n="nCommunity">Сообщество</a>
       <a href="#contact" data-i18n="nContact">Контакты</a>
     </div>
     <div class="nav-right">
       <button class="chip" id="btnLang" aria-label="Language">עב</button>
       <button class="chip" id="btnTheme" aria-label="Theme">☀️</button>
-      <button class="btn btn-gold btn-sm" id="btnAuth"><span>👤</span>&nbsp;<span class="txt" data-i18n="login">Войти</span></button>
+      <a class="btn btn-wa btn-sm nav-wa" data-wa href="#" target="_blank" rel="noopener" aria-label="WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span class="txt">WhatsApp</span></a>
+      <a class="ig-chip" id="igNav" href="#" target="_blank" rel="noopener" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+      <button class="btn btn-gold btn-sm" id="btnAuth" data-feature="accounts"><span>👤</span>&nbsp;<span class="txt" data-i18n="login">Войти</span></button>
       <button class="chip burger" id="btnBurger" aria-label="Menu">☰</button>
     </div>
   </div>
@@ -344,18 +360,19 @@ footer{border-top:1px solid var(--line);padding:34px 0;background:var(--bg2)}
       <div class="hero-sub" data-i18n="heroSub">Тренер по натуральному бодибилдингу</div>
       <p class="hero-desc" data-i18n="heroDesc">Онлайн-тренировки, видеоуроки и питание под твою цель. Без химии, без фанатизма — с уважением к себе.</p>
       <div class="hero-btns">
-        <button class="btn btn-gold" data-open-auth="register" data-i18n="heroCta1">Начать онлайн</button>
-        <a class="btn btn-wa" data-wa href="#" target="_blank" rel="noopener" data-i18n="heroCta2">Написать в WhatsApp</a>
+        <a class="btn btn-gold" data-join href="#" target="_blank" rel="noopener" data-i18n="heroCta1">Начать онлайн</a>
+        <a class="btn btn-wa" data-feature="accounts" data-wa href="#" target="_blank" rel="noopener" data-i18n="heroCta2">Написать в WhatsApp</a>
+        <a class="btn btn-line" id="igHero" href="#" target="_blank" rel="noopener">Instagram</a>
       </div>
       <div class="hero-feats">
         <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="hf1">Индивидуальные программы</span></span>
-        <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="hf2">Видеоуроки и план питания</span></span>
-        <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="hf3">Чат и видеокомната</span></span>
+        <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="hf2" data-feature="lessons">Видеоуроки и план питания</span><span data-i18n="hf2b" data-nofeature="lessons">Рекомендации по питанию</span></span>
+        <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="hf3" data-feature="community">Чат и видеокомната</span><span data-i18n="hf3b" data-nofeature="community">Связь в WhatsApp и Instagram</span></span>
       </div>
     </div>
     <div class="hero-photo">
-      <img src="img/hero.jpg" alt="Yulia — NPC Worldwide 2026" width="600" height="900" fetchpriority="high"/>
-      <div class="medal"><span class="m-ic">🥈</span><div><b data-i18n="medalT">Серебро 2026</b><small>NPC Worldwide</small></div></div>
+      <img src="img/hero.jpg" alt="Yulia — тренер по натуральному бодибилдингу" width="600" height="900" fetchpriority="high"/>
+      <div class="medal"><span class="m-ic">🥈</span><div><b data-i18n="medalT">Серебро 2026</b><small>Natural Bodybuilding</small></div></div>
     </div>
   </div>
 </header>
@@ -409,8 +426,8 @@ footer{border-top:1px solid var(--line);padding:34px 0;background:var(--bg2)}
         <div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 22h8M12 18v4"/></svg></div>
         <h3 data-i18n="c2t">Онлайн-тренировки</h3>
         <p data-i18n="c2p">Программа и видеоуроки, чат с тренером и видеосвязь.</p>
-        <ul><li data-i18n="c2a">Программа под твою цель</li><li data-i18n="c2b">Видеоуроки по технике</li><li data-i18n="c2c">Чат и видеокомната</li></ul>
-        <button class="btn btn-gold btn-sm" data-open-auth="register" data-i18n="join">Присоединиться</button>
+        <ul><li data-i18n="c2a">Программа под твою цель</li><li data-i18n="c2b" data-feature="lessons">Видеоуроки по технике</li><li data-i18n="c2c" data-feature="community">Чат и видеокомната</li><li data-i18n="c2d" data-nofeature="lessons">Обратная связь в WhatsApp</li><li data-i18n="c2e" data-nofeature="community">Видеозвонки по договорённости</li></ul>
+        <a class="btn btn-gold btn-sm" data-join href="#" target="_blank" rel="noopener" data-i18n="join">Присоединиться</a>
       </div>
       <div class="card reveal">
         <div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4c0 2 1 3 1 5H8a4 4 0 0 0 0 8h8a4 4 0 0 0 0-8h-1c0-2 1-3 1-5a4 4 0 0 0-4-4z"/></svg></div>
@@ -420,6 +437,20 @@ footer{border-top:1px solid var(--line);padding:34px 0;background:var(--bg2)}
         <a class="btn btn-line btn-sm" data-wa data-msg="c3t" href="#" target="_blank" rel="noopener" data-i18n="signup">Записаться</a>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ═════ PRICES ═════ -->
+<section id="prices" data-feature="prices">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <div class="eyebrow" data-i18n="prEye">Стоимость</div>
+      <h2 class="h2" data-i18n-html="prH">Понятные <em>цены</em></h2>
+      <p class="lead" data-i18n="prLead">Выбери формат — стоимость зависит от цели и графика. Точные условия обсудим на бесплатной консультации.</p>
+    </div>
+    <div class="cards3" id="priceCards"></div>
+    <div class="freebar reveal"><span style="font-size:24px">🎁</span><b data-i18n="prFree">Первая консультация — бесплатно</b><a class="btn btn-wa btn-sm" data-wa href="#" target="_blank" rel="noopener" data-i18n="prCta">Записаться на консультацию</a></div>
+    <p class="note" data-i18n="prNote">Цены указаны в шекелях и являются ориентировочными. Рекомендации по питанию носят общий характер и не заменяют консультацию клинического диетолога.</p>
   </div>
 </section>
 
@@ -439,7 +470,7 @@ footer{border-top:1px solid var(--line);padding:34px 0;background:var(--bg2)}
 </section>
 
 <!-- ═════ VIDEO LESSONS ═════ -->
-<section class="alt" id="lessons">
+<section id="lessons" data-feature="lessons">
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="eyebrow" data-i18n="vEye">Видеоуроки</div>
@@ -495,7 +526,7 @@ footer{border-top:1px solid var(--line);padding:34px 0;background:var(--bg2)}
 </section>
 
 <!-- ═════ COMMUNITY ═════ -->
-<section class="alt" id="community">
+<section id="community" data-feature="community">
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="eyebrow" data-i18n="mEye">Сообщество</div>
@@ -547,7 +578,7 @@ footer{border-top:1px solid var(--line);padding:34px 0;background:var(--bg2)}
   <div class="wrap foot">
     <div><b class="serif" style="font-size:22px">Yulia</b><br/><small>© 2026 · Israel</small></div>
     <div class="foot-links">
-      <a href="#about" data-i18n="nAbout">О тренере</a><a href="#programs" data-i18n="nPrograms">Программы</a><a href="#lessons" data-i18n="nLessons">Видеоуроки</a><a href="#nutrition" data-i18n="nNutrition">Питание</a><a href="#community" data-i18n="nCommunity">Сообщество</a>
+      <a href="#about" data-i18n="nAbout">О тренере</a><a href="#prices" data-feature="prices" data-i18n="nPrices">Цены</a><a href="#programs" data-i18n="nPrograms">Программы</a><a href="#lessons" data-feature="lessons" data-i18n="nLessons">Видеоуроки</a><a href="#nutrition" data-i18n="nNutrition">Питание</a><a href="#community" data-feature="community" data-i18n="nCommunity">Сообщество</a>
     </div>
     <div class="foot-links"><a href="../privacy.html" data-i18n="privacy">Конфиденциальность</a><a href="https://org-va.com" rel="noopener">org-va.com</a></div>
   </div>
@@ -569,7 +600,6 @@ footer{border-top:1px solid var(--line);padding:34px 0;background:var(--bg2)}
 </div>
 <div id="toast" role="status"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 document.documentElement.classList.add('js');
 
@@ -582,26 +612,30 @@ const CFG = {
   PHOTOS_FUNC: 'https://ovklfunnasqnvmluqbmm.supabase.co/functions/v1/cloudinary-photos',
   WA: '972000000000',          // номер WhatsApp без «+»
   IG: 'yulia_yulson',          // Instagram (без @)
-  JITSI_PREFIX: 'YuliaFitClub' // префикс видеокомнат
+  JITSI_PREFIX: 'YuliaFitClub', // префикс видеокомнат
+  // Включай и выключай блоки сайта. Уроки и чат работают только при accounts:true
+  FEATURES: { accounts:false, lessons:false, community:false, prices:true }
 };
+const FEAT={...CFG.FEATURES};
+if(!FEAT.accounts){FEAT.lessons=false;FEAT.community=false}
 
 /* ═══════════ TEXTS ═══════════ */
 const T = {
 ru:{
-brandSub:'Natural Bodybuilding',nAbout:'О тренере',nPrograms:'Программы',nLessons:'Видеоуроки',nNutrition:'Питание',nCommunity:'Сообщество',nContact:'Контакты',
+brandSub:'Natural Bodybuilding',nAbout:'О тренере',nPrices:'Цены',nPrograms:'Программы',nLessons:'Видеоуроки',nNutrition:'Питание',nCommunity:'Сообщество',nContact:'Контакты',
 login:'Войти',logout:'Выйти',
 heroTag:'Онлайн и офлайн тренировки',heroTitle:'Yulia',heroSub:'Тренер по натуральному бодибилдингу',
 heroDesc:'Онлайн-тренировки, видеоуроки и питание под твою цель. Без химии, без фанатизма — с уважением к себе.',
-heroCta1:'Начать онлайн',heroCta2:'Написать в WhatsApp',hf1:'Индивидуальные программы',hf2:'Видеоуроки и план питания',hf3:'Чат и видеокомната',medalT:'Серебро 2026',
+heroCta1:'Начать онлайн',heroCta1b:'Написать в WhatsApp',heroCta2:'Написать в WhatsApp',hf2b:'Рекомендации по питанию',hf3b:'Связь в WhatsApp и Instagram',hf1:'Индивидуальные программы',hf2:'Видеоуроки и план питания',hf3:'Чат и видеокомната',medalT:'Серебро 2026',
 st1:'года в спорте',st2:'клиентов',st3:'натурально',st4:'готовые программы',
 aEye:'О тренере',aH:'Сила — это <em>дисциплина</em>',
-aP1:'Я Yulia — персональный тренер по натуральному бодибилдингу и спортсменка. Тренирую онлайн и офлайн.',
-aP2:'Моя философия проста: красивое и сильное тело строится постепенно — через грамотные тренировки, питание и сон. Мышцы, пропорции, симметрия — всё это можно развить без химии и без крайностей.',
-aP3:'Каждая программа составляется индивидуально — с учётом твоих целей, образа жизни и возможностей.',
-pt1:'Без химии и опасных диет',pt1d:'Только безопасные методы и реалистичные цели',pt2:'Гибкий график',pt2d:'Тренируйся там и тогда, когда удобно',pt3:'Обратная связь',pt3d:'Вопросы тренеру — в чате и видеокомнате',
+aP1:'Я Yulia — тренер по натуральному бодибилдингу и действующая спортсменка. Выхожу на сцену на соревнованиях, поэтому знаю подготовку не по книгам, а по собственному опыту.',
+aP2:'В 2026 году завоевала серебряную медаль. За плечами больше двух лет в спорте и 30+ клиентов, с которыми мы работаем онлайн и офлайн — в зале и на расстоянии.',
+aP3:'Моя философия проста: красивое и сильное тело строится постепенно — через грамотные тренировки, питание и сон, без химии и без крайностей. Каждая программа составляется индивидуально — с учётом твоих целей, образа жизни и возможностей.',
+pt1:'Без химии и опасных диет',pt1d:'Только безопасные методы и реалистичные цели',pt2:'Гибкий график',pt2d:'Тренируйся там и тогда, когда удобно',pt3:'Обратная связь',pt3d:'Вопросы тренеру — в WhatsApp и Instagram',
 fEye:'Форматы',fH:'Как мы <em>работаем</em>',fLead:'Выбери формат — стоимость и детали обсудим в личной консультации. Первая консультация бесплатна.',
 c1t:'Персональные тренировки',c1p:'Живые тренировки в зале под присмотром тренера.',c1a:'Постановка техники',c1b:'Индивидуальный план',c1c:'Контроль прогресса',
-c2t:'Онлайн-тренировки',c2p:'Программа и видеоуроки, чат с тренером и видеосвязь.',c2a:'Программа под твою цель',c2b:'Видеоуроки по технике',c2c:'Чат и видеокомната',
+c2t:'Онлайн-тренировки',c2p:'Программа под твою цель и постоянная связь с тренером.',c2d:'Обратная связь в WhatsApp',c2e:'Видеозвонки по договорённости',c2a:'Программа под твою цель',c2b:'Видеоуроки по технике',c2c:'Чат и видеокомната',
 c3t:'Комплексное ведение',c3p:'Тренировки + питание + постоянная обратная связь.',c3a:'Тренировки и план питания',c3b:'Постоянная обратная связь',c3c:'Корректировка по результатам',
 signup:'Записаться',join:'Присоединиться',popular:'Популярное',
 pEye:'Программы тренировок',pH:'Выбери свой <em>план</em>',pLead:'Базовые шаблоны для зала. Индивидуальная программа составляется под твои цели, уровень и график.',
@@ -635,24 +669,28 @@ tabLogin:'Вход',tabReg:'Регистрация',aName:'Имя',aEmail:'Email
 aSub:'Доступ к видеоурокам, чату и видеокомнате',aAccount:'Аккаунт',aHello:'Привет',
 aErrFill:'Заполни все поля',aErrPass:'Пароль — минимум 8 символов',aErrCred:'Неверный email или пароль',aErrGen:'Не получилось. Попробуй ещё раз.',aConfirm:'Готово! Проверь почту и подтверди email, затем войди.',aResetOk:'Если такой email есть, мы отправили ссылку для сброса пароля.',aWelcome:'Добро пожаловать!',aBye:'Вы вышли из аккаунта',
 aOff:'Регистрация скоро откроется. Пока что запишись через WhatsApp.',
+prEye:'Стоимость',prH:'Понятные <em>цены</em>',prLead:'Выбери формат — стоимость зависит от цели и графика. Точные условия обсудим на бесплатной консультации.',
+prFree:'Первая консультация — бесплатно',prCta:'Записаться на консультацию',
+prNote:'Цены указаны в шекелях и являются ориентировочными. Рекомендации по питанию носят общий характер и не заменяют консультацию клинического диетолога.',
+waJoin:'Здравствуйте! Хочу онлайн-тренировки',
 goalOpt:['Похудение и рельеф','Набор мышечной массы','Онлайн-тренировки','Питание и план'],
 waHello:'Здравствуйте! Хочу записаться:',waName:'Имя',waPhone:'Телефон',waGoal:'Цель',waMsg:'Сообщение'
 },
 he:{
-brandSub:'Natural Bodybuilding',nAbout:'עליי',nPrograms:'תוכניות',nLessons:'שיעורי וידאו',nNutrition:'תזונה',nCommunity:'קהילה',nContact:'צור קשר',
+brandSub:'Natural Bodybuilding',nAbout:'עליי',nPrices:'מחירים',nPrograms:'תוכניות',nLessons:'שיעורי וידאו',nNutrition:'תזונה',nCommunity:'קהילה',nContact:'צור קשר',
 login:'כניסה',logout:'יציאה',
 heroTag:'אימונים אונליין ואופליין',heroTitle:'יוליה',heroSub:'מאמנת לבודיבילדינג טבעי',
 heroDesc:'אימוני אונליין, שיעורי וידאו ותזונה בהתאמה למטרה שלך. בלי סטרואידים, בלי קיצוניות — עם כבוד עצמי.',
-heroCta1:'להתחיל אונליין',heroCta2:'כתבו לי בוואטסאפ',hf1:'תוכניות אישיות',hf2:'שיעורי וידאו ותפריט',hf3:'צ׳אט וחדר וידאו',medalT:'מקום שני 2026',
+heroCta1:'להתחיל אונליין',heroCta1b:'כתבו לי בוואטסאפ',heroCta2:'כתבו לי בוואטסאפ',hf2b:'המלצות תזונה',hf3b:'קשר בוואטסאפ ובאינסטגרם',hf1:'תוכניות אישיות',hf2:'שיעורי וידאו ותפריט',hf3:'צ׳אט וחדר וידאו',medalT:'מקום שני 2026',
 st1:'שנות ספורט',st2:'לקוחות',st3:'טבעי',st4:'תוכניות מוכנות',
 aEye:'עליי',aH:'כוח הוא <em>משמעת</em>',
-aP1:'אני יוליה — מאמנת אישית לבודיבילדינג טבעי וספורטאית. מאמנת אונליין ואופליין.',
-aP2:'הפילוסופיה שלי פשוטה: גוף חזק ויפה נבנה בהדרגה — דרך אימונים נכונים, תזונה ושינה. שרירים, פרופורציות וסימטריה אפשר לפתח בלי סטרואידים ובלי קיצוניות.',
-aP3:'כל תוכנית נבנית באופן אישי — בהתאם למטרות, לאורח החיים וליכולות שלך.',
-pt1:'בלי סטרואידים ודיאטות מסוכנות',pt1d:'רק שיטות בטוחות ויעדים ריאליים',pt2:'לוח זמנים גמיש',pt2d:'מתאמנים איפה ומתי שנוח',pt3:'משוב אישי',pt3d:'שאלות למאמנת — בצ׳אט ובחדר הווידאו',
+aP1:'אני יוליה — מאמנת לבודיבילדינג טבעי וספורטאית פעילה. עולה לבמה בתחרויות, ולכן מכירה את ההכנה מהניסיון האישי שלי ולא רק מספרים.',
+aP2:'ב-2026 זכיתי במדליית כסף. מאחוריי יותר משנתיים בספורט ו-30+ לקוחות שאיתם אני עובדת אונליין ואופליין — בחדר הכושר ובמרחק.',
+aP3:'הפילוסופיה שלי פשוטה: גוף חזק ויפה נבנה בהדרגה — דרך אימונים נכונים, תזונה ושינה, בלי סטרואידים ובלי קיצוניות. כל תוכנית נבנית באופן אישי — בהתאם למטרות, לאורח החיים וליכולות שלך.',
+pt1:'בלי סטרואידים ודיאטות מסוכנות',pt1d:'רק שיטות בטוחות ויעדים ריאליים',pt2:'לוח זמנים גמיש',pt2d:'מתאמנים איפה ומתי שנוח',pt3:'משוב אישי',pt3d:'שאלות למאמנת — בוואטסאפ ובאינסטגרם',
 fEye:'מסלולים',fH:'איך <em>עובדים</em>',fLead:'בחרו מסלול — את המחיר והפרטים נסגור בייעוץ אישי. הייעוץ הראשון חינם.',
 c1t:'אימונים אישיים',c1p:'אימונים חיים בחדר כושר בליווי מאמנת.',c1a:'לימוד טכניקה',c1b:'תוכנית אישית',c1c:'מעקב התקדמות',
-c2t:'אימוני אונליין',c2p:'תוכנית ושיעורי וידאו, צ׳אט עם המאמנת ושיחות וידאו.',c2a:'תוכנית לפי המטרה שלך',c2b:'שיעורי וידאו בטכניקה',c2c:'צ׳אט וחדר וידאו',
+c2t:'אימוני אונליין',c2p:'תוכנית לפי המטרה שלך וקשר שוטף עם המאמנת.',c2d:'משוב בוואטסאפ',c2e:'שיחות וידאו בתיאום',c2a:'תוכנית לפי המטרה שלך',c2b:'שיעורי וידאו בטכניקה',c2c:'צ׳אט וחדר וידאו',
 c3t:'ליווי מלא',c3p:'אימונים + תזונה + משוב שוטף.',c3a:'אימונים ותפריט',c3b:'משוב שוטף',c3c:'התאמות לפי התוצאות',
 signup:'להרשמה',join:'להצטרפות',popular:'פופולרי',
 pEye:'תוכניות אימון',pH:'בחרו את <em>התוכנית</em>',pLead:'תבניות בסיס לחדר כושר. תוכנית אישית נבנית לפי המטרות, הרמה ולוח הזמנים שלך.',
@@ -686,6 +724,10 @@ tabLogin:'כניסה',tabReg:'הרשמה',aName:'שם',aEmail:'אימייל',aPa
 aSub:'גישה לשיעורי וידאו, צ׳אט וחדר וידאו',aAccount:'חשבון',aHello:'שלום',
 aErrFill:'מלאו את כל השדות',aErrPass:'סיסמה — לפחות 8 תווים',aErrCred:'אימייל או סיסמה שגויים',aErrGen:'לא הצליח. נסו שוב.',aConfirm:'מוכן! בדקו את המייל ואשרו אותו, ואז התחברו.',aResetOk:'אם האימייל קיים, שלחנו קישור לאיפוס סיסמה.',aWelcome:'ברוכים הבאים!',aBye:'התנתקתם מהחשבון',
 aOff:'ההרשמה תיפתח בקרוב. בינתיים אפשר להירשם דרך וואטסאפ.',
+prEye:'מחירים',prH:'מחירים <em>ברורים</em>',prLead:'בחרו מסלול — המחיר תלוי במטרה ובלוח הזמנים. את התנאים המדויקים נסגור בייעוץ חינם.',
+prFree:'הייעוץ הראשון — חינם',prCta:'לקביעת ייעוץ',
+prNote:'המחירים בשקלים והם להערכה בלבד. המלצות התזונה כלליות ואינן מחליפות ייעוץ של דיאטנית קלינית.',
+waJoin:'שלום! אני רוצה אימוני אונליין',
 goalOpt:['ירידה במשקל וחיטוב','עלייה במסת שריר','אימוני אונליין','תזונה ותוכנית'],
 waHello:'שלום! אני רוצה להירשם:',waName:'שם',waPhone:'טלפון',waGoal:'מטרה',waMsg:'הודעה'
 }};
@@ -760,8 +802,18 @@ function applyLang(){
   $('#btnLang').textContent=lang==='he'?'РУС':'עב';
   document.title=lang==='he'?'יוליה — מאמנת לבודיבילדינג טבעי | אימוני אונליין ותזונה':'Yulia — тренер по натуральному бодибилдингу | Онлайн-тренировки и питание';
   localStorage.setItem('yulia_lang',lang);
-  buildSelects();renderPrograms();renderMeals();renderTips();renderCalc();renderLessons();renderCommunity();renderGallery();renderAuthBtn();
+  buildSelects();renderPrices();renderPrograms();renderMeals();renderTips();renderCalc();renderLessons();renderCommunity();renderGallery();renderAuthBtn();
   $$('[data-wa]').forEach(a=>{const k=a.dataset.msg;a.href=waUrl(k?`${t('waHello')} ${t(k)}`:'')});
+  $$('[data-join]').forEach(a=>{
+    if(FEAT.accounts){a.href='#';a.removeAttribute('target');a.onclick=ev=>{ev.preventDefault();openAuth('register')}}
+    else{a.href=waUrl(t('waJoin'));a.onclick=null}
+  });
+}
+function applyFeatures(){
+  $$('[data-feature]').forEach(el=>{if(!FEAT[el.dataset.feature])el.remove()});
+  $$('[data-nofeature]').forEach(el=>{if(FEAT[el.dataset.nofeature])el.remove()});
+  if(!FEAT.accounts)$$('[data-join]').forEach(a=>{a.dataset.i18n=a.dataset.i18n==='heroCta1'?'heroCta1b':'signup'});
+  $$('body > section').forEach((sec,i)=>sec.classList.toggle('alt',i%2===1));
 }
 function setTheme(th){document.documentElement.dataset.theme=th;$('#btnTheme').textContent=th==='dark'?'☀️':'🌙';localStorage.setItem('yulia_theme',th);document.querySelector('meta[name=theme-color]').content=th==='dark'?'#0d0c0b':'#f7f2e9'}
 
@@ -774,6 +826,28 @@ function renderPrograms(){
   $('#progDays').innerHTML=p.plan.map((d,i)=>`<div class="day"><h4>${esc(li(d.n))}<small>${t('day')} ${i+1}</small></h4><ul class="ex">${d.ex.map(([k,s])=>`<li><span>${esc(li(EX[k]))}</span><span>${esc(s.replace('{s}',SEC[lang]).replace('{m}',MIN[lang]))}</span></li>`).join('')}</ul></div>`).join('');
 }
 $('#progTabs').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b){progId=b.dataset.p;renderPrograms()}});
+
+/* ═══════════ PRICES ═══════════ */
+/* ЧЕРНОВИК: цены ориентировочные (по рынку Израиля, ₪). Меняются здесь. */
+const PRICES=[
+ {ic:'🏋️',t:['Офлайн-тренировки','אימונים פנים אל פנים'],rows:[
+  [['Персональная тренировка, 60 мин','אימון אישי, 60 דק׳'],'200 ₪'],
+  [['Пакет из 10 тренировок','חבילת 10 אימונים'],'1 800 ₪',['180 ₪ за тренировку','180 ₪ לאימון']],
+  [['Парная тренировка','אימון זוגי'],'150 ₪',['с человека','לאדם']],
+  [['Мини-группа, 3–6 человек','קבוצה קטנה, 3–6 משתתפים'],'70 ₪',['с человека','לאדם']]]},
+ {ic:'💻',hot:true,t:['Онлайн-ведение','ליווי אונליין'],rows:[
+  [['Старт: программа тренировок и обратная связь','התחלה: תוכנית אימונים ומשוב'],'600 ₪',['в месяц','לחודש']],
+  [['Комплексное: тренировки, питание и обратная связь','מלא: אימונים, תזונה ומשוב'],'900 ₪',['в месяц','לחודש']]]},
+ {ic:'🥗',t:['Питание','תזונה'],rows:[
+  [['План питания под цель (разово)','תפריט לפי מטרה (חד־פעמי)'],'300 ₪'],
+  [['Питание в составе онлайн-ведения','תזונה כחלק מהליווי'],'+300 ₪',['в месяц','לחודש']]]}
+];
+function renderPrices(){
+  const box=$('#priceCards');if(!box)return;
+  box.innerHTML=PRICES.map(c=>`<div class="card ${c.hot?'hot':''}">${c.hot?`<span class="ribbon">${t('popular')}</span>`:''}
+    <div class="ic emoji">${c.ic}</div><h3>${esc(li(c.t))}</h3>
+    ${c.rows.map(r=>`<div class="pr"><span>${esc(li(r[0]))}</span><b>${esc(r[1])}${r[2]?`<small>${esc(li(r[2]))}</small>`:''}</b></div>`).join('')}</div>`).join('');
+}
 
 /* ═══════════ NUTRITION ═══════════ */
 let sex='f',mealId='cut';
@@ -822,12 +896,9 @@ function renderTips(){$('#tips').innerHTML=[1,2,3,4].map(i=>`<div class="tip"><b
 
 /* ═══════════ SUPABASE / AUTH ═══════════ */
 let sb=null,user=null,isAdmin=false;
-if(CFG.SUPABASE_URL&&CFG.SUPABASE_KEY&&window.supabase){
-  sb=window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
-}
 const userName=u=>(u&&u.user_metadata&&u.user_metadata.name)||(u&&u.email?u.email.split('@')[0]:'');
 function renderAuthBtn(){
-  const b=$('#btnAuth');
+  const b=$('#btnAuth');if(!b)return;
   b.innerHTML=user?`<span>👤</span>&nbsp;<span class="txt">${esc(userName(user))}</span>`:`<span>👤</span>&nbsp;<span class="txt">${t('login')}</span>`;
 }
 let authView='login';
@@ -883,7 +954,7 @@ function drawAuth(){
   go.onclick=submit;
   v.querySelectorAll('input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')submit()}));
 }
-$('#btnAuth').onclick=()=>openAuth('login');
+if($('#btnAuth'))$('#btnAuth').onclick=()=>openAuth('login');
 $('#authX').onclick=closeAuth;
 $('#authModal').addEventListener('click',e=>{if(e.target.id==='authModal')closeAuth()});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-open-auth]');if(b)openAuth(b.dataset.openAuth)});
@@ -896,9 +967,16 @@ async function onAuth(session){
   renderAuthBtn();renderLessons();renderCommunity();
   if($('#authModal').classList.contains('open')&&authView==='account'&&!user)closeAuth();
 }
-if(sb){
+function initBackend(){
+  if(sb||!window.supabase||!CFG.SUPABASE_URL||!CFG.SUPABASE_KEY)return;
+  sb=window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
   sb.auth.getSession().then(({data})=>onAuth(data.session));
   sb.auth.onAuthStateChange((ev,s)=>{if(ev!=='INITIAL_SESSION')onAuth(s)});
+}
+function loadBackend(){
+  if(!FEAT.accounts)return;
+  if(window.supabase)return initBackend();
+  const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';sc.onload=initBackend;document.head.appendChild(sc);
 }
 
 /* ═══════════ VIDEO LESSONS ═══════════ */
@@ -1070,10 +1148,11 @@ new MutationObserver(observeReveal).observe(document.body,{childList:true,subtre
 
 /* ═══════════ INIT ═══════════ */
 (function init(){
+  applyFeatures();
   setTheme(localStorage.getItem('yulia_theme')||'dark');
-  $('#igLink').href=`https://www.instagram.com/${CFG.IG}`;$('#igShow').textContent='@'+CFG.IG;
+  const igUrl=`https://www.instagram.com/${CFG.IG}`;['#igLink','#igNav','#igHero'].forEach(i=>{const e=$(i);if(e)e.href=igUrl});$('#igShow').textContent='@'+CFG.IG;
   $('#waShow').textContent='WhatsApp';
-  applyLang();observeReveal();loadPhotos();
+  applyLang();observeReveal();loadPhotos();loadBackend();
 })();
 </script>
 </body>
