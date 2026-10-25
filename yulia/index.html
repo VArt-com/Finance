@@ -574,11 +574,11 @@ footer{border-top:1px solid var(--line);padding:34px 0;background:var(--bg2)}
 document.documentElement.classList.add('js');
 
 /* ═══════════ CONFIG ═══════════
-   Для регистрации, чата и видеоуроков заполни SUPABASE_URL и SUPABASE_KEY
-   (Project URL и publishable/anon key проекта Supabase). */
+   Регистрация, чат и видеоуроки работают через проект VA-Music (таблицы yulia_*).
+   Ключ publishable — публичный, защита данных обеспечивается RLS в базе. */
 const CFG = {
-  SUPABASE_URL: '',
-  SUPABASE_KEY: '',
+  SUPABASE_URL: 'https://nlksyftconptpefeevrp.supabase.co',
+  SUPABASE_KEY: 'sb_publishable_34X7G5besCp0eQ3M6vihMg_fQfmRCnp',
   PHOTOS_FUNC: 'https://ovklfunnasqnvmluqbmm.supabase.co/functions/v1/cloudinary-photos',
   WA: '972000000000',          // номер WhatsApp без «+»
   IG: 'yulia_yulson',          // Instagram (без @)
