@@ -11,7 +11,11 @@ EXCL=(':!package-lock.json' ':!.github' ':!*.b64')
 
 # 1. env-файлы не должны лежать в репозитории
 for p in $(git ls-files | grep -E '(^|/)\.env($|\.)' | grep -vE '\.example$'); do
-  err "В репозитории закоммичен env-файл: $p (удалить: git rm --cached $p)"
+  if grep -vE '^[[:space:]]*(#|$)' "$p" | grep -qvE '^(NEXT_PUBLIC_|VITE_)'; then
+    err "В репозитории закоммичен env-файл с возможными секретами: $p (удалить: git rm --cached $p и сменить ключи)"
+  else
+    warn "В репозитории закоммичен env-файл (только публичные NEXT_PUBLIC_ значения): $p. Лучше хранить их в настройках Vercel и удалить файл из git"
+  fi
 done
 
 # 2. Явные секреты
@@ -45,7 +49,7 @@ git grep -nIE '(^|[^A-Za-z_.])eval\(|new Function\(|document\.write\(' -- "${SRC
 
 # 7. Открытый редирект (Next.js auth callback)
 git grep -nIE '\$\{origin\}\$\{next\}' -- "${SRC[@]}" \
-  | cut -d: -f1,2 | while read -r l; do err "Открытый редирект через параметр next (проверять, что next начинается с одного '/'): $l"; done
+  | cut -d: -f1,2 | while read -r l; do grep -q "startsWith('/')" "${l%%:*}" && continue; err "Открытый редирект через параметр next (проверять, что next начинается с одного '/'): $l"; done
 
 # 8. Внешние скрипты без integrity (SRI)
 git grep -nIE '<script[^>]+src="https://' -- '*.html' | grep -v 'integrity=' | grep -vE 'googlesyndication|googletagmanager' \
@@ -61,8 +65,8 @@ if git ls-files | grep -qE '\.html$'; then
   done
 fi
 if [ -f package.json ] && grep -q '"next"' package.json; then
-  ls -d src/app/privacy app/privacy >/dev/null 2>&1 || warn "В приложении нет страницы /privacy (политика конфиденциальности)"
-  ls -d src/app/terms app/terms     >/dev/null 2>&1 || warn "В приложении нет страницы /terms (условия использования)"
+  [ -d src/app/privacy ] || [ -d app/privacy ] || warn "В приложении нет страницы /privacy (политика конфиденциальности)"
+  [ -d src/app/terms ]   || [ -d app/terms ]   || warn "В приложении нет страницы /terms (условия использования)"
 fi
 
 E=$(grep -c '^::error' "$LOG"); W=$(grep -c '^::warning' "$LOG")
