@@ -10,3 +10,7 @@ paths = [
   '''jobsil\.html$''',
   '''yulia/index\.html$''',   # Supabase publishable key (sb_publishable_...) — публичный по дизайну, защита в RLS
 ]
+regexTarget = "line"
+regexes = [
+  '''SUPABASE_KEY''',   # только sb_publishable_ (публичный по дизайну; проверено по всей истории — secret/service_role ключей нет)
+]
