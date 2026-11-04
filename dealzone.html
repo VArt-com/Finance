@@ -1219,7 +1219,7 @@ function toggleTheme() {
 
 <script>
 // ── ADMIN AUTH ──
-const ADMIN_HASH = '5df0a950a81afb8b0201ee239d3fb8701bd7c00e67262a71c3262c8677aa2c9b'; // aravart
+const ADMIN_HASH = '5df0a950a81afb8b0201ee239d3fb8701bd7c00e67262a71c3262c8677aa2c9b'; // NOTE: client-side check is only a UI convenience; real protection must be enforced by Supabase RLS
 
 async function sha256(msg) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
@@ -1271,5 +1271,7 @@ document.addEventListener('keydown', e => {
 });
 </script>
 
+
+<div data-legal-strip style="text-align:center;padding:14px 12px 22px;font-size:13px;line-height:1.9;opacity:.9"><nav aria-label="Legal"><a href="/privacy.html" style="color:inherit;text-decoration:underline;margin:0 8px;white-space:nowrap">Privacy · Конфиденциальность · פרטיות</a><a href="/terms.html" style="color:inherit;text-decoration:underline;margin:0 8px;white-space:nowrap">Terms · Условия · תנאי שימוש</a><a href="/accessibility.html" style="color:inherit;text-decoration:underline;margin:0 8px;white-space:nowrap">Accessibility · Доступность · נגישות</a></nav></div>
 </body>
 </html>

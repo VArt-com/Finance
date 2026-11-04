@@ -918,40 +918,47 @@ function renderUserPosts(){
   }
 }
 
+// Экранирование пользовательского контента (защита от XSS)
+function esc(v){
+  return String(v==null?'':v).replace(/[&<>"'`]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c];
+  });
+}
+
 function renderJobCard(j,p){
   const emoji=p.catEmojis[j.cat]||'💼';
-  const catLabel=p.catLabels[j.cat]||j.cat;
+  const catLabel=esc(p.catLabels[j.cat]||j.cat);
   let salary='';
   if(j.salFrom&&j.salTo) salary=`<div class="ucard-salary">₪${Number(j.salFrom).toLocaleString()} – ₪${Number(j.salTo).toLocaleString()}</div>`;
   else if(j.salFrom) salary=`<div class="ucard-salary">${p.salaryFrom}${Number(j.salFrom).toLocaleString()}</div>`;
   const contactBtn=j.contactType==='wa'
-    ?`<a class="btn-contact btn-wa" href="https://wa.me/${j.contact.replace(/\D/g,'')}" target="_blank">📱 ${p.contactWa}</a>`
-    :`<a class="btn-contact btn-em" href="mailto:${j.contact}" target="_blank">✉️ ${p.contactEmail}</a>`;
+    ?`<a class="btn-contact btn-wa" href="https://wa.me/${j.contact.replace(/\D/g,'')}" target="_blank" rel="noopener noreferrer">📱 ${p.contactWa}</a>`
+    :`<a class="btn-contact btn-em" href="mailto:${esc(j.contact)}" target="_blank" rel="noopener noreferrer">✉️ ${p.contactEmail}</a>`;
   return `<div class="ucard job-card">
     <div class="ucard-head"><div class="ucard-emoji">${emoji}</div><span class="ucard-badge badge-job">${p.badgeJob}</span></div>
-    <div><div class="ucard-title">${j.title}</div>${j.company?`<div class="ucard-company">${j.company}</div>`:''}</div>
-    <div class="ucard-tags"><span class="utag">${catLabel}</span><span class="utag">📍${j.city}</span>${j.date?`<span class="utag">${j.date}</span>`:''}</div>
+    <div><div class="ucard-title">${esc(j.title)}</div>${j.company?`<div class="ucard-company">${esc(j.company)}</div>`:''}</div>
+    <div class="ucard-tags"><span class="utag">${catLabel}</span><span class="utag">📍${esc(j.city)}</span>${j.date?`<span class="utag">${esc(j.date)}</span>`:''}</div>
     ${salary}
-    ${j.skills?`<div class="ucard-desc"><b>${p.skillsLabel}</b> ${j.skills}</div>`:''}
-    ${j.desc?`<div class="ucard-desc">${j.desc}</div>`:''}
+    ${j.skills?`<div class="ucard-desc"><b>${p.skillsLabel}</b> ${esc(j.skills)}</div>`:''}
+    ${j.desc?`<div class="ucard-desc">${esc(j.desc)}</div>`:''}
     <div class="ucard-contact">${contactBtn}</div>
   </div>`;
 }
 
 function renderCvCard(c,p){
   const emoji=p.catEmojis[c.cat]||'👤';
-  const catLabel=p.catLabels[c.cat]||c.cat;
+  const catLabel=esc(p.catLabels[c.cat]||c.cat);
   let salary=c.salary?`<div class="ucard-salary">${p.salaryDesired}${Number(c.salary).toLocaleString()}</div>`:'';
   const contactBtn=c.contactType==='wa'
-    ?`<a class="btn-contact btn-wa" href="https://wa.me/${c.contact.replace(/\D/g,'')}" target="_blank">📱 ${p.contactWa}</a>`
-    :`<a class="btn-contact btn-em" href="mailto:${c.contact}" target="_blank">✉️ ${p.contactEmail}</a>`;
+    ?`<a class="btn-contact btn-wa" href="https://wa.me/${c.contact.replace(/\D/g,'')}" target="_blank" rel="noopener noreferrer">📱 ${p.contactWa}</a>`
+    :`<a class="btn-contact btn-em" href="mailto:${esc(c.contact)}" target="_blank" rel="noopener noreferrer">✉️ ${p.contactEmail}</a>`;
   return `<div class="ucard cv-card">
     <div class="ucard-head"><div class="ucard-emoji">${emoji}</div><span class="ucard-badge badge-cv">${p.badgeCv}</span></div>
-    <div><div class="ucard-title">${c.name}</div><div class="ucard-company">${c.prof}</div></div>
-    <div class="ucard-tags"><span class="utag">${catLabel}</span><span class="utag">📍${c.city}</span>${c.exp?`<span class="utag">${p.expLabel} ${c.exp}</span>`:''}</div>
+    <div><div class="ucard-title">${esc(c.name)}</div><div class="ucard-company">${esc(c.prof)}</div></div>
+    <div class="ucard-tags"><span class="utag">${catLabel}</span><span class="utag">📍${esc(c.city)}</span>${c.exp?`<span class="utag">${p.expLabel} ${esc(c.exp)}</span>`:''}</div>
     ${salary}
-    ${c.skills?`<div class="ucard-desc"><b>${p.skillsLabel}</b> ${c.skills}</div>`:''}
-    ${c.about?`<div class="ucard-desc">${c.about}</div>`:''}
+    ${c.skills?`<div class="ucard-desc"><b>${p.skillsLabel}</b> ${esc(c.skills)}</div>`:''}
+    ${c.about?`<div class="ucard-desc">${esc(c.about)}</div>`:''}
     <div class="ucard-contact">${contactBtn}</div>
   </div>`;
 }
@@ -1013,5 +1020,7 @@ window.submitCv = submitCv;
   startListeners();
 })();
 </script>
+
+<div data-legal-strip style="text-align:center;padding:14px 12px 22px;font-size:13px;line-height:1.9;opacity:.9"><p style="margin:0 auto 8px;max-width:720px;font-size:12px;opacity:.85">Listings and résumés are posted by users and are not verified by us. To report or remove content, use the Contact page. · Объявления и резюме публикуют пользователи, мы их не проверяем. Пожаловаться или удалить — через страницу «Контакты». · המודעות וקורות החיים מפורסמים על ידי משתמשים ואינם נבדקים על ידינו. לדיווח או להסרה — דרך עמוד יצירת קשר. <a href="/contact.html" style="color:inherit;text-decoration:underline">Contact · Контакты · יצירת קשר</a></p><nav aria-label="Legal"><a href="/privacy.html" style="color:inherit;text-decoration:underline;margin:0 8px;white-space:nowrap">Privacy · Конфиденциальность · פרטיות</a><a href="/terms.html" style="color:inherit;text-decoration:underline;margin:0 8px;white-space:nowrap">Terms · Условия · תנאי שימוש</a><a href="/accessibility.html" style="color:inherit;text-decoration:underline;margin:0 8px;white-space:nowrap">Accessibility · Доступность · נגישות</a></nav></div>
 </body>
 </html>
