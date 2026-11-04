@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Terms of Use — VArt Tools (org-va.com)">
+<title>Terms of Use — VArt Tools</title>
+<link rel="icon" href="https://org-va.com/favicon.ico">
+<style>
+  :root {
+    --accent: #6C63FF;
+    --accent2: #a78bfa;
+    --bg: #0d0d1a;
+    --bg2: #13132a;
+    --card: #1a1a35;
+    --border: #2a2a50;
+    --text: #e0e0f0;
+    --muted: #8888aa;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 99;
+  }
+  header a.logo {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.5px;
+  }
+  header nav a {
+    color: var(--muted);
+    text-decoration: none;
+    margin-left: 16px;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  header nav a:hover { color: var(--accent2); }
+
+  .lang-btns {
+    display: flex; gap: 6px;
+  }
+  .lang-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn.active, .lang-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+  }
+  .page-hero {
+    background: linear-gradient(135deg, var(--card) 0%, #1a1040 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    margin-bottom: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-hero::before {
+    content: '📜';
+    position: absolute;
+    right: 28px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 4rem;
+    opacity: 0.15;
+  }
+  .page-hero h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 8px;
+  }
+  .page-hero p {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  section.block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 16px;
+  }
+  section.block h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  section.block p, section.block li {
+    color: var(--text);
+    font-size: 0.93rem;
+    line-height: 1.75;
+  }
+  section.block ul {
+    padding-left: 20px;
+    margin-top: 8px;
+  }
+  section.block ul li { margin-bottom: 4px; }
+
+  .highlight {
+    background: rgba(108,99,255,0.1);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: var(--accent2);
+  }
+
+  footer {
+    text-align: center;
+    padding: 28px 20px;
+    color: var(--muted);
+    font-size: 0.82rem;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent2); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  footer .links { margin-top: 10px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+  .lang-section { display: none; }
+  .lang-section.active { display: block; }
+
+  @media (max-width: 600px) {
+    .page-hero { padding: 24px 18px; }
+    .page-hero h1 { font-size: 1.4rem; }
+    section.block { padding: 18px 16px; }
+    header { flex-wrap: wrap; gap: 10px; }
+  }
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4502841289225255" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="https://org-va.com/">🛠 VArt Tools</a>
+  <div class="lang-btns">
+    <button class="lang-btn active" onclick="setLang('ru')">РУС</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('he')">עב</button>
+  </div>
+  <nav>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<main>
+
+  <div class="lang-section active" id="lang-ru">
+    <div class="page-hero">
+      <div class="badge">Условия использования</div>
+      <h1>Условия использования</h1>
+      <p>Обновлено: ноябрь 2026 · org-va.com</p>
+    </div>
+
+    <section class="block">
+      <h2>📋 Принятие и область действия</h2>
+      <p>Эти условия регулируют использование VArt Tools (org-va.com) и его инструментов, включая проверку расчётного листка, Переводчик, PDF Editor, DealZone, OurWorld, JobsIL, VA-Music, ReelCoach и другие страницы сайта. Пользуясь сайтом, вы соглашаетесь с этими условиями и с <a href="privacy.html" style="color:var(--accent)">Политикой конфиденциальности</a>. Если не согласны — не пользуйтесь сайтом. Ничто в этих условиях не ограничивает права, от которых закон не позволяет отказаться.</p>
+    </section>
+
+    <section class="block">
+      <h2>⚠️ Только информационные инструменты</h2>
+      <p>Инструменты предоставляются для общей информации. <strong>Они не являются юридической, налоговой, финансовой, трудовой или иной профессиональной консультацией</strong> и не заменяют юриста, бухгалтера или другого специалиста. Результаты, созданные ИИ (например, проверка листков или переводы), могут быть неточными или неполными. Важные вопросы проверяйте сами или со специалистом, прежде чем полагаться на результат. Цены и предложения на DealZone могут меняться или устаревать.</p>
+    </section>
+
+    <section class="block">
+      <h2>👤 Аккаунты и доступ</h2>
+      <p>Чтобы создать аккаунт или публиковать контент, вам должно быть 18 лет или больше. Указывайте верные данные и берегите данные для входа; вы отвечаете за действия в своём аккаунте. Мы можем ограничить, приостановить или удалить аккаунт или доступ, с уведомлением или без него, при нарушении условий, для защиты сервиса или пользователей, либо если этого требует закон.</p>
+    </section>
+
+    <section class="block">
+      <h2>✍️ Ваш контент и поведение</h2>
+      <p>Вы отвечаете за всё, что загружаете или публикуете (треки, видео, изображения, посты, вакансии, резюме). Вы подтверждаете, что вы владелец контента или имеете все необходимые права и разрешения, и что контент не нарушает чужие авторские права, право на частную жизнь или иные права.</p>
+      <p style="margin-top:10px">Запрещено публиковать контент, который незаконен, клеветнический, угрожающий, разжигающий ненависть, сексуально откровенный, вводящий в заблуждение, спам или раскрывающий чужие персональные данные без согласия; запрещено пытаться взломать, перегрузить или иным образом злоупотреблять сервисом. Вы предоставляете нам неисключительную лицензию на хранение и показ вашего контента для работы сервиса. Мы вправе (но не обязаны) проверять, ограничивать или удалять контент.</p>
+    </section>
+
+    <section class="block">
+      <h2>©️ Жалобы на контент / авторские права</h2>
+      <p>Если вы считаете, что контент на сайте нарушает ваши права или незаконен, свяжитесь с нами через страницу <a href="contact.html" style="color:var(--accent)">Контакты</a> или WhatsApp: <a href="https://wa.me/972533213698" style="color:var(--accent)">+972-53-321-3698</a> и укажите: описание контента и ссылку, ваше имя и контакты, основание претензии. Мы оперативно рассмотрим обращение и можем удалить контент или закрыть к нему доступ. Повторных нарушителей можем блокировать.</p>
+    </section>
+
+    <section class="block">
+      <h2>💳 Платежи, подписки и донаты</h2>
+      <p>Платные планы и донаты обрабатываются Ko-fi по его условиям; данные вашей карты мы не получаем. Донаты добровольны. Доступ по подписке может активироваться вручную после оплаты. Если израильский закон о защите потребителя даёт вам право отменить дистанционную сделку или иные права, вы можете воспользоваться ими, связавшись с нами, и эти условия их не ограничивают.</p>
+    </section>
+
+    <section class="block">
+      <h2>🛒 Партнёрские ссылки</h2>
+      <p>Часть ссылок на DealZone и других страницах — партнёрские. Если вы совершите покупку по ним, мы можем получить комиссию без дополнительных затрат для вас. Покупка совершается у стороннего продавца по его условиям; мы не являемся стороной сделки и не отвечаем за товар, доставку и возвраты.</p>
+    </section>
+
+    <section class="block">
+      <h2>🔗 Сторонние сервисы</h2>
+      <p>Сайт опирается на сторонние сервисы (хостинг, базы данных, ИИ-провайдеры, реклама, платежи). Мы не отвечаем за их доступность, содержание и практики.</p>
+    </section>
+
+    <section class="block">
+      <h2>⚖️ Отказ от гарантий и ограничение ответственности</h2>
+      <p>Сайт и инструменты предоставляются «как есть» и «по мере доступности» без гарантий точности, доступности или пригодности для конкретной цели. В максимально допустимой законом степени мы не отвечаем за косвенный или сопутствующий ущерб, потерю данных, дохода или прибыли, а также за решения, принятые на основе инструментов. Наша общая ответственность по любому требованию ограничена суммой, которую вы заплатили нам за 12 месяцев до требования, а при бесплатном использовании — нулём. Это не исключает ответственность, которую по закону исключить нельзя.</p>
+    </section>
+
+    <section class="block">
+      <h2>©️ Наш контент</h2>
+      <p>Дизайн, код и тексты VArt Tools принадлежат нам или нашим лицензиарам. Вы можете использовать инструменты для личных или рабочих целей по назначению, но нельзя копировать, перепродавать или массово выгружать сервис без разрешения.</p>
+    </section>
+
+    <section class="block">
+      <h2>📝 Изменения</h2>
+      <p>Мы можем обновлять условия; дата вверху страницы показывает последнюю версию. Продолжение использования после обновления означает согласие с ним.</p>
+    </section>
+
+    <section class="block">
+      <h2>🏛 Применимое право</h2>
+      <p>К этим условиям применяется право государства Израиль; юрисдикция принадлежит компетентным судам Израиля, с учётом обязательных прав потребителей. Контакт: через страницу <a href="contact.html" style="color:var(--accent)">Контакты</a> или WhatsApp: <a href="https://wa.me/972533213698" style="color:var(--accent)">+972-53-321-3698</a>.</p>
+    </section>
+  </div>
+
+  <div class="lang-section" id="lang-en">
+    <div class="page-hero">
+      <div class="badge">Terms of Use</div>
+      <h1>Terms of Use</h1>
+      <p>Last updated: November 2026 · org-va.com</p>
+    </div>
+
+    <section class="block">
+      <h2>📋 Acceptance and scope</h2>
+      <p>These terms govern your use of VArt Tools (org-va.com) and its tools, including the Payslip Checker, Translator, PDF Editor, DealZone, OurWorld, JobsIL, VA-Music, ReelCoach, and the other pages on the site. By using the site you agree to these terms and to the <a href="privacy.html" style="color:var(--accent)">Privacy Policy</a>. If you do not agree, please do not use the site. Nothing in these terms limits rights that the law does not allow to be waived.</p>
+    </section>
+
+    <section class="block">
+      <h2>⚠️ Informational tools only</h2>
+      <p>The tools are provided for general information. <strong>They do not constitute legal, tax, financial, employment or any other professional advice</strong>, and are not a substitute for a lawyer, accountant or other professional. Results created by AI (such as payslip checks or translations) may be inaccurate or incomplete. Verify important matters yourself or with a professional before relying on them. Prices and deals shown on DealZone may change or be out of date.</p>
+    </section>
+
+    <section class="block">
+      <h2>👤 Accounts and access</h2>
+      <p>You must be 18 or older to create an account or post content. Provide accurate information and keep your login details safe; you are responsible for activity in your account. We may limit, suspend or remove accounts or access, with or without notice, if these terms are breached, to protect the service or users, or if required by law.</p>
+    </section>
+
+    <section class="block">
+      <h2>✍️ Your content and conduct</h2>
+      <p>You are responsible for everything you upload or publish (tracks, videos, images, posts, job listings, résumés). You confirm that you own the content or have all necessary rights and permissions, and that it does not infringe anyone’s copyright, privacy or other rights.</p>
+      <p style="margin-top:10px">You must not publish content that is unlawful, defamatory, threatening, hateful, sexually explicit, misleading, spam, or that exposes other people’s personal data without their consent; and you must not attempt to break, overload or abuse the service. You grant us a non-exclusive licence to host, store and display your content in order to operate the service. We may, but are not obliged to, review, restrict or remove content.</p>
+    </section>
+
+    <section class="block">
+      <h2>©️ Reporting content / copyright</h2>
+      <p>If you believe content on the site infringes your rights or is unlawful, contact us via the <a href="contact.html" style="color:var(--accent)">Contact</a> page or WhatsApp: <a href="https://wa.me/972533213698" style="color:var(--accent)">+972-53-321-3698</a> with: a description of the content and its link, your name and contact details, and the basis of your claim. We will review it promptly and may remove the content or disable access to it. Repeat infringers may be suspended.</p>
+    </section>
+
+    <section class="block">
+      <h2>💳 Payments, subscriptions and donations</h2>
+      <p>Paid plans and donations are processed by Ko-fi under its own terms; we do not receive your card details. Donations are voluntary. Subscription access may be activated manually after payment. Where Israeli consumer protection law gives you a right to cancel a distance transaction or other rights, you may exercise them by contacting us, and these terms do not limit them.</p>
+    </section>
+
+    <section class="block">
+      <h2>🛒 Affiliate links</h2>
+      <p>Some links on DealZone and other pages are affiliate links. If you buy through them we may receive a commission at no extra cost to you. Purchases are made with the third-party seller under its terms; we are not a party to those transactions and are not responsible for the products, delivery or refunds.</p>
+    </section>
+
+    <section class="block">
+      <h2>🔗 Third-party services</h2>
+      <p>The site relies on third-party services (hosting, databases, AI providers, ads, payments). We are not responsible for their availability, content or practices.</p>
+    </section>
+
+    <section class="block">
+      <h2>⚖️ Disclaimer and limitation of liability</h2>
+      <p>The site and tools are provided “as is” and “as available”, without guarantees of accuracy, availability, or fitness for a particular purpose. To the maximum extent permitted by law, we are not liable for indirect or consequential damages, loss of data, income or profits, or for decisions you make based on the tools. Our total liability for any claim is limited to the amount you paid us in the 12 months before the claim, or zero for free use. This does not exclude liability that cannot be excluded by law.</p>
+    </section>
+
+    <section class="block">
+      <h2>©️ Our content</h2>
+      <p>The design, code and texts of VArt Tools belong to us or their licensors. You may use the tools for personal or business use as intended, but you may not copy, resell or scrape the service without permission.</p>
+    </section>
+
+    <section class="block">
+      <h2>📝 Changes</h2>
+      <p>We may update these terms; the date at the top shows the latest version. Continued use after an update means you accept it.</p>
+    </section>
+
+    <section class="block">
+      <h2>🏛 Governing law</h2>
+      <p>These terms are governed by the laws of the State of Israel, and the competent courts in Israel have jurisdiction, subject to any mandatory consumer rights. Contact: via the <a href="contact.html" style="color:var(--accent)">Contact</a> page or WhatsApp: <a href="https://wa.me/972533213698" style="color:var(--accent)">+972-53-321-3698</a>.</p>
+    </section>
+  </div>
+
+  <div class="lang-section" id="lang-he" dir="rtl">
+    <div class="page-hero">
+      <div class="badge">תנאי שימוש</div>
+      <h1>תנאי שימוש</h1>
+      <p>עודכן: נובמבר 2026 · org-va.com</p>
+    </div>
+
+    <section class="block">
+      <h2>📋 הסכמה והיקף</h2>
+      <p>תנאים אלה חלים על השימוש ב-VArt Tools (org-va.com) ובכליו, לרבות בודק תלושי השכר, המתרגם, עורך ה-PDF, DealZone, OurWorld, JobsIL, VA-Music, ReelCoach ושאר עמודי האתר. בשימוש באתר אתה מסכים לתנאים אלה ול<a href="privacy.html" style="color:var(--accent)">מדיניות הפרטיות</a>. אם אינך מסכים — אל תשתמש באתר. אין בתנאים אלה כדי לפגוע בזכויות שהדין אינו מאפשר לוותר עליהן.</p>
+    </section>
+
+    <section class="block">
+      <h2>⚠️ כלי מידע בלבד</h2>
+      <p>הכלים ניתנים למטרות מידע כללי. <strong>אין בהם משום ייעוץ משפטי, מס, פיננסי, תעסוקתי או מקצועי אחר</strong>, והם אינם תחליף לעורך דין, רואה חשבון או איש מקצוע אחר. תוצאות שנוצרו על ידי בינה מלאכותית (כגון בדיקת תלושים או תרגומים) עלולות להיות לא מדויקות או לא שלמות. יש לוודא עניינים חשובים בעצמך או מול איש מקצוע לפני שמסתמכים עליהן. מחירים ומבצעים ב-DealZone עשויים להשתנות או להיות לא עדכניים.</p>
+    </section>
+
+    <section class="block">
+      <h2>👤 חשבונות וגישה</h2>
+      <p>יצירת חשבון או פרסום תוכן מותרים רק לבני 18 ומעלה. יש למסור פרטים נכונים ולשמור על פרטי ההתחברות; אתה אחראי לפעילות בחשבונך. אנו רשאים להגביל, להשעות או להסיר חשבון או גישה, בהודעה או בלעדיה, בעת הפרת התנאים, לשם הגנה על השירות או על משתמשים, או אם הדין מחייב זאת.</p>
+    </section>
+
+    <section class="block">
+      <h2>✍️ התוכן שלך והתנהגות</h2>
+      <p>אתה אחראי לכל מה שאתה מעלה או מפרסם (רצועות, סרטונים, תמונות, פוסטים, מודעות דרושים, קורות חיים). אתה מצהיר שהתוכן שלך או שיש לך כל הזכויות וההרשאות הנדרשות, ושאינו פוגע בזכויות יוצרים, בפרטיות או בזכויות אחרות של מישהו.</p>
+      <p style="margin-top:10px">אסור לפרסם תוכן בלתי חוקי, מוציא דיבה, מאיים, משנא, בעל אופי מיני מפורש, מטעה, ספאם, או החושף מידע אישי של אחרים ללא הסכמתם; ואסור לנסות לפרוץ, להעמיס או לנצל לרעה את השירות. אתה מעניק לנו רישיון לא בלעדי לאחסן ולהציג את התוכן שלך לצורך הפעלת השירות. אנו רשאים, אך לא חייבים, לבדוק, להגביל או להסיר תוכן.</p>
+    </section>
+
+    <section class="block">
+      <h2>©️ דיווח על תוכן / זכויות יוצרים</h2>
+      <p>אם לדעתך תוכן באתר פוגע בזכויותיך או אינו חוקי, פנה אלינו דרך עמוד <a href="contact.html" style="color:var(--accent)">יצירת קשר</a> או בוואטסאפ: <a href="https://wa.me/972533213698" style="color:var(--accent)">‎+972-53-321-3698</a> וציין: תיאור התוכן וקישור אליו, שמך ופרטי קשר, והבסיס לטענתך. נבדוק את הפנייה בהקדם ועשויים להסיר את התוכן או לחסום גישה אליו. מפרים חוזרים עשויים להיחסם.</p>
+    </section>
+
+    <section class="block">
+      <h2>💳 תשלומים, מנויים ותרומות</h2>
+      <p>תוכניות בתשלום ותרומות מעובדות על ידי Ko-fi לפי תנאיה; איננו מקבלים את פרטי הכרטיס שלך. תרומות הן מרצון. גישת מנוי עשויה להיות מופעלת ידנית לאחר התשלום. במקום שבו חוק הגנת הצרכן הישראלי מקנה לך זכות לבטל עסקת מכר מרחוק או זכויות אחרות, תוכל לממש אותן בפנייה אלינו, ותנאים אלה אינם מגבילים אותן.</p>
+    </section>
+
+    <section class="block">
+      <h2>🛒 קישורי שותפים</h2>
+      <p>חלק מהקישורים ב-DealZone ובעמודים אחרים הם קישורי שותפים. אם תרכוש דרכם ייתכן שנקבל עמלה ללא עלות נוספת עבורך. הרכישה נעשית מול מוכר צד שלישי לפי תנאיו; איננו צד לעסקה ואיננו אחראים למוצר, למשלוח או להחזרים.</p>
+    </section>
+
+    <section class="block">
+      <h2>🔗 שירותי צד שלישי</h2>
+      <p>האתר נשען על שירותי צד שלישי (אחסון, מסדי נתונים, ספקי בינה מלאכותית, פרסום, תשלומים). איננו אחראים לזמינותם, לתוכנם או לנהליהם.</p>
+    </section>
+
+    <section class="block">
+      <h2>⚖️ הסרת אחריות והגבלת אחריות</h2>
+      <p>האתר והכלים ניתנים "כפי שהם" ו"כפי שזמינים", ללא התחייבות לדיוק, לזמינות או להתאמה למטרה מסוימת. במידה המרבית שהדין מתיר, איננו אחראים לנזק עקיף או תוצאתי, לאובדן נתונים, הכנסה או רווח, או להחלטות שקיבלת על סמך הכלים. אחריותנו הכוללת לכל תביעה מוגבלת לסכום ששילמת לנו ב-12 החודשים שקדמו לתביעה, ובשימוש חינמי — לאפס. אין בכך כדי לשלול אחריות שאין אפשרות לשלול על פי דין.</p>
+    </section>
+
+    <section class="block">
+      <h2>©️ התוכן שלנו</h2>
+      <p>העיצוב, הקוד והטקסטים של VArt Tools שייכים לנו או למעניקי הרישיון שלנו. מותר להשתמש בכלים לשימוש אישי או עסקי כמיועד, אך אסור להעתיק, למכור מחדש או לגרד את השירות ללא רשות.</p>
+    </section>
+
+    <section class="block">
+      <h2>📝 שינויים</h2>
+      <p>אנו עשויים לעדכן את התנאים; התאריך בראש העמוד מציין את הגרסה העדכנית. המשך השימוש לאחר עדכון משמעו הסכמה לו.</p>
+    </section>
+
+    <section class="block">
+      <h2>🏛 הדין החל</h2>
+      <p>על תנאים אלה חל דין מדינת ישראל, וסמכות השיפוט נתונה לבתי המשפט המוסמכים בישראל, בכפוף לזכויות צרכן קוגנטיות. יצירת קשר: דרך עמוד <a href="contact.html" style="color:var(--accent)">יצירת קשר</a> או בוואטסאפ: <a href="https://wa.me/972533213698" style="color:var(--accent)">‎+972-53-321-3698</a>.</p>
+    </section>
+  </div>
+
+</main>
+
+<footer>
+  <div>© 2026 VArt Tools · org-va.com</div>
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="about.html">About</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html">Terms of Use</a>
+    <a href="accessibility.html">Accessibility · נגישות</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://ko-fi.com/varthur">☕ Ko-fi</a>
+  </div>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.querySelectorAll('.lang-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.lang-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('lang-' + lang).classList.add('active');
+  event.target.classList.add('active');
+  document.documentElement.lang = lang === 'he' ? 'he' : lang === 'en' ? 'en' : 'ru';
+}
+</script>
+</body>
+</html>

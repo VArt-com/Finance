@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Accessibility Statement — VArt Tools (org-va.com)">
+<title>Accessibility Statement — VArt Tools</title>
+<link rel="icon" href="https://org-va.com/favicon.ico">
+<style>
+  :root {
+    --accent: #6C63FF;
+    --accent2: #a78bfa;
+    --bg: #0d0d1a;
+    --bg2: #13132a;
+    --card: #1a1a35;
+    --border: #2a2a50;
+    --text: #e0e0f0;
+    --muted: #8888aa;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 99;
+  }
+  header a.logo {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.5px;
+  }
+  header nav a {
+    color: var(--muted);
+    text-decoration: none;
+    margin-left: 16px;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  header nav a:hover { color: var(--accent2); }
+
+  .lang-btns {
+    display: flex; gap: 6px;
+  }
+  .lang-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn.active, .lang-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+  }
+  .page-hero {
+    background: linear-gradient(135deg, var(--card) 0%, #1a1040 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    margin-bottom: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-hero::before {
+    content: '♿';
+    position: absolute;
+    right: 28px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 4rem;
+    opacity: 0.15;
+  }
+  .page-hero h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 8px;
+  }
+  .page-hero p {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  section.block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 16px;
+  }
+  section.block h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  section.block p, section.block li {
+    color: var(--text);
+    font-size: 0.93rem;
+    line-height: 1.75;
+  }
+  section.block ul {
+    padding-left: 20px;
+    margin-top: 8px;
+  }
+  section.block ul li { margin-bottom: 4px; }
+
+  .highlight {
+    background: rgba(108,99,255,0.1);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: var(--accent2);
+  }
+
+  footer {
+    text-align: center;
+    padding: 28px 20px;
+    color: var(--muted);
+    font-size: 0.82rem;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent2); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  footer .links { margin-top: 10px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+  .lang-section { display: none; }
+  .lang-section.active { display: block; }
+
+  @media (max-width: 600px) {
+    .page-hero { padding: 24px 18px; }
+    .page-hero h1 { font-size: 1.4rem; }
+    section.block { padding: 18px 16px; }
+    header { flex-wrap: wrap; gap: 10px; }
+  }
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4502841289225255" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="https://org-va.com/">🛠 VArt Tools</a>
+  <div class="lang-btns">
+    <button class="lang-btn active" onclick="setLang('ru')">РУС</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('he')">עב</button>
+  </div>
+  <nav>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<main>
+
+  <div class="lang-section active" id="lang-ru">
+    <div class="page-hero">
+      <div class="badge">Заявление о доступности</div>
+      <h1>Заявление о доступности</h1>
+      <p>Обновлено: ноябрь 2026 · org-va.com</p>
+    </div>
+
+    <section class="block">
+      <h2>♿ Наше обязательство</h2>
+      <p>VArt Tools стремится сделать свои инструменты доступными для максимального числа людей, включая людей с инвалидностью. Мы работаем над соответствием израильскому стандарту SI 5568 на основе WCAG 2.0 уровня AA, как того требуют израильские нормы о доступности.</p>
+    </section>
+
+    <section class="block">
+      <h2>✅ Что мы делаем</h2>
+      <ul>
+        <li>Сайт доступен на русском, английском и иврите, для иврита поддерживается написание справа налево.</li>
+        <li>Текст можно увеличивать масштабом браузера, страницы адаптируются под телефоны, планшеты и компьютеры.</li>
+        <li>Мы проверяем и улучшаем доступность по мере обновления инструментов.</li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>🚧 Известные ограничения</h2>
+      <p>Сайт пока не полностью доступен. На некоторых страницах, особенно с визуальными и интерактивными инструментами (PDF Editor, соцпространство OurWorld, игры, графики и аудиоплеер), отдельные элементы могут быть неудобны для скринридера или управления только с клавиатуры, либо иметь недостаточный цветовой контраст. Контент третьих сторон (реклама, встроенные сервисы) вне нашего контроля. Мы работаем над улучшениями.</p>
+    </section>
+
+    <section class="block">
+      <h2>📩 Запросить адаптацию или сообщить о проблеме</h2>
+      <p>Если вы столкнулись с барьером доступности или вам нужна информация в другой форме, свяжитесь с нами через страницу <a href="contact.html" style="color:var(--accent)">Контакты</a> или WhatsApp: <a href="https://wa.me/972533213698" style="color:var(--accent)">+972-53-321-3698</a>. Опишите страницу и проблему. Мы постараемся быстро ответить и предложить решение или альтернативный способ получить услугу.</p>
+    </section>
+
+    <section class="block">
+      <h2>📅 Дата заявления</h2>
+      <p>Заявление обновлено в ноябре 2026 года. Оно основано на нашей собственной проверке, а не на формальном аудите доступности.</p>
+    </section>
+  </div>
+
+  <div class="lang-section" id="lang-en">
+    <div class="page-hero">
+      <div class="badge">Accessibility Statement</div>
+      <h1>Accessibility Statement</h1>
+      <p>Last updated: November 2026 · org-va.com</p>
+    </div>
+
+    <section class="block">
+      <h2>♿ Our commitment</h2>
+      <p>VArt Tools wants its tools to be usable by as many people as possible, including people with disabilities. We work towards meeting the Israeli Standard SI 5568, based on WCAG 2.0 level AA, as required by Israeli accessibility regulations.</p>
+    </section>
+
+    <section class="block">
+      <h2>✅ What we do</h2>
+      <ul>
+        <li>The site is available in Russian, English and Hebrew, with right-to-left layout for Hebrew.</li>
+        <li>Text can be enlarged using the browser zoom, and pages adapt to phones, tablets and computers.</li>
+        <li>We review and improve accessibility as we update the tools.</li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>🚧 Known limitations</h2>
+      <p>This site is not yet fully accessible. Some pages, especially visual or interactive tools (such as the PDF Editor, the OurWorld social space, games, charts and the audio player), may have parts that are difficult to use with a screen reader or keyboard only, or that have insufficient colour contrast. Content from third parties (ads, embedded services) is outside our control. We are working on improvements.</p>
+    </section>
+
+    <section class="block">
+      <h2>📩 Request an accommodation or report a problem</h2>
+      <p>If you found an accessibility barrier, or need information in another form, contact us via the <a href="contact.html" style="color:var(--accent)">Contact</a> page or WhatsApp: <a href="https://wa.me/972533213698" style="color:var(--accent)">+972-53-321-3698</a>. Please describe the page and the problem. We will do our best to respond promptly and to provide a solution or an alternative way to get the service.</p>
+    </section>
+
+    <section class="block">
+      <h2>📅 Statement date</h2>
+      <p>This statement was last updated in November 2026. It is based on our own review and not on a formal accessibility audit.</p>
+    </section>
+  </div>
+
+  <div class="lang-section" id="lang-he" dir="rtl">
+    <div class="page-hero">
+      <div class="badge">הצהרת נגישות</div>
+      <h1>הצהרת נגישות</h1>
+      <p>עודכן: נובמבר 2026 · org-va.com</p>
+    </div>
+
+    <section class="block">
+      <h2>♿ המחויבות שלנו</h2>
+      <p>VArt Tools מבקשת שהכלים שלה יהיו שמישים עבור כמה שיותר אנשים, לרבות אנשים עם מוגבלות. אנו פועלים לעמידה בתקן הישראלי ת"י 5568 המבוסס על WCAG 2.0 ברמה AA, כנדרש בתקנות הנגישות בישראל.</p>
+    </section>
+
+    <section class="block">
+      <h2>✅ מה אנחנו עושים</h2>
+      <ul>
+        <li>האתר זמין ברוסית, באנגלית ובעברית, עם פריסה מימין לשמאל בעברית.</li>
+        <li>ניתן להגדיל טקסט באמצעות הזום בדפדפן, והעמודים מתאימים את עצמם לטלפונים, לטאבלטים ולמחשבים.</li>
+        <li>אנו בודקים ומשפרים את הנגישות עם עדכון הכלים.</li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>🚧 מגבלות ידועות</h2>
+      <p>האתר עדיין אינו נגיש במלואו. בחלק מהעמודים, בעיקר בכלים חזותיים ואינטראקטיביים (עורך ה-PDF, המרחב החברתי OurWorld, משחקים, תרשימים ונגן האודיו), ייתכנו חלקים הקשים לשימוש עם קורא מסך או במקלדת בלבד, או בעלי ניגודיות צבעים לא מספקת. תוכן של צדדים שלישיים (פרסומות, שירותים משובצים) אינו בשליטתנו. אנו פועלים לשיפור.</p>
+    </section>
+
+    <section class="block">
+      <h2>📩 בקשת התאמה או דיווח על בעיה</h2>
+      <p>אם נתקלת במחסום נגישות, או שאתה זקוק למידע בצורה אחרת, פנה אלינו דרך עמוד <a href="contact.html" style="color:var(--accent)">יצירת קשר</a> או בוואטסאפ: <a href="https://wa.me/972533213698" style="color:var(--accent)">‎+972-53-321-3698</a>. נא לתאר את העמוד ואת הבעיה. נעשה כל מאמץ להשיב בהקדם ולספק פתרון או דרך חלופית לקבלת השירות.</p>
+    </section>
+
+    <section class="block">
+      <h2>📅 תאריך ההצהרה</h2>
+      <p>הצהרה זו עודכנה לאחרונה בנובמבר 2026. היא מבוססת על בדיקה פנימית שלנו ולא על ביקורת נגישות רשמית.</p>
+    </section>
+  </div>
+
+</main>
+
+<footer>
+  <div>© 2026 VArt Tools · org-va.com</div>
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="about.html">About</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="terms.html">Terms of Use</a>
+    <a href="accessibility.html">Accessibility · נגישות</a>
+    <a href="contact.html">Contact</a>
+    <a href="https://ko-fi.com/varthur">☕ Ko-fi</a>
+  </div>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.querySelectorAll('.lang-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.lang-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('lang-' + lang).classList.add('active');
+  event.target.classList.add('active');
+  document.documentElement.lang = lang === 'he' ? 'he' : lang === 'en' ? 'en' : 'ru';
+}
+</script>
+</body>
+</html>
