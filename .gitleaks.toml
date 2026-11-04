@@ -8,6 +8,7 @@ description = "Firebase web API keys публичны по дизайну (за�
 paths = [
   '''ourworld\.html$''',
   '''jobsil\.html$''',
+  '''Yulia\+Katia/.*\.html$''',   # ложное срабатывание: встроенные base64-картинки
   '''yulia/index\.html$''',   # Supabase publishable key (sb_publishable_...) — публичный по дизайну, защита в RLS
 ]
 regexTarget = "line"
