@@ -28,7 +28,16 @@ const EX={
  legRaise:[['abs'],['quad_rf','obliques','forearm']],
  abductor:[['glute_m'],['glute']],
  backExt:[['lowback','glute','ham'],[]],
- cardio:[[...Q,'calf'],['ham','glute']]};
+ cardio:[[...Q,'calf'],['ham','glute']],
+ chairStand:[[...Q,'glute'],['abs','adduct']],
+ wallPush:[['chest_u','chest_l','delt_f','triceps'],['serratus','abs']],
+ calfChair:[['calf','soleus'],[]],
+ seatMarch:[['quad_rf','abs'],['adduct']],
+ legExtChair:[[...Q],[]],
+ bridge:[['glute','ham'],['lowback','abs','glute_m']],
+ balance:[['glute_m','calf','soleus'],['abs','quad_rf']],
+ sideLegRaise:[['glute_m'],['glute','obliques']],
+ lyingBreath:[[],['abs']]};
 const NAMES={
  delt_f:['Передняя дельта','כתף קדמית'],delt_s:['Средняя дельта','כתף צדדית'],delt_r:['Задняя дельта','כתף אחורית'],
  chest_u:['Верх груди','חזה עליון'],chest_l:['Низ груди','חזה תחתון'],serratus:['Зубчатая мышца','שרשרתית קדמית'],

@@ -265,7 +265,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{overflow-wrap:break-word}
 
 /* дыхание */
-.breath{position:absolute;inset-inline:0;bottom:10px;display:flex;justify-content:center;pointer-events:none;z-index:3}
+.breath{display:flex;justify-content:center;margin:10px 14px 0;min-height:42px;pointer-events:none}
+.breath.off{visibility:hidden}
 .breath span{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:99px;font-size:calc(14px*var(--fs,1));font-weight:700;letter-spacing:.08em;color:#fff;background:rgba(40,36,32,.82);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(4px)}
 .breath i{width:12px;height:12px;border-radius:50%;background:#fff;display:inline-block;transition:transform 1.4s ease-in-out}
 .breath.in span{background:rgba(37,99,176,.92)}.breath.in i{transform:scale(1.6)}
@@ -275,3 +276,10 @@ body{overflow-wrap:break-word}
 .brcard b{color:var(--gold);font-size:calc(12px*var(--fs,1));letter-spacing:.12em;text-transform:uppercase}
 .brcard span{font-size:calc(14.5px*var(--fs,1));line-height:1.5}
 .vbtn.on{border-color:var(--gold);color:var(--gold)}
+
+/* блок безопасности */
+.safe{margin:0 0 16px;padding:14px 16px;border-radius:18px;background:rgba(214,98,32,.09);border:1px solid rgba(214,98,32,.45)}
+.safe h3{margin:0 0 8px;font-size:calc(16px*var(--fs,1));color:var(--gold)}
+.safe ul{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px;font-size:calc(14px*var(--fs,1));line-height:1.5}
+.safe small{display:block;margin-top:8px;opacity:.75;font-size:calc(12px*var(--fs,1))}
+.badge-care{display:inline-block;margin-inline-start:6px;padding:2px 9px;border-radius:99px;font-size:calc(11px*var(--fs,1));font-weight:700;background:rgba(80,160,220,.18);color:#8cc8f0;border:1px solid rgba(80,160,220,.45)}

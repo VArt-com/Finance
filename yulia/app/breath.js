@@ -3,7 +3,7 @@ var Breath=(()=>{
 /* какая половина движения — усилие: AB = от позы A к B, BA = от B к A; S = статика, R = ритм (кардио) */
 const DIR={squat:'BA',goblet:'BA',rdl:'BA',lunge:'BA',legPress:'AB',hipThrust:'AB',legCurl:'AB',legExt:'AB',calf:'AB',dbBench:'AB',incline:'AB',
  shoulder:'AB',lateral:'AB',pulldown:'AB',row:'AB',dbRow:'AB',facePull:'AB',biceps:'AB',triceps:'AB',plank:'S',crunch:'AB',legRaise:'AB',
- abductor:'AB',backExt:'AB',cardio:'R'};
+ abductor:'AB',backExt:'AB',cardio:'R',chairStand:'AB',wallPush:'AB',calfChair:'AB',seatMarch:'R',legExtChair:'AB',bridge:'AB',balance:'S',sideLegRaise:'AB',lyingBreath:'S'};
 const T={
  AB:['Выдох — на усилии (когда давите, тянете или поднимаете). Вдох — на возврате в исходное положение. Не задерживайте дыхание.',
      'נשיפה — בזמן המאמץ (דחיפה, משיכה או הרמה). שאיפה — בחזרה למצב ההתחלתי. לא לעצור את הנשימה.'],
@@ -19,6 +19,11 @@ const SPEC={
  legRaise:['Выдох — поднимаете ноги, вдох — опускаете. Поясница прижата.','נשיפה — בהרמת הרגליים, שאיפה — בהורדה. הגב התחתון צמוד.'],
  calf:['Выдох — подъём на носки, вдох — опускание пятки.','נשיפה — עלייה על קצות האצבעות, שאיפה — ירידה.'],
  facePull:['Выдох — тянете канат к лицу, вдох — возвращаете руки вперёд.','נשיפה — משיכת הכבל אל הפנים, שאיפה — החזרת הידיים קדימה.'],
+ chairStand:['Выдох — когда встаёте (это усилие), вдох — когда медленно садитесь. Не задерживайте дыхание.','נשיפה — בזמן הקימה (זה המאמץ), שאיפה — בישיבה איטית. לא לעצור את הנשימה.'],
+ wallPush:['Вдох — сгибаете локти, выдох — отталкиваетесь от стены.','שאיפה — כיפוף המרפקים, נשיפה — דחיפה מהקיר.'],
+ seatMarch:['Дышите ровно: вдох на 2 шага, выдох на 2 шага. Темп такой, чтобы вы могли говорить.','לנשום בקצב אחיד: שאיפה על 2 צעדים, נשיפה על 2 צעדים. בקצב שמאפשר לדבר.'],
+ balance:['Дышите ровно и спокойно, не задерживайте дыхание. Взгляд на точке перед собой.','לנשום בקצב רגוע, לא לעצור את הנשימה. המבט על נקודה לפניכם.'],
+ lyingBreath:['Вдох носом на 4 счёта (живот поднимается), выдох через губы на 6 счётов (живот опускается). Без напряжения.','שאיפה דרך האף 4 ספירות (הבטן עולה), נשיפה דרך השפתיים 6 ספירות (הבטן יורדת). בלי מאמץ.'],
  backExt:['Выдох — поднимаетесь вверх, вдох — опускаетесь. Без рывков.','נשיפה — עלייה למעלה, שאיפה — ירידה. בלי תנופה.']};
 const W={in:['ВДОХ','שאיפה'],out:['ВЫДОХ','נשיפה'],even:['Дышите ровно','לנשום בקצב אחיד'],rhythm:['Вдох 2–3 шага · выдох 2–3 шага','שאיפה 2–3 צעדים · נשיפה 2–3 צעדים']};
 const SAY={in:['Вдох','שאיפה'],out:['Выдох','נשיפה']};
@@ -50,8 +55,8 @@ function toggle(lang){
 /* индикатор на фигуре: возвращает onTick для Fig.mount */
 function ticker(holder,id,lang){
   const box=holder.parentElement;if(!box)return null;
-  let bd=box.querySelector('.breath');
-  if(!bd){bd=document.createElement('div');bd.className='breath';bd.setAttribute('aria-live','off');box.appendChild(bd)}
+  let bd=box.nextElementSibling;
+  if(!bd||!bd.classList.contains('breath')){bd=document.createElement('div');bd.className='breath';bd.setAttribute('aria-live','off');box.insertAdjacentElement('afterend',bd)}
   const l=L(lang),d=DIR[id];
   if(d==='S'||d==='R'){bd.className='breath even';bd.innerHTML=`<span><i></i>${(d==='S'?W.even:W.rhythm)[l]}</span>`;return null}
   let cur='';
@@ -61,6 +66,8 @@ function ticker(holder,id,lang){
     if(voiceOn())say(SAY[s][l],lang);
   };
 }
-function hide(holder){const b=holder.parentElement&&holder.parentElement.querySelector('.breath');if(b)b.remove()}
+function hide(holder){const box=holder.parentElement;if(!box)return;let b=box.nextElementSibling;
+  if(!b||!b.classList.contains('breath')){b=document.createElement('div');box.insertAdjacentElement('afterend',b)}
+  b.className='breath off';b.innerHTML='<span>&nbsp;</span>'}
 return{state,text,card,ticker,hide,stop,toggle,voiceBtn,voiceOn,canSpeak};
 })();

@@ -258,13 +258,13 @@ function pelvisSvg(){return''}
 /* ---------- вид спереди (анфас) ---------- */
 function frontFrame(ex,P,time,hlOp,S){
   const seated=!!ex.seated,cx=200,hw=15.5,sw=31,hy=seated?172:146,sy=hy-66;
-  const spr=P.leg||0,a=P.arm||0,bd=P.bend||0;
+  const spr0=P.leg||0,a=P.arm||0,bd=P.bend||0;
   const SIM={thigh:sym(PA.thigh),shin:sym(PA.shin),ua:sym(PA.ua),fa:sym(PA.fa)};
   const stA=S('abductor'),stD=S('delt');
   const fl=(st,base)=>st===1?M.hl:st===2?M.sec:base,ee=st=>st===1?M.hlE:st===2?M.secE:M.edge,ff=st=>st===1?M.hlF:st===2?M.secF:M.fib;
   let s='';
   const lg=sd=>{
-    const hip=[cx+sd*hw,hy];let knee,ankle;
+    const spr=ex.one?(sd===1?spr0:0):spr0;const hip=[cx+sd*hw,hy];let knee,ankle;
     if(seated){knee=[hip[0]+sd*Math.sin(spr*R)*62,hip[1]+16];ankle=[knee[0]+sd*3,knee[1]+66]}
     else{knee=[hip[0]+sd*Math.sin(spr*R)*60,hip[1]+Math.cos(spr*R)*60];ankle=[knee[0]+sd*Math.sin((spr+4)*R)*58,knee[1]+Math.cos((spr+4)*R)*58]}
     return{hip,knee,ankle};
@@ -347,6 +347,10 @@ function frontFrame(ex,P,time,hlOp,S){
 
 
 /* ---------- сцены (оборудование) для вида сбоку ---------- */
+/* стул (вид сбоку): сиденье с отступом назад от бедра, спинка слева; flip=1 — спинка справа (опора впереди) */
+const chairProp=(hx,sy,flip)=>{const x1=flip?hx-62:hx-64,x2=flip?hx+26:hx+24,bx=flip?x2-6:x1+6;
+  return rect(x1,sy,x2-x1,12,5,C.pad,`stroke="${C.padL}" stroke-width="1.5"`)+line([bx,sy+2],[bx,sy-92],10,C.pad)+
+   line([x1+8,sy+12],[x1+8,FLOOR],6,C.steelD)+line([x2-8,sy+12],[x2-8,FLOOR],6,C.steelD)};
 const SC={
  squat:J=>{const f=J.fwd,b=ad(ad(J.sh,[-f[0]*6,-f[1]*6]),mv([0,0],J.t,-0));
    const u=dir(J.t);return {b:'',f:plate(ad(ad(J.sh,[-f[0]*5,-f[1]*5]),[-u[0]*9,-u[1]*9]),16)}},
@@ -374,7 +378,15 @@ const SC={
  crunch:J=>({b:mat(J.hip[0]-130,J.hip[0]+120),f:''}),
  legRaise:J=>({b:`<rect x="${J.wrist[0]-70}" y="${J.wrist[1]-12}" width="140" height="8" rx="4" fill="${C.steelD}"/>`+post(J.wrist[0]+66,J.wrist[1]-12,FLOOR+10)+post(J.wrist[0]-66,J.wrist[1]-12,FLOOR+10),f:circ(J.wrist,5,C.steel)}),
  backExt:J=>{const h=J.hip,a=mv(h,160,95);return {b:line(ad(h,[16,-6]),ad(a,[-10,6]),13,C.pad,`stroke="${C.padL}"`)+line(ad(h,[16,-6]),ad(a,[-10,6]),11,C.pad)+line(ad(h,[16,12]),[h[0]+16,FLOOR],6,C.steelD)+line([h[0]-68,a[1]+20],[h[0]-68,FLOOR],6,C.steelD)+line([h[0]-90,FLOOR-2],[h[0]+50,FLOOR-2],6,C.steelD),f:''}},
- cardio:J=>({b:'',f:''})
+ cardio:J=>({b:'',f:''}),
+ chairStand:J=>{const J0=solve(poseAt('chairStand',0),EXD.chairStand),h=J0.hip;return {b:chairProp(h[0],h[1]+13),f:''}},
+ wallPush:J=>{const J1=solve(poseAt('wallPush',1),EXD.wallPush),x=J1.wrist[0]+9;return {b:rect(x,24,16,FLOOR-24,3,'#c9c3b6',`stroke="#9b9488" stroke-width="1.5"`),f:''}},
+ calfChair:J=>{const J0=solve(poseAt('calfChair',0),EXD.calfChair),w=J0.wrist;return {b:chairProp(w[0]+60,w[1]+92),f:''}},
+ seatMarch:J=>{const h=J.hip;return {b:chairProp(h[0],h[1]+13),f:''}},
+ legExtChair:J=>{const h=J.hip;return {b:chairProp(h[0]+8,h[1]+14),f:''}},
+ bridge:J=>({b:mat(J.toe[0]-210,J.toe[0]+60),f:''}),
+ balance:J=>{const J0=solve(poseAt('balance',0),EXD.balance),w=J0.wrist;return {b:chairProp(w[0]+60,w[1]+92),f:''}},
+ lyingBreath:J=>({b:mat(J.hip[0]-150,J.hip[0]+120),f:''}),
 };
 
 /* ---------- данные поз ---------- */
@@ -425,6 +437,23 @@ const EXD={
  abductor:{view:'front',seated:1,hl:['abductor'],A:{leg:10},B:{leg:40}},
  backExt:{anchor:{type:'hip',p:[225,150]},hl:['lowback','glute','ham'],
   A:{t:58,th:160,sh:160,ft:140,rel:1,ua:75,fa:-75},B:{t:-20}},
+ chairStand:{anchor:{type:'toe',p:[200,FLOOR]},hl:['quad','glute'],
+  A:{t:-80,th:2,sh:97,ft:22,rel:1,ua:72,fa:-82},B:{t:-90,th:90,sh:90}},
+ wallPush:{anchor:{type:'toe',p:[165,FLOOR]},hl:['chest','delt'],
+  A:{t:-62,th:118,sh:118,ft:20,ua:48,fa:-30},B:{t:-76,th:104,sh:104,ua:0,fa:0}},
+ calfChair:{anchor:{type:'toe',p:[190,FLOOR]},hl:['calf'],
+  A:{t:-90,th:90,sh:90,ft:20,ua:12,fa:6},B:{ft:78}},
+ seatMarch:{anchor:{type:'hip',p:[170,201]},hl:['quad','abs'],
+  A:{t:-90,th:-24,sh:84,ft:25,ua:60,fa:28,fth:2,fsh:92},B:{th:2,sh:92,fth:-24,fsh:84}},
+ legExtChair:{anchor:{type:'hip',p:[150,206]},hl:['quad'],
+  A:{t:-92,th:2,sh:92,ft:5,ua:62,fa:28},B:{sh:2,ft:-80}},
+ bridge:{anchor:{type:'toe',p:[300,FLOOR]},hl:['glute','ham'],
+  A:{t:-174,th:-60,sh:82,ft:15,ua:176,fa:176},B:{t:-166,th:-22,sh:80,ua:176,fa:176}},
+ balance:{anchor:{type:'toe',p:[190,FLOOR]},hl:['calf','glute'],
+  A:{t:-90,th:90,sh:90,ft:20,ua:12,fa:6,fth:90,fsh:90,fft:20},B:{fth:28,fsh:112,fft:80}},
+ sideLegRaise:{view:'front',one:1,hl:['abductor'],A:{leg:0,arm:6,bend:6},B:{leg:30,arm:6,bend:6}},
+ lyingBreath:{anchor:{type:'hip',p:[200,FLOOR-14]},hl:['abs'],
+  A:{t:180,th:-50,sh:100,ft:10,rel:1,ua:62,fa:-150},B:{}},
  cardio:{anchor:{type:'hip',p:[200,148]},hl:['quad','calf'],
   A:{t:-88,th:66,sh:84,ft:15,fth:108,fsh:104,fft:70,ua:35,fa:-30,fua:140,ffa:150},
   B:{th:108,sh:104,ft:70,fth:66,fsh:84,fft:15,ua:140,fa:150,fua:35,ffa:-30}}
@@ -463,7 +492,7 @@ const DEFS=`<defs><radialGradient id="hlg"><stop offset="0" stop-color="#ff6a3a"
 const HL2={squat:['ham','abs','lowback'],goblet:['abs'],legPress:['calf'],rdl:['back','forearm'],hipThrust:['quad','abs'],lunge:['ham','calf'],
  legCurl:['calf'],legExt:[],calf:[],dbBench:[],incline:[],shoulder:['back'],lateral:['forearm'],pulldown:['forearm','delt'],row:['forearm','lowback'],
  dbRow:['forearm','lowback'],facePull:['triceps'],biceps:['forearm'],triceps:['forearm'],plank:['glute','chest'],crunch:[],legRaise:['forearm','quad'],
- abductor:[],backExt:[],cardio:['ham','glute']};
+ abductor:[],backExt:[],cardio:['ham','glute'],chairStand:['abs'],wallPush:['triceps'],calfChair:[],seatMarch:[],legExtChair:[],bridge:['abs'],balance:['quad'],sideLegRaise:['glute'],lyingBreath:[]};
 
 function frame(id,k,time,opts){
   opts=opts||{};

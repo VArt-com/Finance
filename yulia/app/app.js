@@ -31,7 +31,7 @@ const I={
 const ic=(n,w)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w||2}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
 const LOGO=`<svg viewBox="0 0 64 64" width="38" height="38" aria-hidden="true" style="border-radius:11px"><defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ecd08a"/><stop offset="1" stop-color="#c39a3d"/></linearGradient></defs><rect width="64" height="64" rx="15" fill="#14110e"/><rect x="1.5" y="1.5" width="61" height="61" rx="13.5" fill="none" stroke="url(#lg1)" stroke-width="1.4" opacity=".55"/><path d="M19 17L32 37L45 17M32 37V53" stroke="url(#lg1)" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 15H52" stroke="#d2ae55" stroke-width="3" stroke-linecap="round"/><rect x="6" y="8" width="5" height="14" rx="2" fill="url(#lg1)"/><rect x="53" y="8" width="5" height="14" rx="2" fill="url(#lg1)"/><rect x="11" y="10" width="3.5" height="10" rx="1.5" fill="#a98532"/><rect x="49.5" y="10" width="3.5" height="10" rx="1.5" fill="#a98532"/></svg>`;
 
-const NOWEIGHT=['plank','crunch','legRaise','cardio','backExt'];
+const NOWEIGHT=['plank','crunch','legRaise','cardio','backExt','chairStand','wallPush','calfChair','seatMarch','legExtChair','bridge','balance','sideLegRaise','lyingBreath'];
 const waUrl=txt=>`https://wa.me/${APP_CFG.WA}`+(txt?`?text=${encodeURIComponent(txt)}`:'');
 const igUrl=`https://www.instagram.com/${APP_CFG.IG}/`;
 const exName=id=>li(EXI[id].name);
@@ -103,7 +103,7 @@ function viewHome(){
 function progCard(p,i){
   const ids=[];p.plan.forEach(d=>d.ex.forEach(e=>{if(ids.indexOf(e[0])<0)ids.push(e[0])}));
   return `<button class="pcard" data-prog="${p.id}"><span class="num">${i+1}</span>
-   <h3>${li(p.n)}</h3><div class="pmeta"><span class="chip sm">${p.days} ${t('days')}</span><span class="chip sm">${p.weeks} ${t('weeks')}</span><span class="chip sm">${li(p.lvl)}</span></div>
+   <h3>${li(p.n)}</h3><div class="pmeta"><span class="chip sm">${p.days} ${t('days')}</span><span class="chip sm">${p.weeks} ${t('weeks')}</span><span class="chip sm">${li(p.lvl)}</span>${p.care?`<span class="badge-care">${lang==='he'?'עדין / גיל מבוגר':'Мягкая / 60+'}</span>`:''}</div>
    <p>${li(p.goal)}</p><div class="thumbs">${ids.slice(0,5).map(id=>`<div class="th">${thumb(id)}</div>`).join('')}</div></button>`;
 }
 function viewPrograms(){
@@ -114,6 +114,7 @@ function viewPrograms(){
    <div class="pmeta" style="margin:10px 0"><span class="chip sm">${p.days} ${t('days')}</span><span class="chip sm">${p.weeks} ${t('weeks')}</span><span class="chip sm">${li(p.lvl)}</span></div>
    <p style="font-size:calc(14.5px*var(--fs,1));margin-bottom:6px"><b style="color:var(--gold)">${t('goal')}:</b> ${li(p.goal)}</p>
    <p style="font-size:calc(14.5px*var(--fs,1))"><b style="color:var(--gold)">${t('forWho')}:</b> ${li(p.who)}</p></div>
+  ${p.care?`<div class="safe"><h3>${li(SAFE.t)}</h3><ul>${SAFE.items.map(x=>`<li>${li(x)}</li>`).join('')}</ul><small>${li(SAFE.src)}</small></div>`:''}
   <div class="dtabs">${p.plan.map((x,i)=>`<button class="dtab ${i===S.day?'on':''}" data-day="${i}">${t('day')} ${i+1} · ${li(x.n)}</button>`).join('')}</div>
   ${d.ex.map((e,i)=>`<button class="exrow" data-ex="${e[0]}" data-ctx="prog">
     <span class="n">${i+1}</span><span class="im">${thumb(e[0])}</span>
