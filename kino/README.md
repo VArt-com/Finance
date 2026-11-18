@@ -6,3 +6,11 @@
 3. Публично: создать Cloudflare Worker из worker/tmdb-proxy.js, Secret TMDB_TOKEN = «API Read Access Token», ALLOWED_ORIGINS = https://org-va.com. Адрес Worker вписать в index.html (WORKER_URL).
 ## free.json
 Добавляйте только то, что проверили сами (общественное достояние / свободная лицензия). Без исключений.
+
+## СТАТУС: отложено (на паузе)
+Готово: каталог, где смотреть, бесплатный раздел, список, Worker.
+Осталось, когда вернёмся:
+1. Ключ TMDB + Worker (WORKER_URL в index.html), проверка на живых данных.
+2. Добавить проверенные фильмы в free.json.
+3. Перед монетизацией: коммерческая лицензия TMDB.
+4. Монетизация: партнёрки, реклама, premium.
