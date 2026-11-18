@@ -1,0 +1,15 @@
+{
+  "note": "Только то, что вы проверили сами: общественное достояние или явная свободная лицензия. Поля: id, title{ru,he,en}, year, type(movie|tv), source(archive|youtube), ref, license, src (ссылка на страницу-источник).",
+  "items": [
+    {
+      "id": "notld-1968",
+      "title": {"ru": "Ночь живых мертвецов", "he": "ליל המתים החיים", "en": "Night of the Living Dead"},
+      "year": 1968,
+      "type": "movie",
+      "source": "archive",
+      "ref": "Night.Of.The.Living.Dead_1080p",
+      "license": "Общественное достояние (США): в титрах отсутствовал знак авторского права",
+      "src": "https://archive.org/details/Night.Of.The.Living.Dead_1080p"
+    }
+  ]
+}

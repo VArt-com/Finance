@@ -1,0 +1,8 @@
+# VArt Kino
+Каталог фильмов/сериалов/аниме (TMDB) + «где смотреть легально» по странам (JustWatch через TMDB) + бесплатные легальные фильмы (free.json).
+## Запуск
+1. themoviedb.org → Settings → API → получить ключ (бесплатно).
+2. Проверка у себя: открыть kino/index.html → ⚙ → вставить «API Key (v3)» (хранится только в вашем браузере).
+3. Публично: создать Cloudflare Worker из worker/tmdb-proxy.js, Secret TMDB_TOKEN = «API Read Access Token», ALLOWED_ORIGINS = https://org-va.com. Адрес Worker вписать в index.html (WORKER_URL).
+## free.json
+Добавляйте только то, что проверили сами (общественное достояние / свободная лицензия). Без исключений.

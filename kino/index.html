@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0e1320">
+<title>VArt Kino: где смотреть фильмы, сериалы и аниме легально</title>
+<meta name="description" content="Каталог фильмов, сериалов и аниме: где смотреть легально по странам, и бесплатные фильмы без пиратских сайтов.">
+<style>
+:root{--bg:#0e1320;--card:#171e30;--card2:#1f2840;--tx:#e9eef8;--mut:#93a1bd;--ac:#e5484d;--ac2:#3b82f6;--ok:#3ddc84;--fs:1}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:calc(16px*var(--fs));line-height:1.45;overflow-wrap:anywhere}
+header{position:sticky;top:0;z-index:20;background:rgba(14,19,32,.96);backdrop-filter:blur(6px);border-bottom:1px solid #243049;padding:10px 12px}
+.top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.logo{font-weight:800;font-size:calc(18px*var(--fs));letter-spacing:.3px;margin-inline-end:4px}.logo b{color:var(--ac)}
+#q{flex:1;min-width:140px;padding:11px 12px;font-size:calc(16px*var(--fs));border-radius:10px;border:1px solid #2b3858;background:var(--card);color:var(--tx)}
+select,button{font:inherit;color:var(--tx)}
+select{padding:10px;border-radius:10px;border:1px solid #2b3858;background:var(--card);max-width:100%}
+.btn{padding:10px 14px;border-radius:10px;border:0;background:var(--ac2);cursor:pointer;color:#fff}
+.btn.sec{background:var(--card2)} .btn.red{background:var(--ac)} .btn:focus-visible,.tab:focus-visible,.card:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px;scrollbar-width:none}
+.tab{white-space:nowrap;padding:9px 14px;border-radius:999px;border:1px solid #2b3858;background:var(--card);cursor:pointer}
+.tab.on{background:var(--ac);border-color:var(--ac);color:#fff}
+main{padding:14px 12px 40px;max-width:1200px;margin:0 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(135px*var(--fs)),1fr));gap:12px}
+.card{background:var(--card);border-radius:12px;overflow:hidden;cursor:pointer;border:0;padding:0;text-align:start;display:flex;flex-direction:column}
+.card img,.ph{width:100%;aspect-ratio:2/3;object-fit:cover;background:#222c45;display:block}
+.ph{display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:36px}
+.card .t{padding:8px 9px 2px;font-size:calc(14px*var(--fs));font-weight:600;line-height:1.25}
+.card .m{padding:0 9px 9px;color:var(--mut);font-size:calc(12.5px*var(--fs))}
+h2{font-size:calc(18px*var(--fs));margin:4px 0 12px}
+.muted{color:var(--mut)} .small{font-size:calc(13px*var(--fs))}
+.box{background:var(--card);border-radius:12px;padding:14px;margin:0 0 14px}
+.warn{background:#3a2a12;border:1px solid #7a5a1c}
+dialog{width:min(760px,96vw);max-height:92vh;overflow:auto;background:var(--bg);color:var(--tx);border:1px solid #2b3858;border-radius:14px;padding:16px}
+dialog::backdrop{background:rgba(0,0,0,.7)}
+.x{float:inline-end}
+.det{display:flex;gap:14px;flex-wrap:wrap}.det img{width:min(200px,45%);border-radius:10px;align-self:flex-start}
+.det .info{flex:1;min-width:210px}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--card2);font-size:calc(12.5px*var(--fs));margin:0 4px 4px 0}
+.prov{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 10px}
+.prov span{display:flex;align-items:center;gap:6px;background:var(--card);padding:5px 9px 5px 5px;border-radius:10px;font-size:calc(13px*var(--fs))}
+.prov img{width:30px;height:30px;border-radius:7px}
+iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#000}
+footer{border-top:1px solid #243049;padding:16px 12px;color:var(--mut);font-size:calc(12.5px*var(--fs));max-width:1200px;margin:0 auto}
+input[type=text],input[type=password]{width:100%;padding:10px;border-radius:8px;border:1px solid #2b3858;background:var(--card);color:var(--tx);font-size:inherit}
+label{display:block;margin:10px 0 4px}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <span class="logo">VArt <b>Kino</b></span>
+    <input id="q" type="search" autocomplete="off">
+    <select id="region" aria-label="Region"></select>
+    <button class="btn sec" id="btnLang">HE</button>
+    <button class="btn sec" id="btnFs" title="Aa">Aa</button>
+    <button class="btn sec" id="btnSet" aria-label="Settings">⚙</button>
+  </div>
+  <nav class="tabs" id="tabs"></nav>
+</header>
+<main id="main"></main>
+<footer id="foot"></footer>
+<dialog id="dlg"></dialog>
+
+<script>
+(function(){
+'use strict';
+/* ===== Настройки ===== */
+// После деплоя Worker впишите его адрес сюда, например 'https://kino-proxy.vart.workers.dev'
+const WORKER_URL = '';
+const IMG = 'https://image.tmdb.org/t/p/';
+const REGIONS = {IL:'Israel',US:'USA',GB:'UK',DE:'Germany',FR:'France',CA:'Canada',AU:'Australia',UA:'Ukraine',PL:'Poland',ES:'Spain',IT:'Italy',NL:'Netherlands',BR:'Brazil'};
+
+const T = {
+ru:{search:'Найти фильм, сериал, аниме…',home:'Главная',movies:'Фильмы',tv:'Сериалы',anime:'Аниме',free:'Бесплатно',list:'Мой список',
+  trend:'Сейчас в тренде',results:'Результаты поиска',nores:'Ничего не найдено',where:'Где смотреть',stream:'По подписке',freeP:'Бесплатно',ads:'Бесплатно с рекламой',rent:'Аренда',buy:'Покупка',
+  none:'Нет данных о доступности в этой стране. Попробуйте другую страну вверху.',open:'Открыть страницу сервисов',add:'＋ В мой список',rm:'✓ В списке, убрать',close:'Закрыть',
+  empty:'Здесь пока пусто.',freeTitle:'Бесплатно и легально',freeNote:'Фильмы в общественном достоянии и с открытой лицензией. Каждый источник проверяет автор каталога.',watch:'Смотреть',license:'Лицензия',source:'Источник',
+  setup:'Нужно подключение к каталогу',setupTxt:'Чтобы показывать фильмы, подключите бесплатный ключ TMDB (2 минуты): themoviedb.org → Настройки → API → скопируйте «API Key (v3)» и вставьте в ⚙ Настройки. Для публичного сайта лучше подключить Worker (адрес в настройках).',
+  set:'Настройки',tmdbKey:'Ключ TMDB (для проверки у себя)',workerUrl:'Адрес Worker (для публичного сайта)',save:'Сохранить',err:'Не удалось загрузить данные',seasons:'сезонов',min:'мин',
+  attr:'Эта программа использует API TMDB, но не одобрена и не сертифицирована TMDB. Данные о доступности предоставлены JustWatch.',
+  legal:'VArt Kino не хранит и не показывает пиратский контент: мы показываем, где фильм доступен у законных сервисов, и ссылки на бесплатные источники, проверенные вручную.',
+  more:'Показать ещё'},
+he:{search:'חיפוש סרט, סדרה או אנימה…',home:'ראשי',movies:'סרטים',tv:'סדרות',anime:'אנימה',free:'בחינם',list:'הרשימה שלי',
+  trend:'פופולרי עכשיו',results:'תוצאות חיפוש',nores:'לא נמצא דבר',where:'איפה לצפות',stream:'במנוי',freeP:'חינם',ads:'חינם עם פרסומות',rent:'השכרה',buy:'רכישה',
+  none:'אין מידע על זמינות במדינה זו. נסו מדינה אחרת למעלה.',open:'פתיחת עמוד השירותים',add:'＋ לרשימה שלי',rm:'✓ ברשימה, להסיר',close:'סגירה',
+  empty:'עדיין ריק.',freeTitle:'בחינם ובחוקיות',freeNote:'סרטים ברשות הציבור או ברישיון פתוח. כל מקור נבדק ידנית על ידי מנהל הקטלוג.',watch:'צפייה',license:'רישיון',source:'מקור',
+  setup:'נדרש חיבור לקטלוג',setupTxt:'כדי להציג סרטים יש לחבר מפתח TMDB חינמי (2 דקות): themoviedb.org ← הגדרות ← API ← להעתיק את «API Key (v3)» ולהדביק ב-⚙ הגדרות. לאתר ציבורי עדיף לחבר Worker.',
+  set:'הגדרות',tmdbKey:'מפתח TMDB (לבדיקה אישית)',workerUrl:'כתובת Worker (לאתר ציבורי)',save:'שמירה',err:'טעינת הנתונים נכשלה',seasons:'עונות',min:'דק׳',
+  attr:'תוכנה זו משתמשת ב-API של TMDB אך אינה מאושרת או מוסמכת על ידי TMDB. נתוני הזמינות מסופקים על ידי JustWatch.',
+  legal:'VArt Kino לא מאחסן ולא מציג תוכן פיראטי: אנו מציגים היכן הסרט זמין אצל שירותים חוקיים וקישורים למקורות חינמיים שנבדקו ידנית.',
+  more:'הצג עוד'}
+};
+const LS = {get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let lang = LS.get('kino_lang','ru'), region = LS.get('kino_region','IL'), tab = 'home', query = '';
+let fs = parseFloat(LS.get('kino_fs','1'))||1;
+const t = k => T[lang][k];
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tmdbLang = () => lang==='he'?'he-IL':'ru-RU';
+
+/* ===== API ===== */
+function apiMode(){
+  const w = (LS.get('kino_api','')||WORKER_URL).trim().replace(/\/+$/,'');
+  if (w) return {base:w, key:''};
+  const k = LS.get('kino_tmdbkey','').trim();
+  if (k) return {base:'https://api.themoviedb.org/3', key:k};
+  return null;
+}
+async function api(path, params){
+  const m = apiMode(); if (!m) throw new Error('nokey');
+  const u = new URL(m.base + path);
+  Object.entries(Object.assign({language:tmdbLang(), include_adult:'false'}, params||{})).forEach(([k,v])=>{ if (v!==''&&v!=null) u.searchParams.set(k,v); });
+  if (m.key) u.searchParams.set('api_key', m.key);
+  const r = await fetch(u.toString());
+  if (!r.ok) throw new Error('http '+r.status);
+  return r.json();
+}
+
+/* ===== Список ===== */
+const getList = () => { try{ const v=JSON.parse(LS.get('kino_list','[]')); return Array.isArray(v)?v:[]; }catch(e){ return []; } };
+const setList = a => LS.set('kino_list', JSON.stringify(a));
+
+/* ===== Рендер карточек ===== */
+function poster(p){ return p ? `<img loading="lazy" alt="" src="${IMG}w342${esc(p)}">` : '<div class="ph" aria-hidden="true">🎬</div>'; }
+function cards(items){
+  return `<div class="grid">${items.map(i=>{
+    const media = i.media_type || i._m;
+    const title = i.title || i.name || '';
+    const date = (i.release_date || i.first_air_date || '').slice(0,4);
+    const r = i.vote_average ? '★ '+i.vote_average.toFixed(1) : '';
+    return `<button class="card" data-open="${esc(media)}:${esc(i.id)}">${poster(i.poster_path)}<div class="t">${esc(title)}</div><div class="m">${esc(date)} ${esc(r)}</div></button>`;
+  }).join('')}</div>`;
+}
+const onlyTitles = a => (a||[]).filter(x => (x.media_type?x.media_type==='movie'||x.media_type==='tv':true) && !x.adult);
+function tag(arr, m){ return (arr||[]).map(x=>Object.assign({_m:m},x)); }
+
+/* ===== Вкладки ===== */
+const TABS = ['home','movies','tv','anime','free','list'];
+function drawTabs(){
+  $('tabs').innerHTML = TABS.map(k=>`<button class="tab ${tab===k&&!query?'on':''}" data-tab="${k}">${esc(t(k))}</button>`).join('');
+}
+function setup(){
+  return `<div class="box warn"><h2>${esc(t('setup'))}</h2><p>${esc(t('setupTxt'))}</p><button class="btn" data-act="settings">⚙ ${esc(t('set'))}</button></div>`;
+}
+async function render(){
+  const el = $('main'); drawTabs();
+  document.documentElement.lang = lang; document.documentElement.dir = lang==='he'?'rtl':'ltr';
+  $('q').placeholder = t('search'); $('btnLang').textContent = lang==='ru'?'HE':'RU';
+  $('foot').innerHTML = `<p>${esc(t('legal'))}</p><p>${esc(t('attr'))}</p>`;
+  if (tab==='free' && !query) return renderFree(el);
+  if (tab==='list' && !query) return renderList(el);
+  if (!apiMode()){ el.innerHTML = setup(); return; }
+  el.innerHTML = '<p class="muted">…</p>';
+  try{
+    if (query){
+      const r = await api('/search/multi', {query});
+      const items = onlyTitles(r.results);
+      el.innerHTML = `<h2>${esc(t('results'))}</h2>` + (items.length ? cards(items) : `<p class="muted">${esc(t('nores'))}</p>`);
+      return;
+    }
+    let items=[], head=t('trend');
+    if (tab==='home'){ items = onlyTitles((await api('/trending/all/week')).results); }
+    else if (tab==='movies'){ items = tag((await api('/trending/movie/week')).results,'movie'); head=t('movies'); }
+    else if (tab==='tv'){ items = tag((await api('/trending/tv/week')).results,'tv'); head=t('tv'); }
+    else if (tab==='anime'){
+      const [a,b] = await Promise.all([
+        api('/discover/tv',{with_genres:'16',with_original_language:'ja',sort_by:'popularity.desc'}),
+        api('/discover/movie',{with_genres:'16',with_original_language:'ja',sort_by:'popularity.desc'})]);
+      items = tag(a.results,'tv').concat(tag(b.results,'movie')).sort((x,y)=>(y.popularity||0)-(x.popularity||0)); head=t('anime');
+    }
+    el.innerHTML = `<h2>${esc(head)}</h2>` + (items.length ? cards(items) : `<p class="muted">${esc(t('nores'))}</p>`);
+  }catch(e){
+    el.innerHTML = `<div class="box warn">${esc(t('err'))} (${esc(e.message)})</div>` + (e.message==='http 401'||e.message==='nokey'?setup():'');
+  }
+}
+async function renderFree(el){
+  let data={items:[]};
+  try{ const r = await fetch('free.json',{cache:'no-cache'}); data = await r.json(); }catch(e){}
+  const items = (data.items||[]).filter(x=>x && /^[A-Za-z0-9._-]+$/.test(x.ref||''));
+  el.innerHTML = `<h2>${esc(t('freeTitle'))}</h2><p class="muted small">${esc(t('freeNote'))}</p>` +
+   (items.length ? `<div class="grid">${items.map(i=>{
+      const th = i.source==='youtube' ? `https://i.ytimg.com/vi/${i.ref}/hqdefault.jpg` : `https://archive.org/services/img/${i.ref}`;
+      const ti = (i.title&&(i.title[lang]||i.title.en||i.title.ru))||'';
+      return `<button class="card" data-free="${esc(i.id)}"><img loading="lazy" alt="" src="${esc(th)}"><div class="t">${esc(ti)}</div><div class="m">${esc(i.year||'')}</div></button>`;}).join('')}</div>` : `<p class="muted">${esc(t('empty'))}</p>`);
+  el._free = items;
+}
+function renderList(el){
+  const l = getList();
+  el.innerHTML = `<h2>${esc(t('list'))}</h2>` + (l.length ? cards(l.map(x=>({id:x.id,_m:x.media,title:x.title,poster_path:x.poster}))) : `<p class="muted">${esc(t('empty'))}</p>`);
+}
+
+/* ===== Карточка ===== */
+async function openTitle(media,id){
+  const d = $('dlg'); d.innerHTML = '<p class="muted">…</p>'; if (!d.open) d.showModal();
+  try{
+    const x = await api('/'+media+'/'+id, {append_to_response:'watch/providers'});
+    const title = x.title||x.name||'', date=(x.release_date||x.first_air_date||'').slice(0,4);
+    const res = (x['watch/providers']&&x['watch/providers'].results)||{};
+    const p = res[region]||null;
+    const groups = [['flatrate','stream'],['free','freeP'],['ads','ads'],['rent','rent'],['buy','buy']];
+    let prov = '';
+    if (p){
+      prov = groups.filter(([k])=>p[k]&&p[k].length).map(([k,lb])=>`<div class="small muted">${esc(t(lb))}</div><div class="prov">${p[k].map(v=>`<span>${v.logo_path?`<img alt="" src="${IMG}w92${esc(v.logo_path)}">`:''}${esc(v.provider_name)}</span>`).join('')}</div>`).join('');
+      if (prov && p.link && /^https:\/\//.test(p.link)) prov += `<a class="btn sec" style="display:inline-block;text-decoration:none" target="_blank" rel="noopener noreferrer" href="${esc(p.link)}">${esc(t('open'))}</a>`;
+    }
+    const inList = getList().some(l=>l.id===x.id&&l.media===media);
+    const extra = media==='tv' ? `${esc(x.number_of_seasons||'')} ${esc(t('seasons'))}` : (x.runtime?`${esc(x.runtime)} ${esc(t('min'))}`:'');
+    d.innerHTML = `<button class="btn sec x" data-act="close">${esc(t('close'))}</button>
+      <div class="det">${x.poster_path?`<img alt="" src="${IMG}w342${esc(x.poster_path)}">`:''}
+      <div class="info"><h2 style="margin-top:0">${esc(title)} <span class="muted">${esc(date)}</span></h2>
+      <div>${x.vote_average?`<span class="badge">★ ${esc(x.vote_average.toFixed(1))}</span>`:''}${(x.genres||[]).map(g=>`<span class="badge">${esc(g.name)}</span>`).join('')}${extra?`<span class="badge">${extra}</span>`:''}</div>
+      <p>${esc(x.overview||'')}</p>
+      <button class="btn ${inList?'sec':'red'}" data-act="toggle" data-m="${esc(media)}" data-id="${esc(x.id)}" data-t="${esc(title)}" data-p="${esc(x.poster_path||'')}">${esc(inList?t('rm'):t('add'))}</button></div></div>
+      <h2 style="margin-top:16px">${esc(t('where'))}: ${esc(REGIONS[region]||region)}</h2>
+      ${prov || `<p class="muted">${esc(t('none'))}</p>`}
+      <p class="muted small">${esc(t('attr'))}</p>`;
+  }catch(e){ d.innerHTML = `<button class="btn sec x" data-act="close">${esc(t('close'))}</button><p>${esc(t('err'))} (${esc(e.message)})</p>`; }
+}
+function openFree(id){
+  const it = ($('main')._free||[]).find(x=>x.id===id); if (!it) return;
+  const src = it.source==='youtube' ? 'https://www.youtube-nocookie.com/embed/'+it.ref : 'https://archive.org/embed/'+it.ref;
+  const ti = (it.title&&(it.title[lang]||it.title.en||it.title.ru))||'';
+  const link = /^https:\/\/(archive\.org|www\.youtube\.com)\//.test(it.src||'') ? `<a target="_blank" rel="noopener noreferrer" href="${esc(it.src)}">${esc(t('source'))}</a>` : '';
+  const d = $('dlg');
+  d.innerHTML = `<button class="btn sec x" data-act="close">${esc(t('close'))}</button><h2 style="margin-top:0">${esc(ti)} <span class="muted">${esc(it.year||'')}</span></h2>
+    <iframe src="${esc(src)}" allow="fullscreen" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="no-referrer" title="${esc(ti)}"></iframe>
+    <p class="small muted">${esc(t('license'))}: ${esc(it.license||'')} ${link}</p>`;
+  d.showModal();
+}
+function openSettings(){
+  const d = $('dlg');
+  d.innerHTML = `<button class="btn sec x" data-act="close">${esc(t('close'))}</button><h2 style="margin-top:0">${esc(t('set'))}</h2>
+   <label for="sKey">${esc(t('tmdbKey'))}</label><input id="sKey" type="password" autocomplete="off" value="${esc(LS.get('kino_tmdbkey',''))}">
+   <label for="sApi">${esc(t('workerUrl'))}</label><input id="sApi" type="text" autocomplete="off" placeholder="https://…workers.dev" value="${esc(LS.get('kino_api',''))}">
+   <p><button class="btn" data-act="saveset">${esc(t('save'))}</button></p>`;
+  d.showModal();
+}
+
+/* ===== События ===== */
+document.addEventListener('click', e=>{
+  const c = e.target.closest('[data-open],[data-free],[data-tab],[data-act]'); if (!c) return;
+  if (c.dataset.tab){ tab=c.dataset.tab; query=''; $('q').value=''; render(); return; }
+  if (c.dataset.open){ const [m,i]=c.dataset.open.split(':'); if (/^(movie|tv)$/.test(m)&&/^\d+$/.test(i)) openTitle(m,i); return; }
+  if (c.dataset.free){ openFree(c.dataset.free); return; }
+  const a = c.dataset.act;
+  if (a==='close'){ $('dlg').close(); $('dlg').innerHTML=''; }
+  else if (a==='settings') openSettings();
+  else if (a==='saveset'){ LS.set('kino_tmdbkey',$('sKey').value.trim()); LS.set('kino_api',$('sApi').value.trim()); $('dlg').close(); render(); }
+  else if (a==='toggle'){
+    const id=+c.dataset.id, m=c.dataset.m; let l=getList();
+    if (l.some(x=>x.id===id&&x.media===m)) l=l.filter(x=>!(x.id===id&&x.media===m)); else l.push({id,media:m,title:c.dataset.t,poster:c.dataset.p});
+    setList(l); openTitle(m,String(id)); if (tab==='list') render();
+  }
+});
+$('dlg').addEventListener('close', ()=>{ $('dlg').innerHTML=''; });
+let tmr; $('q').addEventListener('input', e=>{ clearTimeout(tmr); tmr=setTimeout(()=>{ query=e.target.value.trim(); render(); },400); });
+$('region').innerHTML = Object.entries(REGIONS).map(([k,v])=>`<option value="${k}">${k} · ${v}</option>`).join('');
+$('region').value = region; $('region').addEventListener('change', e=>{ region=e.target.value; LS.set('kino_region',region); });
+$('btnLang').addEventListener('click', ()=>{ lang = lang==='ru'?'he':'ru'; LS.set('kino_lang',lang); render(); });
+$('btnSet').addEventListener('click', openSettings);
+const SIZES=[1,1.15,1.3,1.5];
+function applyFs(){ document.documentElement.style.setProperty('--fs',fs); $('btnFs').textContent = ['Aa','A+','A++','A+++'][Math.max(0,SIZES.indexOf(fs))]; }
+$('btnFs').addEventListener('click', ()=>{ fs = SIZES[(SIZES.indexOf(fs)+1)%SIZES.length]; LS.set('kino_fs',fs); applyFs(); });
+if (!SIZES.includes(fs)) fs=1; applyFs(); render();
+})();
+</script>
+</body>
+</html>
