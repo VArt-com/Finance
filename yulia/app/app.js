@@ -39,6 +39,17 @@ const unit=s=>String(s).replace('{s}',' '+SEC[lang]).replace('{m}',' '+MIN[lang]
 function parseSets(s){const m=/^(\d+)×(.+)$/.exec(s);return m?{sets:+m[1],reps:unit(m[2])}:{sets:1,reps:unit(s)}}
 function lvlDots(n){return `<span class="lvl" title="${t('level')}">${[1,2,3].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</span>`}
 let uidN=0;
+/* 3D-модель (Three.js, анатомия BodyParts3D); при отсутствии WebGL — запасной 2D */
+function mountFig(holder,id,o){
+  let inner=null,dead=false;
+  const to2D=()=>{if(dead)return;try{if(inner&&inner.destroy)inner.destroy()}catch(e){}holder.innerHTML='';
+    if(o.phase!==undefined){holder.innerHTML=Fig.frame(id,o.phase,0,{uid:o.uid});inner={destroy(){},setSpeed(){},setView(){}}}
+    else inner=Fig.mount(holder,id,{speed:o.speed,uid:o.uid,autoplay:o.autoplay})};
+  if(window.Fig3D&&Fig3D.supported()&&!window.__no3d){
+    try{inner=Fig3D.mount(holder,id,Object.assign({},o,{onError:to2D}));holder.classList.add('is3d')}catch(e){to2D()}
+  }else to2D();
+  return {setSpeed(s){inner.setSpeed&&inner.setSpeed(s)},setView(v){inner.setView&&inner.setView(v)},destroy(){dead=true;try{inner.destroy()}catch(e){}}};
+}
 function thumb(id){return Fig.frame(id,1,0,{uid:'u'+(++uidN)})}
 function toast(m){const el=$('#toast');el.textContent=m;el.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove('show'),2800)}
 
@@ -87,7 +98,7 @@ function viewHome(){
   <div class="pgrid">${pc}</div>
   <div class="sec"><h2>${t('rulesTitle')}</h2></div>
   <div class="rules">${RULES.map(r=>`<div class="rule"><b>${lang==='he'?r[1]:r[0]}</b><span>${lang==='he'?r[3]:r[2]}</span></div>`).join('')}</div>
-  <p class="disc">${t('disclaimer')}</p><p class="foot">${t('copyright')}</p></section>`;
+  <p class="disc">${t('disclaimer')}</p><p class="foot">${t('copyright')}</p><p class="foot" style="font-size:11px;opacity:.7">${t('anatCredit')}</p></section>`;
 }
 function progCard(p,i){
   const ids=[];p.plan.forEach(d=>d.ex.forEach(e=>{if(ids.indexOf(e[0])<0)ids.push(e[0])}));
@@ -143,7 +154,7 @@ function viewContact(){
   <div class="card"><h3 style="font-size:24px;margin-bottom:8px">${t('installTitle')}</h3><p style="font-size:14.5px;color:var(--text2);margin-bottom:12px">${t('installText')}</p>
    <div style="display:grid;gap:10px"><button class="btn gold block" data-act="install" id="btnInstall2">${ic('dl')} ${t('install')}</button><button class="btn block" data-act="share">${ic('share')} ${t('share')}</button></div>
    <p class="muted" style="font-size:12.5px;margin-top:12px">${ic('check',2.4).replace('<svg','<svg width="14" height="14" style="vertical-align:-2px"')} ${t('offline')}</p></div></div>
-  <p class="disc">${t('disclaimer')}</p><p class="foot">${t('copyright')} · v${APP_CFG.VERSION}</p></section>`;
+  <p class="disc">${t('disclaimer')}</p><p class="foot">${t('copyright')} · v${APP_CFG.VERSION}</p><p class="foot" style="font-size:11px;opacity:.7">${t('anatCredit')}</p></section>`;
 }
 function render(){
   const v=$('#view');
@@ -176,6 +187,7 @@ function drawSheet(){
   <div class="figbox" id="figBox"><span class="ybadge">Yulia Fit</span></div>
   <div class="ctrl"><div class="seg" id="modeSeg"><button data-mode="anim" class="on">▶ ${t('play')}</button><button data-mode="A">${t('poseA')}</button><button data-mode="B">${t('poseB')}</button></div>
    <div class="seg"><button data-speed="1" class="on">${t('normal')}</button><button data-speed="0.45">${t('slow')}</button></div></div>
+  <div class="ctrl" id="viewRow" ${(window.Fig3D&&Fig3D.supported())?'':'hidden'}><div class="seg" id="viewSeg"><button data-view="three" class="on">${t('v34')}</button><button data-view="side">${t('vSide')}</button><button data-view="front">${t('vFront')}</button><button data-view="back">${t('vBack')}</button></div></div>
   <div class="sbody"><h2>${exName(id)}</h2>
    <div class="kv"><div class="it"><b>${t('muscles')}</b><span>${li(e.mus)}</span></div>
    ${li(e.sec)!=='—'?`<div class="it"><b>${t('secondary')}</b><span>${li(e.sec)}</span></div>`:''}
@@ -189,6 +201,7 @@ function drawSheet(){
   $('#sheet').scrollTop=0;
   startFig();
 }
+function EXD_FRONT(id){try{return Fig.EXD[id].view==='front'}catch(e){return false}}
 function startFig(){
   if(anim){anim.destroy();anim=null}
   const box=$('#figBox');if(!box)return;
@@ -196,9 +209,10 @@ function startFig(){
   const holder=document.createElement('div');holder.style.cssText='position:absolute;inset:0';
   const old=$('#figInner');if(old)old.remove();
   holder.id='figInner';box.appendChild(holder);
-  if(mode==='anim'){
-    anim=Fig.mount(holder,id,{speed,uid:'sh',autoplay:!reduceMotion});
-  }else{holder.innerHTML=Fig.frame(id,mode==='A'?0:1,0,{uid:'sh'})}
+  const vw=sheetState.view||(EXD_FRONT(id)?'front':'three');
+  if(mode==='anim')anim=mountFig(holder,id,{speed,uid:'sh',autoplay:!reduceMotion,view:vw});
+  else anim=mountFig(holder,id,{speed,uid:'sh',autoplay:false,phase:mode==='A'?0:1,view:vw});
+  $$('#viewSeg button').forEach(b=>b.classList.toggle('on',b.dataset.view===vw));
   $$('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));
   $$('[data-speed]').forEach(b=>b.classList.toggle('on',+b.dataset.speed===speed));
 }
@@ -236,7 +250,7 @@ function drawPlayer(){
   <div class="rest" id="rest"><div class="ring"><svg viewBox="0 0 64 64"><circle class="bg" cx="32" cy="32" r="27"/><circle class="fg" id="rfg" cx="32" cy="32" r="27" stroke-dasharray="169.6" stroke-dashoffset="0"/></svg><b id="rnum">0</b></div><div class="rt"><b>${t('restTimer')}</b><span id="rtxt"></span></div><button class="btn" data-act="restAdd" style="padding:10px 12px">${t('addTime')}</button><button class="btn" data-act="restSkip" style="padding:10px 12px">${t('skip')}</button></div>
   <div class="pfoot"><button class="btn" data-act="pPrev" ${W.idx===0?'style="opacity:.4"':''}>${lang==='he'?'→':'←'}</button>${W.idx<W.items.length-1?`<button class="btn gold" data-act="pNext">${t('next')} ${lang==='he'?'←':'→'}</button>`:`<button class="btn gold" data-act="pFinish">${t('finish')}</button>`}</div>`;
   const f=$('#pfig'),h=document.createElement('div');h.style.cssText='position:absolute;inset:0';f.appendChild(h);
-  pAnim=Fig.mount(h,it.id,{uid:'pl',autoplay:!reduceMotion});
+  pAnim=mountFig(h,it.id,{uid:'pl',autoplay:!reduceMotion});
   drawSets();
 }
 function drawSets(){
@@ -318,7 +332,7 @@ async function doShare(){
 
 /* ───────── события ───────── */
 document.addEventListener('click',ev=>{
-  const el=ev.target.closest('[data-go],[data-prog],[data-day],[data-ex],[data-group],[data-act],[data-mode],[data-speed],[data-set]');
+  const el=ev.target.closest('[data-go],[data-prog],[data-day],[data-ex],[data-group],[data-act],[data-mode],[data-speed],[data-view],[data-set]');
   if(!el)return;
   if(el.dataset.go){go(el.dataset.go);return}
   if(el.dataset.prog){go('programs',el.dataset.prog);return}
@@ -331,6 +345,7 @@ document.addEventListener('click',ev=>{
     else ctx=[id];
     openSheet(id,ctx,Math.max(0,ctx.indexOf(id)));return;
   }
+  if(el.dataset.view){sheetState.view=el.dataset.view;if(anim)anim.setView(el.dataset.view);$$('#viewSeg button').forEach(b=>b.classList.toggle('on',b===el));return}
   if(el.dataset.mode){sheetState.mode=el.dataset.mode;startFig();return}
   if(el.dataset.speed){sheetState.speed=+el.dataset.speed;if(anim)anim.setSpeed(sheetState.speed);$$('[data-speed]').forEach(b=>b.classList.toggle('on',b===el));return}
   if(el.dataset.set!==undefined){toggleSet(+el.dataset.set);return}

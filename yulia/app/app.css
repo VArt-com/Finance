@@ -229,3 +229,8 @@ html[lang="he"] .logo b{font-family:'Heebo',sans-serif;font-size:18px}
 
 .rest .btn{white-space:nowrap}
 @media(max-width:560px){#btnInstall span{display:none}#btnInstall{padding:0;width:38px}}
+
+.figbox.is3d,.figbox:has(.is3d){background:#f2f2f0}
+#viewRow[hidden]{display:none}
+#viewRow{margin-top:8px}
+.figbox .ybadge{z-index:3}
