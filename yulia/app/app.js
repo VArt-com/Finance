@@ -98,7 +98,7 @@ function viewHome(){
   <div class="pgrid">${pc}</div>
   <div class="sec"><h2>${t('rulesTitle')}</h2></div>
   <div class="rules">${RULES.map(r=>`<div class="rule"><b>${lang==='he'?r[1]:r[0]}</b><span>${lang==='he'?r[3]:r[2]}</span></div>`).join('')}</div>
-  <p class="disc">${t('disclaimer')}</p><p class="foot">${t('copyright')}</p><p class="foot" style="font-size:11px;opacity:.7">${t('anatCredit')}</p></section>`;
+  <p class="disc">${t('disclaimer')}</p><p class="foot">${t('copyright')}</p><p class="foot" style="font-size:calc(11px*var(--fs,1));opacity:.7">${t('anatCredit')}</p></section>`;
 }
 function progCard(p,i){
   const ids=[];p.plan.forEach(d=>d.ex.forEach(e=>{if(ids.indexOf(e[0])<0)ids.push(e[0])}));
@@ -110,10 +110,10 @@ function viewPrograms(){
   if(!S.prog)return `<section class="view"><div class="sec"><h2>${t('homePrograms')}</h2></div><div class="pgrid">${PROGRAMS.map(progCard).join('')}</div><p class="disc">${t('disclaimer')}</p></section>`;
   const p=PROGRAMS.find(x=>x.id===S.prog)||PROGRAMS[0];const d=p.plan[Math.min(S.day,p.plan.length-1)];
   return `<section class="view"><button class="ibtn" data-act="progBack" style="margin-bottom:12px">${lang==='he'?'→':'←'} ${t('back')}</button>
-  <div class="card" style="margin-bottom:14px"><h2 style="font-size:34px;color:var(--gold2)">${li(p.n)}</h2>
+  <div class="card" style="margin-bottom:14px"><h2 style="font-size:calc(34px*var(--fs,1));color:var(--gold2)">${li(p.n)}</h2>
    <div class="pmeta" style="margin:10px 0"><span class="chip sm">${p.days} ${t('days')}</span><span class="chip sm">${p.weeks} ${t('weeks')}</span><span class="chip sm">${li(p.lvl)}</span></div>
-   <p style="font-size:14.5px;margin-bottom:6px"><b style="color:var(--gold)">${t('goal')}:</b> ${li(p.goal)}</p>
-   <p style="font-size:14.5px"><b style="color:var(--gold)">${t('forWho')}:</b> ${li(p.who)}</p></div>
+   <p style="font-size:calc(14.5px*var(--fs,1));margin-bottom:6px"><b style="color:var(--gold)">${t('goal')}:</b> ${li(p.goal)}</p>
+   <p style="font-size:calc(14.5px*var(--fs,1))"><b style="color:var(--gold)">${t('forWho')}:</b> ${li(p.who)}</p></div>
   <div class="dtabs">${p.plan.map((x,i)=>`<button class="dtab ${i===S.day?'on':''}" data-day="${i}">${t('day')} ${i+1} · ${li(x.n)}</button>`).join('')}</div>
   ${d.ex.map((e,i)=>`<button class="exrow" data-ex="${e[0]}" data-ctx="prog">
     <span class="n">${i+1}</span><span class="im">${thumb(e[0])}</span>
@@ -145,16 +145,16 @@ function viewProgress(){
 }
 function viewContact(){
   return `<section class="view"><div class="sec"><h2>${t('contactTitle')}</h2></div>
-  <div class="cwrap"><div class="card"><div class="coach"><img src="../img/about.jpg" alt="Yulia"/><div><h3 style="font-size:26px;color:var(--gold2)">Yulia</h3><p class="muted" style="font-size:14px">${t('coachRole')}</p></div></div>
-   <p style="margin:14px 0;font-size:14.5px">${t('contactText')}</p>
+  <div class="cwrap"><div class="card"><div class="coach"><img src="../img/about.jpg" alt="Yulia"/><div><h3 style="font-size:calc(26px*var(--fs,1));color:var(--gold2)">Yulia</h3><p class="muted" style="font-size:calc(14px*var(--fs,1))">${t('coachRole')}</p></div></div>
+   <p style="margin:14px 0;font-size:calc(14.5px*var(--fs,1))">${t('contactText')}</p>
    <div style="display:grid;gap:10px"><a class="btn wa block" target="_blank" rel="noopener" href="${waUrl(t('waText'))}">${ic('wa')} ${t('contactWA')}</a>
    <a class="btn ig block" target="_blank" rel="noopener" href="${igUrl}">${ic('ig')} ${t('contactIG')} @${esc(APP_CFG.IG)}</a>
    <a class="btn block" target="_blank" rel="noopener" href="${APP_CFG.SITE}">${ic('web')} ${t('contactSite')}</a></div>
-   <p class="muted" style="font-size:12.5px;margin-top:12px">${t('freeFirst')}</p></div>
-  <div class="card"><h3 style="font-size:24px;margin-bottom:8px">${t('installTitle')}</h3><p style="font-size:14.5px;color:var(--text2);margin-bottom:12px">${t('installText')}</p>
+   <p class="muted" style="font-size:calc(12.5px*var(--fs,1));margin-top:12px">${t('freeFirst')}</p></div>
+  <div class="card"><h3 style="font-size:calc(24px*var(--fs,1));margin-bottom:8px">${t('installTitle')}</h3><p style="font-size:calc(14.5px*var(--fs,1));color:var(--text2);margin-bottom:12px">${t('installText')}</p>
    <div style="display:grid;gap:10px"><button class="btn gold block" data-act="install" id="btnInstall2">${ic('dl')} ${t('install')}</button><button class="btn block" data-act="share">${ic('share')} ${t('share')}</button></div>
-   <p class="muted" style="font-size:12.5px;margin-top:12px">${ic('check',2.4).replace('<svg','<svg width="14" height="14" style="vertical-align:-2px"')} ${t('offline')}</p></div></div>
-  <p class="disc">${t('disclaimer')}</p><p class="foot">${t('copyright')} · v${APP_CFG.VERSION}</p><p class="foot" style="font-size:11px;opacity:.7">${t('anatCredit')}</p></section>`;
+   <p class="muted" style="font-size:calc(12.5px*var(--fs,1));margin-top:12px">${ic('check',2.4).replace('<svg','<svg width="14" height="14" style="vertical-align:-2px"')} ${t('offline')}</p></div></div>
+  <p class="disc">${t('disclaimer')}</p><p class="foot">${t('copyright')} · v${APP_CFG.VERSION}</p><p class="foot" style="font-size:calc(11px*var(--fs,1));opacity:.7">${t('anatCredit')}</p></section>`;
 }
 function render(){
   const v=$('#view');

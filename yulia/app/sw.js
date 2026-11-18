@@ -1,6 +1,6 @@
 /* Yulia Fit — service worker: работа без интернета. Меняйте VERSION при обновлении файлов. */
-const VERSION='yfit-v5';
-const CORE=['./','index.html','app.css','app.js','figure.js','musclemap.js','data.js','manifest.webmanifest',
+const VERSION='yfit-v6';
+const CORE=['./','index.html','app.css','app.js','figure.js','musclemap.js','../textsize.js','data.js','manifest.webmanifest',
  'icons/favicon.svg','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png','../img/hero.jpg','../img/about.jpg'];
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(VERSION).then(c=>Promise.all(CORE.map(u=>c.add(u).catch(()=>{})))).then(()=>self.skipWaiting()));
