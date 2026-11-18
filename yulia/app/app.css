@@ -234,3 +234,23 @@ html[lang="he"] .logo b{font-family:'Heebo',sans-serif;font-size:18px}
 #viewRow[hidden]{display:none}
 #viewRow{margin-top:8px}
 .figbox .ybadge{z-index:3}
+
+/* 2D-карта мышц */
+.mmap{margin:14px 14px 4px;padding:14px 10px 12px;border-radius:20px;background:#14110e;border:1px solid var(--line)}
+.mm-views{display:flex;justify-content:center;gap:6px}
+.mm-views figure{margin:0;flex:1;max-width:200px;text-align:center}
+.mm-views svg{width:100%;height:auto;display:block}
+.mm-views figcaption{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#a89f90;margin-top:4px}
+.mmap .mm-b{fill:#2b2621;stroke:#3d362e;stroke-width:1}
+.mmap .mm-hair{fill:none;stroke:#3d362e;stroke-width:1.2}
+.mmap .mm-m path{fill:#3b342c;stroke:#4a4238;stroke-width:.8;stroke-linejoin:round}
+.mmap .mm-ln{fill:none;stroke:#1a1612;stroke-width:1;opacity:.8}
+.mmap .mm-kn{fill:#2b2621;stroke:#3d362e;stroke-width:1}
+.mmap .mm-p path{fill:#e0393a;stroke:#ff8a85;stroke-width:1;animation:mmPulse 1.8s ease-in-out infinite}
+.mmap .mm-s path{fill:#e8892c;stroke:#ffc27a;stroke-width:.8}
+@keyframes mmPulse{0%,100%{opacity:.82}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.mmap .mm-p path{animation:none}}
+.mm-legend{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;margin-top:10px;font-size:13px;color:#d9d0c1}
+.mm-lg{display:inline-flex;align-items:center;gap:6px}
+.mm-lg i{width:11px;height:11px;border-radius:50%;display:inline-block}
+.mm-lg i.p{background:#e0393a}.mm-lg i.s{background:#e8892c}

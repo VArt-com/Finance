@@ -188,6 +188,7 @@ function drawSheet(){
   <div class="ctrl"><div class="seg" id="modeSeg"><button data-mode="anim" class="on">▶ ${t('play')}</button><button data-mode="A">${t('poseA')}</button><button data-mode="B">${t('poseB')}</button></div>
    <div class="seg"><button data-speed="1" class="on">${t('normal')}</button><button data-speed="0.45">${t('slow')}</button></div></div>
   <div class="ctrl" id="viewRow" ${(window.Fig3D&&Fig3D.supported())?'':'hidden'}><div class="seg" id="viewSeg"><button data-view="three" class="on">${t('v34')}</button><button data-view="side">${t('vSide')}</button><button data-view="front">${t('vFront')}</button><button data-view="back">${t('vBack')}</button></div></div>
+  ${window.MuscleMap?MuscleMap.html(id,lang):''}
   <div class="sbody"><h2>${exName(id)}</h2>
    <div class="kv"><div class="it"><b>${t('muscles')}</b><span>${li(e.mus)}</span></div>
    ${li(e.sec)!=='—'?`<div class="it"><b>${t('secondary')}</b><span>${li(e.sec)}</span></div>`:''}
