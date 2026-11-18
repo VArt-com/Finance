@@ -1,5 +1,5 @@
 /* Yulia Fit — service worker: работа без интернета. Меняйте VERSION при обновлении файлов. */
-const VERSION='yfit-v4';
+const VERSION='yfit-v5';
 const CORE=['./','index.html','app.css','app.js','figure.js','musclemap.js','data.js','manifest.webmanifest',
  'icons/favicon.svg','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png','../img/hero.jpg','../img/about.jpg'];
 self.addEventListener('install',e=>{
