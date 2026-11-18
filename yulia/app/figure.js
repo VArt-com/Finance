@@ -495,6 +495,7 @@ function mount(el,id,opts){
     if(now-last<40)return;
     const dt=now-last;last=now;if(playing)acc+=dt*speed;
     const u=(acc%cyc)/cyc;
+    if(opts.onTick)opts.onTick(u);
     el.innerHTML=frame(id,phase(u),now/1000,opts);
   }
   raf=requestAnimationFrame(draw);

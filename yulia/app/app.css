@@ -263,3 +263,15 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .tab{min-width:0;overflow:hidden}.tab span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .wrap *{min-width:0}.stats{grid-template-columns:repeat(3,minmax(0,1fr))}
 body{overflow-wrap:break-word}
+
+/* дыхание */
+.breath{position:absolute;inset-inline:0;bottom:10px;display:flex;justify-content:center;pointer-events:none;z-index:3}
+.breath span{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:99px;font-size:calc(14px*var(--fs,1));font-weight:700;letter-spacing:.08em;color:#fff;background:rgba(40,36,32,.82);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(4px)}
+.breath i{width:12px;height:12px;border-radius:50%;background:#fff;display:inline-block;transition:transform 1.4s ease-in-out}
+.breath.in span{background:rgba(37,99,176,.92)}.breath.in i{transform:scale(1.6)}
+.breath.out span{background:rgba(214,98,32,.94)}.breath.out i{transform:scale(.6)}
+.breath.even span{letter-spacing:.02em;font-weight:600}
+.brcard{margin:0 0 14px;padding:12px 14px;border-radius:16px;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.brcard b{color:var(--gold);font-size:calc(12px*var(--fs,1));letter-spacing:.12em;text-transform:uppercase}
+.brcard span{font-size:calc(14.5px*var(--fs,1));line-height:1.5}
+.vbtn.on{border-color:var(--gold);color:var(--gold)}

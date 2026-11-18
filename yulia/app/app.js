@@ -43,12 +43,12 @@ let uidN=0;
 function mountFig(holder,id,o){
   let inner=null,dead=false;
   const to2D=()=>{if(dead)return;try{if(inner&&inner.destroy)inner.destroy()}catch(e){}holder.innerHTML='';
-    if(o.phase!==undefined){holder.innerHTML=Fig.frame(id,o.phase,0,{uid:o.uid});inner={destroy(){},setSpeed(){},setView(){}}}
-    else inner=Fig.mount(holder,id,{speed:o.speed,uid:o.uid,autoplay:o.autoplay})};
+    if(o.phase!==undefined){holder.innerHTML=Fig.frame(id,o.phase,0,{uid:o.uid});Breath.hide(holder);inner={destroy(){},setSpeed(){},setView(){}}}
+    else inner=Fig.mount(holder,id,{speed:o.speed,uid:o.uid,autoplay:o.autoplay,onTick:Breath.ticker(holder,id,lang)})};
   if(window.Fig3D&&Fig3D.supported()&&!window.__no3d){
     try{inner=Fig3D.mount(holder,id,Object.assign({},o,{onError:to2D}));holder.classList.add('is3d')}catch(e){to2D()}
   }else to2D();
-  return {setSpeed(s){inner.setSpeed&&inner.setSpeed(s)},setView(v){inner.setView&&inner.setView(v)},destroy(){dead=true;try{inner.destroy()}catch(e){}}};
+  return {setSpeed(s){inner.setSpeed&&inner.setSpeed(s)},setView(v){inner.setView&&inner.setView(v)},destroy(){dead=true;Breath.stop();try{inner.destroy()}catch(e){}}};
 }
 function thumb(id){return Fig.frame(id,1,0,{uid:'u'+(++uidN)})}
 function toast(m){const el=$('#toast');el.textContent=m;el.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove('show'),2800)}
@@ -187,6 +187,7 @@ function drawSheet(){
   <div class="figbox" id="figBox"><span class="ybadge">Yulia Fit</span></div>
   <div class="ctrl"><div class="seg" id="modeSeg"><button data-mode="anim" class="on">▶ ${t('play')}</button><button data-mode="A">${t('poseA')}</button><button data-mode="B">${t('poseB')}</button></div>
    <div class="seg"><button data-speed="1" class="on">${t('normal')}</button><button data-speed="0.45">${t('slow')}</button></div></div>
+  ${Breath.canSpeak?`<div class="ctrl">${Breath.voiceBtn(lang)}</div>`:''}
   <div class="ctrl" id="viewRow" ${(window.Fig3D&&Fig3D.supported())?'':'hidden'}><div class="seg" id="viewSeg"><button data-view="three" class="on">${t('v34')}</button><button data-view="side">${t('vSide')}</button><button data-view="front">${t('vFront')}</button><button data-view="back">${t('vBack')}</button></div></div>
   ${window.MuscleMap?MuscleMap.html(id,lang):''}
   <div class="sbody"><h2>${exName(id)}</h2>
@@ -194,6 +195,7 @@ function drawSheet(){
    ${li(e.sec)!=='—'?`<div class="it"><b>${t('secondary')}</b><span>${li(e.sec)}</span></div>`:''}
    <div class="it"><b>${t('equipment')}</b><span>${li(e.eq)}</span></div>
    <div class="it"><b>${t('level')}</b><span>${lvlDots(e.lvl)}</span></div></div>
+   ${Breath.card(id,lang)}
    <h3>${t('technique')}</h3><ol class="steps">${e.steps.map(s=>`<li>${li(s)}</li>`).join('')}</ol>
    <h3>${t('mistakes')}</h3><ul class="errs">${e.err.map(s=>`<li>${li(s)}</li>`).join('')}</ul>
    <div class="tip"><b>${t('coachTip')}</b>${li(e.tip)}</div>
@@ -242,7 +244,7 @@ function drawPlayer(){
   if(W.finished){drawDone();return}
   const it=W.items[W.idx],e=EXI[it.id],nw=NOWEIGHT.indexOf(it.id)>=0;
   if(pAnim){pAnim.destroy();pAnim=null}
-  $('#player').innerHTML=`<div class="ph"><button class="xbtn" data-act="closePlayer" aria-label="${t('close')}">×</button><div class="pt"><b>${esc(lang==='he'?W.dn[1]:W.dn[0])}</b><small>${W.idx+1} / ${W.items.length}</small></div><button class="ibtn" data-act="playerInfo">${t('technique')}</button></div>
+  $('#player').innerHTML=`<div class="ph"><button class="xbtn" data-act="closePlayer" aria-label="${t('close')}">×</button><div class="pt"><b>${esc(lang==='he'?W.dn[1]:W.dn[0])}</b><small>${W.idx+1} / ${W.items.length}</small></div><button class="ibtn" data-act="playerInfo">${t('technique')}</button>${Breath.voiceBtn(lang)}</div>
   <div class="pbar"><i id="pbar" style="width:${doneSets()/totalSets()*100}%"></i></div>
   <div class="pscroll"><div class="figbox" id="pfig" style="margin:0 auto;width:min(100%,calc(46vh*1.3334))"><span class="ybadge">Yulia Fit</span></div>
    <div class="pname"><h2>${exName(it.id)}</h2></div>
@@ -359,6 +361,7 @@ document.addEventListener('click',ev=>{
     case 'closePlayer':
       if(W&&!W.finished&&doneSets()>0){if(!confirm(lang==='he'?'לסיים את האימון בלי לשמור?':'Выйти без сохранения тренировки?'))break}
       popModal();break;
+    case 'voice':Breath.toggle(lang);break;
     case 'playerInfo':openSheet(W.items[W.idx].id,[W.items[W.idx].id],0);break;
     case 'pNext':if(W.idx<W.items.length-1){W.idx++;clearRest();drawPlayer()}break;
     case 'pPrev':if(W.idx>0){W.idx--;clearRest();drawPlayer()}break;
