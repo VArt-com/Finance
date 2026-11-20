@@ -81,7 +81,10 @@ ru:{search:'Найти фильм, сериал, аниме…',home:'Главн
   set:'Настройки',tmdbKey:'Ключ TMDB (для проверки у себя)',workerUrl:'Адрес Worker (для публичного сайта)',save:'Сохранить',err:'Не удалось загрузить данные',seasons:'сезонов',min:'мин',
   attr:'Эта программа использует API TMDB, но не одобрена и не сертифицирована TMDB. Данные о доступности предоставлены JustWatch.',
   legal:'VArt Kino не хранит и не показывает пиратский контент: мы показываем, где фильм доступен у законных сервисов, и ссылки на бесплатные источники, проверенные вручную.',
-  more:'Показать ещё'},
+  more:'Показать ещё',
+  addLink:'＋ Добавить ссылку',addTitle:'Добавить фильм по ссылке',linkLbl:'Ссылка (archive.org или YouTube)',nameLbl:'Название',yearLbl:'Год (необязательно)',licLbl:'Лицензия / почему законно (необязательно)',
+  okLbl:'Я проверил, что этот фильм можно смотреть легально',badLink:'Ссылка не подходит: нужна страница archive.org/details/… или видео YouTube',needName:'Впишите название и поставьте галочку',
+  mine:'добавлено мной',del:'Удалить',mineNote:'Ваши ссылки хранятся только в этом браузере.'},
 he:{search:'חיפוש סרט, סדרה או אנימה…',home:'ראשי',movies:'סרטים',tv:'סדרות',anime:'אנימה',free:'בחינם',list:'הרשימה שלי',
   trend:'פופולרי עכשיו',results:'תוצאות חיפוש',nores:'לא נמצא דבר',where:'איפה לצפות',stream:'במנוי',freeP:'חינם',ads:'חינם עם פרסומות',rent:'השכרה',buy:'רכישה',
   none:'אין מידע על זמינות במדינה זו. נסו מדינה אחרת למעלה.',open:'פתיחת עמוד השירותים',add:'＋ לרשימה שלי',rm:'✓ ברשימה, להסיר',close:'סגירה',
@@ -90,7 +93,10 @@ he:{search:'חיפוש סרט, סדרה או אנימה…',home:'ראשי',movi
   set:'הגדרות',tmdbKey:'מפתח TMDB (לבדיקה אישית)',workerUrl:'כתובת Worker (לאתר ציבורי)',save:'שמירה',err:'טעינת הנתונים נכשלה',seasons:'עונות',min:'דק׳',
   attr:'תוכנה זו משתמשת ב-API של TMDB אך אינה מאושרת או מוסמכת על ידי TMDB. נתוני הזמינות מסופקים על ידי JustWatch.',
   legal:'VArt Kino לא מאחסן ולא מציג תוכן פיראטי: אנו מציגים היכן הסרט זמין אצל שירותים חוקיים וקישורים למקורות חינמיים שנבדקו ידנית.',
-  more:'הצג עוד'}
+  more:'הצג עוד',
+  addLink:'＋ הוספת קישור',addTitle:'הוספת סרט לפי קישור',linkLbl:'קישור (archive.org או YouTube)',nameLbl:'שם',yearLbl:'שנה (לא חובה)',licLbl:'רישיון / למה זה חוקי (לא חובה)',
+  okLbl:'בדקתי שאפשר לצפות בסרט זה באופן חוקי',badLink:'הקישור לא מתאים: נדרש עמוד archive.org/details/… או סרטון YouTube',needName:'יש להזין שם ולסמן את התיבה',
+  mine:'נוסף על ידי',del:'מחיקה',mineNote:'הקישורים שלך נשמרים רק בדפדפן הזה.'}
 };
 const LS = {get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 let lang = LS.get('kino_lang','ru'), region = LS.get('kino_region','IL'), tab = 'home', query = '';
@@ -175,17 +181,57 @@ async function render(){
     el.innerHTML = `<div class="box warn">${esc(t('err'))} (${esc(e.message)})</div>` + (e.message==='http 401'||e.message==='nokey'?setup():'');
   }
 }
+const getMine = () => { try{ const v=JSON.parse(LS.get('kino_myfree','[]')); return Array.isArray(v)?v:[]; }catch(e){ return []; } };
+const setMine = a => LS.set('kino_myfree', JSON.stringify(a));
+function parseLink(u){
+  let x; try{ x=new URL(String(u).trim()); }catch(e){ return null; }
+  if (x.protocol!=='https:') return null;
+  const h=x.hostname.replace(/^www\./,'').replace(/^m\./,'');
+  let m;
+  if (h==='archive.org' && (m=x.pathname.match(/^\/(?:details|embed)\/([A-Za-z0-9._-]+)/))) return {source:'archive',ref:m[1],src:'https://archive.org/details/'+m[1]};
+  if (h==='youtu.be' && (m=x.pathname.match(/^\/([A-Za-z0-9_-]{11})/))) return {source:'youtube',ref:m[1],src:'https://www.youtube.com/watch?v='+m[1]};
+  if (h==='youtube.com'){
+    if ((m=x.pathname.match(/^\/(?:embed|shorts)\/([A-Za-z0-9_-]{11})/))) return {source:'youtube',ref:m[1],src:'https://www.youtube.com/watch?v='+m[1]};
+    const v=x.searchParams.get('v'); if (v && /^[A-Za-z0-9_-]{11}$/.test(v)) return {source:'youtube',ref:v,src:'https://www.youtube.com/watch?v='+v};
+  }
+  return null;
+}
 async function renderFree(el){
   let data={items:[]};
   try{ const r = await fetch('free.json',{cache:'no-cache'}); data = await r.json(); }catch(e){}
-  const items = (data.items||[]).filter(x=>x && /^[A-Za-z0-9._-]+$/.test(x.ref||''));
-  el.innerHTML = `<h2>${esc(t('freeTitle'))}</h2><p class="muted small">${esc(t('freeNote'))}</p>` +
+  const mine = getMine().map(x=>Object.assign({},x,{mine:true}));
+  const items = (data.items||[]).concat(mine).filter(x=>x && /^[A-Za-z0-9._-]+$/.test(x.ref||''));
+  el.innerHTML = `<h2>${esc(t('freeTitle'))}</h2><p class="muted small">${esc(t('freeNote'))}</p><p><button class="btn" data-act="addlink">${esc(t('addLink'))}</button></p>` +
    (items.length ? `<div class="grid">${items.map(i=>{
       const th = i.source==='youtube' ? `https://i.ytimg.com/vi/${i.ref}/hqdefault.jpg` : `https://archive.org/services/img/${i.ref}`;
       const ti = (i.title&&(i.title[lang]||i.title.en||i.title.ru))||'';
-      return `<button class="card" data-free="${esc(i.id)}"><img loading="lazy" alt="" src="${esc(th)}"><div class="t">${esc(ti)}</div><div class="m">${esc(i.year||'')}</div></button>`;}).join('')}</div>` : `<p class="muted">${esc(t('empty'))}</p>`);
+      return `<button class="card" data-free="${esc(i.id)}"><img loading="lazy" alt="" src="${esc(th)}"><div class="t">${esc(ti)}</div><div class="m">${esc(i.year||'')}${i.mine?' · '+esc(t('mine')):''}</div></button>`;}).join('')}</div>` : `<p class="muted">${esc(t('empty'))}</p>`);
   el._free = items;
 }
+function openAddLink(msg){
+  const d = $('dlg');
+  d.innerHTML = `<button class="btn sec x" data-act="close">${esc(t('close'))}</button><h2 style="margin-top:0">${esc(t('addTitle'))}</h2>
+   <label for="aUrl">${esc(t('linkLbl'))}</label><input id="aUrl" type="text" autocomplete="off" placeholder="https://archive.org/details/…">
+   <label for="aName">${esc(t('nameLbl'))}</label><input id="aName" type="text" autocomplete="off" maxlength="120">
+   <label for="aYear">${esc(t('yearLbl'))}</label><input id="aYear" type="text" inputmode="numeric" maxlength="4">
+   <label for="aLic">${esc(t('licLbl'))}</label><input id="aLic" type="text" autocomplete="off" maxlength="200">
+   <p><label><input id="aOk" type="checkbox"> ${esc(t('okLbl'))}</label></p>
+   <p class="small muted">${esc(t('mineNote'))}</p>
+   <p id="aMsg" class="small" style="color:#ff8a8a">${esc(msg||'')}</p>
+   <p><button class="btn" data-act="savelink">${esc(t('save'))}</button></p>`;
+  if (!d.open) d.showModal();
+}
+function saveLink(){
+  const p = parseLink($('aUrl').value);
+  if (!p) return openAddLinkKeep(t('badLink'));
+  const name = $('aName').value.trim();
+  if (!name || !$('aOk').checked) return openAddLinkKeep(t('needName'));
+  const yr = parseInt($('aYear').value,10);
+  const l = getMine().filter(x=>!(x.source===p.source&&x.ref===p.ref));
+  l.push({id:'my-'+p.source+'-'+p.ref, title:{ru:name,he:name,en:name}, year:(yr>1850&&yr<2100)?yr:'', type:'movie', source:p.source, ref:p.ref, license:$('aLic').value.trim(), src:p.src});
+  setMine(l); $('dlg').close(); render();
+}
+function openAddLinkKeep(msg){ $('aMsg').textContent = msg; }
 function renderList(el){
   const l = getList();
   el.innerHTML = `<h2>${esc(t('list'))}</h2>` + (l.length ? cards(l.map(x=>({id:x.id,_m:x.media,title:x.title,poster_path:x.poster}))) : `<p class="muted">${esc(t('empty'))}</p>`);
@@ -226,7 +272,8 @@ function openFree(id){
   const d = $('dlg');
   d.innerHTML = `<button class="btn sec x" data-act="close">${esc(t('close'))}</button><h2 style="margin-top:0">${esc(ti)} <span class="muted">${esc(it.year||'')}</span></h2>
     <iframe src="${esc(src)}" allow="fullscreen" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="no-referrer" title="${esc(ti)}"></iframe>
-    <p class="small muted">${esc(t('license'))}: ${esc(it.license||'')} ${link}</p>`;
+    <p class="small muted">${esc(t('license'))}: ${esc(it.license||'')} ${link}</p>` +
+    (it.mine ? `<p><button class="btn sec" data-act="dellink" data-id="${esc(it.id)}">${esc(t('del'))}</button></p>` : '');
   d.showModal();
 }
 function openSettings(){
@@ -247,6 +294,9 @@ document.addEventListener('click', e=>{
   const a = c.dataset.act;
   if (a==='close'){ $('dlg').close(); $('dlg').innerHTML=''; }
   else if (a==='settings') openSettings();
+  else if (a==='addlink') openAddLink();
+  else if (a==='savelink') saveLink();
+  else if (a==='dellink'){ setMine(getMine().filter(x=>x.id!==c.dataset.id)); $('dlg').close(); render(); }
   else if (a==='saveset'){ LS.set('kino_tmdbkey',$('sKey').value.trim()); LS.set('kino_api',$('sApi').value.trim()); $('dlg').close(); render(); }
   else if (a==='toggle'){
     const id=+c.dataset.id, m=c.dataset.m; let l=getList();
