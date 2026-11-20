@@ -34,6 +34,10 @@ h2{font-size:calc(18px*var(--fs));margin:4px 0 12px}
 .warn{background:#3a2a12;border:1px solid #7a5a1c}
 dialog{width:min(760px,96vw);max-height:92vh;overflow:auto;background:var(--bg);color:var(--tx);border:1px solid #2b3858;border-radius:14px;padding:16px}
 dialog a{color:#8ab4ff}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.chip{padding:8px 14px;border-radius:999px;border:1px solid #2b3858;background:var(--card);color:var(--tx);cursor:pointer;font-size:inherit}
+.chip.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.mine{background:#12301f;border:1px solid #2c7a4b;border-radius:12px;padding:12px;margin:10px 0}
 dialog::backdrop{background:rgba(0,0,0,.7)}
 .x{float:inline-end}
 .det{display:flex;gap:14px;flex-wrap:wrap}.det img{width:min(200px,45%);border-radius:10px;align-self:flex-start}
@@ -87,7 +91,8 @@ ru:{search:'Найти фильм, сериал, аниме…',home:'Главн
   okLbl:'Я проверил, что этот фильм можно смотреть легально',badLink:'Ссылка не подходит. Нужна ссылка на видео или плейлист YouTube, канал вида youtube.com/channel/UC… (не @имя), Vimeo, Dailymotion или archive.org/details/…',needName:'Впишите название и поставьте галочку',
   mine:'добавлено мной',del:'Удалить',mineNote:'Ссылка сразу появится у всех посетителей.',
   services:'Сервисы',svcTitle:'Легальные сервисы',svcNote:'Бесплатные и легальные площадки. Кнопка откроет сервис на его сайте. Какие фильмы доступны в Израиле, зависит от самого сервиса, проверяйте на его сайте.',svcOpen:'Открыть',svcFree:'Бесплатно',svcAds:'Бесплатно с рекламой',svcLimited:'Каталог зависит от страны',
-  admin:'🔒 Админ',logout:'Выйти',pwLbl:'Пароль админа',login:'Войти',badPw:'Неверный пароль (после 8 ошибок вход блокируется на 15 минут)',saveErr:'Не удалось сохранить, попробуйте ещё раз',saving:'Сохраняю…'},
+  admin:'🔒 Админ',logout:'Выйти',pwLbl:'Пароль админа',login:'Войти',badPw:'Неверный пароль (после 8 ошибок вход блокируется на 15 минут)',saveErr:'Не удалось сохранить, попробуйте ещё раз',saving:'Сохраняю…',
+  mySubs:'Мои подписки',mySubsNote:'Отметьте платформы, на которые вы уже подписаны. В карточке фильма Kino покажет, что из этого доступно именно вам, и откроет фильм на нужной платформе. Выбор хранится только на этом устройстве.',haveIt:'Есть у вас',openOn:'Открыть на',notMine:'Не из ваших подписок',noneMine:'Этого нет на ваших платформах.',pickSubs:'Выбрать мои подписки'},
 he:{search:'חיפוש סרט, סדרה או אנימה…',home:'ראשי',movies:'סרטים',tv:'סדרות',anime:'אנימה',free:'בחינם',list:'הרשימה שלי',
   trend:'פופולרי עכשיו',results:'תוצאות חיפוש',nores:'לא נמצא דבר',where:'איפה לצפות',stream:'במנוי',freeP:'חינם',ads:'חינם עם פרסומות',rent:'השכרה',buy:'רכישה',
   none:'אין מידע על זמינות במדינה זו. נסו מדינה אחרת למעלה.',open:'פתיחת עמוד השירותים',add:'＋ לרשימה שלי',rm:'✓ ברשימה, להסיר',close:'סגירה',
@@ -101,7 +106,8 @@ he:{search:'חיפוש סרט, סדרה או אנימה…',home:'ראשי',movi
   okLbl:'בדקתי שאפשר לצפות בסרט זה באופן חוקי',badLink:'הקישור לא מתאים: נדרש עמוד archive.org/details/… או סרטון YouTube',needName:'יש להזין שם ולסמן את התיבה',
   mine:'נוסף על ידי',del:'מחיקה',mineNote:'הקישור יופיע מיד אצל כל המבקרים.',
   services:'שירותים',svcTitle:'שירותים חוקיים',svcNote:'פלטפורמות חינמיות וחוקיות. הכפתור פותח את השירות באתר שלו. הזמינות בישראל תלויה בשירות עצמו, יש לבדוק באתר שלו.',svcOpen:'פתיחה',svcFree:'חינם',svcAds:'חינם עם פרסומות',svcLimited:'הקטלוג תלוי במדינה',
-  admin:'🔒 מנהל',logout:'יציאה',pwLbl:'סיסמת מנהל',login:'כניסה',badPw:'סיסמה שגויה (אחרי 8 טעויות הכניסה נחסמת ל-15 דקות)',saveErr:'השמירה נכשלה, נסו שוב',saving:'שומר…'}
+  admin:'🔒 מנהל',logout:'יציאה',pwLbl:'סיסמת מנהל',login:'כניסה',badPw:'סיסמה שגויה (אחרי 8 טעויות הכניסה נחסמת ל-15 דקות)',saveErr:'השמירה נכשלה, נסו שוב',saving:'שומר…',
+  mySubs:'המנויים שלי',mySubsNote:'סמנו את הפלטפורמות שאתם כבר מנויים עליהן. בכרטיס הסרט Kino יציג מה זמין לכם ויפתח את הסרט בפלטפורמה המתאימה. הבחירה נשמרת רק במכשיר זה.',haveIt:'זמין לכם',openOn:'פתיחה ב-',notMine:'לא מהמנויים שלכם',noneMine:'זה לא זמין בפלטפורמות שלכם.',pickSubs:'בחירת המנויים שלי'}
 };
 const LS = {get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 let lang = LS.get('kino_lang','ru'), region = LS.get('kino_region','IL'), tab = 'home', query = '';
@@ -200,8 +206,29 @@ const SERVICES = [
  {n:'Okko',u:'https://okko.tv/',k:'ads',w:0,ru:'Бесплатные подборки с рекламой. Многое доступно только в России и СНГ.',he:'מבחרים חינמיים עם פרסומות. חלק גדול זמין רק ברוסיה ובמדינות חבר העמים.'},
  {n:'Tvigle',u:'https://www.tvigle.ru/',k:'ads',w:0,ru:'Бесплатные подборки с рекламой. Многое доступно только в России и СНГ.',he:'מבחרים חינמיים עם פרסומות. חלק גדול זמין רק ברוסיה ובמדינות חבר העמים.'}
 ];
+/* ===== Мои подписки: только отметки на устройстве, поток не проксируется ===== */
+const PLATFORMS = [
+ {k:'netflix',n:'Netflix',m:['netflix'],s:'https://www.netflix.com/search?q='},
+ {k:'disney',n:'Disney+',m:['disney plus','disney+'],s:'https://www.disneyplus.com/search?q='},
+ {k:'prime',n:'Prime Video',m:['amazon prime video','prime video'],s:'https://www.primevideo.com/search/?phrase='},
+ {k:'apple',n:'Apple TV+',m:['apple tv plus','apple tv+','apple tv'],s:'https://tv.apple.com/search?term='},
+ {k:'max',n:'HBO Max',m:['max','hbo max'],s:'https://www.max.com/search?q='},
+ {k:'paramount',n:'Paramount+',m:['paramount plus','paramount+'],s:'https://www.paramountplus.com/search/?q='},
+ {k:'yes',n:'yes',m:['yes'],s:''},
+ {k:'hot',n:'HOT',m:['hot'],s:''},
+ {k:'cellcom',n:'Cellcom tv',m:['cellcom tv'],s:''},
+ {k:'partner',n:'Partner TV',m:['partner tv'],s:''}
+];
+const getSubs = () => { try{ const v=JSON.parse(LS.get('kino_subs','[]')); return Array.isArray(v)?v.filter(k=>PLATFORMS.some(p=>p.k===k)):[]; }catch(e){ return []; } };
+const setSubs = a => LS.set('kino_subs', JSON.stringify(a));
+function platOf(name){ const nm=String(name||'').toLowerCase().trim(); return PLATFORMS.find(p=>p.m.some(x=>nm===x||nm.startsWith(x+' '))); }
+function subsBox(){
+  const s = getSubs();
+  return `<div class="box"><h2 style="margin-top:0">${esc(t('mySubs'))}</h2><p class="muted small">${esc(t('mySubsNote'))}</p>
+   <div class="chips">${PLATFORMS.map(p=>`<button class="chip ${s.includes(p.k)?'on':''}" data-act="togglesub" data-k="${esc(p.k)}" aria-pressed="${s.includes(p.k)}">${s.includes(p.k)?'✓ ':''}${esc(p.n)}</button>`).join('')}</div></div>`;
+}
 function renderServices(el){
-  el.innerHTML = `<h2>${esc(t('svcTitle'))}</h2><p class="muted small">${esc(t('svcNote'))}</p>` +
+  el.innerHTML = subsBox() + `<h2>${esc(t('svcTitle'))}</h2><p class="muted small">${esc(t('svcNote'))}</p>` +
    SERVICES.map(x=>`<div class="box" style="margin-bottom:10px"><h3 style="margin:0 0 4px">${esc(x.n)} <span class="muted small">· ${esc(t(x.k==='free'?'svcFree':'svcAds'))}${x.w?'':' · '+esc(t('svcLimited'))}</span></h3>
      <p style="margin:0 0 8px">${esc(x[lang]||x.ru)}</p>
      <a class="btn" style="display:inline-block;text-decoration:none" target="_blank" rel="noopener noreferrer" href="${esc(x.u)}">${esc(t('svcOpen'))}</a></div>`).join('');
@@ -334,6 +361,20 @@ async function openTitle(media,id){
       prov = groups.filter(([k])=>p[k]&&p[k].length).map(([k,lb])=>`<div class="small muted">${esc(t(lb))}</div><div class="prov">${p[k].map(v=>`<span>${v.logo_path?`<img alt="" src="${IMG}w92${esc(v.logo_path)}">`:''}${esc(v.provider_name)}</span>`).join('')}</div>`).join('');
       if (prov && p.link && /^https:\/\//.test(p.link)) prov += `<a class="btn sec" style="display:inline-block;text-decoration:none" target="_blank" rel="noopener noreferrer" href="${esc(p.link)}">${esc(t('open'))}</a>`;
     }
+    let mineHtml = '';
+    const subs = getSubs();
+    if (subs.length){
+      const have = [];
+      ((p&&p.flatrate)||[]).forEach(v=>{ const pl=platOf(v.provider_name); if (pl && subs.includes(pl.k) && !have.some(h=>h.k===pl.k)) have.push(pl); });
+      if (have.length){
+        mineHtml = `<div class="mine"><b>✓ ${esc(t('haveIt'))}</b><div class="chips">${have.map(pl=>{
+          const href = pl.s ? pl.s+encodeURIComponent(title) : ((p&&/^https:\/\//.test(p.link||''))?p.link:'');
+          return href ? `<a class="btn red" style="text-decoration:none" target="_blank" rel="noopener noreferrer" href="${esc(href)}">${esc(t('openOn'))} ${esc(pl.n)}</a>` : `<span class="badge">${esc(pl.n)}</span>`;
+        }).join('')}</div></div>`;
+      } else if (p && p.flatrate && p.flatrate.length){
+        mineHtml = `<p class="muted small">${esc(t('noneMine'))}</p>`;
+      }
+    }
     const inList = getList().some(l=>l.id===x.id&&l.media===media);
     const extra = media==='tv' ? `${esc(x.number_of_seasons||'')} ${esc(t('seasons'))}` : (x.runtime?`${esc(x.runtime)} ${esc(t('min'))}`:'');
     d.innerHTML = `<button class="btn sec x" data-act="close">${esc(t('close'))}</button>
@@ -343,7 +384,9 @@ async function openTitle(media,id){
       <p>${esc(x.overview||'')}</p>
       <button class="btn ${inList?'sec':'red'}" data-act="toggle" data-m="${esc(media)}" data-id="${esc(x.id)}" data-t="${esc(title)}" data-p="${esc(x.poster_path||'')}">${esc(inList?t('rm'):t('add'))}</button></div></div>
       <h2 style="margin-top:16px">${esc(t('where'))}: ${esc(REGIONS[region]||region)}</h2>
+      ${mineHtml}
       ${prov || `<p class="muted">${esc(t('none'))}</p>`}
+      <p class="small"><a href="#" data-act="mysubs">${esc(t('pickSubs'))}</a></p>
       <p class="muted small">${esc(t('attr'))}</p>`;
   }catch(e){ d.innerHTML = `<button class="btn sec x" data-act="close">${esc(t('close'))}</button><p>${esc(t('err'))} (${esc(e.message)})</p>`; }
 }
@@ -377,6 +420,8 @@ document.addEventListener('click', e=>{
   const a = c.dataset.act;
   if (a==='close'){ $('dlg').close(); $('dlg').innerHTML=''; }
   else if (a==='settings') openSettings();
+  else if (a==='togglesub'){ e.preventDefault(); const k=c.dataset.k; let s=getSubs(); s = s.includes(k)?s.filter(x=>x!==k):s.concat(k); setSubs(s); render(); }
+  else if (a==='mysubs'){ e.preventDefault(); $('dlg').close(); $('dlg').innerHTML=''; tab='services'; query=''; $('q').value=''; render(); window.scrollTo(0,0); }
   else if (a==='addlink') openAddLink();
   else if (a==='savelink') saveLink();
   else if (a==='adminlogin') openAdminLogin();
