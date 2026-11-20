@@ -86,6 +86,7 @@ ru:{search:'Найти фильм, сериал, аниме…',home:'Главн
   addLink:'＋ Добавить ссылку',addTitle:'Добавить фильм по ссылке',linkLbl:'Ссылка (YouTube видео, плейлист или канал, Vimeo, Dailymotion, archive.org)',nameLbl:'Название',yearLbl:'Год (необязательно)',licLbl:'Лицензия / почему законно (необязательно)',
   okLbl:'Я проверил, что этот фильм можно смотреть легально',badLink:'Ссылка не подходит. Нужна ссылка на видео или плейлист YouTube, канал вида youtube.com/channel/UC… (не @имя), Vimeo, Dailymotion или archive.org/details/…',needName:'Впишите название и поставьте галочку',
   mine:'добавлено мной',del:'Удалить',mineNote:'Ссылка сразу появится у всех посетителей.',
+  services:'Сервисы',svcTitle:'Легальные сервисы',svcNote:'Бесплатные и легальные площадки. Кнопка откроет сервис на его сайте. Какие фильмы доступны в Израиле, зависит от самого сервиса, проверяйте на его сайте.',svcOpen:'Открыть',svcFree:'Бесплатно',svcAds:'Бесплатно с рекламой',svcLimited:'Каталог зависит от страны',
   admin:'🔒 Админ',logout:'Выйти',pwLbl:'Пароль админа',login:'Войти',badPw:'Неверный пароль (после 8 ошибок вход блокируется на 15 минут)',saveErr:'Не удалось сохранить, попробуйте ещё раз',saving:'Сохраняю…'},
 he:{search:'חיפוש סרט, סדרה או אנימה…',home:'ראשי',movies:'סרטים',tv:'סדרות',anime:'אנימה',free:'בחינם',list:'הרשימה שלי',
   trend:'פופולרי עכשיו',results:'תוצאות חיפוש',nores:'לא נמצא דבר',where:'איפה לצפות',stream:'במנוי',freeP:'חינם',ads:'חינם עם פרסומות',rent:'השכרה',buy:'רכישה',
@@ -99,6 +100,7 @@ he:{search:'חיפוש סרט, סדרה או אנימה…',home:'ראשי',movi
   addLink:'＋ הוספת קישור',addTitle:'הוספת סרט לפי קישור',linkLbl:'קישור (YouTube, Vimeo, Dailymotion, archive.org)',nameLbl:'שם',yearLbl:'שנה (לא חובה)',licLbl:'רישיון / למה זה חוקי (לא חובה)',
   okLbl:'בדקתי שאפשר לצפות בסרט זה באופן חוקי',badLink:'הקישור לא מתאים: נדרש עמוד archive.org/details/… או סרטון YouTube',needName:'יש להזין שם ולסמן את התיבה',
   mine:'נוסף על ידי',del:'מחיקה',mineNote:'הקישור יופיע מיד אצל כל המבקרים.',
+  services:'שירותים',svcTitle:'שירותים חוקיים',svcNote:'פלטפורמות חינמיות וחוקיות. הכפתור פותח את השירות באתר שלו. הזמינות בישראל תלויה בשירות עצמו, יש לבדוק באתר שלו.',svcOpen:'פתיחה',svcFree:'חינם',svcAds:'חינם עם פרסומות',svcLimited:'הקטלוג תלוי במדינה',
   admin:'🔒 מנהל',logout:'יציאה',pwLbl:'סיסמת מנהל',login:'כניסה',badPw:'סיסמה שגויה (אחרי 8 טעויות הכניסה נחסמת ל-15 דקות)',saveErr:'השמירה נכשלה, נסו שוב',saving:'שומר…'}
 };
 const LS = {get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
@@ -146,7 +148,7 @@ const onlyTitles = a => (a||[]).filter(x => (x.media_type?x.media_type==='movie'
 function tag(arr, m){ return (arr||[]).map(x=>Object.assign({_m:m},x)); }
 
 /* ===== Вкладки ===== */
-const TABS = ['home','movies','tv','anime','free','list'];
+const TABS = ['home','movies','tv','anime','free','services','list'];
 function drawTabs(){
   $('tabs').innerHTML = TABS.map(k=>`<button class="tab ${tab===k&&!query?'on':''}" data-tab="${k}">${esc(t(k))}</button>`).join('');
 }
@@ -159,6 +161,7 @@ async function render(){
   $('q').placeholder = t('search'); $('btnLang').textContent = lang==='ru'?'HE':'RU';
   $('foot').innerHTML = `<p>${esc(t('legal'))}</p><p>${esc(t('attr'))}</p>`;
   if (tab==='free' && !query) return renderFree(el);
+  if (tab==='services' && !query) return renderServices(el);
   if (tab==='list' && !query) return renderList(el);
   if (!apiMode()){ el.innerHTML = setup(); return; }
   el.innerHTML = '<p class="muted">…</p>';
@@ -183,6 +186,25 @@ async function render(){
   }catch(e){
     el.innerHTML = `<div class="box warn">${esc(t('err'))} (${esc(e.message)})</div>` + (e.message==='http 401'||e.message==='nokey'?setup():'');
   }
+}
+const SERVICES = [
+ {n:'Plex',u:'https://watch.plex.tv',k:'ads',w:1,ru:'Фильмы, сериалы и телеканалы с рекламой, без подписки.',he:'סרטים, סדרות וערוצי טלוויזיה עם פרסומות, ללא מנוי.'},
+ {n:'YouTube',u:'https://www.youtube.com/',k:'free',w:1,ru:'Официальные каналы киностудий («Мосфильм», «Ленфильм» и другие) выкладывают фильмы бесплатно.',he:'ערוצים רשמיים של אולפני קולנוע מעלים סרטים בחינם.'},
+ {n:'Filmzie',u:'https://filmzie.com/',k:'free',w:1,ru:'Независимое кино и классика без подписки.',he:'קולנוע עצמאי וקלאסיקה ללא מנוי.'},
+ {n:'Rakuten TV',u:'https://rakuten.tv/',k:'ads',w:1,ru:'Раздел Free: фильмы и сериалы с рекламой.',he:'מדור Free: סרטים וסדרות עם פרסומות.'},
+ {n:'Vimeo',u:'https://vimeo.com/',k:'free',w:1,ru:'Авторское, короткометражное и документальное кино.',he:'קולנוע יוצרים, סרטים קצרים ותיעודיים.'},
+ {n:'Tubi',u:'https://tubitv.com/',k:'ads',w:0,ru:'Большая библиотека фильмов и сериалов с рекламой.',he:'ספרייה גדולה של סרטים וסדרות עם פרסומות.'},
+ {n:'Pluto TV',u:'https://pluto.tv/',k:'ads',w:0,ru:'Телеканалы и фильмы бесплатно, с рекламой.',he:'ערוצי טלוויזיה וסרטים בחינם, עם פרסומות.'},
+ {n:'MEGOGO',u:'https://megogo.net/',k:'ads',w:0,ru:'Раздел бесплатного кино, классика и телеканалы.',he:'מדור קולנוע חינמי, קלאסיקה וערוצי טלוויזיה.'},
+ {n:'Иви',u:'https://www.ivi.ru/',k:'ads',w:0,ru:'Бесплатные подборки с рекламой. Многое доступно только в России и СНГ.',he:'מבחרים חינמיים עם פרסומות. חלק גדול זמין רק ברוסיה ובמדינות חבר העמים.'},
+ {n:'Okko',u:'https://okko.tv/',k:'ads',w:0,ru:'Бесплатные подборки с рекламой. Многое доступно только в России и СНГ.',he:'מבחרים חינמיים עם פרסומות. חלק גדול זמין רק ברוסיה ובמדינות חבר העמים.'},
+ {n:'Tvigle',u:'https://www.tvigle.ru/',k:'ads',w:0,ru:'Бесплатные подборки с рекламой. Многое доступно только в России и СНГ.',he:'מבחרים חינמיים עם פרסומות. חלק גדול זמין רק ברוסיה ובמדינות חבר העמים.'}
+];
+function renderServices(el){
+  el.innerHTML = `<h2>${esc(t('svcTitle'))}</h2><p class="muted small">${esc(t('svcNote'))}</p>` +
+   SERVICES.map(x=>`<div class="box" style="margin-bottom:10px"><h3 style="margin:0 0 4px">${esc(x.n)} <span class="muted small">· ${esc(t(x.k==='free'?'svcFree':'svcAds'))}${x.w?'':' · '+esc(t('svcLimited'))}</span></h3>
+     <p style="margin:0 0 8px">${esc(x[lang]||x.ru)}</p>
+     <a class="btn" style="display:inline-block;text-decoration:none" target="_blank" rel="noopener noreferrer" href="${esc(x.u)}">${esc(t('svcOpen'))}</a></div>`).join('');
 }
 const getPw = () => LS.get('kino_adm','');
 const isAdmin = () => !!getPw();
