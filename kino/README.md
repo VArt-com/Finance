@@ -3,7 +3,7 @@
 ## Запуск
 1. themoviedb.org → Settings → API → получить ключ (бесплатно).
 2. Проверка у себя: открыть kino/index.html → ⚙ → вставить «API Key (v3)» (хранится только в вашем браузере).
-3. Публично: создать Cloudflare Worker из worker/tmdb-proxy.js, Secret TMDB_KEY = «API Key (v3)» (или TMDB_TOKEN = «API Read Access Token»), ALLOWED_ORIGINS = https://org-va.com. Адрес Worker вписать в index.html (WORKER_URL).
+3. Публично: создать Cloudflare Worker из worker/tmdb-proxy.js, Secret TMDB_KEY = «API Key (v3)», Secret ADMIN_PASSWORD, KV-привязка KINO_KV, ALLOWED_ORIGINS = https://org-va.com. Адрес Worker вписать в index.html (WORKER_URL).
 ## free.json
 Добавляйте только то, что проверили сами (общественное достояние / свободная лицензия). Без исключений.
 

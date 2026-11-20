@@ -1,20 +1,55 @@
-// Cloudflare Worker: прокси к TMDB. Ключ TMDB живёт только здесь (Secret TMDB_TOKEN), в браузер не попадает.
+// Cloudflare Worker для VArt Kino: прокси к TMDB + общий список ссылок («Бесплатно») с админ-входом.
 // Settings -> Variables and Secrets:
-//   TMDB_KEY        (Secret) — "API Key (v3)" с themoviedb.org/settings/api  (достаточно одного из двух)
-//   TMDB_TOKEN      (Secret) — "API Read Access Token" (альтернатива ключу v3)
-//   ALLOWED_ORIGINS (Text, необязательно) — адреса сайта через запятую, например https://org-va.com
+//   TMDB_KEY        (Secret) — "API Key (v3)" с themoviedb.org/settings/api  (или TMDB_TOKEN — Read Access Token)
+//   ADMIN_PASSWORD  (Secret) — пароль админа для добавления/удаления ссылок
+//   ALLOWED_ORIGINS (Text)   — адрес сайта, например https://org-va.com
+// Settings -> Bindings -> KV namespace: переменная KINO_KV (список ссылок хранится здесь)
 const TMDB = 'https://api.themoviedb.org/3';
 const PATH_OK = /^\/(trending\/(all|movie|tv)\/(day|week)|search\/(multi|movie|tv)|discover\/(movie|tv)|(movie|tv)\/\d{1,9}|genre\/(movie|tv)\/list)$/;
 const PARAMS_OK = ['language', 'query', 'page', 'with_genres', 'with_original_language', 'sort_by', 'region'];
+const SOURCES = ['youtube', 'youtube-list', 'vimeo', 'dailymotion', 'archive'];
+const REF_OK = /^[A-Za-z0-9._-]{3,80}$/;
+const SRC_OK = /^https:\/\/(archive\.org|www\.youtube\.com|vimeo\.com|www\.dailymotion\.com)\//;
+const MAX_LINKS = 500, MAX_FAILS = 8, LOCK_SECONDS = 900;
 
 function cors(origin, env) {
   const allowed = (env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
   const ok = !allowed.length || allowed.includes(origin);
   return {
     'Access-Control-Allow-Origin': ok ? (allowed.length ? origin : '*') : 'null',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
     'Vary': 'Origin'
   };
+}
+const json = (obj, status, h) => new Response(JSON.stringify(obj), { status: status || 200, headers: { ...h, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+
+async function sha(s) { return new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(s)))); }
+async function safeEqual(a, b) {
+  const x = await sha(a), y = await sha(b); let d = 0;
+  for (let i = 0; i < x.length; i++) d |= x[i] ^ y[i];
+  return d === 0;
+}
+// 'ok' | 'bad' | 'locked' | 'off'
+async function checkPw(req, env, pw) {
+  if (!env.ADMIN_PASSWORD || !env.KINO_KV) return 'off';
+  const key = 'fail:' + (req.headers.get('CF-Connecting-IP') || 'x');
+  const n = parseInt(await env.KINO_KV.get(key), 10) || 0;
+  if (n >= MAX_FAILS) return 'locked';
+  if (typeof pw === 'string' && pw && await safeEqual(pw, env.ADMIN_PASSWORD)) { if (n) await env.KINO_KV.delete(key); return 'ok'; }
+  await env.KINO_KV.put(key, String(n + 1), { expirationTtl: LOCK_SECONDS });
+  return 'bad';
+}
+async function getLinks(env) { try { const v = JSON.parse((await env.KINO_KV.get('links')) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+
+function cleanItem(it) {
+  if (!it || typeof it !== 'object') return null;
+  const title = String(it.title || '').trim();
+  const year = parseInt(it.year, 10);
+  const lic = String(it.license || '').trim();
+  if (!SOURCES.includes(it.source) || !REF_OK.test(String(it.ref || '')) || !SRC_OK.test(String(it.src || ''))) return null;
+  if (title.length < 1 || title.length > 120 || lic.length > 200) return null;
+  return { source: it.source, ref: String(it.ref), title, year: (year > 1850 && year < 2100) ? year : '', license: lic, src: String(it.src) };
 }
 
 export default {
@@ -22,11 +57,37 @@ export default {
     const origin = req.headers.get('Origin') || '';
     const h = cors(origin, env);
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: h });
-    if (req.method !== 'GET') return new Response('{"error":"method"}', { status: 405, headers: h });
     const allowed = (env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
     if (allowed.length && origin && !allowed.includes(origin)) return new Response('{"error":"origin"}', { status: 403, headers: h });
-
     const url = new URL(req.url);
+
+    // ---- Общий список ссылок ----
+    if (url.pathname === '/links' && req.method === 'GET') {
+      if (!env.KINO_KV) return json({ items: [] }, 200, h);
+      return json({ items: await getLinks(env) }, 200, h);
+    }
+    if (req.method === 'POST' && url.pathname.startsWith('/admin/')) {
+      let body; try { body = await req.json(); } catch (e) { return json({ ok: false, error: 'bad' }, 400, h); }
+      const st = await checkPw(req, env, body && body.pw);
+      if (st !== 'ok') return json({ ok: false, error: st }, st === 'locked' ? 429 : 401, h);
+      if (url.pathname === '/admin/login') return json({ ok: true }, 200, h);
+      let list = await getLinks(env);
+      if (url.pathname === '/admin/add') {
+        const it = cleanItem(body.item); if (!it) return json({ ok: false, error: 'invalid' }, 400, h);
+        list = list.filter(x => !(x.source === it.source && x.ref === it.ref));
+        list.unshift({ id: crypto.randomUUID(), ...it, created: Date.now() });
+        await env.KINO_KV.put('links', JSON.stringify(list.slice(0, MAX_LINKS)));
+        return json({ ok: true }, 200, h);
+      }
+      if (url.pathname === '/admin/del') {
+        await env.KINO_KV.put('links', JSON.stringify(list.filter(x => x.id !== String(body.id || ''))));
+        return json({ ok: true }, 200, h);
+      }
+      return json({ ok: false, error: 'not found' }, 404, h);
+    }
+
+    // ---- Прокси к TMDB ----
+    if (req.method !== 'GET') return new Response('{"error":"method"}', { status: 405, headers: h });
     if (!PATH_OK.test(url.pathname)) return new Response('{"error":"not found"}', { status: 404, headers: h });
     if (!env.TMDB_KEY && !env.TMDB_TOKEN) return new Response('{"error":"worker not configured"}', { status: 500, headers: h });
 
@@ -34,9 +95,8 @@ export default {
     for (const k of PARAMS_OK) { const v = url.searchParams.get(k); if (v) q.set(k, v.slice(0, 120)); }
     const ap = url.searchParams.get('append_to_response');
     if (ap === 'watch/providers') q.set('append_to_response', ap);
-    q.set('include_adult', 'false'); // взрослый контент отключён всегда
+    q.set('include_adult', 'false');
 
-    // Ключ добавляется только перед запросом к TMDB; в кэш-ключ и в ответ браузеру он не попадает
     const upQ = new URLSearchParams(q);
     if (env.TMDB_KEY) upQ.set('api_key', env.TMDB_KEY);
 

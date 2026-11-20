@@ -84,7 +84,8 @@ ru:{search:'Найти фильм, сериал, аниме…',home:'Главн
   more:'Показать ещё',
   addLink:'＋ Добавить ссылку',addTitle:'Добавить фильм по ссылке',linkLbl:'Ссылка (YouTube видео, плейлист или канал, Vimeo, Dailymotion, archive.org)',nameLbl:'Название',yearLbl:'Год (необязательно)',licLbl:'Лицензия / почему законно (необязательно)',
   okLbl:'Я проверил, что этот фильм можно смотреть легально',badLink:'Ссылка не подходит. Нужна ссылка на видео или плейлист YouTube, канал вида youtube.com/channel/UC… (не @имя), Vimeo, Dailymotion или archive.org/details/…',needName:'Впишите название и поставьте галочку',
-  mine:'добавлено мной',del:'Удалить',mineNote:'Ваши ссылки хранятся только в этом браузере.'},
+  mine:'добавлено мной',del:'Удалить',mineNote:'Ссылка сразу появится у всех посетителей.',
+  admin:'🔒 Админ',logout:'Выйти',pwLbl:'Пароль админа',login:'Войти',badPw:'Неверный пароль (после 8 ошибок вход блокируется на 15 минут)',saveErr:'Не удалось сохранить, попробуйте ещё раз',saving:'Сохраняю…'},
 he:{search:'חיפוש סרט, סדרה או אנימה…',home:'ראשי',movies:'סרטים',tv:'סדרות',anime:'אנימה',free:'בחינם',list:'הרשימה שלי',
   trend:'פופולרי עכשיו',results:'תוצאות חיפוש',nores:'לא נמצא דבר',where:'איפה לצפות',stream:'במנוי',freeP:'חינם',ads:'חינם עם פרסומות',rent:'השכרה',buy:'רכישה',
   none:'אין מידע על זמינות במדינה זו. נסו מדינה אחרת למעלה.',open:'פתיחת עמוד השירותים',add:'＋ לרשימה שלי',rm:'✓ ברשימה, להסיר',close:'סגירה',
@@ -96,7 +97,8 @@ he:{search:'חיפוש סרט, סדרה או אנימה…',home:'ראשי',movi
   more:'הצג עוד',
   addLink:'＋ הוספת קישור',addTitle:'הוספת סרט לפי קישור',linkLbl:'קישור (YouTube, Vimeo, Dailymotion, archive.org)',nameLbl:'שם',yearLbl:'שנה (לא חובה)',licLbl:'רישיון / למה זה חוקי (לא חובה)',
   okLbl:'בדקתי שאפשר לצפות בסרט זה באופן חוקי',badLink:'הקישור לא מתאים: נדרש עמוד archive.org/details/… או סרטון YouTube',needName:'יש להזין שם ולסמן את התיבה',
-  mine:'נוסף על ידי',del:'מחיקה',mineNote:'הקישורים שלך נשמרים רק בדפדפן הזה.'}
+  mine:'נוסף על ידי',del:'מחיקה',mineNote:'הקישור יופיע מיד אצל כל המבקרים.',
+  admin:'🔒 מנהל',logout:'יציאה',pwLbl:'סיסמת מנהל',login:'כניסה',badPw:'סיסמה שגויה (אחרי 8 טעויות הכניסה נחסמת ל-15 דקות)',saveErr:'השמירה נכשלה, נסו שוב',saving:'שומר…'}
 };
 const LS = {get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 let lang = LS.get('kino_lang','ru'), region = LS.get('kino_region','IL'), tab = 'home', query = '';
@@ -181,8 +183,24 @@ async function render(){
     el.innerHTML = `<div class="box warn">${esc(t('err'))} (${esc(e.message)})</div>` + (e.message==='http 401'||e.message==='nokey'?setup():'');
   }
 }
-const getMine = () => { try{ const v=JSON.parse(LS.get('kino_myfree','[]')); return Array.isArray(v)?v:[]; }catch(e){ return []; } };
-const setMine = a => LS.set('kino_myfree', JSON.stringify(a));
+const getPw = () => LS.get('kino_adm','');
+const isAdmin = () => !!getPw();
+async function adm(path, body){
+  const base = (LS.get('kino_api','')||WORKER_URL).trim().replace(/\/+$/,'');
+  if (!base) throw new Error('nobase');
+  const r = await fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  let j={}; try{ j = await r.json(); }catch(e){}
+  return Object.assign({status:r.status}, j);
+}
+async function loadRemote(){
+  try{
+    const base = (LS.get('kino_api','')||WORKER_URL).trim().replace(/\/+$/,'');
+    if (!base) return [];
+    const r = await fetch(base+'/links');
+    if (!r.ok) return [];
+    return ((await r.json()).items||[]).map(x=>({id:'db-'+x.id, dbId:x.id, db:true, title:{ru:x.title,he:x.title,en:x.title}, year:x.year||'', type:'movie', source:x.source, ref:x.ref, license:x.license||'', src:x.src}));
+  }catch(e){ return []; }
+}
 function parseLink(u){
   let x; try{ x=new URL(String(u).trim()); }catch(e){ return null; }
   if (x.protocol!=='https:') return null;
@@ -220,13 +238,13 @@ function thumbUrl(it){
 async function renderFree(el){
   let data={items:[]};
   try{ const r = await fetch('free.json',{cache:'no-cache'}); data = await r.json(); }catch(e){}
-  const mine = getMine().map(x=>Object.assign({},x,{mine:true}));
-  const items = (data.items||[]).concat(mine).filter(x=>x && /^[A-Za-z0-9._-]+$/.test(x.ref||''));
-  el.innerHTML = `<h2>${esc(t('freeTitle'))}</h2><p class="muted small">${esc(t('freeNote'))}</p><p><button class="btn" data-act="addlink">${esc(t('addLink'))}</button></p>` +
+  const remote = await loadRemote();
+  const items = (data.items||[]).concat(remote).filter(x=>x && /^[A-Za-z0-9._-]+$/.test(x.ref||''));
+  el.innerHTML = `<h2>${esc(t('freeTitle'))}</h2><p class="muted small">${esc(t('freeNote'))}</p><p>${isAdmin() ? `<button class="btn" data-act="addlink">${esc(t('addLink'))}</button> <button class="btn sec" data-act="logout">${esc(t('logout'))}</button>` : `<button class="btn sec" data-act="adminlogin">${esc(t('admin'))}</button>`}</p>` +
    (items.length ? `<div class="grid">${items.map(i=>{
       const th = thumbUrl(i);
       const ti = (i.title&&(i.title[lang]||i.title.en||i.title.ru))||'';
-      return `<button class="card" data-free="${esc(i.id)}">${th?`<img loading="lazy" alt="" src="${esc(th)}">`:`<div class="ph" style="display:flex;align-items:center;justify-content:center;font-size:2.4rem">▶</div>`}<div class="t">${esc(ti)}</div><div class="m">${esc(i.year||'')}${i.mine?' · '+esc(t('mine')):''}</div></button>`;}).join('')}</div>` : `<p class="muted">${esc(t('empty'))}</p>`);
+      return `<button class="card" data-free="${esc(i.id)}">${th?`<img loading="lazy" alt="" src="${esc(th)}">`:`<div class="ph" style="display:flex;align-items:center;justify-content:center;font-size:2.4rem">▶</div>`}<div class="t">${esc(ti)}</div><div class="m">${esc(i.year||'')}</div></button>`;}).join('')}</div>` : `<p class="muted">${esc(t('empty'))}</p>`);
   el._free = items;
 }
 function openAddLink(msg){
@@ -242,15 +260,36 @@ function openAddLink(msg){
    <p><button class="btn" data-act="savelink">${esc(t('save'))}</button></p>`;
   if (!d.open) d.showModal();
 }
-function saveLink(){
+function openAdminLogin(){
+  const d = $('dlg');
+  d.innerHTML = `<button class="btn sec x" data-act="close">${esc(t('close'))}</button><h2 style="margin-top:0">${esc(t('admin'))}</h2>
+   <label for="pPw">${esc(t('pwLbl'))}</label><input id="pPw" type="password" autocomplete="current-password">
+   <p id="pMsg" class="small" style="color:#ff8a8a"></p>
+   <p><button class="btn" data-act="dologin">${esc(t('login'))}</button></p>`;
+  d.showModal();
+}
+async function doLogin(){
+  const pw = $('pPw').value;
+  $('pMsg').textContent = t('saving');
+  try{
+    const r = await adm('/admin/login',{pw});
+    if (r.ok){ LS.set('kino_adm',pw); $('dlg').close(); render(); }
+    else $('pMsg').textContent = (r.error==='bad'||r.error==='locked') ? t('badPw') : t('saveErr');
+  }catch(e){ $('pMsg').textContent = t('saveErr'); }
+}
+async function saveLink(){
   const p = parseLink($('aUrl').value);
   if (!p) return openAddLinkKeep(t('badLink'));
   const name = $('aName').value.trim();
   if (!name || !$('aOk').checked) return openAddLinkKeep(t('needName'));
   const yr = parseInt($('aYear').value,10);
-  const l = getMine().filter(x=>!(x.source===p.source&&x.ref===p.ref));
-  l.push({id:'my-'+p.source+'-'+p.ref, title:{ru:name,he:name,en:name}, year:(yr>1850&&yr<2100)?yr:'', type:'movie', source:p.source, ref:p.ref, license:$('aLic').value.trim(), src:p.src});
-  setMine(l); $('dlg').close(); render();
+  openAddLinkKeep(t('saving'));
+  try{
+    const r = await adm('/admin/add',{pw:getPw(), item:{source:p.source, ref:p.ref, title:name, year:(yr>1850&&yr<2100)?String(yr):'', license:$('aLic').value.trim(), src:p.src}});
+    if (r.ok){ $('dlg').close(); render(); return; }
+    if (r.error==='bad'||r.error==='locked'){ LS.set('kino_adm',''); $('dlg').close(); render(); return; }
+    openAddLinkKeep(t('saveErr'));
+  }catch(e){ openAddLinkKeep(t('saveErr')); }
 }
 function openAddLinkKeep(msg){ $('aMsg').textContent = msg; }
 function renderList(el){
@@ -294,7 +333,7 @@ function openFree(id){
   d.innerHTML = `<button class="btn sec x" data-act="close">${esc(t('close'))}</button><h2 style="margin-top:0">${esc(ti)} <span class="muted">${esc(it.year||'')}</span></h2>
     <iframe src="${esc(src)}" allow="fullscreen" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="no-referrer" title="${esc(ti)}"></iframe>
     <p class="small muted">${esc(t('license'))}: ${esc(it.license||'')} ${link}</p>` +
-    (it.mine ? `<p><button class="btn sec" data-act="dellink" data-id="${esc(it.id)}">${esc(t('del'))}</button></p>` : '');
+    (it.db && isAdmin() ? `<p><button class="btn sec" data-act="dellink" data-id="${esc(it.dbId)}">${esc(t('del'))}</button></p>` : '');
   d.showModal();
 }
 function openSettings(){
@@ -317,7 +356,10 @@ document.addEventListener('click', e=>{
   else if (a==='settings') openSettings();
   else if (a==='addlink') openAddLink();
   else if (a==='savelink') saveLink();
-  else if (a==='dellink'){ setMine(getMine().filter(x=>x.id!==c.dataset.id)); $('dlg').close(); render(); }
+  else if (a==='adminlogin') openAdminLogin();
+  else if (a==='dologin') doLogin();
+  else if (a==='logout'){ LS.set('kino_adm',''); render(); }
+  else if (a==='dellink'){ adm('/admin/del',{pw:getPw(), id:c.dataset.id}).then(r=>{ if (r.error==='bad'||r.error==='locked') LS.set('kino_adm',''); $('dlg').close(); render(); }).catch(()=>{ $('dlg').close(); render(); }); }
   else if (a==='saveset'){ LS.set('kino_tmdbkey',$('sKey').value.trim()); LS.set('kino_api',$('sApi').value.trim()); $('dlg').close(); render(); }
   else if (a==='toggle'){
     const id=+c.dataset.id, m=c.dataset.m; let l=getList();
