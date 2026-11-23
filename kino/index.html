@@ -92,7 +92,7 @@ ru:{search:'Найти фильм, сериал, аниме…',home:'Главн
   mine:'добавлено мной',del:'Удалить',mineNote:'Ссылка сразу появится у всех посетителей.',
   services:'Сервисы',svcTitle:'Легальные сервисы',svcNote:'Бесплатные и легальные площадки. Кнопка откроет сервис на его сайте. Какие фильмы доступны в Израиле, зависит от самого сервиса, проверяйте на его сайте.',svcOpen:'Открыть',svcFree:'Бесплатно',svcAds:'Бесплатно с рекламой',svcLimited:'Каталог зависит от страны',
   admin:'🔒 Админ',logout:'Выйти',pwLbl:'Пароль админа',login:'Войти',badPw:'Неверный пароль (после 8 ошибок вход блокируется на 15 минут)',saveErr:'Не удалось сохранить, попробуйте ещё раз',saving:'Сохраняю…',
-  mySubs:'Мои подписки',mySubsNote:'Отметьте платформы, на которые вы уже подписаны. В карточке фильма Kino покажет, что из этого доступно именно вам, и откроет фильм на нужной платформе. Выбор хранится только на этом устройстве.',haveIt:'Есть у вас',openOn:'Открыть на',notMine:'Не из ваших подписок',noneMine:'Этого нет на ваших платформах.',pickSubs:'Выбрать мои подписки'},
+  mySubs:'Мои подписки',mySubsNote:'Отметьте платформы, на которые вы уже подписаны. В карточке фильма Kino покажет, что из этого доступно именно вам, и откроет фильм на нужной платформе. Выбор хранится только на этом устройстве.',haveIt:'Есть у вас',openOn:'Открыть на',notMine:'Не из ваших подписок',noneMine:'Этого нет на ваших платформах.',pickSubs:'Выбрать мои подписки',launch:'Открыть мои сервисы',subscribe:'Оформить подписку',affNote:'Партнёрская ссылка: Kino может получить комиссию, для вас цена не меняется.'},
 he:{search:'חיפוש סרט, סדרה או אנימה…',home:'ראשי',movies:'סרטים',tv:'סדרות',anime:'אנימה',free:'בחינם',list:'הרשימה שלי',
   trend:'פופולרי עכשיו',results:'תוצאות חיפוש',nores:'לא נמצא דבר',where:'איפה לצפות',stream:'במנוי',freeP:'חינם',ads:'חינם עם פרסומות',rent:'השכרה',buy:'רכישה',
   none:'אין מידע על זמינות במדינה זו. נסו מדינה אחרת למעלה.',open:'פתיחת עמוד השירותים',add:'＋ לרשימה שלי',rm:'✓ ברשימה, להסיר',close:'סגירה',
@@ -107,7 +107,7 @@ he:{search:'חיפוש סרט, סדרה או אנימה…',home:'ראשי',movi
   mine:'נוסף על ידי',del:'מחיקה',mineNote:'הקישור יופיע מיד אצל כל המבקרים.',
   services:'שירותים',svcTitle:'שירותים חוקיים',svcNote:'פלטפורמות חינמיות וחוקיות. הכפתור פותח את השירות באתר שלו. הזמינות בישראל תלויה בשירות עצמו, יש לבדוק באתר שלו.',svcOpen:'פתיחה',svcFree:'חינם',svcAds:'חינם עם פרסומות',svcLimited:'הקטלוג תלוי במדינה',
   admin:'🔒 מנהל',logout:'יציאה',pwLbl:'סיסמת מנהל',login:'כניסה',badPw:'סיסמה שגויה (אחרי 8 טעויות הכניסה נחסמת ל-15 דקות)',saveErr:'השמירה נכשלה, נסו שוב',saving:'שומר…',
-  mySubs:'המנויים שלי',mySubsNote:'סמנו את הפלטפורמות שאתם כבר מנויים עליהן. בכרטיס הסרט Kino יציג מה זמין לכם ויפתח את הסרט בפלטפורמה המתאימה. הבחירה נשמרת רק במכשיר זה.',haveIt:'זמין לכם',openOn:'פתיחה ב-',notMine:'לא מהמנויים שלכם',noneMine:'זה לא זמין בפלטפורמות שלכם.',pickSubs:'בחירת המנויים שלי'}
+  mySubs:'המנויים שלי',mySubsNote:'סמנו את הפלטפורמות שאתם כבר מנויים עליהן. בכרטיס הסרט Kino יציג מה זמין לכם ויפתח את הסרט בפלטפורמה המתאימה. הבחירה נשמרת רק במכשיר זה.',haveIt:'זמין לכם',openOn:'פתיחה ב-',notMine:'לא מהמנויים שלכם',noneMine:'זה לא זמין בפלטפורמות שלכם.',pickSubs:'בחירת המנויים שלי',launch:'פתיחת השירותים שלי',subscribe:'הרשמה למנוי',affNote:'קישור שותפים: Kino עשויה לקבל עמלה, המחיר עבורכם לא משתנה.'}
 };
 const LS = {get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 let lang = LS.get('kino_lang','ru'), region = LS.get('kino_region','IL'), tab = 'home', query = '';
@@ -208,16 +208,16 @@ const SERVICES = [
 ];
 /* ===== Мои подписки: только отметки на устройстве, поток не проксируется ===== */
 const PLATFORMS = [
- {k:'netflix',n:'Netflix',m:['netflix'],s:'https://www.netflix.com/search?q='},
- {k:'disney',n:'Disney+',m:['disney plus','disney+'],s:'https://www.disneyplus.com/search?q='},
- {k:'prime',n:'Prime Video',m:['amazon prime video','prime video'],s:'https://www.primevideo.com/search/?phrase='},
- {k:'apple',n:'Apple TV+',m:['apple tv plus','apple tv+','apple tv'],s:'https://tv.apple.com/search?term='},
- {k:'max',n:'HBO Max',m:['max','hbo max'],s:'https://www.max.com/search?q='},
- {k:'paramount',n:'Paramount+',m:['paramount plus','paramount+'],s:'https://www.paramountplus.com/search/?q='},
- {k:'yes',n:'yes',m:['yes'],s:''},
- {k:'hot',n:'HOT',m:['hot'],s:''},
- {k:'cellcom',n:'Cellcom tv',m:['cellcom tv'],s:''},
- {k:'partner',n:'Partner TV',m:['partner tv'],s:''}
+ {k:'netflix',h:'https://www.netflix.com/',a:'',n:'Netflix',m:['netflix'],s:'https://www.netflix.com/search?q='},
+ {k:'disney',h:'https://www.disneyplus.com/',a:'',n:'Disney+',m:['disney plus','disney+'],s:'https://www.disneyplus.com/search?q='},
+ {k:'prime',h:'https://www.primevideo.com/',a:'',n:'Prime Video',m:['amazon prime video','prime video'],s:'https://www.primevideo.com/search/?phrase='},
+ {k:'apple',h:'https://tv.apple.com/',a:'',n:'Apple TV+',m:['apple tv plus','apple tv+','apple tv'],s:'https://tv.apple.com/search?term='},
+ {k:'max',h:'https://www.max.com/',a:'',n:'HBO Max',m:['max','hbo max'],s:'https://www.max.com/search?q='},
+ {k:'paramount',h:'https://www.paramountplus.com/',a:'',n:'Paramount+',m:['paramount plus','paramount+'],s:'https://www.paramountplus.com/search/?q='},
+ {k:'yes',h:'https://www.yes.co.il/',a:'',n:'yes',m:['yes'],s:''},
+ {k:'hot',h:'https://www.hot.net.il/',a:'',n:'HOT',m:['hot'],s:''},
+ {k:'cellcom',h:'https://www.cellcom.co.il/',a:'',n:'Cellcom tv',m:['cellcom tv'],s:''},
+ {k:'partner',h:'https://www.partner.co.il/',a:'',n:'Partner TV',m:['partner tv'],s:''}
 ];
 const getSubs = () => { try{ const v=JSON.parse(LS.get('kino_subs','[]')); return Array.isArray(v)?v.filter(k=>PLATFORMS.some(p=>p.k===k)):[]; }catch(e){ return []; } };
 const setSubs = a => LS.set('kino_subs', JSON.stringify(a));
@@ -225,7 +225,10 @@ function platOf(name){ const nm=String(name||'').toLowerCase().trim(); return PL
 function subsBox(){
   const s = getSubs();
   return `<div class="box"><h2 style="margin-top:0">${esc(t('mySubs'))}</h2><p class="muted small">${esc(t('mySubsNote'))}</p>
-   <div class="chips">${PLATFORMS.map(p=>`<button class="chip ${s.includes(p.k)?'on':''}" data-act="togglesub" data-k="${esc(p.k)}" aria-pressed="${s.includes(p.k)}">${s.includes(p.k)?'✓ ':''}${esc(p.n)}</button>`).join('')}</div></div>`;
+   <div class="chips">${PLATFORMS.map(p=>`<button class="chip ${s.includes(p.k)?'on':''}" data-act="togglesub" data-k="${esc(p.k)}" aria-pressed="${s.includes(p.k)}">${s.includes(p.k)?'✓ ':''}${esc(p.n)}</button>`).join('')}</div>
+   ${s.length?`<h3 style="margin:14px 0 4px">${esc(t('launch'))}</h3><div class="chips">${PLATFORMS.filter(p=>s.includes(p.k)).map(p=>`<a class="btn red" style="text-decoration:none" target="_blank" rel="noopener noreferrer" href="${esc(p.h)}">${esc(p.n)} ↗</a>`).join('')}</div>`:''}
+   <h3 style="margin:14px 0 4px">${esc(t('subscribe'))}</h3><div class="chips">${PLATFORMS.filter(p=>!s.includes(p.k)).map(p=>`<a class="btn sec" style="text-decoration:none" target="_blank" rel="noopener noreferrer${p.a?' sponsored':''}" href="${esc(p.a||p.h)}">${esc(p.n)} ↗</a>`).join('')}</div>
+   ${PLATFORMS.some(p=>p.a)?`<p class="muted small">${esc(t('affNote'))}</p>`:''}</div>`;
 }
 function renderServices(el){
   el.innerHTML = subsBox() + `<h2>${esc(t('svcTitle'))}</h2><p class="muted small">${esc(t('svcNote'))}</p>` +
