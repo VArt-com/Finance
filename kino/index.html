@@ -36,14 +36,21 @@ h2{font-size:calc(18px*var(--fs));margin:4px 0 12px}
 dialog{width:min(760px,96vw);max-height:92vh;overflow:auto;background:var(--bg);color:var(--tx);border:1px solid #2b3858;border-radius:14px;padding:16px}
 dialog a{color:#8ab4ff}
 #plwrap{background:#000;border-radius:10px;overflow:hidden;margin-bottom:10px}
-#plwrap:fullscreen{display:flex;flex-direction:column;border-radius:0;margin:0}
-#plwrap:fullscreen #plplayer{flex:1;min-height:0}
-#plwrap:fullscreen iframe{aspect-ratio:auto;height:100%;border-radius:0}
+#plwrap{position:relative}
+#plwrap:fullscreen{display:block;border-radius:0;margin:0}
+#plwrap:fullscreen #plplayer{height:100%}
+#plwrap:fullscreen iframe{aspect-ratio:auto;width:100%;height:100%;border-radius:0}
 #plbar{display:flex;gap:8px;align-items:center;padding:8px;background:var(--card)}
 #plbar .ttl{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:calc(14px*var(--fs))}
 #plstrip{display:none;overflow-x:auto;gap:8px;padding:6px 8px;background:var(--card)}
-#plwrap:fullscreen #plstrip{display:flex}
 #plstrip img{height:60px;aspect-ratio:16/9;object-fit:cover;border-radius:6px;cursor:pointer;flex:none}
+#plfab{display:none}
+#plwrap:fullscreen #plbar{position:absolute;top:0;left:0;right:0;background:rgba(10,15,30,.92);transform:translateY(-120%);transition:transform .2s;z-index:3}
+#plwrap:fullscreen #plstrip{position:absolute;top:58px;left:0;right:0;background:rgba(10,15,30,.92);transform:translateY(-300%);transition:transform .2s;z-index:3}
+#plwrap:fullscreen.show #plbar,#plwrap:fullscreen.show #plstrip{transform:none}
+#plwrap:fullscreen #plstrip{display:flex}
+#plwrap:fullscreen #plfab{display:block;position:absolute;right:8px;top:50%;transform:translateY(-50%);z-index:4;opacity:.45;width:44px;height:44px;border-radius:50%;padding:0}
+#plwrap:fullscreen.show #plfab{opacity:.9}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
 .chip{padding:8px 14px;border-radius:999px;border:1px solid #2b3858;background:var(--card);color:var(--tx);cursor:pointer;font-size:inherit}
 .chip.on{background:var(--ac);border-color:var(--ac);color:#fff}
@@ -418,6 +425,7 @@ function plPlay(id, auto){
   f.addEventListener('load', ()=>{ try{ f.contentWindow.postMessage(JSON.stringify({event:'listening',id:1,channel:'widget'}),'https://www.youtube-nocookie.com'); }catch(e){} });
   const v = plSt && plSt.items.find(x=>x.id===id); const tt = $('pltitle'); if (tt) tt.textContent = v ? v.title : '';
   plMark(id);
+  const w = $('plwrap'); if (w) w.classList.remove('show');
 }
 async function plStep(d){
   const st = plSt; if (!st || !st.items.length) return;
@@ -461,7 +469,7 @@ function openFree(id){
   const link = /^https:\/\/(archive\.org|www\.youtube\.com|vimeo\.com|www\.dailymotion\.com)\//.test(it.src||'') ? `<a target="_blank" rel="noopener noreferrer" href="${esc(it.src)}">${esc(t('source'))}</a>` : '';
   const d = $('dlg');
   d.innerHTML = `<button class="btn sec x" data-act="close">${esc(t('close'))}</button><h2 style="margin-top:0">${esc(ti)} <span class="muted">${esc(it.year||'')}</span></h2>
-    ${it.source==='youtube-list' ? `<div id="plwrap"><div id="plplayer"></div><div id="plbar"><button class="btn sec" data-act="plprev" aria-label="prev">◀</button><span class="ttl" id="pltitle"></span><button class="btn sec" data-act="plnext" aria-label="next">▶</button><button class="btn sec" data-act="plfs" aria-label="fullscreen">⛶</button></div><div id="plstrip"></div></div><p id="plmsg" class="small muted">${esc(t('plNote'))}</p><div class="grid" id="plgrid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))"></div><p><button class="btn sec" id="plmore" data-act="plmore" style="display:none">${esc(t('plMore'))}</button></p>` : `<iframe src="${esc(src)}" allow="fullscreen; encrypted-media; picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation allow-popups" referrerpolicy="strict-origin-when-cross-origin" title="${esc(ti)}"></iframe>`}
+    ${it.source==='youtube-list' ? `<div id="plwrap"><div id="plplayer"></div><div id="plbar"><button class="btn sec" data-act="plprev" aria-label="prev">◀</button><span class="ttl" id="pltitle"></span><button class="btn sec" data-act="plnext" aria-label="next">▶</button><button class="btn sec" data-act="plfs" aria-label="fullscreen">⛶</button></div><div id="plstrip"></div><button class="btn sec" id="plfab" data-act="plmenu" aria-label="menu">☰</button></div><p id="plmsg" class="small muted">${esc(t('plNote'))}</p><div class="grid" id="plgrid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))"></div><p><button class="btn sec" id="plmore" data-act="plmore" style="display:none">${esc(t('plMore'))}</button></p>` : `<iframe src="${esc(src)}" allow="fullscreen; encrypted-media; picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation allow-popups" referrerpolicy="strict-origin-when-cross-origin" title="${esc(ti)}"></iframe>`}
     <p class="small muted">${esc(t('license'))}: ${esc(it.license||'')} ${link}</p>` +
     (it.db && isAdmin() ? `<p><button class="btn sec" data-act="dellink" data-id="${esc(it.dbId)}">${esc(t('del'))}</button></p>` : '');
   d.showModal();
@@ -491,6 +499,7 @@ document.addEventListener('click', e=>{
   else if (a==='plprev') plStep(-1);
   else if (a==='plnext') plStep(1);
   else if (a==='plfs') plFs();
+  else if (a==='plmenu'){ const w=$('plwrap'); if (w) w.classList.toggle('show'); }
   else if (a==='togglesub'){ e.preventDefault(); const k=c.dataset.k; let s=getSubs(); s = s.includes(k)?s.filter(x=>x!==k):s.concat(k); setSubs(s); render(); }
   else if (a==='mysubs'){ e.preventDefault(); $('dlg').close(); $('dlg').innerHTML=''; tab='services'; query=''; $('q').value=''; render(); window.scrollTo(0,0); }
   else if (a==='addlink') openAddLink();
