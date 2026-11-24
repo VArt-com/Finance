@@ -103,10 +103,10 @@ export default {
       const titles = {}; (aj.items || []).forEach(i => { if (i.contentDetails) titles[i.contentDetails.videoId] = (i.snippet && i.snippet.title) || ''; });
       let items = [];
       if (ids.length) {
-        const b = await fetch(Y + 'videos?part=status&id=' + ids.join(',') + '&key=' + env.YT_KEY);
+        const b = await fetch(Y + 'videos?part=status,contentDetails&id=' + ids.join(',') + '&key=' + env.YT_KEY);
         if (!b.ok) return json({ error: 'yt-' + b.status }, 502, h);
         const bj = await b.json();
-        items = (bj.items || []).filter(v => v.status && v.status.embeddable === true && v.status.privacyStatus === 'public')
+        items = (bj.items || []).filter(v => v.status && v.status.embeddable === true && v.status.privacyStatus === 'public' && !((v.contentDetails && v.contentDetails.contentRating && v.contentDetails.contentRating.ytRating) === 'ytAgeRestricted'))
           .map(v => ({ id: v.id, title: String(titles[v.id] || '').slice(0, 150) }));
         const order = {}; ids.forEach((v, i) => order[v] = i); items.sort((x, y) => order[x.id] - order[y.id]);
       }
