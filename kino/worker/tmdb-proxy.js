@@ -2,6 +2,7 @@
 // Settings -> Variables and Secrets:
 //   TMDB_KEY        (Secret) — "API Key (v3)" с themoviedb.org/settings/api  (или TMDB_TOKEN — Read Access Token)
 //   ADMIN_PASSWORD  (Secret) — пароль админа для добавления/удаления ссылок
+//   YT_KEY          (Secret) — ключ YouTube Data API v3 (для списка фильмов плейлиста)
 //   ALLOWED_ORIGINS (Text)   — адрес сайта, например https://org-va.com
 // Settings -> Bindings -> KV namespace: переменная KINO_KV (список ссылок хранится здесь)
 const TMDB = 'https://api.themoviedb.org/3';
@@ -84,6 +85,34 @@ export default {
         return json({ ok: true }, 200, h);
       }
       return json({ ok: false, error: 'not found' }, 404, h);
+    }
+
+    // ---- Список фильмов плейлиста YouTube (только те, что можно встраивать) ----
+    if (url.pathname === '/yt/playlist' && req.method === 'GET') {
+      if (!env.YT_KEY) return json({ error: 'yt-off' }, 503, h);
+      const list = url.searchParams.get('list') || '', pt = url.searchParams.get('page') || '';
+      if (!/^[A-Za-z0-9_-]{10,60}$/.test(list) || (pt && !/^[A-Za-z0-9_-]{1,100}$/.test(pt))) return json({ error: 'bad' }, 400, h);
+      const cache = typeof caches !== 'undefined' ? caches.default : null;
+      const ck = new Request('https://kino.cache/yt/' + list + '/' + pt);
+      if (cache) { const hit = await cache.match(ck); if (hit) { const r = new Response(hit.body, hit); Object.entries(h).forEach(([a, b]) => r.headers.set(a, b)); return r; } }
+      const Y = 'https://www.googleapis.com/youtube/v3/';
+      const a = await fetch(Y + 'playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=' + list + (pt ? '&pageToken=' + pt : '') + '&key=' + env.YT_KEY);
+      if (!a.ok) return json({ error: 'yt-' + a.status }, 502, h);
+      const aj = await a.json();
+      const ids = (aj.items || []).map(i => i.contentDetails && i.contentDetails.videoId).filter(v => /^[A-Za-z0-9_-]{11}$/.test(v || ''));
+      const titles = {}; (aj.items || []).forEach(i => { if (i.contentDetails) titles[i.contentDetails.videoId] = (i.snippet && i.snippet.title) || ''; });
+      let items = [];
+      if (ids.length) {
+        const b = await fetch(Y + 'videos?part=status&id=' + ids.join(',') + '&key=' + env.YT_KEY);
+        if (!b.ok) return json({ error: 'yt-' + b.status }, 502, h);
+        const bj = await b.json();
+        items = (bj.items || []).filter(v => v.status && v.status.embeddable === true && v.status.privacyStatus === 'public')
+          .map(v => ({ id: v.id, title: String(titles[v.id] || '').slice(0, 150) }));
+        const order = {}; ids.forEach((v, i) => order[v] = i); items.sort((x, y) => order[x.id] - order[y.id]);
+      }
+      const out = new Response(JSON.stringify({ items, next: aj.nextPageToken || '', total: (aj.pageInfo && aj.pageInfo.totalResults) || 0 }), { status: 200, headers: { ...h, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' } });
+      if (cache) ctx.waitUntil(cache.put(ck, out.clone()));
+      return out;
     }
 
     // ---- Прокси к TMDB ----
