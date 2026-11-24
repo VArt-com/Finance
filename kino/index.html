@@ -455,9 +455,9 @@ async function plLoad(){
     st.next = j.next||''; st.shown += (j.items||[]).length;
     if (!st.started && (j.items||[]).length){ st.started = true; plPlay(j.items[0].id, false); }
     if (!g.children.length && !st.next) $('plmsg').textContent = t('plNone');
-    $('plmore').style.display = st.next ? '' : 'none';
+    $('plmore').style.display = (st.next && st.auto >= 40) ? '' : 'none';
     // если на странице попались только запрещённые фильмы, подгружаем дальше сами
-    if (st.next && st.shown < 12 && st.auto < 6){ st.auto++; st.busy=false; return await plLoad(); }
+    if (st.next && st.auto < 40){ st.auto++; st.busy=false; return await plLoad(); }
   }catch(e){
     if (plSt === st && !st.started && $('plplayer')){ $('plmsg').textContent = t('plErr'); $('plplayer').innerHTML = `<iframe src="${esc(embedSrc({source:'youtube-list',ref:st.ref}))}" allow="fullscreen; encrypted-media; picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation allow-popups" referrerpolicy="strict-origin-when-cross-origin" title="playlist"></iframe>`; $('plmore').style.display='none'; }
   }finally{ st.busy = false; }
