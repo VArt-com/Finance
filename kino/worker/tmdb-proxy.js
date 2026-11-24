@@ -93,7 +93,7 @@ export default {
       const list = url.searchParams.get('list') || '', pt = url.searchParams.get('page') || '';
       if (!/^[A-Za-z0-9_-]{10,60}$/.test(list) || (pt && !/^[A-Za-z0-9_-]{1,100}$/.test(pt))) return json({ error: 'bad' }, 400, h);
       const cache = typeof caches !== 'undefined' ? caches.default : null;
-      const ck = new Request('https://kino.cache/yt/' + list + '/' + pt);
+      const ck = new Request('https://kino.cache/yt2/' + list + '/' + pt);
       if (cache) { const hit = await cache.match(ck); if (hit) { const r = new Response(hit.body, hit); Object.entries(h).forEach(([a, b]) => r.headers.set(a, b)); return r; } }
       const Y = 'https://www.googleapis.com/youtube/v3/';
       const a = await fetch(Y + 'playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=' + list + (pt ? '&pageToken=' + pt : '') + '&key=' + env.YT_KEY);
