@@ -268,6 +268,7 @@ function parseLink(u){
     if (x.pathname==='/playlist' && list && /^[A-Za-z0-9_-]{10,60}$/.test(list)) return yt('youtube-list',list,'https://www.youtube.com/playlist?list='+list);
     if ((m=x.pathname.match(/^\/channel\/UC([A-Za-z0-9_-]{22})/))) return yt('youtube-list','UU'+m[1],'https://www.youtube.com/channel/UC'+m[1]);
     if ((m=x.pathname.match(/^\/(?:embed|shorts)\/([A-Za-z0-9_-]{11})/))) return yt('youtube',m[1],'https://www.youtube.com/watch?v='+m[1]);
+    if (x.pathname==='/watch' && list && /^(PL|UU|OLAK)[A-Za-z0-9_-]{8,60}$/.test(list)) return yt('youtube-list',list,'https://www.youtube.com/playlist?list='+list);
     const v=x.searchParams.get('v'); if (v && /^[A-Za-z0-9_-]{11}$/.test(v)) return yt('youtube',v,'https://www.youtube.com/watch?v='+v);
   }
   if (h==='vimeo.com' && (m=x.pathname.match(/^\/(?:video\/)?(\d{5,12})/))) return yt('vimeo',m[1],'https://vimeo.com/'+m[1]);
